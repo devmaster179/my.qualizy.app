@@ -1,0 +1,314 @@
+/**
+ * This injects Tailwind's base styles, which is a combination of
+ * Normalize.css and some additional base styles.
+ *
+ * You can see the styles here:
+ * https://github.com/tailwindcss/tailwindcss/blob/master/css/preflight.css
+ *
+ * If using `postcss-import`, you should import this line from it's own file:
+ *
+ * @import "./tailwind-preflight.css";
+ *
+ * See: https://github.com/tailwindcss/tailwindcss/issues/53#issuecomment-341413622
+ */
+/*NOTE: 'preflight' IS RENAMED TO 'base'*/
+/*@tailwind base;*/
+
+/**
+ * Here you would add any of your custom component classes; stuff that you'd
+ * want loaded *before* the utilities so that the utilities could still
+ * override them.
+ *
+ * Example:
+ *
+ * .btn { ... }
+ * .form-input { ... }
+ *
+ * Or if using a preprocessor or `postcss-import`:
+ *
+ * @import "components/buttons";
+ * @import "components/forms";
+ */
+@tailwind components;
+
+/**
+ * This injects all of Tailwind's utility classes, generated based on your
+ * config file.
+ *
+ * If using `postcss-import`, you should import this line from it's own file:
+ *
+ * @import "./tailwind-utilities.css";
+ *
+ * See: https://github.com/tailwindcss/tailwindcss/issues/53#issuecomment-341413622
+ */
+@tailwind utilities;
+
+/**
+ * Here you would add any custom utilities you need that don't come out of the
+ * box with Tailwind.
+ *
+ * Example :
+ *
+ * .bg-pattern-graph-paper { ... }
+ * .skew-45 { ... }
+ *
+ * Or if using a preprocessor or `postcss-import`:
+ *
+ * @import "utilities/background-patterns";
+ * @import "utilities/skew-transforms";
+ */
+
+/** 
+  Custome CSS
+ */
+ .h-screen {
+   min-width: 100vh !important;
+ }
+.vs-icon-primary {
+  color: rgba(var(--vs-primary),1)!important;
+}
+body{
+  background-color: #ebebf1!important;
+}
+#content-area{
+  margin-left:80px ;
+}
+.main-menu-sidebar  .vs-sidebar{
+  max-width: 80px;
+}
+#app .main-menu-sidebar .scroll-area--main-sidebar > .vs-sidebar--item{
+  padding: 5px 0px;
+}
+.router-view{
+  background: #ebebf1!important;;
+}
+
+.vs-input--input.normal ,.flatpickr-input{
+  padding: .786rem;
+}
+.log-sidebar .vs-input--input.normal ,.flatpickr-input{
+  padding: 1.072rem;
+}
+.log-sidebar  .vs-input--placeholder.normal,.vdp-datepicker input {
+    padding: 1.1rem;
+}
+.vs-input--placeholder.normal,.vdp-datepicker input {
+    padding: 0.85rem;
+}
+.vuesax-app-is-ltr .vs-input--input.hasIcon+.vs-input--placeholder.large{
+  padding-left: 40px;
+  padding-top: 17px;
+}
+.log-sidebar  .vs-input--icon.feather{
+  top: 13px;
+}
+.vs-input--icon.feather{
+  top: 10px;
+}
+
+#app .log-sidebar  .vue-simple-suggest.designed .input-wrapper input{
+  padding: 15px;
+}
+
+.log-sidebar .multiselect__tags {
+  min-height: 48px;
+  padding: 11px 40px 0 8px;
+}
+
+.log-sidebar .multiselect__select {
+      height: 43px;
+}
+/* template */
+
+.color-my-black{
+  color: #1e1c26;
+}
+
+.vs-area-no-border.vs-con-textarea{
+  border: none!important;
+}
+.vs-area-no-border .vs-textarea:focus{
+  resize: none!important;
+}
+.edit-component .vs-textarea{
+  padding: 0px 2px;
+  font-family: "Karla";
+  color: #1e1c26;
+  font-size: 12px;
+  opacity: 0.54;
+}
+
+.edit-component .vs-textarea:focus{
+  opacity: 1;
+}
+
+
+.edit-component input {
+  padding: 5px!important;
+}
+.edit-component .input-span-placeholder {
+  padding: 0!important;
+}
+
+.edit-component.isFocus .input-span-placeholder {
+  display: none;
+}
+
+.edit-component .input-span-placeholder.large , .edit-component input.large  {
+  font-size: 16px;
+  font-family: "Karla";
+  font-weight: bold;
+  color: #1e1c26;
+  transform: unset!important;
+}
+
+/* template */
+
+
+.vuesax-app-is-ltr .vs-input--input.hasValue+.vs-placeholder-label, .vuesax-app-is-ltr .vs-input--input:focus+.vs-placeholder-label{
+    -webkit-transform: translate(-3px,-63%)!important;
+    transform: translate(-3px,-63%)!important;
+}
+
+.vs-inputx.vs-input--input{
+  background: #ffffff!important;
+}
+.log-sidebar  .vs--searchable .vs__dropdown-toggle{
+  height: 100%;
+  padding: .536rem;
+}
+.vs--searchable .vs__dropdown-toggle{
+  padding: .25rem;
+}
+.scanner-container {
+  height: 65% !important;
+}
+
+.vs-dialog {
+  max-width: 600px !important;
+  max-height: 95% !important;
+}
+
+.vs-inputx.vs-input--input {
+  background-color: transparent;
+}
+
+.pac-container {
+  z-index: 99999 !important;
+}
+
+.vx-row {
+  margin: 0;
+}
+
+._app-fixed-height {
+  height: calc(100vh - 13.6rem);
+}
+
+/* @media (max-width: 576px) {
+ ._app-fixed-height {
+    height: calc(100vh - 14.1rem);
+ } 
+} */
+
+.content-wrapper {
+  min-height: calc(100vh - 4rem) !important;
+}
+
+.router-view {
+  padding-bottom: 0 !important;
+}
+
+.autosave-section {
+  position: fixed;
+  top: 100px;
+  left: 0px;
+  width: 100%;
+}
+
+.autosave-section span {
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #c2efce;
+  color: #05843e;
+  font-weight: 500;
+  -webkit-box-shadow: 0 0 25px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 25px 0 rgba(0, 0, 0, 0.2);
+  transition: all 0.5s ease-in-out;
+}
+
+.task-section .swiper-pagination.swiper-pagination-clickable.swiper-pagination-bullets{
+  position: fixed;
+  bottom: 10px;
+}
+
+@media (max-width: 576px) {
+  .con-vs-popup .vs-popup--content {
+    padding: 1rem .5rem;
+  }
+  #app .navbar-sticky .vx-navbar-wrapper header.vx-navbar {
+    padding: 0.5rem 1rem !important;
+  }
+
+  .vue-form-wizard .wizard-tab-content {
+    padding-right: 0 !important;
+    padding-top: 0 !important;
+    padding-left: 0 !important;
+  }
+
+  .wizard-header {
+    padding: 0 !important;
+  }
+
+  /* .autosave-section {
+    display: none !important;
+  } */
+
+  ._app-fixed-height {
+    height: calc(100vh - 9.9rem);
+  }
+
+  .con-tab.vs-tabs--content {
+    padding: 0;
+  }
+
+  .router-view {
+    padding: 1px !important;
+  }
+}
+
+.con-tab.vs-tabs--content {
+  padding-bottom: 0;
+}
+
+.vx-navbar-wrapper {
+  height: unset;
+}
+
+.vs-notifications {
+  min-width: unset !important;
+}
+
+.con-text-noti p {
+  white-space: pre-line;
+}
+
+.vdp-datepicker__calendar {
+  z-index: 300 !important;
+}
+
+.pmBtn button {
+  margin-left: -1px;
+  padding: 0.7rem 0.8rem !important;
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+}
+
+.pmBtn input {
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.pmBtn .vs-con-input-label {
+  width: 150px;
+}
