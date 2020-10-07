@@ -125,7 +125,7 @@
               style="color:#6c50f0;"
               v-if="haveAction(answerContent.type.id)"
               @click="openAction"
-            >{{$t("add action")}}</p>
+            >{{$t("Notification")}}</p>
             <p
               class="karla-bold mr-2"
               style="color:#6c50f0;"
