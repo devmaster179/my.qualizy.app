@@ -201,7 +201,12 @@
             <p class="karla ml-1">{{$t("unscheduled")}}</p>
           </div>
         </div>
+      <div class="template-assign mt-4" v-if="templateSD=='bookmarked'">
+        <p class="title">{{$t("teams")}}</p>
+        <v-select v-model="team" :options="teams" label="name" multiple/>
       </div>
+      </div>
+
     </VuePerfectScrollbar>
     <vs-divider />
     <div class="flex items-center justify-end">
@@ -224,7 +229,7 @@ import TemplateImages from "./Template-Images";
 import Multiselect from "vue-multiselect";
 import Swatches from "vue-swatches";
 import "vue-swatches/dist/vue-swatches.min.css";
-
+import VSelect from "vue-select"
 import { db } from "@/firebase/firebaseConfig";
 export default {
   components: {
@@ -232,6 +237,7 @@ export default {
     TemplateImages,
     Multiselect,
     Swatches,
+    VSelect
   },
   props: {
     showCreat: {
@@ -271,6 +277,34 @@ export default {
     };
   },
   computed: {
+    teams() {
+      return this.$store.getters["app/teams"].filter((team) => {
+        return true
+        // if(!item.active) return false
+        // let selectedLocations = this.$store.getters["app/locationList"]
+        // if(selectedLocations.length > 0) {
+        //   if(team.location==undefined || !Array.isArray(team.location)) return false
+        //   return team.location.some(item=> selectedLocations.includes(item))
+        // }
+      });
+    },
+    team: {
+      get() {
+        var teamss = []
+        let teams =  this.tempTemplate.content.teams || []
+        teams.map(team=> {
+          teamss.push(this.$store.getters["app/getTeamById"](team))
+        })
+        return teamss
+      },
+      set(val) {
+        var teams = []
+        val.map(item=> {
+          teams.push(item.id)
+        })
+        this.$store.commit("app/CHN_TEMPLATE_TEAMS" , teams)
+      }
+    },
     templateSD: {
       get() {
         return this.tempTemplate.content.templateSD;

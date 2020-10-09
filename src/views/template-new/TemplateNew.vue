@@ -167,6 +167,7 @@ export default {
       });
       let tempTemplate = {
         content: {
+          teams: [],
           location: [],
           templateTitle: template.content.templateTitle,
           templateComment: template.content.templateComment,
@@ -184,6 +185,7 @@ export default {
 
       var tempTemplate = {
         content: {
+          teams: [],
           location: [],
           templateTitle: "",
           templateComment: "",

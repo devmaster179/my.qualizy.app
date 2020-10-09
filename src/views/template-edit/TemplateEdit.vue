@@ -331,7 +331,8 @@ export default {
         templateComment: template.content.templateComment,
         templateImage: template.content.templateImage,
         templateLabel: template.content.templateLabel,
-        templateSD: template.content.templateSD
+        templateSD: template.content.templateSD,
+        teams: template.content.teams || []
       };
       if (
         this.$route.params.state == "create" ||
