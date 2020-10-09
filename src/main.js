@@ -81,10 +81,6 @@ Vue.use(VueIntercom, {
   appId: 'neav79ns'
 });
 
-// import VueMixpanel from "vue-mixpanel"
-// Vue.use(VueMixpanel, {
-//   token: "ee92027ccac8a7d338ad16ed3cb98709",
-// })
 
 import Mixpanel from "mixpanel-browser"
 
