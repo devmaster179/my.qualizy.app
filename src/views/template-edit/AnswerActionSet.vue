@@ -257,7 +257,7 @@ export default {
       },
     },
     teams() {
-      return this.$store.getters["app/teams"];
+      return this.$store.getters["app/teams"].filter((item) => item.active);
     },
     temp1: {
       get() {

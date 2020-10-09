@@ -161,6 +161,9 @@ export default {
   CHN_TEMPLATE_SD(state, query) {
     state.tempTemplate.content.templateSD = query
   },
+  CHN_TEMPLATE_TEAMS(state,query) {
+    state.tempTemplate.content.teams = query
+  },
   SET_TYPED_TEMPLATE_TYPE(state, query) {
     state.typedTemplateType = query
   },
