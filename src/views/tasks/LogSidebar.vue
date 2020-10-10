@@ -1058,92 +1058,58 @@ export default {
           logs: this.pages,
         });
 
-      if (action && action.content !== undefined) {
-        if (
-          (action.condition == "Equal" && e == action.content[0]) ||
-          (action.condition == "Not Equal" && e != action.content[0]) ||
-          (action.condition == "Less Than" && e < action.content[0]) ||
-          (action.condition == "Less Than or Equal" &&
-            e <= action.content[0]) ||
-          (action.condition == "Greater Than" && e > action.content[0]) ||
-          (action.condition == "Greater Than or Equal" &&
-            e >= action.content[0]) ||
-          (action.condition == "Between" &&
-            e >= action.content[0] &&
-            e <= action.content[1])
-        ) {
-          var notification = this.$store.getters[
-            "app/getNotificationByT_Indexes"
-          ]({
-            tId: this.template,
-            indexes: [pIndex, qIndex, aIndex],
-            logID: this.logID,
-            value:
-              e +
-              this.pages[pIndex].questions[qIndex].answers[aIndex].ref.type
-                .tempUnit,
-          });
-          var templateTitle = this.templateInfo.content.templateTitle;
-          var mUsers = [];
-          action.toUser.map((id) => {
-            let team = this.$store.getters["app/getTeamById"](id);
-            if (team == undefined) return;
-            let user = this.$store.getters["app/users"].filter(
-              (item) => item.team.indexOf(id) > -1
-            );
+      console.log('action:', action, this.pages[pIndex].questions[qIndex].answers[aIndex]);
+      const actions = type == "temperature" ? action : [action];
 
-            user.map((item) => {
-              if (
-                mUsers.find((mUser) => mUser.email == item.email)
-              )
-                return;
-              mUsers.push({ email: item.email, name: item.name });
-            });
-          });
-          
-          if (notification == undefined) {
-
-            db.collection("notifications").add({
-              readIds: [],
-              sendEmails: mUsers,
-              text:
-                "Captured " +
-                '"' +
-                e +
-                this.pages[pIndex].questions[qIndex].answers[aIndex].ref.type
-                  .tempUnit +
-                '" in ' +
-                '"' +
-                this.pages[pIndex].questions[qIndex].title +
-                '"',
-              templateIndexes: [pIndex, qIndex, aIndex],
+      actions.forEach(action => {
+        if (action && action.content !== undefined) {
+          if (
+            (action.condition == "Equal" && e == action.content[0]) ||
+            (action.condition == "Not Equal" && e != action.content[0]) ||
+            (action.condition == "Less Than" && e < action.content[0]) ||
+            (action.condition == "Less Than or Equal" &&
+              e <= action.content[0]) ||
+            (action.condition == "Greater Than" && e > action.content[0]) ||
+            (action.condition == "Greater Than or Equal" &&
+              e >= action.content[0]) ||
+            (action.condition == "Between" &&
+              e >= action.content[0] &&
+              e <= action.content[1])
+          ) {
+            var notification = this.$store.getters[
+              "app/getNotificationByT_Indexes"
+            ]({
+              tId: this.template,
+              indexes: [pIndex, qIndex, aIndex],
               logID: this.logID,
-              templateId: this.template,
-              title: templateTitle,
               value:
                 e +
                 this.pages[pIndex].questions[qIndex].answers[aIndex].ref.type
                   .tempUnit,
-              alertType: action.alertType || action.alwertType,
-              toTeam: action.toUser,
-              group: JSON.parse(localStorage.getItem("userInfo")).group,
-              updated_by: JSON.parse(localStorage.getItem("userInfo")).id,
-              updated_at: new Date(),
-              at: firebase.firestore.FieldValue.serverTimestamp(),
             });
-          } else {
- 
-            db.collection("notifications")
-              .doc(notification.id)
-              .update({
+            var templateTitle = this.templateInfo.content.templateTitle;
+            var mUsers = [];
+            action.toUser.map((id) => {
+              let team = this.$store.getters["app/getTeamById"](id);
+              if (team == undefined) return;
+              let user = this.$store.getters["app/users"].filter(
+                (item) => item.team.indexOf(id) > -1
+              );
+
+              user.map((item) => {
+                if (
+                  mUsers.find((mUser) => mUser.email == item.email)
+                )
+                  return;
+                mUsers.push({ email: item.email, name: item.name });
+              });
+            });
+            
+            if (notification == undefined) {
+
+              db.collection("notifications").add({
+                readIds: [],
                 sendEmails: mUsers,
-                value:
-                  e +
-                  this.pages[pIndex].questions[qIndex].answers[aIndex].ref.type
-                    .tempUnit,
-                updated_by: JSON.parse(localStorage.getItem("userInfo")).id,
-                updated_at: new Date(),
-                at: firebase.firestore.FieldValue.serverTimestamp(),
                 text:
                   "Captured " +
                   '"' +
@@ -1154,11 +1120,50 @@ export default {
                   '"' +
                   this.pages[pIndex].questions[qIndex].title +
                   '"',
-                readIds: [],
+                templateIndexes: [pIndex, qIndex, aIndex],
+                logID: this.logID,
+                templateId: this.template,
+                title: templateTitle,
+                value:
+                  e +
+                  this.pages[pIndex].questions[qIndex].answers[aIndex].ref.type
+                    .tempUnit,
+                alertType: action.alertType || action.alwertType,
+                toTeam: action.toUser,
+                group: JSON.parse(localStorage.getItem("userInfo")).group,
+                updated_by: JSON.parse(localStorage.getItem("userInfo")).id,
+                updated_at: new Date(),
+                at: firebase.firestore.FieldValue.serverTimestamp(),
               });
+            } else {
+  
+              db.collection("notifications")
+                .doc(notification.id)
+                .update({
+                  sendEmails: mUsers,
+                  value:
+                    e +
+                    this.pages[pIndex].questions[qIndex].answers[aIndex].ref.type
+                      .tempUnit,
+                  updated_by: JSON.parse(localStorage.getItem("userInfo")).id,
+                  updated_at: new Date(),
+                  at: firebase.firestore.FieldValue.serverTimestamp(),
+                  text:
+                    "Captured " +
+                    '"' +
+                    e +
+                    this.pages[pIndex].questions[qIndex].answers[aIndex].ref.type
+                      .tempUnit +
+                    '" in ' +
+                    '"' +
+                    this.pages[pIndex].questions[qIndex].title +
+                    '"',
+                  readIds: [],
+                });
+            }
           }
         }
-      }
+      });
     },
     chnContent(pIndex, qIndex, aIndex, content, failed, action = false) {
       this.initState = false;
