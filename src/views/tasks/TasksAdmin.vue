@@ -293,7 +293,6 @@ export default {
           if (item.trashed !== undefined && item.trashed) return false;
           if(item.content.teams !== undefined ) {
             var userTeam = this.$store.getters["app/currentUser"].team
-            console.log(userTeam)
             if(!item.content.teams.some(t=> userTeam.includes(t))) return false
           }
           if (this.$store.getters["app/locationList"].length > 0) {

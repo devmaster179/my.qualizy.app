@@ -14,23 +14,30 @@
             :class="{'active': tab=='teams'}"
             @click="tab='teams'"
           >{{$t("teams")}}</div>
+          <div
+            class="text-center py-3 px-6 karla"
+            :class="{'active': tab=='auth'}"
+            @click="tab='auth'"
+          >{{$t("authorizations")}}</div>
         </div>
       </div>
     </div>
     <div class="page-content">
       <user-tab v-if=" tab=='users'" />
       <group-tab v-else-if="tab=='teams'" />
+      <auth-tab v-else-if="tab='auth'"/>
     </div>
   </div>
 </template>
 <script>
 import UserTab from "./user/UserTab.vue";
 import GroupTab from "./group/GroupTab.vue";
-
+import AuthTab from "./auth/Auth.vue"
 export default {
   components: {
     UserTab,
     GroupTab,
+    AuthTab
   },
   data() {
     return {
@@ -59,6 +66,7 @@ export default {
 .switch-tab div:last-child {
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
+  border-left-width: 0;
 }
 .switch-tab div.active {
   background-color: rgba(108, 80, 240, 0.08);

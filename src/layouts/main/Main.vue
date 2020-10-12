@@ -240,6 +240,50 @@ export default {
     },
   },
   methods: {
+    setAuth() {
+      return new Promise((resolve,reject) => {
+        db.collection("roles").doc(JSON.parse(localStorage.getItem("userInfo")).group).onSnapshot((q)=> {
+          
+          var subjects = ['records' , 'templates' , 'schedule' , 'food items' , 'knoledge base' , 'analytics' , 'user and team settings']
+          var auth = {}
+          subjects.map(item=> {
+            auth[item] = {
+              admin: {
+                view: true,
+                create: true,
+                edit: true,
+                delete: false
+              },
+              supervisor: {
+                view: true,
+                create: true,
+                edit: false,
+                delete: false
+              },
+              operator: {
+                view: true,
+                create: false,
+                edit: false,
+                delete: false
+              },
+              auditor: {
+                view: true,
+                create: false,
+                edit: false,
+                delete: false
+              }
+            }
+          })
+          if(!q.exists) {
+            this.$store.commit("app/SET_AUTH" , auth)
+          } else {
+            this.$store.commit("app/SET_AUTH" , q.data())
+          }
+
+          resolve("OK")
+        })
+      })
+    },
     setCurrentUser() {
       return new Promise((resolve, reject) => {
         db.collection("users")
@@ -735,7 +779,7 @@ export default {
     await this.setIots();
     await this.setReports();
     await this.setKnowledge();
-
+    await this.setAuth();
     this.$vs.loading.close();
 
     // db.collection('notifications').where('group', '==', JSON.parse(localStorage.getItem('userInfo')).group).onSnapshot(q => {

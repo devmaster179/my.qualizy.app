@@ -1,5 +1,6 @@
 export default {
     "en-gb": {
+        "authorizations": "Authorizations",
         "due": "due",
         "to do": "to do",
         "Celery": "Celery",
@@ -533,6 +534,7 @@ export default {
         "SunDay": "Sunday",
     },
     "en-us": {
+        "authorizations": "Authorizations",
         "due": "due",
         "to do": "to do",
         "Celery": "Celery",
@@ -1066,6 +1068,7 @@ export default {
         "SunDay": "Sunday",
     },
     "fr": {
+        "authorizations": "Autorisations",
         "due": "dans",
         "to do": "à faire",
         "Celery": "Céleri",
@@ -1599,6 +1602,7 @@ export default {
         "SunDay": "Dimanche",
     },
     "es": {
+        "authorizations": "Autorizaciones",
         "industry": "Industria",
         "skip": "Skip",
         "apply": "Aplicar",
@@ -2078,6 +2082,7 @@ export default {
         "SunDay": "Domingo",
     },
     "it": {
+        "authorizations": "Autorizzazioni",
         "industry": "Industria",
         "skip": "Skip",
         "apply": "Applicare",
