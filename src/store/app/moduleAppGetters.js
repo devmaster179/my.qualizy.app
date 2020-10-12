@@ -1,5 +1,8 @@
 /* eslint-disable no-redeclare */
 export default {
+  auth: state=> {
+    return state.auth
+  },
   ipInfo: state => {
     return state.ipInfo
   },

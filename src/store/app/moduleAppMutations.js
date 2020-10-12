@@ -1,4 +1,7 @@
 export default {
+  SET_AUTH(state ,query) {
+    state.auth = query
+  },
   SET_IP_INFO(state , query) {
     state.ipInfo = query
   },

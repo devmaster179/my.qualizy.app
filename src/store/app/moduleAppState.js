@@ -73,4 +73,5 @@ export default {
   editAction: false,
   editScore: false,
   ipInfo: {},
+  auth:{},
 }
