@@ -246,39 +246,41 @@ export default {
           
           var subjects = ['records' , 'templates' , 'schedule' , 'food items' , 'knoledge base' , 'analytics' , 'user and team settings']
           var auth = {}
-          subjects.map(item=> {
-            auth[item] = {
-              admin: {
-                view: true,
-                create: true,
-                edit: true,
-                delete: false
-              },
-              supervisor: {
-                view: true,
-                create: true,
-                edit: false,
-                delete: false
-              },
-              operator: {
-                view: true,
-                create: false,
-                edit: false,
-                delete: false
-              },
-              auditor: {
-                view: true,
-                create: false,
-                edit: false,
-                delete: false
-              }
-            }
-          })
           if(!q.exists) {
-            this.$store.commit("app/SET_AUTH" , auth)
-          } else {
-            this.$store.commit("app/SET_AUTH" , q.data())
+            subjects.map(item=> {
+              auth[item] = {
+                admin: {
+                  view: true,
+                  create: true,
+                  edit: true,
+                  delete: false
+                },
+                supervisor: {
+                  view: true,
+                  create: true,
+                  edit: false,
+                  delete: false
+                },
+                operator: {
+                  view: true,
+                  create: false,
+                  edit: false,
+                  delete: false
+                },
+                auditor: {
+                  view: true,
+                  create: false,
+                  edit: false,
+                  delete: false
+                }
+              }
+            })
+          }else {
+            subjects.map(item=> {
+              auth[item] = q.data()[item]
+            })
           }
+            this.$store.commit("app/SET_AUTH" , auth)
 
           resolve("OK")
         })

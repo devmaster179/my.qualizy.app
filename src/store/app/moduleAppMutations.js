@@ -2,6 +2,9 @@ export default {
   SET_AUTH(state ,query) {
     state.auth = query
   },
+  CHN_AUTH(state, query) {
+    state.auth[query.key][query.role][query.action] = !state.auth[query.key][query.role][query.action]
+  },
   SET_IP_INFO(state , query) {
     state.ipInfo = query
   },

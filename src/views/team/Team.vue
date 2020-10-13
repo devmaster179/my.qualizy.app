@@ -15,6 +15,7 @@
             @click="tab='teams'"
           >{{$t("teams")}}</div>
           <div
+            v-if="cUser.role && cUser.role.key<1"
             class="text-center py-3 px-6 karla"
             :class="{'active': tab=='auth'}"
             @click="tab='auth'"
@@ -44,6 +45,11 @@ export default {
       tab: "users",
     };
   },
+  computed: {
+    cUser() {
+      return  this.$store.getters["app/currentUser"];
+    }
+  },
   created() {},
 };
 </script>
@@ -63,10 +69,12 @@ export default {
   border-top-left-radius: 10px;
   border-bottom-left-radius: 10px;
 }
+.switch-tab div:nth-child(3) {
+  border-left-width: 0;
+}
 .switch-tab div:last-child {
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
-  border-left-width: 0;
 }
 .switch-tab div.active {
   background-color: rgba(108, 80, 240, 0.08);
