@@ -17,6 +17,7 @@
     </div>
     <div class="log-container mx-auto px-1 sm:px-0" v-if="logID!='' && pages.length>0">
       <VuePerfectScrollbar
+        @ps-scroll-y="scrollHandle"
         :settings="settings"
         ref="pageLists"
         class="scroll-area-task pr-1 sm:mt-3 mt-1"
@@ -374,7 +375,7 @@
                     <template v-else-if="getTemplateType(answer.ref.type.id).content=='date time'">
                       <div class="pl-4 w-full  relative" :class="{'hasClockIcon': !(isMobile || isIOS)}">
                         <flat-pickr
-                          v-if="answer.ref.type.dateType == 'Date'"
+                          v-if="answer.ref.type.dateType == 'Date' || answer.ref.type.dateType == undefined"
                           class="flatpickr-input w-full"
                           :config="configDatePicker"
                           :value=" pages[pIndex].questions[qIndex].answers[aIndex].value"
@@ -527,10 +528,13 @@ export default {
   },
   data() {
     return {
+      signatureTop: -1,
+      scrollUpdate: false,
       userList: [],
       settings: {
         maxScrollbarLength: 60,
         wheelSpeed: 0.5,
+        suppressScrollY: false
       },
       viewPage: false,
       windowWidth: window.innerWidth,
@@ -561,10 +565,6 @@ export default {
       saveState: false,
       now: new Date(),
       showThread: false,
-      settings: {
-        maxScrollbarLength: 60,
-        wheelSpeed: 0.5,
-      },
       enterClass: "animated bounceInRight",
       pageNum: 0,
       log: [],
@@ -835,6 +835,10 @@ export default {
     },
   },
   methods: {
+    scrollHandle(evt) {
+      if(this.signatureTop > -1)
+        this.$refs.pageLists.$el.scrollTop = this.signatureTop
+    },
     saveSignAction(url, ref, indexs) {
       this.pages[indexs[0]].questions[indexs[1]].answers[indexs[2]].value = {
         url: url,
@@ -910,8 +914,18 @@ export default {
     undoSign(p, q, a) {
       this.$refs[`signaturePad_${p}_${q}_${a}`][0].undoSignature();
     },
-    onBegin() {},
-    onEnd() {},
+    onBegin() {
+      this.signatureTop = this.$refs.pageLists.$el.scrollTop
+      // this.settings = {
+      //   maxScrollbarLength: 60,
+      //   wheelSpeed: 0.5,
+      //   suppressScrollY: true
+      // }
+      // this.scrollUpdate = true
+    },
+    onEnd() {
+      this.signatureTop = -1
+    },
     searchUserList(search, loading) {
       this.userList = [];
       loading(true);

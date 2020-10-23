@@ -98,7 +98,6 @@ export default {
             this.$store.commit("app/CHN_AUTH" , {key:key,role: role, action: action})
             db.collection('roles').doc(JSON.parse(localStorage.getItem("userInfo")).group).set(this.auths)
         }
-
     }
 }
 </script>

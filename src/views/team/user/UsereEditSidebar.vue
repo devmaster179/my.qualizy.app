@@ -18,7 +18,6 @@
       <div class="vs-row">
         <div class="vx-col px-base mb-4 mt-base">
           <h5 class="mb-0">{{$t("name") | capitalize}}</h5>
-
           <vs-input
             class="w-full"
             v-validate="'required|min:3'"
@@ -42,7 +41,14 @@
         </div>
         <div class="vx-col px-base mb-4">
           <h5 class="mb-0">{{$t("role") | capitalize}}</h5>
-          <v-select label="name" v-model="role" :options="roles" />
+          <v-select label="name" v-model="role" :options="roles" :selectable="option => option.key >= roleKey">
+            <template slot="option" slot-scope="option">
+              <span class="karla">{{ $t(option.name) }}</span>
+            </template>
+            <template slot="selected-option" slot-scope="option">
+              <span class="karla">{{ $t(option.name) }}</span>
+            </template>
+          </v-select>
         </div>
         <div class="vx-col px-base mb-4">
           <vs-checkbox v-model="status">{{$t("desactivate this user") | capitalize}}</vs-checkbox>
@@ -79,23 +85,23 @@ export default {
       status: false,
       roles: [
         {
-          name: "Super admin",
+          name: "super admin",
           key: 0,
         },
         {
-          name: "Admin",
+          name: "admin",
           key: 1,
         },
         {
-          name: "Supervisor",
+          name: "supervisor",
           key: 2,
         },
         {
-          name: "Operator",
+          name: "operator",
           key: 3,
         },
         {
-          name: "Auditor",
+          name: "auditor",
           key: 4,
         },
       ],
@@ -149,9 +155,8 @@ export default {
           else this.team.push(team);
         });
 
-        this.role = "";
-
-        if (this.user.role !== undefined) this.role = this.user.role;
+        this.role = {'key': 4 , name: 'auditor'};
+        if (this.user.role !== undefined && this.user.role.key != undefined) this.role = {'key': this.user.role.key , name: this.user.role.name.toLowerCase()}
         if (this.user.status === undefined) this.status = true;
         else this.status = this.user.status;
       }
@@ -189,15 +194,31 @@ export default {
     },
   },
   computed: {
+    roleKey() {
+      var cUser = this.$store.getters["app/currentUser"];
+      if(cUser == undefined || cUser.role == undefined) return 4
+      return cUser.role.key
+    },
     locations() {
-      return this.$store.getters["app/locations"].filter(
-        (item) => item.active && !item.deleted
-      );
+      let locationList = this.$store.getters["app/locationList"]
+      return this.$store.getters["app/locations"].filter((location) => {
+        if(locationList.length >0) {
+          if(locationList.indexOf(location.id)<0)
+            return false
+        }
+        return location.active && !location.deleted
+      });
     },
     teams() {
-      return this.$store.getters["app/teams"].filter(
-        (item) => item.active && !item.deleted
-      );
+      let locationList = this.$store.getters["app/locationList"]
+      let teams = this.$store.getters["app/teams"].filter(team=> {
+        if (locationList.length > 0) {
+          if(team.location == undefined || !Array.isArray(team.location)) return false
+          if(!team.location.some(item => locationList.includes(item))) return false
+        }
+        return team.active && !team.deleted
+      });
+      return teams
     },
     isSidebarActiveLocal: {
       get() {

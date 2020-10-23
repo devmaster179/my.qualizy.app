@@ -126,44 +126,44 @@ export default {
   },
   watch: {
     idlCalc(val) {
-      if (this.$store.state.idleVue.isIdle) {
-        var cUser = this.$store.getters["app/currentUser"];
-        // this.$router.push("/pages/login");
+    //   if (this.$store.state.idleVue.isIdle) {
+    //     var cUser = this.$store.getters["app/currentUser"];
+    //     // this.$router.push("/pages/login");
 
-        db.collection("users").doc(cUser.id).update({
-          chatStatus: "offline",
-        });
-        firebase
-          .auth()
-          .signOut()
-          .then(() => {
-            firebase.analytics().logEvent("sign-out", {
-              email: cUser.email,
-            });
-            this.$intercom.trackEvent("sign-out", {
-              email: cUser.email,
-            });
-            this.$intercom.shutdown();
+    //     db.collection("users").doc(cUser.id).update({
+    //       chatStatus: "offline",
+    //     });
+    //     firebase
+    //       .auth()
+    //       .signOut()
+    //       .then(() => {
+    //         firebase.analytics().logEvent("sign-out", {
+    //           email: cUser.email,
+    //         });
+    //         this.$intercom.trackEvent("sign-out", {
+    //           email: cUser.email,
+    //         });
+    //         this.$intercom.shutdown();
 
-            this.$mixpanel.track("Sign out" , {
-              distinct_id: cUser.id,
-              "$email": cUser.email,
-            })
+    //         this.$mixpanel.track("Sign out" , {
+    //           distinct_id: cUser.id,
+    //           "$email": cUser.email,
+    //         })
             
-            this.$userflow.track("Sign out" , {
-              email: cUser.email,
-              group: cUser.email.group
-            })
-            this.$userflow.reset()
+    //         this.$userflow.track("Sign out" , {
+    //           email: cUser.email,
+    //           group: cUser.email.group
+    //         })
+    //         this.$userflow.reset()
 
-            localStorage.removeItem("userLogin");
-            localStorage.removeItem("tokenExpiryKey");
-            localStorage.removeItem("userLogin");
+    //         localStorage.removeItem("userLogin");
+    //         localStorage.removeItem("tokenExpiryKey");
+    //         localStorage.removeItem("userLogin");
 
-            this.$acl.change("public");
+    //         this.$acl.change("public");
 
-          });
-      }
+    //       });
+    //   }
     },
     $route() {
       this.routeTitle = this.$route.meta.pageTitle;
@@ -240,11 +240,22 @@ export default {
     },
   },
   methods: {
+    setReportSchedule() {
+      return new Promise((res,rej)=> {
+        db.collection('report_schedule').where('group' , '==' ,  JSON.parse(localStorage.getItem("userInfo")).group).onSnapshot(q=> {
+          let schedules = []
+          q.forEach(doc=> {
+            schedules.push(Object.assign({} , doc.data() , {id: doc.id}))
+          })
+          this.$store.commit('app/SET_REPORT_SCHEDULE' , schedules)
+          res('ok')
+        })
+      })
+    },
     setAuth() {
       return new Promise((resolve,reject) => {
         db.collection("roles").doc(JSON.parse(localStorage.getItem("userInfo")).group).onSnapshot((q)=> {
-          
-          var subjects = ['records' , 'templates' , 'schedule' , 'food items' , 'knoledge base' , 'analytics' , 'user and team settings']
+          var subjects = ['records' , 'templates' , 'schedule' , 'food items' , 'report', 'knowledge base' , 'analytics' , 'user and team settings']
           var auth = {}
           if(!q.exists) {
             subjects.map(item=> {
@@ -360,6 +371,7 @@ export default {
               locations.push(Object.assign({}, doc.data(), { id: doc.id }));
             });
             this.$store.dispatch("app/setLocations", locations);
+
             resolve("OK");
           });
       });
@@ -762,6 +774,9 @@ export default {
       this.updateNavbarColor(this.navbarColor);
     }
     this.$vs.loading();
+    this.$store.commit('app/SET_LOCATION_LIST' , [])
+    await this.setReportSchedule()
+    await this.setAuth();
     await this.setCurrentUser();
     await this.setUser();
     await this.setAllergens();
@@ -781,7 +796,6 @@ export default {
     await this.setIots();
     await this.setReports();
     await this.setKnowledge();
-    await this.setAuth();
     this.$vs.loading.close();
 
     // db.collection('notifications').where('group', '==', JSON.parse(localStorage.getItem('userInfo')).group).onSnapshot(q => {

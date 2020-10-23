@@ -1,9 +1,21 @@
 export default {
+  SET_REPORT_SCHEDULE(state,query) {
+    state.report_schedule = query
+  },
   SET_AUTH(state ,query) {
     state.auth = query
   },
   CHN_AUTH(state, query) {
-    state.auth[query.key][query.role][query.action] = !state.auth[query.key][query.role][query.action]
+    const value = !state.auth[query.key][query.role][query.action]
+    state.auth[query.key][query.role][query.action] = value
+
+    if(query.action == 'view' && !value) {
+      state.auth[query.key][query.role].edit = false
+      state.auth[query.key][query.role].create = false
+      state.auth[query.key][query.role].delete = false
+    } else if (query.action != 'view' && value && !state.auth[query.key][query.role].view) {
+      state.auth[query.key][query.role].view = true
+    }
   },
   SET_IP_INFO(state , query) {
     state.ipInfo = query

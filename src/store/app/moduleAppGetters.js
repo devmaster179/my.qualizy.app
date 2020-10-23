@@ -1,5 +1,12 @@
 /* eslint-disable no-redeclare */
 export default {
+  reportSchedule: state=> {
+    console.log(state.report_schedule)
+    return state.report_schedule
+  },
+  getReportScheduleByID: (state) => (id) => {
+    return state.report_schedule.find(item => item.reportID == id)
+  },
   auth: state=> {
     return state.auth
   },
@@ -124,15 +131,18 @@ export default {
     if (teams == undefined) return []
     return state.schedules.filter(item => item.active && item.assign.some(team => teams.includes(team)))
   },
+  getScheduleByTemplate: state => (template) => {
+    return state.schedules.filter(item => item.active && item.template == template)
+  },
 
   //=============Logs==========================
 
   logs: state => {
     return state.logs
   },
-  getLogByTidTime: state => (id, time) => {
+  getLogByTidTime: state => (id, time , sID) => {
     return state.logs.find((item) => {
-      return item.templateID == id && item.time !== undefined && item.time.toDate().getTime() == time.getTime()
+      return item.templateID == id && item.time !== undefined && item.time.toDate().getTime() == time.getTime() && item.schedule == sID
     })
   },
   getLogById: state => (id) => {

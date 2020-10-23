@@ -25,8 +25,8 @@
             <p
               class="karla-bold templateTitle"
             >{{templateInfo(task.templateID).content.templateTitle}}</p>
-            <vs-icon size="12px" icon-pack="feather" icon="icon-map-pin"></vs-icon>
-            <span class="karla locationText pl-1">{{templateLocation(task.templateID)}}</span>
+            <!-- <vs-icon size="12px" icon-pack="feather" icon="icon-map-pin"></vs-icon> -->
+            <!-- <span class="karla locationText pl-1">{{templateLocation(task.templateID)}}</span> -->
           </div>
         </div>
         <div class="flex justify-between">

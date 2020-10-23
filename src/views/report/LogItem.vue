@@ -62,10 +62,16 @@
                     style="display: inline; font-size: 12px;font-weight: 500;color: #1e1c26;opacity: 0.78;"
                   >
                     {{answer.ref.title}}
-                    <span
-                      v-if="answer.ref.type.tempUnit"
-                      class="text-success"
-                    >({{answer.ref.type.tempUnit}})&nbsp;</span>
+                    <template v-if="getType(answer.ref.type.id).content == 'temperature'">
+                      <span
+                        v-if="answer.ref.type.tempUnit"
+                        class="text-success"
+                      >({{answer.ref.type.tempUnit}})&nbsp;</span>
+                      <span
+                        v-else
+                        class="text-success"
+                      >(℃)&nbsp;</span>
+                    </template>
                     <span v-if="answer.ref.mandatory" class="text-danger">*</span>
                   </h5>
                 </td>

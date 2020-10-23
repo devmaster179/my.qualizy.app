@@ -214,6 +214,7 @@ import VSelect from "vue-select";
 import TaskItem from "./taskItem.vue";
 import LogSidebar from "./LogSidebar.vue";
 import { db } from "@/firebase/firebaseConfig";
+import UsereEditSidebarVue from '../team/user/UsereEditSidebar.vue';
 
 export default {
   components: {
@@ -288,11 +289,11 @@ export default {
       return date;
     },
     unshceduledTemplates() {
+      var userTeam = this.$store.getters["app/currentUser"].team
       let templates = this.$store.getters["app/getBookedTemplate"]
         .filter((item) => {
           if (item.trashed !== undefined && item.trashed) return false;
-          if(item.content.teams !== undefined ) {
-            var userTeam = this.$store.getters["app/currentUser"].team
+          if(item.content.teams !== undefined && Array.isArray(item.content.teams)) {
             if(!item.content.teams.some(t=> userTeam.includes(t))) return false
           }
           if (this.$store.getters["app/locationList"].length > 0) {
@@ -339,6 +340,7 @@ export default {
       return unshceduledTemplate;
     },
     logs() {
+      var userTeam = this.$store.getters["app/currentUser"].team
       var dayFrom = 0;
       var dayTo = 0;
       var today = new Date();
@@ -367,6 +369,7 @@ export default {
         -1
       );
       var log = this.$store.getters["app/logs"];
+      var schedule
       log = log.filter((item) => {
         var template = this.$store.getters["app/getTemplateById"](
           item.templateID
@@ -374,7 +377,13 @@ export default {
 
         if (template === undefined) return false;
         if (template.trashed !== undefined && template.trashed) return false;
-
+        if(template.content.templateSD == 'bookmarked') {
+          if(template.content.teams!=undefined && Array.isArray(template.content.teams) && !template.content.teams.some(t=> userTeam.includes(t))) return false
+        } else {
+          schedule = this.$store.getters['app/getScheduleById'](item.schedule || '')
+          // if(schedule == undefined) return false
+          if(schedule != undefined && !schedule.assign.some(t=> userTeam.includes(t))) return false
+        }
         if (this.status == "noDue") {
           if (item.time !== undefined) return false;
         }
@@ -468,9 +477,8 @@ export default {
           ).getDate();
         }
 
-        var teams = this.$store.getters["app/getUserById"](
-          JSON.parse(localStorage.getItem("userInfo")).id
-        );
+        var userTeam = this.$store.getters["app/currentUser"].team || []
+        if(!Array.isArray(userTeam)) userTeam = []
 
         var schedules = this.$store.getters["app/schedules"].sort(
           (a, b) =>
@@ -484,12 +492,14 @@ export default {
           );
           if (template === undefined) return false;
           if (template.trashed !== undefined && template.trashed) return false;
+          if (template.content.templateSD == 'bookmarked') return false
           if (
             template.content.templateTitle
               .toLowerCase()
               .indexOf(this.search.toLowerCase()) < 0
           )
             return false;
+          if (!schedule.assign.some((item) => userTeam.includes(item))) return false
           if (this.teams != "") {
             if (!schedule.assign.some((item) => this.teams.includes(item)))
               return false;
@@ -535,6 +545,7 @@ export default {
                     )
                   )
                     validSchedules.push({
+                      schedule: schedule.id,
                       templateID: schedule.template,
                       time: new Date(
                         today.getFullYear(),
@@ -550,6 +561,7 @@ export default {
                   this.checkScheule(i, taskTime, interval, schedule._repeat)
                 ) {
                   validSchedules.push({
+                    schedule: schedule.id,
                     templateID: schedule.template,
                     time: new Date(
                       today.getFullYear(),
@@ -601,8 +613,10 @@ export default {
       return (task, status) => {
         let log = this.$store.getters["app/getLogByTidTime"](
           task.templateID,
-          task.time
+          task.time,
+          task.schedule
         );
+        
         if (status == "task") {
           // if (log !== undefined && !log.initial) return true;
           // else return false;
@@ -728,6 +742,19 @@ export default {
     // tasks() {
     //   return this.$store.getters["app/template"];
     // }
+    auth() {
+      return action => {
+        let authList = this.$store.getters['app/auth']
+        var cUser = this.$store.getters["app/currentUser"];
+        if(cUser == undefined || cUser.role == undefined) return false
+        else if(cUser.role.key == 0) 
+          return true
+        else if(authList.records[cUser.role.name.toLowerCase()][action])
+          return true
+        else 
+          return false
+      }
+    }
   },
   methods: {
     filter(val) {
@@ -738,12 +765,12 @@ export default {
       this.dueDate = val.dueDate;
       this.logTiem = val.logTime;
     },
-    roleError() {
+    roleError(action) {
       this.$vs.notify({
         time: 5000,
         title: "Authorization Error",
         text:
-          "You don't have authorization for this case.\n Please contact with your super admin",
+          `You don't have authorization for ${action} log.\n Please contact with your super admin`,
         color: "danger",
         iconPack: "feather",
         icon: "icon-lock",
@@ -751,6 +778,11 @@ export default {
       });
     },
     editLog(log) {
+      if(!this.auth('edit'))  {
+        this.roleError('edit')
+        return false
+      }
+
       this.$vs.loading();
       this.logID = log.id;
 
@@ -765,16 +797,11 @@ export default {
         });
     },
     async assign(task, unscheduled = false) {
-      var that = this;
-      var cUser = this.$store.getters["app/currentUser"];
-      if (cUser == undefined || cUser.role === undefined) {
-        this.roleError();
+      if(!this.auth('create')) {
+        this.roleError('create');
         return false;
       }
-      if (cUser.role.key > 3) {
-        this.roleError();
-        return false;
-      }
+      const that = this
       this.$vs.loading();
       var updated_at = new Date();
       var pages = [];
@@ -865,6 +892,7 @@ export default {
             pages.push({ questions: questions, title: page.title });
           });
           db.collection("logs").add({
+            schedule: task.schedule,
             initial: unscheduled,
             time: task.time,
             templateID: task.templateID,

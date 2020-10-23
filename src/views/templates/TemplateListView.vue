@@ -114,20 +114,19 @@
       <vs-icon icon-pack="feather" icon="icon-alert-octagon" size="25px" v-else />
     </td>
     <td style="text-align: center;">
-      <vs-dropdown v-if="role<3" vs-custom-content class="cursor-pointer mr-4" vs-trigger-click>
+      <vs-dropdown vs-custom-content class="cursor-pointer mr-4" vs-trigger-click>
         <feather-icon icon="MoreVerticalIcon" class="p-2 cursor-pointer" style="height:2.6rem;" />
         <vs-dropdown-menu class="vx-navbar-dropdown">
           <ul style="min-width: 9rem" class="p-0">
             <li
               class="flex py-1 px-2 my-1 cursor-pointer hover:bg-primary hover:text-white"
-              v-if="template.content.templateSD=='schedule this template' && role<3"
+              v-if="template.content.templateSD=='schedule this template'"
               @click="$emit('schedule',template.id)"
             >
               <feather-icon icon="CalendarIcon" svgClasses="w-4 h-4"></feather-icon>
               <span class="ml-2 karla">{{$t("new schedule")}}</span>
             </li>
             <li
-              v-if="role<3"
               class="flex py-1 px-2 my-1 cursor-pointer hover:bg-primary hover:text-white"
               @click="editTemplate"
             >
@@ -135,7 +134,6 @@
               <span class="ml-2 karla">{{$t("edit")}}</span>
             </li>
             <li
-              v-if="role<3"
               class="flex py-1 px-2 my-1 cursor-pointer hover:bg-primary hover:text-white"
               @click="duplicateTemplate"
             >
@@ -144,9 +142,8 @@
             </li>
 
             <li
-              v-if="role<2"
               class="flex py-1 px-2 my-1 cursor-pointer hover:bg-primary hover:text-white"
-              @click="deletePrompt=true"
+              @click="deleteTemplate1"
             >
               <feather-icon icon="Trash2Icon" svgClasses="w-4 h-4"></feather-icon>
               <span class="ml-2 karla">{{$t("delete")}}</span>
@@ -262,6 +259,19 @@ export default {
     };
   },
   computed: {
+    auth() {
+      return (sub,action) => {
+        let authList = this.$store.getters['app/auth']
+        var cUser = this.$store.getters["app/currentUser"];
+        if(cUser == undefined || cUser.role == undefined) return false
+        else if(cUser.role.key == 0) 
+          return true
+        else if(authList[sub][cUser.role.name.toLowerCase()][action])
+          return true
+        else 
+          return false
+      }
+    },
     role() {
       var cUser = this.$store.getters["app/currentUser"];
       if (cUser == undefined || cUser.role === undefined) {
@@ -306,6 +316,24 @@ export default {
     },
   },
   methods: {
+    roleError(sub , action) {
+      this.$vs.notify({
+        time: 5000,
+        title: "Authorization Error",
+        text:
+          `You don't have authorization to ${action} for ${sub}.\n Please contact with your super admin`,
+        color: "danger",
+        iconPack: "feather",
+        icon: "icon-lock",
+      });
+    },
+    deleteTemplate1() {
+      if(!this.auth('templates' , 'delete')) {
+        this.roleError('templates' , 'delete') 
+        return false
+      }
+      this.deletePrompt=true
+    },
     deleteTemplate() {
       this.deletePrompt = false;
       this.$vs.loading();
@@ -326,6 +354,10 @@ export default {
     },
     acceptDelete() {},
     editTemplate() {
+      if(!this.auth('templates' , 'edit')) {
+        this.roleError('templates' , 'edit') 
+        return false
+      }
       this.templateState = "update template";
       var pages = [];
       var questions;
@@ -390,6 +422,10 @@ export default {
       });
     },
     duplicateTemplate() {
+      if(!this.auth('templates' , 'create')) {
+        this.roleError('templates' , 'create') 
+        return false
+      }
       this.templateState = "duplicate template";
       var pages = [];
       var questions;
@@ -449,8 +485,9 @@ export default {
       });
     },
     stared() {
-      if (this.role > 2) {
-        return false;
+      if(!this.auth('templates' , 'edit')) {
+        this.roleError('templates' , 'edit') 
+        return false
       }
       var star = true;
       if (this.template.starred !== undefined) star = !this.template.starred;

@@ -74,4 +74,5 @@ export default {
   editScore: false,
   ipInfo: {},
   auth:{},
+  report_schedule: []
 }

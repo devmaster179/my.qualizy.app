@@ -1,5 +1,8 @@
 <template>
   <div id="company">
+    <template v-if="!auth('user and team settings' , 'view')">
+      <no-auth />
+    </template>
     <div class="page-header">
       <p
         class="page-title karla-bold text-2xl color-my-black"
@@ -48,7 +51,7 @@
                 icon="Edit2Icon"
                 class="cursor-pointer hover:text-primary mt-1"
                 style="width:20px; height:20px;"
-                @click="editCompany=true"
+                @click="companyEdit"
               />
             </div>
           </div>
@@ -70,7 +73,7 @@
             icon-pack="feather"
             icon-no-border
           />
-          <vs-button class="kalar ml-4" @click="addLocation=true">+ {{$t("add location")}}</vs-button>
+          <vs-button class="kalar ml-4" @click="locationAdd">+ {{$t("add location")}}</vs-button>
         </div>
       </div>
       <div class="location-items">
@@ -348,12 +351,14 @@ import "@firebase/auth";
 import MapCard from "./MapCard.vue";
 import AddLocation from "./LocationAdd";
 import EditLocation from "./LocationEdit";
+import NoAuth from "@/components/no-auth/NoAuth";
 export default {
   components: {
     VueTelInput,
     MapCard,
     AddLocation,
-    EditLocation
+    EditLocation,
+    NoAuth
   },
   data() {
     return {
@@ -385,6 +390,19 @@ export default {
     };
   },
   computed: {
+    auth() {
+      return (sub,action) => {
+        let authList = this.$store.getters['app/auth']
+        var cUser = this.$store.getters["app/currentUser"];
+        if(cUser == undefined || cUser.role == undefined) return false
+        else if(cUser.role.key == 0) 
+          return true
+        else if(authList[sub][cUser.role.name.toLowerCase()][action])
+          return true
+        else 
+          return false
+      }
+    },
     locationName() {
       let location = this.$store.getters["app/getLocationById"](
         this.editLocationID
@@ -485,6 +503,20 @@ export default {
     }
   },
   methods: {
+    locationAdd() {
+      if(!this.auth('user and team settings' , 'create')) {
+        this.roleError('edit')
+        return false
+      }
+      this.addLocation=true
+    },
+    companyEdit() {
+      if(!this.auth('user and team settings' , 'edit')) {
+        this.roleError('edit')
+        return false
+      }
+      this.editCompany=true
+    },
     deleteLocationY() {
       db.collection("locations")
         .doc(this.editLocationID)
@@ -501,10 +533,18 @@ export default {
       this.deletePrompt = false;
     },
     editLocation(id) {
+      if(!this.auth('user and team settings' , 'edit')) {
+        this.roleError('edit')
+        return false
+      }
       this.editLocationID = id;
       this.activeEdit = true;
     },
     deleteLocation(id) {
+      if(!this.auth('user and team settings' , 'delete')) {
+        this.roleError('delete')
+        return false
+      }
       this.editLocationID = id;
       this.deletePrompt = true;
     },
@@ -572,12 +612,27 @@ export default {
       }
     },
     launchFilePicker() {
+      if(!this.auth('user and team settings' , 'edit')) {
+        this.roleError('edit')
+        return false
+      }
       this.$refs.userPhoto.click();
     },
     phoneValidate(formattedNumber, { number, isValid, country }) {
       this.isPhone = isValid;
       this.code = country;
-    }
+    },
+    roleError(action) {
+      this.$vs.notify({
+        time: 5000,
+        title: "Authorization Error",
+        text:
+          `You don't have authorization to ${action}.\n Please contact with your super admin`,
+        color: "danger",
+        iconPack: "feather",
+        icon: "icon-lock",
+      });
+    },
   },
   watch: {
     uploadStatus() {

@@ -1,165 +1,165 @@
 <template>
   <div id="food-items" class="px-2">
-    <template v-if="!isSidebarActive">
-      <div class="sm:flex items-center justify-between">
-        <p class="pageTitle karla-bold">{{$t("food items") | capitalize}}</p>
-        <div class="page-tools sm:flex justify-end">
-          <div class="flex justify-end">
-            <feather-icon
-              @click="viewMode='card'"
-              icon="GridIcon"
-              class="p-2 ml-2 rounded-lg d-theme-dark-bg cursor-pointer hidden md:block"
-              :class="{'text-primary': viewMode=='card'}"
-              style="height:40px;"
-            />
-            <feather-icon
-              @click="viewMode='list'"
-              icon="ListIcon"
-              :class="{'text-primary': viewMode=='list'}"
-              class="p-2 mx-2 rounded-lg d-theme-dark-bg cursor-pointer hidden md:block"
-              style="height:40px;"
-            />
-            <vs-input
-              class="bg-white hidden md:block"
-              v-model="search"
-              :placeholder="$t('Search')"
-              icon="icon-search"
-              icon-pack="feather"
-              icon-no-border
-            />
-            <feather-icon
-              v-if="role<4"
-              @click="activeUpload = true"
-              icon="DownloadIcon"
-              class="ml-2 rounded-lg d-theme-dark-bg cursor-pointer"
-              style="height:40px; width:40px; padding:.6rem"
-            />
-            <feather-icon
-              @click="activeFilter=true"
-              icon="FilterIcon"
-              class="ml-2 rounded-lg d-theme-dark-bg cursor-pointer"
-              style="height:40px; width:40px; padding:.7rem"
-            />
-            <vs-button
-              :disabled="role>3"
-              @click="selectedItem={} , duplicateFlag=false ,activeType=true"
-              class="ml-2"
-            >
-              <span class="karla">+ {{$t("add food item") | capitalize}}</span>
-            </vs-button>
-          </div>
-        </div>
-      </div>
-      <vs-input
-        class="bg-white block md:hidden w-full my-2"
-        v-model="search"
-        :placeholder="$t('Search')"
-        icon="icon-search"
-        icon-pack="feather"
-        icon-no-border
-      />
-
-      <div class="page-content">
-        <template v-if="fooditems.length>0">
-          <div class="card-view vx-row w-full mt-base" v-if="viewMode=='card'">
-            <div
-              class="vx-col lg:w-1/4 md:w-2/1 sm:w-1/2 w-full p-0 sm:px-2"
-              v-for="(item,index) in fooditems"
-              :key="index"
-            >
-              <card-view
-                :item="item"
-                @edit="edit"
-                @remove="remove"
-                @print="print"
-                @history="history"
-                @process="process"
-                @duplicate="duplicate"
-                @indShow="indShow"
+    <template v-if="!auth('food items' , 'view')">
+      <no-auth/>
+    </template>
+    <template v-else>
+      <template v-if="!isSidebarActive">
+        <div class="sm:flex items-center justify-between">
+          <p class="pageTitle karla-bold">{{$t("food items") | capitalize}}</p>
+          <div class="page-tools sm:flex justify-end">
+            <div class="flex justify-end">
+              <feather-icon
+                @click="viewMode='card'"
+                icon="GridIcon"
+                class="p-2 ml-2 rounded-lg d-theme-dark-bg cursor-pointer hidden md:block"
+                :class="{'text-primary': viewMode=='card'}"
+                style="height:40px;"
               />
+              <feather-icon
+                @click="viewMode='list'"
+                icon="ListIcon"
+                :class="{'text-primary': viewMode=='list'}"
+                class="p-2 mx-2 rounded-lg d-theme-dark-bg cursor-pointer hidden md:block"
+                style="height:40px;"
+              />
+              <vs-input
+                class="bg-white hidden md:block"
+                v-model="search"
+                :placeholder="$t('Search')"
+                icon="icon-search"
+                icon-pack="feather"
+                icon-no-border
+              />
+              <feather-icon
+                v-if="role<4"
+                @click="activeUpload = true"
+                icon="DownloadIcon"
+                class="ml-2 rounded-lg d-theme-dark-bg cursor-pointer"
+                style="height:40px; width:40px; padding:.6rem"
+              />
+              <feather-icon
+                @click="activeFilter=true"
+                icon="FilterIcon"
+                class="ml-2 rounded-lg d-theme-dark-bg cursor-pointer"
+                style="height:40px; width:40px; padding:.7rem"
+              />
+              <vs-button
+                @click="addFoodItem"
+                class="ml-2"
+              >
+                <span class="karla">+ {{$t("add food item") | capitalize}}</span>
+              </vs-button>
             </div>
           </div>
-          <div class="list-view" v-else>
-            <table class="fooditem-table w-full">
-              <thead>
-                <tr>
-                  <th width="15%">{{$t('name')}}</th>
-                  <th>{{$t('expiry')}}</th>
-                  <th>{{$t('created')}}</th>
-                  <th>{{$t('quantity')}}</th>
-                  <th>{{$t('batch number')}}</th>
-                  <th>{{$t('supplier')}}</th>
-                  <th width="18%">{{$t('tags')}}</th>
-                  <th width="10%">{{$t('status')}}</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                <list-view
-                  v-for="(item,index) in fooditems"
-                  :key="index"
+        </div>
+        <vs-input
+          class="bg-white block md:hidden w-full my-2"
+          v-model="search"
+          :placeholder="$t('Search')"
+          icon="icon-search"
+          icon-pack="feather"
+          icon-no-border
+        />
+
+        <div class="page-content">
+          <template v-if="fooditems.length>0">
+            <div class="card-view vx-row w-full mt-base" v-if="viewMode=='card'">
+              <div
+                class="vx-col lg:w-1/4 md:w-2/1 sm:w-1/2 w-full p-0 sm:px-2"
+                v-for="(item,index) in fooditems"
+                :key="index"
+              >
+                <card-view
                   :item="item"
                   @edit="edit"
                   @remove="remove"
                   @print="print"
-                  @process="process"
                   @history="history"
+                  @process="process"
                   @duplicate="duplicate"
                   @indShow="indShow"
                 />
-              </tbody>
-            </table>
-          </div>
-        </template>
-        <template v-else>
-          <div class="flex w-full mt-base">
-            <div
-              class="vx-col flex items-center justify-center flex-col sm:w-1/2 md:w-3/5 lg:w-3/4 xl:w-1/2 mx-auto text-center sm:mt-base mt-0"
-            >
-              <img
-                :src="require('@/assets/images/pages/report/empty-docs.svg')"
-                class="mx-auto mb-4"
-              />
-              <h5
-                v-if="role<3"
-                class="sm:mx-0 mx-4 mb-4 sm:text-2xl sm:text-1xl d-theme-heading-color"
-              >{{$t("You don’t have any food items yet")}}, {{$t("would you like to create one")}}?</h5>
-              <h5 v-else
-                class="sm:mx-0 mx-4 mb-4 sm:text-2xl sm:text-1xl d-theme-heading-color"
-              >{{$t("You don’t have any food items yet")}}.</h5>
-              <vs-button v-if="role<3" class="ml-2" @click="selectedItem={} , duplicateFlag=false ,activeType=true" >{{$t("add food item")}}</vs-button>
+              </div>
             </div>
+            <div class="list-view" v-else>
+              <table class="fooditem-table w-full">
+                <thead>
+                  <tr>
+                    <th width="15%">{{$t('name')}}</th>
+                    <th>{{$t('expiry')}}</th>
+                    <th>{{$t('created')}}</th>
+                    <th>{{$t('quantity')}}</th>
+                    <th>{{$t('batch number')}}</th>
+                    <th>{{$t('supplier')}}</th>
+                    <th width="18%">{{$t('tags')}}</th>
+                    <th width="10%">{{$t('status')}}</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <list-view
+                    v-for="(item,index) in fooditems"
+                    :key="index"
+                    :item="item"
+                    @edit="edit"
+                    @remove="remove"
+                    @print="print"
+                    @process="process"
+                    @history="history"
+                    @duplicate="duplicate"
+                    @indShow="indShow"
+                  />
+                </tbody>
+              </table>
+            </div>
+          </template>
+          <template v-else>
+            <div class="flex w-full mt-base">
+              <div
+                class="vx-col flex items-center justify-center flex-col sm:w-1/2 md:w-3/5 lg:w-3/4 xl:w-1/2 mx-auto text-center sm:mt-base mt-0"
+              >
+                <img
+                  :src="require('@/assets/images/pages/report/empty-docs.svg')"
+                  class="mx-auto mb-4"
+                />
+                <h5
+                  class="sm:mx-0 mx-4 mb-4 sm:text-2xl sm:text-1xl d-theme-heading-color"
+                >{{$t("You don’t have any food items yet")}}, {{$t("would you like to create one")}}?</h5>
+                <vs-button class="ml-2" @click="addFoodItem" >{{$t("add food item")}}</vs-button>
+              </div>
+            </div>
+          </template>
           </div>
-        </template>
-        </div>
-    </template>
+      </template>
 
-    <fooditem-type :open="activeType" @close="activeType=false" @selectType="selectType" />
-    <fooditemadd-sidebar
-      :item="selectedItem"
-      :type="type"
-      :open="activeAdd"
-      :duplicateFlag="duplicateFlag"
-      @close="activeAdd=false"
-    />
-    <fooditem-filter :activeFilter="activeFilter" @filter="filter" @close="activeFilter=false" />
-    <fooditem-history :open="activeHistory" :id="historyID" @close="activeHistory=false" />
-    <fooditem-print :open="activePrint" :item="printItem" @close="activePrint=false" />
-    <fooditem-upload :open="activeUpload" @close="activeUpload=false" />
-    <fooditem-process
-      :open="activeProcess"
-      @close="activeProcess=false"
-      @assginTemplate="assginTemplate"
-    />
-    <log-sidebar
-      parent="#food-items"
-      :logID="logID"
-      :pages="pages"
-      :template="template"
-      :isSidebarActive="isSidebarActive"
-      @closeSidebar="isSidebarActive=false"
-    />
-    <fooditem-ingredient :item="showInd" :open="activeIngredient" @close="activeIngredient=false" />
+      <fooditem-type :open="activeType" @close="activeType=false" @selectType="selectType" />
+      <fooditemadd-sidebar
+        :item="selectedItem"
+        :type="type"
+        :open="activeAdd"
+        :duplicateFlag="duplicateFlag"
+        @close="activeAdd=false"
+      />
+      <fooditem-filter :activeFilter="activeFilter" @filter="filter" @close="activeFilter=false" />
+      <fooditem-history :open="activeHistory" :id="historyID" @close="activeHistory=false" />
+      <fooditem-print :open="activePrint" :item="printItem" @close="activePrint=false" />
+      <fooditem-upload :open="activeUpload" @close="activeUpload=false" />
+      <fooditem-process
+        :open="activeProcess"
+        @close="activeProcess=false"
+        @assginTemplate="assginTemplate"
+      />
+      <log-sidebar
+        parent="#food-items"
+        :logID="logID"
+        :pages="pages"
+        :template="template"
+        :isSidebarActive="isSidebarActive"
+        @closeSidebar="isSidebarActive=false"
+      />
+      <fooditem-ingredient :item="showInd" :open="activeIngredient" @close="activeIngredient=false" />
+    </template>
   </div>
 </template>
 <script>
@@ -176,6 +176,7 @@ import FooditemPrint from "./FooditemPrint";
 import FooditemProcess from "./FooditemProcess";
 import LogSidebar from "../tasks/LogSidebar";
 import { db } from "@/firebase/firebaseConfig";
+import NoAuth from "@/components/no-auth/NoAuth";
 
 export default {
   components: {
@@ -190,6 +191,7 @@ export default {
     FooditemProcess,
     LogSidebar,
     FooditemIngredient,
+    NoAuth
   },
   data() {
     return {
@@ -220,16 +222,24 @@ export default {
     };
   },
   methods: {
-    roleError() {
+    addFoodItem() {
+      if(!this.auth('food items' , 'create')) {
+        this.roleError('create')
+        return false
+      }
+      this.selectedItem={} 
+      this.duplicateFlag=false 
+      this.activeType=true
+    },
+    roleError(action) {
       this.$vs.notify({
         time: 5000,
         title: "Authorization Error",
         text:
-          "You don't have authorization for this case.\n Please contact with your super admin",
+          `You don't have authorization for ${action}.\n Please contact with your super admin`,
         color: "danger",
         iconPack: "feather",
         icon: "icon-lock",
-        // position:'bottom-center'
       });
     },
     async assginTemplate(task) {
@@ -384,6 +394,10 @@ export default {
     },
 
     process(id) {
+      if(!this.auth('records' , 'create')) {
+        this.roleError('create log')
+        return false
+      }
       this.processID = id;
       this.activeProcess = true;
     },
@@ -396,6 +410,10 @@ export default {
       this.activePrint = true;
     },
     remove(item) {
+      if(!this.auth('food items' , 'delete')) {
+        this.roleError('delete')
+        return false
+      }
       this.deleteID = item.id;
       this.$vs.dialog({
         type: "confirm",
@@ -417,6 +435,10 @@ export default {
         });
     },
     duplicate(item) {
+      if(!this.auth('food items' , 'create')) {
+        this.roleError('create')
+        return false
+      }
       this.duplicateFlag = true;
       this.selectedItem = item;
       if (item.type === undefined) this.type = "delivered";
@@ -428,6 +450,10 @@ export default {
       this.activeIngredient = true;
     },
     edit(item) {
+      if(!this.auth('food items' , 'edit')) {
+        this.roleError('edit')
+        return false
+      }
       this.duplicateFlag = false;
       this.selectedItem = item;
       if (item.type === undefined) this.type = "delivered";
@@ -444,6 +470,19 @@ export default {
     },
   },
   computed: {
+    auth() {
+      return (sub,action) => {
+        let authList = this.$store.getters['app/auth']
+        var cUser = this.$store.getters["app/currentUser"];
+        if(cUser == undefined || cUser.role == undefined) return false
+        else if(cUser.role.key == 0) 
+          return true
+        else if(authList[sub][cUser.role.name.toLowerCase()][action])
+          return true
+        else 
+          return false
+      }
+    },
     role() {
       var cUser = this.$store.getters["app/currentUser"];
       if (cUser == undefined || cUser.role === undefined) {

@@ -1,5 +1,8 @@
 <template>
   <div id="user-management">
+    <template v-if="!auth('user and team settings' , 'view')">
+      <no-auth/>
+    </template>
     <div class="page-header flex items-center justify-between">
       <div class="sm:flex">
         <p class="text-2xl color-my-black karla-bold">{{$t("users management")}}</p>
@@ -34,11 +37,13 @@
 import UserTab from "./user/UserTab.vue";
 import GroupTab from "./group/GroupTab.vue";
 import AuthTab from "./auth/Auth.vue"
+import NoAuth from "@/components/no-auth/NoAuth";
 export default {
   components: {
     UserTab,
     GroupTab,
-    AuthTab
+    AuthTab,
+    NoAuth
   },
   data() {
     return {
@@ -46,6 +51,19 @@ export default {
     };
   },
   computed: {
+    auth() {
+      return (sub,action) => {
+        let authList = this.$store.getters['app/auth']
+        var cUser = this.$store.getters["app/currentUser"];
+        if(cUser == undefined || cUser.role == undefined) return false
+        else if(cUser.role.key == 0) 
+          return true
+        else if(authList[sub][cUser.role.name.toLowerCase()][action])
+          return true
+        else 
+          return false
+      }
+    },
     cUser() {
       return  this.$store.getters["app/currentUser"];
     }

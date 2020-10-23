@@ -21,7 +21,7 @@
         icon-pack="feather"
         icon-no-border
       />
-      <vs-button v-if="cUserRole<2" @click="openInvite = true">+ {{$t("add user")}}</vs-button>
+      <vs-button  @click="addUser">+ {{$t("add user")}}</vs-button>
     </div>
     <vs-input
       class="bg-white block md:hidden mr-2 w-full"
@@ -37,7 +37,7 @@
         v-for="(user,key) in users"
         :key="key"
       >
-        <user-card :user="user" @edit="editUser" @resend-invite="resendInvite" />
+        <user-card :user="user" @delete="deleteConfirm" @edit="editUser" @resend-invite="resendInvite" />
       </div>
     </div>
     <div class="w-full" v-else>
@@ -148,7 +148,7 @@
               <span>{{user.phone}}</span>
             </vs-td>
             <vs-td>
-              <span style="word-break:break-word;" v-if="user.role">{{user.role.name | capitalize}}</span>
+              <span style="word-break:break-word;" v-if="user.role">{{$t(user.role.name.toLowerCase()) | capitalize}}</span>
             </vs-td>
             <vs-td>
               <span
@@ -290,7 +290,29 @@ export default {
   },
 
   methods: {
+    roleError(action) {
+      this.$vs.notify({
+        time: 5000,
+        title: "Authorization Error",
+        text:
+          `You don't have authorization to ${action}.\n Please contact with your super admin`,
+        color: "danger",
+        iconPack: "feather",
+        icon: "icon-lock",
+      });
+    },
+    addUser() {
+      if(!this.auth('user and team settings' , 'create')) {
+        this.roleError('create')
+        return false
+      }
+      this.openInvite = true
+    },
     resendInvite(user) {
+      if(!this.auth('user and team settings' , 'edit')) {
+        this.roleError('create')
+        return false
+      }
       this.$vs.loading();
       this.$http
         .post(
@@ -380,6 +402,10 @@ export default {
       }, 1000);
     },
     deleteConfirm(user) {
+      if (!this.auth('user and team settings' , 'delete')) {
+        this.roleError('delete')
+        return false;
+      }
       this.selectedUser = user;
       this.$vs.dialog({
         type: "confirm",
@@ -391,7 +417,10 @@ export default {
       });
     },
     editUser(user) {
-      if (this.cUserRole > 1) return false;
+      if (!this.auth('user and team settings' , 'edit')) {
+        this.roleError('edit')
+        return false;
+      }
       this.selectedUser = user;
       this.userEditSidebar = true;
     },
@@ -454,21 +483,21 @@ export default {
                 firebase
                   .auth()
                   .createUserWithEmailAndPassword(item.email, pass)
-                  .then(() => {
-                    db.collection("users").add({
+                  .then((res) => {
+                   db.collection('users').doc(res.user.uid).set({
                       name: item.email.split("@")[0],
                       email: item.email,
                       group: JSON.parse(localStorage.getItem("userInfo")).group,
                       map: "",
                       phone: "",
                       job_title: "",
-                      location: "",
+                      location: this.$store.getters['app/locationList'],
                       photo: "",
                       team: [],
                       status: true,
                       pass: pass + pass,
                       role: {
-                        name: "Auditor",
+                        name: "auditor",
                         key: 4,
                       },
                       created_at: new Date(),
@@ -644,6 +673,19 @@ export default {
   },
 
   computed: {
+    auth() {
+      return (sub,action) => {
+        let authList = this.$store.getters['app/auth']
+        var cUser = this.$store.getters["app/currentUser"];
+        if(cUser == undefined || cUser.role == undefined) return false
+        else if(cUser.role.key == 0) 
+          return true
+        else if(authList[sub][cUser.role.name.toLowerCase()][action])
+          return true
+        else 
+          return false
+      }
+    },
     teams() {
       return (ids) => {
         var teams = [];

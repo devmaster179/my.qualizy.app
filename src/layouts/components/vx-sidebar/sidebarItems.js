@@ -22,14 +22,14 @@
 export default [{
   url: "/dashboard",
   name: "Tasks",
-  slug: "tasks",
+  slug: "records",
   icon: "ClipboardIcon",
   i18n: "tasks",
 },
 {
   url: "/fooditems",
   name: "Food Item",
-  slug: "fooditems",
+  slug: "food items",
   icon: "fastfood",
   i18n: "food items",
   feather: false
@@ -66,7 +66,7 @@ export default [{
 {
   url: "/team",
   name: "Users Management",
-  slug: "team",
+  slug: "user and team settings",
   icon: "UsersIcon",
   i18n: "users management",
 },
@@ -74,7 +74,7 @@ export default [{
 {
   url: '/company',
   name: "Company Profile",
-  slug: "settings-company",
+  slug: "user and team settings",
   i18n: "company profile",
   icon: "BriefcaseIcon",
 
@@ -84,7 +84,7 @@ export default [{
   url: '/knowledge',
   name: "Knowledge Base",
   icon: "BookIcon",
-  slug: 'knowledge-base',
+  slug: 'knowledge base',
   i18n: "knowledge base",
 },
 // {
@@ -97,7 +97,7 @@ export default [{
 {
   url: "/chat",
   name: "Chat",
-  slug: "chat",
+  slug: "",
   icon: "MessageSquareIcon",
   i18n: "Chat",
 },
