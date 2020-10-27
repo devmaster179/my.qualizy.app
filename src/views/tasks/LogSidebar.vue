@@ -202,8 +202,9 @@
                         <div v-else>
                           <VueSignaturePad
                             height="150px"
+                            width="300px"
                             :ref="'signaturePad_'+pIndex+'_'+qIndex+'_'+aIndex"
-                            class="w-full border border-solid d-theme-border-grey-light"
+                            class="border border-solid d-theme-border-grey-light" :class="{'w-full' : !(isMobile || isIOS)}"
                             :options="{ onBegin, onEnd , penColor: '#2128ff',}"
                             :images="signImage(pIndex,qIndex,aIndex)"
                           />
