@@ -138,14 +138,14 @@ require('./assets/css/iconfont.css')
 require('./assets/css/karla.css')
 
 
-import IdleVue from "idle-vue";
-const eventsHub = new Vue();
-Vue.use(IdleVue, {
-  eventEmitter: eventsHub,
-  store,
-  idleTime: 1000 * 60 * 30, // 10min
-  startAtIdle: false
-});
+// import IdleVue from "idle-vue";
+// const eventsHub = new Vue();
+// Vue.use(IdleVue, {
+//   eventEmitter: eventsHub,
+//   store,
+//   idleTime: 1000 * 60 * 30, // 10min
+//   startAtIdle: false
+// });
 
 // Clipboard
 import VueClipboard from 'vue-clipboard2'

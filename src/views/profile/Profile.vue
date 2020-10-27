@@ -539,10 +539,27 @@ export default {
       return this.languages.find((item) => item.flag == cLang);
     },
     teamsList() {
-      return this.$store.getters["app/teams"].filter((item) => item.active);
+      let locationList = this.$store.getters['app/locationList']
+      return this.$store.getters["app/teams"].filter((item) => {
+        if(!item.active) return false
+        if(locationList.length>0) {
+          if(item.location == undefined || !Array.isArray(item.location) )
+            return false
+          if(!locationList.some(t=> item.location.includes(t))) return false
+        }
+        return true
+      });
     },
     locationList() {
-      return this.$store.getters["app/locations"].filter((item) => item.active);
+      let locationList = this.$store.getters['app/locationList']
+      return this.$store.getters["app/locations"].filter((item) => {
+        if(!item.active || item.deleted) return false
+        if(locationList.length>0) {
+          if(locationList.indexOf(item.id)<0)
+            return false
+        }
+        return true
+      });
     },
 
     cUser() {
@@ -562,7 +579,7 @@ export default {
           if (!Array.isArray(ids)) return [];
           ids.map((id) => {
             let team = this.$store.getters["app/getTeamById"](id);
-            if (team === undefined) return;
+            if (team === undefined || !team.active) return;
             teams.push(team);
           });
         }
@@ -576,7 +593,7 @@ export default {
           if (!Array.isArray(ids)) return [];
           ids.map((id) => {
             let location = this.$store.getters["app/getLocationById"](id);
-            if (location === undefined) return;
+            if (location === undefined || location.deleted) return;
             locations.push(location);
           });
         }

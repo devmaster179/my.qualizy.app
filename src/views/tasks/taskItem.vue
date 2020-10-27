@@ -96,6 +96,9 @@
             >{{calcTime(task.updated_at)|duration('humanize' , true) | capitalize}}</span>
           </div>
         </div>
+        <div class="flex justify-end mt-1" v-if="monitor">
+          <vs-icon icon-pack="feather" icon="icon-eye"/>
+        </div>
       </div>
     </div>
   </vx-card>
@@ -124,6 +127,14 @@ export default {
     };
   },
   computed: {
+    monitor() {
+      if(this.task.schedule == undefined) return false
+      let schedule = this.$store.getters['app/getScheduleById'](this.task.schedule)
+      var cUser = this.$store.getters["app/currentUser"];
+      var cTeam = cUser.team || []
+      if(!Array.isArray(cTeam)) cTeam = []
+      return !cTeam.some(ct=>schedule.assign.includes(ct))
+    },
     role() {
       var cUser = this.$store.getters["app/currentUser"];
       if (cUser == undefined || cUser.role === undefined) {

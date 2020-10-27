@@ -1,5 +1,7 @@
 export default {
     "en-gb": {
+        "select teams": "Select teams",
+        "monitor": "Monitor",
         "delete shceduled email delivery": "Delete shceduled email delivery",
         'year': "Year",
         "repeat evey": "Repeat evey",
@@ -540,6 +542,8 @@ export default {
         "SunDay": "Sunday",
     },
     "en-us": {
+        "select teams": "Select teams",
+        "monitor": "Monitor",
         "delete shceduled email delivery": "Delete shceduled email delivery",
         'year': "Year",
         "repeat evey": "Repeat evey",
@@ -1080,6 +1084,8 @@ export default {
         "SunDay": "Sunday",
     },
     "fr": {
+        "select teams": "Select teams",
+        "monitor": "Monitor",
         "delete shceduled email delivery": "Delete shceduled email delivery",
         'year': "Year",
         "repeat evey": "Repeat evey",
@@ -1620,6 +1626,8 @@ export default {
         "SunDay": "Dimanche",
     },
     "es": {
+        "select teams": "Select teams",
+        "monitor": "Monitor",
         "delete shceduled email delivery": "Delete shceduled email delivery",
         'year': "Year",
         "repeat evey": "Repeat evey",
@@ -2106,6 +2114,8 @@ export default {
         "SunDay": "Domingo",
     },
     "it": {
+        "select teams": "Select teams",
+        "monitor": "Monitor",
         "delete shceduled email delivery": "Delete shceduled email delivery",
         'year': "Year",
         "repeat evey": "Repeat evey",

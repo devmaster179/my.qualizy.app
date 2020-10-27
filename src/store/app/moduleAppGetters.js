@@ -86,6 +86,9 @@ export default {
       return item.id == id
     })
   },
+  getUsersByTeam: state=> (id) => {
+    return state.users.filter((user=> user.team.indexOf(id)>-1 && user.status))
+  },
 
   //==============Team========================
   teams: state => {
@@ -140,9 +143,9 @@ export default {
   logs: state => {
     return state.logs
   },
-  getLogByTidTime: state => (id, time , sID) => {
+  getLogByTidTime: state => (id, time , sID , assign) => {
     return state.logs.find((item) => {
-      return item.templateID == id && item.time !== undefined && item.time.toDate().getTime() == time.getTime() && item.schedule == sID
+      return item.templateID == id && item.time !== undefined && item.time.toDate().getTime() == time.getTime() && item.schedule == sID 
     })
   },
   getLogById: state => (id) => {

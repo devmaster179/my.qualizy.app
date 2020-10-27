@@ -125,7 +125,7 @@ export default {
     };
   },
   watch: {
-    idlCalc(val) {
+    // idlCalc(val) {
     //   if (this.$store.state.idleVue.isIdle) {
     //     var cUser = this.$store.getters["app/currentUser"];
     //     // this.$router.push("/pages/login");
@@ -164,7 +164,7 @@ export default {
 
     //       });
     //   }
-    },
+    // },
     $route() {
       this.routeTitle = this.$route.meta.pageTitle;
       var cUser = this.$store.getters["app/currentUser"];

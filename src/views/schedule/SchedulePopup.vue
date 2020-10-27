@@ -13,6 +13,19 @@
     <VuePerfectScrollbar class="schedule-new-area p-4" :settings="settings">
       <div class="vx-row mb-base">
         <div class="vx-col w-full">
+          <p class="text-item">{{$t('select location')}}</p>
+          <multiselect
+            v-model="location"
+            :placeholder="$t('select location')"
+            label="name"
+            track-by="id"
+            :options="locations"
+          />
+        </div>
+      </div>
+
+      <div class="vx-row mb-base">
+        <div class="vx-col w-full">
           <p class="text-item">{{$t('Select template')}}</p>
           <multiselect
             v-model="template"
@@ -23,20 +36,35 @@
           />
         </div>
       </div>
+
       <div class="vx-row mb-base">
         <div class="vx-col w-full">
           <p class="text-item">{{$t('assignees') | capitalize}}</p>
           <multiselect
             v-model="user"
-            :placeholder="$t('Select template')"
+            :placeholder="$t('select teams')"
             label="name"
             track-by="id"
             :options="users"
             :multiple="true"
+            :disabled="location==null"
           />
         </div>
       </div>
-
+      <div class="vx-row mb-base">
+        <div class="vx-col w-full">
+          <p class="text-item">{{$t('monitor') | capitalize}}</p>
+          <multiselect
+            v-model="mUser"
+            :placeholder="$t('select teams')"
+            label="name"
+            track-by="id"
+            :options="users"
+            :multiple="true"
+            :disabled="location==null"
+          />
+        </div>
+      </div>
       <div class="vx-row mb-base">
         <div class="vx-col w-full">
           <p class="text-item">{{$t('Schedule available from')}}</p>
@@ -163,10 +191,12 @@ export default {
   },
   data() {
     return {
+      location: null,
       interval: 1,
       languages: lang,
       template: "",
-      user: "",
+      user: [],
+      mUser: [],
       selectedDays: [],
       repeat: "Daily",
       settings: {
@@ -194,8 +224,10 @@ export default {
       this.aTimes.push({ value: "08:00" });
     },
     clear() {
+      this.location = null
       this.template = "";
-      this.user = "";
+      this.user = [];
+      this.mUser = [];
       this.repeat = "Daily";
       this.selectedDays = [];
       this.aTimes = [{ value: "08:00" }];
@@ -222,15 +254,21 @@ export default {
       this.user.map((item) => {
         teams.push(item.id);
       });
+      var mUser = []
+      this.mUser.map(item=> {
+        mUser.push(item.id)
+      })
       var the = this;
       var title = this.template.title + " - " + this.$t(this.repeat);
 
       if (!this.update) {
         this.$vs.loading();
         db.collection("schedules").add({
+          location: [this.location.id],
           title: title,
           template: this.template.id,
           assign: teams,
+          monitor: mUser,
           _repeat: this.repeat,
           dueTimes: assignDates,
           selectedDays: this.selectedDays,
@@ -272,9 +310,11 @@ export default {
         db.collection("schedules")
           .doc(this.schedule.id)
           .update({
+            location: [this.location.id],
             title: title,
             template: this.template.id,
             assign: teams,
+            monitor: mUser,
             _repeat: this.repeat,
             dueTimes: assignDates,
             selectedDays: this.selectedDays,
@@ -300,6 +340,10 @@ export default {
     },
   },
   watch: {
+    location(val) {
+      this.teams = []
+      this.mUser = []
+    },
     repeat(val) {
       if (!this.update) this.selectedDays = [];
       else {
@@ -315,13 +359,24 @@ export default {
         });
       }
       if (val && this.update) {
+        if(this.schedule.location == undefined) this.location = null
+        else {
+          var location = this.$store.getters['app/getLocationById'](this.schedule.location[0]) 
+          if(location == undefined || location.deleted) this.location = null
+          else this.location = location
+        }
         this.template = this.templates.find((item) => {
           return item.id == this.schedule.template;
         });
         this.user = [];
+        this.mUser = [];
         this.schedule.assign.map((item) => {
           var user = this.users.find((user) => user.id == item);
           if (user !== undefined) this.user.push(user);
+        });
+        this.schedule.monitor.map((item) => {
+          var user = this.users.find((user) => user.id == item);
+          if (user !== undefined) this.mUser.push(user);
         });
         this.repeat = this.schedule._repeat;
 
@@ -340,6 +395,28 @@ export default {
     },
   },
   computed: {
+    locations() {
+      var locations = this.$store.getters["app/locationList"]
+      var filterLocations = []
+      var locations1 = this.$store.getters['app/locations']
+      let cUser = this.$store.getters['app/currentUser']
+
+      if(locations.length == 0) {
+        if(cUser.role == undefined || cUser.role.key == undefined || cUser.role.key>0) {
+          if(cUser.location !== undefined && Array.isArray(cUser.location)) {
+            filterLocations = cUser.location
+          } else {
+            filterLocations = ['no']
+          }
+        }
+      }
+      else
+        filterLocations = locations
+      if(filterLocations.length == 0 ) {
+        return locations1.filter(item=> item.deleted == undefined || !item.deleted)
+      }
+      return locations1.filter(item=> filterLocations.indexOf(item.id)>-1)
+    },
     calcIntervalText() {
       var txt = "";
       if (this.repeat == "Daily") txt = this.$t("day(s)");
@@ -398,21 +475,34 @@ export default {
       ];
     },
     users() {
-      return this.$store.getters["app/teams"].filter((item) => {
-        let filterLocations = this.$store.getters["app/locationList"]
-        if(filterLocations.length > 0)
-          return (!!item.location && item.location.some(location=> filterLocations.includes(location)) && !!item.active)
-        else 
-          return !!item.active
-      });
+      var location = this.location == null ? "" : this.location.id
+      var teams = this.$store.getters['app/teams']
+      return teams = teams.filter(team=> {
+        if(team.active != undefined && !team.active) return false
+          var users = this.$store.getters['app/getUsersByTeam'](team.id)
+          var teamLocation = []
+          users.map(user=> {
+            if(user.location !== undefined && Array.isArray(user.location)) {
+              user.location.map(ul=> {
+                if(teamLocation.indexOf(ul)<0)
+                  teamLocation.push(ul)
+              })
+            }
+          })
+          if(teamLocation.indexOf(location)<0) return false
+          return true
+      })
     },
     templates() {
+      let filterLocations = []
+      // this.$store.getters["app/locationList"]
+      
       let templates = this.$store.getters["app/template"].filter(template=> {
-        let filterLocations = this.$store.getters["app/locationList"]
-        if(filterLocations.length > 0)
-          return template.content.location.some(item=>filterLocations.includes(item))
-        else 
-          return true
+        return template.trashed == undefined || !template.trashed
+        // if(filterLocations.length > 0)
+        //   return template.content.location.some(item=>filterLocations.includes(item))
+        // else 
+        //   return true
       });
 
       var __templates = [];
@@ -443,7 +533,7 @@ export default {
       },
     },
     validateForm() {
-      if (this.template == "" || this.user == "") return false;
+      if (this.template == "" || this.user.length == 0) return false;
       else {
         if (this.interval === null) return false;
         if (this.repeat == "Weekly" || this.repeat == "Monthly") {
