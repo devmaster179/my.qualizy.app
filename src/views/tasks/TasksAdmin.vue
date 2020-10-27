@@ -359,7 +359,19 @@ export default {
       );
       var log = this.$store.getters["app/logs"];
       var schedule
+      var cUser = this.$store.getters["app/currentUser"]
+      var locationList = this.$store.getters['app/locationList']
+      if(locationList.length==0) {
+        if(cUser.role == undefined || cUser.role.key == undefined || cUser.role.key>0) {
+          if(cUser.location !== undefined && Array.isArray(cUser.location) && cUser.location.length>0) {
+            locationList = cUser.location
+          } else {
+            locationList = ['no']
+          }
+        }
+      }
       log = log.filter((item) => {
+        
         var template = this.$store.getters["app/getTemplateById"](
           item.templateID
         );
@@ -371,8 +383,13 @@ export default {
         } else {
           schedule = this.$store.getters['app/getScheduleById'](item.schedule || '')
           if(schedule == undefined) return false
+          if ((schedule.deleted !== undefined && schedule.deleted === true) || (schedule.active !== undefined && !schedule.active)) return false;
           var scheduleTeam = schedule.assign.concat(schedule.monitor || [])
           if(!scheduleTeam.some(t=> userTeam.includes(t))) return false
+          if(schedule.location== undefined) return false
+          if(locationList.length>0) {
+            if(locationList.indexOf(schedule.location[0])<0) return false
+          }
         }
         if (this.status == "noDue") {
           if (item.time !== undefined) return false;
@@ -385,16 +402,6 @@ export default {
         )
           return false;
         if (item.initial !== undefined && item.initial) return false;
-
-        if (this.$store.getters["app/locationList"].length > 0) {
-          if (template.content.location === undefined) return false;
-          if (
-            !this.$store.getters["app/locationList"].some((location) =>
-              template.content.location.includes(location)
-            )
-          )
-            return false;
-        }
 
         if (item.updated_at.nanoseconds === undefined) {
           return (
@@ -796,7 +803,7 @@ export default {
         time: 5000,
         title: "Monitor",
         text:
-          `You are monitor for this task.`,
+          `You can only monitor this task.`,
         color: "primary",
         iconPack: "feather",
         icon: "icon-info",
