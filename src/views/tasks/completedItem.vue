@@ -28,6 +28,10 @@
             <p
               class="karla-bold templateTitle"
             >{{templateInfo(task.templateID).content.templateTitle}}</p>
+            <template v-if="task.schedule">
+              <vs-icon size="12px" icon-pack="feather" icon="icon-map-pin"></vs-icon>
+              <span class="karla locationText pl-1">{{scheduleLocation(task.schedule)}}</span>
+            </template>
             <!-- <vs-icon size="12px" icon-pack="feather" icon="icon-map-pin"></vs-icon>
             <span class="karla locationText pl-1">{{templateLocation(task.templateID)}}</span> -->
           </div>
@@ -78,6 +82,9 @@
         >
           <vs-icon icon="arrow_drop_down" :class="{'rotate180':labelColapes}" class="times2" />
         </div>
+        <div class="flex items-center justify-end mt-1" v-if="monitor">
+          <span class="karla mr-1 text-warning">Monitoring</span><vs-icon icon-pack="feather" icon="icon-eye"/>
+        </div>
       </div>
     </div>
   </vx-card>
@@ -102,6 +109,24 @@ export default {
     };
   },
   computed: {
+    monitor() {
+      if(this.task.schedule == undefined) return false
+      let schedule = this.$store.getters['app/getScheduleById'](this.task.schedule)
+      var cUser = this.$store.getters["app/currentUser"];
+      var cTeam = cUser.team || []
+      if(!Array.isArray(cTeam)) cTeam = []
+      return !cTeam.some(ct=>schedule.assign.includes(ct))
+    },
+    scheduleLocation() {
+      return id => {
+        if(!id) return this.$t('no location')
+        let schedule = this.$store.getters['app/getScheduleById'](id)
+        if(!schedule || !schedule.location) return this.$t('no location')
+        var location = this.$store.getters['app/getLocationById'](schedule.location[0])
+        if(!location)  return this.$t('no location')
+        return location.name
+      }
+    },
     calcOverTime() {
       var dueTime, logTime;
       if (this.task.time === undefined) return -1;

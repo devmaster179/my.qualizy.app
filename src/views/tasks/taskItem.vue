@@ -25,8 +25,10 @@
             <p
               class="karla-bold templateTitle"
             >{{templateInfo(task.templateID).content.templateTitle}}</p>
-            <!-- <vs-icon size="12px" icon-pack="feather" icon="icon-map-pin"></vs-icon> -->
-            <!-- <span class="karla locationText pl-1">{{templateLocation(task.templateID)}}</span> -->
+            <template v-if="task.schedule">
+              <vs-icon size="12px" icon-pack="feather" icon="icon-map-pin"></vs-icon>
+              <span class="karla locationText pl-1">{{scheduleLocation(task.schedule)}}</span>
+            </template>
           </div>
         </div>
         <div class="flex justify-between">
@@ -127,6 +129,16 @@ export default {
     };
   },
   computed: {
+    scheduleLocation() {
+      return id => {
+        if(!id) return this.$t('no location')
+        let schedule = this.$store.getters['app/getScheduleById'](id)
+        if(!schedule || !schedule.location) return this.$t('no location')
+        var location = this.$store.getters['app/getLocationById'](schedule.location[0])
+        if(!location)  return this.$t('no location')
+        return location.name
+      }
+    },
     monitor() {
       if(this.task.schedule == undefined) return false
       let schedule = this.$store.getters['app/getScheduleById'](this.task.schedule)
