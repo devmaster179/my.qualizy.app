@@ -122,32 +122,40 @@ export default {
     },
   },
   computed: {
-    role() {
-      var cUser = this.$store.getters["app/currentUser"];
-      if (cUser == undefined || cUser.role === undefined) {
-        return 4;
+    auth() {
+      return (sub,action) => {
+        let authList = this.$store.getters['app/auth']
+        var cUser = this.$store.getters["app/currentUser"];
+        if(cUser == undefined || cUser.role == undefined) return false
+        else if(cUser.role.key == 0) 
+          return true
+        else if(authList[sub][cUser.role.name.toLowerCase()][action])
+          return true
+        else 
+          return false
       }
-      return cUser.role.key;
     },
     canSee() {
+      if(this.slug == '' || this.slug === null || this.slug == undefined) return true
+      return this.auth(this.slug , 'view')
       // this.$acl.check(this.$store.state.userRole);
-      if (this.to) {
-        if (
-          this.to == "/templates" ||
-          this.to == "/schedule" ||
-          this.to == "/analytics" ||
-          this.to == "/report" ||
-          this.to == "/report"
-        ) {
-          if (this.role == 3) return false;
-        } else if (this.to == "/team" && this.role > 1) return false;
-        else if (this.to == "/company" && this.role > 0) return false;
+      // if (this.to) {
+      //   if (
+      //     this.to == "/templates" ||
+      //     this.to == "/schedule" ||
+      //     this.to == "/analytics" ||
+      //     this.to == "/report" ||
+      //     this.to == "/report"
+      //   ) {
+      //     if (this.role == 3) return false;
+      //   } else if (this.to == "/team" && this.role > 1) return false;
+      //   else if (this.to == "/company" && this.role > 0) return false;
 
-        // var role_text = this.$router.match(this.to).meta.rule;
+      //   // var role_text = this.$router.match(this.to).meta.rule;
 
-        // return this.$acl.check(this.$router.match(this.to).meta.rule);
-      }
-      return true;
+      //   // return this.$acl.check(this.$router.match(this.to).meta.rule);
+      // }
+      // return true;
     },
   },
   updated() {

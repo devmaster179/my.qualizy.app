@@ -338,7 +338,19 @@ export default {
     },
 
     allLocationIDs() {
+      var cUser = this.$store.getters["app/currentUser"];
+      var roleKey = 4
+      var userLocation = []
+      if(cUser == undefined || cUser.role == undefined) {
+        roleKey = 4
+      } else {
+        roleKey = cUser.role.key
+        userLocation = cUser.location || []
+      }
       let locations = this.$store.getters["app/locations"].filter((item) => {
+        if(roleKey > 1) {
+          if(userLocation.indexOf(item.id) < 0) return false
+        }
         if (this.searchQuery !== "")
           return (
             item.name.toLowerCase().indexOf(this.searchQuery.toLowerCase()) >
@@ -348,6 +360,7 @@ export default {
           );
         return item.active && !item.deleted;
       });
+      
       var ids = [];
       locations.map((item) => {
         ids.push(item.id);
@@ -377,7 +390,19 @@ export default {
         : "icon-minus";
     },
     locations() {
+      var cUser = this.$store.getters["app/currentUser"];
+      var roleKey = 4
+      var userLocation = []
+      if(cUser == undefined || cUser.role == undefined) {
+        roleKey = 4
+      } else {
+        roleKey = cUser.role.key
+        userLocation = cUser.location || []
+      }
       let locations = this.$store.getters["app/locations"].filter((item) => {
+        if(roleKey > 1) {
+          if(userLocation.indexOf(item.id) < 0) return false
+        }
         if (this.searchQuery !== "")
           return (
             item.name.toLowerCase().indexOf(this.searchQuery.toLowerCase()) >

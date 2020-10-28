@@ -53,7 +53,7 @@
     "vue-prism-component": "^1.1.1",
     "vue-radial-progress": "^0.2.10",
     "vue-router": "^3.1.5",
-    "vue-select": "^3.1.0",
+    "vue-select": "^3.10.8",
     "vue-signature-pad": "^2.0.2",
     "vue-simple-suggest": "^1.10.1",
     "vue-smooth-dnd": "^0.8.1",

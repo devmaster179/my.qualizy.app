@@ -36,11 +36,11 @@
             <span
               class="font-semibold text-primary"
               v-if="$store.getters['app/locationList'].length==1"
-            >1 Location</span>
+            >{{$store.getters['app/getLocationById']($store.getters['app/locationList'][0]).name}}</span>
             <span
               class="font-semibold text-primary text-sm sm:text-base"
               v-if="$store.getters['app/locationList'].length>1"
-            >{{$store.getters['app/locationList'].length}} Locations</span>
+            >{{$store.getters['app/locationList'].length}} {{$t('locations')}}</span>
             <div
               v-click-outside="outside"
               class="absolute bookmark-list w-location sm:w-1/3 xl:w-1/4 mt-base"
@@ -303,53 +303,6 @@ export default {
       return (id) => {
         return this.$store.getters["app/getTemplateById"](id);
       };
-    },
-
-    locationLists() {
-      var lists = {
-        actionIcon: "CheckIcon",
-        highlightColor: "success",
-        data: [],
-      };
-
-      var datas = [];
-
-      var locations = this.$store.getters["app/locations"].filter(
-        (item) => item.active && !item.deleted
-      );
-      locations.map((item) => {
-        if (this.locationSearch != "") {
-          if (item.name.toLowerCase().indexOf(this.locationSearch) < 0) return;
-        }
-
-        if (this.$store.getters["app/locationList"].indexOf(item.id) > -1)
-          datas.push({
-            id: item.id,
-            label: item.name,
-            highlightAction: true,
-          });
-        else {
-          datas.push({
-            id: item.id,
-            label: item.name,
-            highlightAction: false,
-          });
-        }
-      });
-
-      datas = datas.sort((a, b) => b.highlightAction - a.highlightAction);
-      if (datas.length == 0)
-        datas = [
-          {
-            id: -1,
-            highlightAction: false,
-            label: "No results found.",
-            labelIcon: "AlertCircleIcon",
-            url: null,
-          },
-        ];
-      lists.data = datas;
-      return lists;
     },
 
     unreadNotifications() {

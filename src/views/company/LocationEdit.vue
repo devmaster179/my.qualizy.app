@@ -129,9 +129,11 @@ export default {
       var updated_at = new Date();
       var addingObject = {
         address: this.address,
+        active:true,
         name: this.name,
         updated_at: updated_at,
-        updated_by: JSON.parse(localStorage.getItem("userInfo")).id
+        updated_by: JSON.parse(localStorage.getItem("userInfo")).id,
+        group: JSON.parse(localStorage.getItem("userInfo")).group
       };
       if (this.region != "") {
         addingObject = Object.assign({}, addingObject, { region: this.region });
@@ -140,9 +142,10 @@ export default {
             area: this.area
           });
       }
+      
       db.collection("locations")
         .doc(this.id)
-        .update(addingObject);
+        .set(addingObject);
       this.$vs.notify({
         title: "Success",
         text: "Location is updated successfully!",

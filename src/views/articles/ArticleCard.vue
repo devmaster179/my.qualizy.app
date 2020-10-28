@@ -4,9 +4,9 @@
       <div class="flex justify-between mb-base">
         <p class="karla-bold text-lg">{{$t('articles')}}</p>
         <p
-          v-if="role<3 && group!='global'"
+          v-if="group!='global'"
           class="karla-bold text-primary text-sm cursor-pointer"
-          @click="activeAdd=true"
+          @click="addArticle"
         >{{$t('create a new article')}}</p>
       </div>
       <vs-table stripe :data="articles">
@@ -83,11 +83,38 @@ export default {
     };
   },
   methods: {
+    roleError(action) {
+      this.$vs.notify({
+        time: 5000,
+        title: "Authorization Error",
+        text:
+          `You don't have authorization for ${action}.\n Please contact with your super admin`,
+        color: "danger",
+        iconPack: "feather",
+        icon: "icon-lock",
+      });
+    },
+    addArticle() {
+      if(!this.auth('create')) {
+        this.roleError('create')
+        return false
+      }
+      this.activeAdd=true
+
+    },
     editArticle(data) {
+      if(!this.auth('edit')) {
+        this.roleError('edit')
+        return false
+      }
       this.editedArticle = data;
       this.activeEdit = true;
     },
     removeArticle(id, ref) {
+      if(!this.auth('delete')) {
+        this.roleError('delete')
+        return false
+      }
       this.articleId = id;
       this.ref = ref;
       this.$vs.dialog({
@@ -129,6 +156,16 @@ export default {
     },
   },
   computed: {
+    auth() {
+      return action=> {
+        let authList = this.$store.getters['app/auth']
+        var cUser = this.$store.getters["app/currentUser"];
+        if(cUser == undefined || cUser.role == undefined) return false
+        else if(cUser.role.key == 0) 
+          return true
+        return authList['knowledge base'][cUser.role.name.toLowerCase()][action]
+      }
+    },
     role() {
       var cUser = this.$store.getters["app/currentUser"];
       if (cUser == undefined || cUser.role === undefined) {

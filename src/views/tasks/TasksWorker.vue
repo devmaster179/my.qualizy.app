@@ -140,7 +140,7 @@
                       class="text-success inline-flex rounded-full"
                       style="background: rgba(var(--vs-success),.1); width:24px;height:24px; padding:5px;"
                     ></feather-icon>
-                    <p class="karla-bold task-group-text ml-2">Completed</p>
+                    <p class="karla-bold task-group-text ml-2">{{$t('completed')}}</p>
                   </div>
                   <p class="karla-bold task-group-text">{{logs.complated.length}}</p>
                 </div>
@@ -319,6 +319,7 @@ export default {
       return unshceduledTemplate;
     },
     logs() {
+
       var dayFrom = new Date(
         this.now.getFullYear(),
         this.now.getMonth(),
@@ -339,7 +340,6 @@ export default {
         );
         if (template === undefined) return false;
         if (template.trashed !== undefined && template.trashed) return false;
-
         if (
           template.content.templateTitle
             .toLowerCase()
@@ -347,6 +347,17 @@ export default {
           this.search != ""
         )
           return false;
+        if (this.$store.getters["app/locationList"].length > 0) {
+          if (
+            !this.$store.getters["app/locationList"].some((item) =>
+              template.content.location.includes(item)
+            )
+          )
+          return false;
+        }
+        // if(template.content.templateSD != 'bookmarked') {
+        //   var assignSchedule = this.$store.getters['app/getScheduleByTemplate'](template.id)
+        // }
         if (this.tag != "") {
           if (template.content.templateLabel === undefined) return false;
           if (
@@ -360,16 +371,6 @@ export default {
               .content.location === undefined
           )
             return false;
-          if (this.$store.getters["app/locationList"].length > 0) {
-            if (
-              !this.$store.getters["app/locationList"].some((item) =>
-                this.$store.getters["app/getTemplateById"](
-                  schedule.template
-                ).content.location.includes(item)
-              )
-            )
-              return false;
-          }
         }
         if (item.initial !== undefined && item.initial) return false;
 
@@ -442,6 +443,7 @@ export default {
           );
           if (template === undefined) return false;
           if (template.trashed !== undefined && template.trashed) return false;
+          if (template.content.templateSD == 'bookmarked') return false
 
           if (
             template.content.templateTitle
@@ -689,6 +691,19 @@ export default {
         { text: this.$t("month"), value: "month" },
       ];
     },
+    auth() {
+      return action => {
+        let authList = this.$store.getters['app/auth']
+        var cUser = this.$store.getters["app/currentUser"];
+        if(cUser == undefined || cUser.role == undefined) return false
+        else if(cUser.role.key == 0) 
+          return true
+        else if(authList.records[cUser.role.name.toLowerCase()][action])
+          return true
+        else 
+          return false
+      }
+    }
 
     // tasks() {
     //   return this.$store.getters["app/template"];
@@ -699,12 +714,12 @@ export default {
       this.frequency = val.frequency;
       this.tag = val.tag;
     },
-    roleError() {
+    roleError(action) {
       this.$vs.notify({
         time: 5000,
         title: "Authorization Error",
         text:
-          "You don't have authorization for this case.\n Please contact with your super admin",
+          `You don't have authorization for ${action} log.\n Please contact with your super admin`,
         color: "danger",
         iconPack: "feather",
         icon: "icon-lock",
@@ -712,6 +727,10 @@ export default {
       });
     },
     editLog(log) {
+      if(!this.auth('edit'))  {
+        this.roleError('edit')
+        return false
+      }
       this.$vs.loading();
       this.logID = log.id;
 
@@ -726,13 +745,8 @@ export default {
         });
     },
     async assign(task, unscheduled = false) {
-      var cUser = this.$store.getters["app/currentUser"];
-      if (cUser == undefined || cUser.role === undefined) {
-        this.roleError();
-        return false;
-      }
-      if (cUser.role.key > 3) {
-        this.roleError();
+      if(!this.auth('create')) {
+        this.roleError('create');
         return false;
       }
 

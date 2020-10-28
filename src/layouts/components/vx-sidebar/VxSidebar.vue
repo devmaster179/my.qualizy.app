@@ -171,15 +171,32 @@ export default {
     showShadowBottom: false,
   }),
   computed: {
+    auth() {
+      return (sub,action) => {
+        let authList = this.$store.getters['app/auth']
+        var cUser = this.$store.getters["app/currentUser"];
+        if(cUser == undefined || cUser.role == undefined) return false
+        else if(cUser.role.key == 0) 
+          return true
+        else if(authList[sub][cUser.role.name.toLowerCase()][action])
+          return true
+        else 
+          return false
+      }
+    },
     sidebarDisabled() {
       return (item) => {
-        if (!item.role) return false;
+        return false
+        // if(item.slug == '') return false
+        // return !this.auth(item.slug , 'read')
 
-        var cUser = this.$store.getters["app/currentUser"];
-        if (cUser == undefined || cUser.role == undefined) return true;
-        if (item.role.indexOf(cUser.role.key) > -1) return false;
+      //   if (!item.role) return false;
 
-        return true;
+      //   var cUser = this.$store.getters["app/currentUser"];
+      //   if (cUser == undefined || cUser.role == undefined) return true;
+      //   if (item.role.indexOf(cUser.role.key) > -1) return false;
+
+      //   return true;
       };
     },
     isSidebarActive: {

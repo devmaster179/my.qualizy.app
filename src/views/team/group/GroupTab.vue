@@ -21,7 +21,7 @@
         icon-pack="feather"
         icon-no-border
       />
-      <vs-button class="karla" v-if="cUserRole<2" @click="newTeam">+ {{$t("add team")}}</vs-button>
+      <vs-button class="karla" @click="newTeam">+ {{$t("add team")}}</vs-button>
     </div>
     <vs-input
       class="bg-white block md:hidden mr-2 w-full"
@@ -94,7 +94,7 @@
                 </vs-dropdown>
               </div>
             </vs-td>
-            <vs-td v-if="cUserRole<2">
+            <vs-td >
               <div class="flex items-center justify-end">
                 <feather-icon
                   icon="Edit2Icon"
@@ -230,21 +230,57 @@ export default {
       this.deletePrompt = false;
     },
     deleteConfirm(team) {
+      if(!this.auth('user and team settings' , 'delete')) {
+        this.roleError('create')
+        return false
+      }
       this.deletePrompt = true;
       this.deleteTeamID = team.id;
     },
     editTeam(team) {
+      if(!this.auth('user and team settings' , 'edit')) {
+        this.roleError('create')
+        return false
+      }
       this.selectedTeam = team;
       this.updatedKey = true;
       this.activeEdit = true;
     },
     newTeam() {
+      if(!this.auth('user and team settings' , 'create')) {
+        this.roleError('create')
+        return false
+      }
       this.updatedKey = false;
       this.selectedTeam = {};
       this.activeEdit = true;
     },
+    roleError(action) {
+      this.$vs.notify({
+        time: 5000,
+        title: "Authorization Error",
+        text:
+          `You don't have authorization for ${action}.\n Please contact with your super admin`,
+        color: "danger",
+        iconPack: "feather",
+        icon: "icon-lock",
+      });
+    },
   },
   computed: {
+    auth() {
+      return (sub,action) => {
+        let authList = this.$store.getters['app/auth']
+        var cUser = this.$store.getters["app/currentUser"];
+        if(cUser == undefined || cUser.role == undefined) return false
+        else if(cUser.role.key == 0) 
+          return true
+        else if(authList[sub][cUser.role.name.toLowerCase()][action])
+          return true
+        else 
+          return false
+      }
+    },
     locations() {
       return (ids) => {
         if (!Array.isArray(ids)) return [];
@@ -264,26 +300,26 @@ export default {
     },
     // Group : Location, authorisation, chat name
     teams() {
-      var teams = this.$store.getters["app/teams"].filter(
-        (item) => !item.deleted
-      );
+      var cUser = this.$store.getters["app/currentUser"]
+      var locationList = this.$store.getters['app/locationList']
+      if(locationList.length==0) {
+        if(cUser.role == undefined || cUser.role.key == undefined || cUser.role.key>0) {
+          if(cUser.location !== undefined && Array.isArray(cUser.location) && cUser.location.length>0) {
+            locationList = cUser.location
+          } else {
+            locationList = ['no']
+          }
+        }
+      }
+      let teams = this.$store.getters["app/teams"].filter(team=> {
+        if (locationList.length > 0) {
+          if(team.location == undefined || !Array.isArray(team.location)) return false
+          if(!team.location.some(item => locationList.includes(item))) return false
+        }
+        return team.active && !team.deleted
+      });
 
-      if (this.searchKey != "") {
-        teams = teams.filter(
-          (team) =>
-            team.name.toLowerCase().indexOf(this.searchKey.toLowerCase()) > -1
-        );
-      }
-      if (this.$store.getters["app/locationList"].length > 0) {
-        teams = teams.filter(
-          (team) =>
-            team.location &&
-            team.location.some((location) =>
-              this.$store.getters["app/locationList"].includes(location)
-            )
-        );
-      }
-      return teams;
+      return teams
     },
     usersCount() {
       return (id) => {

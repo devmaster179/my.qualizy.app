@@ -4,6 +4,7 @@
       <thead>
         <tr>
           <th>{{$t("template name")}}</th>
+          <th>{{$t("location")}}</th>
           <th>{{$t("teams")}}</th>
           <th></th>
         </tr>
@@ -119,14 +120,45 @@ export default {
     ListViewItem,
     SchedulePopup
   },
+  computed: {
+    auth() {
+      return action=> {
+        let authList = this.$store.getters['app/auth']
+        var cUser = this.$store.getters["app/currentUser"];
+        if(cUser == undefined || cUser.role == undefined) return false
+        else if(cUser.role.key == 0) 
+          return true
+        return authList.schedule[cUser.role.name.toLowerCase()][action]
+      }
+    },
+  },
   methods: {
+    roleError(action) {
+      this.$vs.notify({
+        time: 5000,
+        title: "Authorization Error",
+        text:
+          `You don't have authorization for ${action}.\n Please contact with your super admin`,
+        color: "danger",
+        iconPack: "feather",
+        icon: "icon-lock",
+      });
+    },
     editSchedule(id) {
+      if(!this.auth('edit')) {
+        this.roleError('edit')
+        return false
+      }
       let schedule = this.$store.getters["app/getScheduleById"](id);
       this.selectedSchedule = schedule;
       // this.selectedSchedule = JSON.parse(JSON.stringify(schedule));
       this.activeEdit = true;
     },
     deleteConfirm(id) {
+      if(!this.auth('delete')) {
+        this.roleError('delete')
+        return false
+      }
       this.deleteID = id;
       this.deletePrompt = true;
     },

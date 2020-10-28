@@ -1,15 +1,13 @@
 <template>
   <div id="report-view" class="px-1">
+   
     <div class="flex items-center justify-between mb-3">
-      <div class="page-title flex items-center">
-        <span
+      <div class="page-title flex items-center" style="max-width: 70%;">
+        <p
           class="karla-bold main-title cursor-pointer"
           @click="$router.push('/report')"
-        >{{$t("report") | capitalize}}</span>
-        <span
-          class="karla-bold hidden sm:block lg:hidden ml-2"
-        >&nbsp;> {{reportTitle | truncate(20) | capitalize}}</span>
-        <span class="karla-bold hidden lg:block ml-2">&nbsp;> {{reportTitle |capitalize}}</span>
+        >{{$t("report") | capitalize}}</p>
+        <p class="karla-bold hidden sm:block ml-2 truncate">&nbsp;> {{reportTitle |capitalize}}</p>
       </div>
       <div class="flex items-center page-action">
         <vs-dropdown vs-custom-content vs-trigger-click>
@@ -17,8 +15,12 @@
             class="p-2 shadow-drop mr-2 w-10 rounded-lg d-theme-dark-bg cursor-pointer"
             icon="MoreVerticalIcon"
           />
-
           <vs-dropdown-menu style="min-width:270px;">
+            <vs-dropdown-item @click="activeSchedule = true" class="mr-12 mb-2 mt-2" v-if="auth">
+              <vs-icon color="black" icon="icon-calendar" icon-pack="feather" size="16px" />
+              <span class="ml-3 font-semibold text-black" style="font-size:12px;">{{$t("scheduled email delivery")}}</span>
+            </vs-dropdown-item>
+
             <vs-dropdown-item @click="activeExport = true" class="mr-12 mb-2 mt-2">
               <vs-icon color="black" icon="icon-download" icon-pack="feather" size="16px" />
               <span class="ml-3 font-semibold text-black" style="font-size:12px;">{{$t("export")}}</span>
@@ -45,7 +47,7 @@
           icon="FilterIcon"
         />
         <vs-button
-          :disabled="filter.template === undefined || filter.template.length == 0  || role>2"
+          :disabled="filter.template === undefined || filter.template.length == 0  || !auth('report' , 'edit')"
           @click="activeSave = true"
           color="primary"
           icon="icon-file-text"
@@ -341,6 +343,51 @@
         <vs-switch :disabled="selectedFormat == 'pdf'" v-model="cellAutoWidth"></vs-switch>
       </div>
     </vs-prompt>
+    <vs-prompt
+      class="report-schedule"
+      :accept-text="existSchedule ? $t('update'): $t('save') "
+      :active.sync="activeSchedule"
+      :cancel-text="$t('cancel') | capitalize"
+      :is-valid="rTeam.length>0"
+      :title="$t('report schedule delivery settings')"
+      @accept="scheduleReport"
+    >
+      <div class="vx-row">
+        <div class="vx-col w-full mb-6">
+          <label> {{$t('start date')}} </label>
+          <datepicker
+            placeholder="Available from"
+            v-model="sDate"
+            :language="languages[$i18n.locale]"
+            class="hasDatepickerIcon"
+          ></datepicker>
+        </div>
+        <div class="vx-col w-full mb-6">
+          <label>{{$t('repeat evey')}}</label>
+          <v-select :clearable="false" :options="['day' , 'week' , 'month' , 'year']" v-model="sRepeat">
+            <template #option="{label}">
+              <span class="">{{$t(label)}}</span>
+            </template>
+             <template #selected-option="{ label }">
+              <span class="">{{$t(label)}}</span>
+             </template>
+          </v-select>
+        </div>
+        <div class="vx-col w-full">
+          <div class="flex items-center">
+            <label>{{$t('teams')}}</label>
+          </div>
+          <v-select :options="teams" label="name" multiple v-model="rTeam" class="w-full">
+          </v-select> 
+          <div class="vx-col v-full mt-6 " v-if="existSchedule">
+            <div class="flex items-center cursor-pointer text-primary hover:text-danger" @click="deleteRD">
+              <vs-icon icon-pack="feather" size="20px" icon="icon-trash-2" class="mr-2"/>
+              <p class="">{{$t('delete shceduled email delivery')}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </vs-prompt>
   </div>
 </template>
 
@@ -354,6 +401,9 @@ import VSelect from "vue-select";
 import { db } from "@/firebase/firebaseConfig.js";
 import XLSX from "xlsx";
 
+import Datepicker from "vuejs-datepicker";
+import * as lang from "vuejs-datepicker/src/locale";
+
 export default {
   components: {
     PrintItem,
@@ -361,9 +411,15 @@ export default {
     LogItem,
     VSelect,
     SocialSharing,
+    Datepicker
   },
   data() {
     return {
+      rTeam: [],
+      sRepeat: 'day',
+      sDate: new Date(),
+      languages: lang,
+      activeSchedule: false,
       selectedFormat: "pdf",
       formats: ["xlsx", "csv", "pdf"],
       cellAutoWidth: true,
@@ -384,7 +440,24 @@ export default {
       tag: [],
     };
   },
-  watch: {},
+  watch: {
+    activeSchedule(val) {
+      if(val && this.existSchedule) {
+        let schedule = this.existSchedule
+        this.sDate = schedule.start.toDate()
+        this.sRepeat = schedule.__repeat
+        this.rTeam = []
+        schedule.team.map(id=> {
+          this.rTeam.push(this.$store.getters['app/getTeamById'](id))
+        })
+      }
+      else if(val && !this.existSchedule) {
+        this.sDate = new Date()
+        this.sRepeat = 'day'
+        this.rTeam = []
+      }
+    }
+  },
   mounted() {
     // this.wasSidebarOpen = this.$store.state.reduceButton;
     // this.$store.commit("TOGGLE_REDUCE_BUTTON", true);
@@ -393,11 +466,33 @@ export default {
     // if (!this.wasSidebarOpen) this.$store.commit("TOGGLE_REDUCE_BUTTON", false);
   },
   computed: {
+    auth() {
+      return (sub,action) => {
+        let authList = this.$store.getters['app/auth']
+        var cUser = this.$store.getters["app/currentUser"];
+        if(cUser == undefined || cUser.role == undefined) return false
+        else if(cUser.role.key == 0) 
+          return true
+        else if(authList[sub][cUser.role.name.toLowerCase()][action])
+          return true
+        else 
+          return false
+      }
+    },
+    existSchedule() {
+      return this.$store.getters['app/getReportScheduleByID'](this.$route.params.id)
+    },
     tags() {
       return this.$store.getters["app/labels"];
     },
     teams() {
-      return this.$store.getters["app/teams"].filter((item) => item.active);
+      let locationList = this.$store.getters['app/locationList']
+      return this.$store.getters["app/teams"].filter((item) => {
+        if(locationList.length>0) {
+          if(locationList.indexOf(item.id)< 0 ) return false
+        }
+        return item.active
+      });
     },
     role() {
       var cUser = this.$store.getters["app/currentUser"];
@@ -752,6 +847,98 @@ export default {
     },
   },
   methods: {
+    roleError(action) {
+      this.$vs.notify({
+        time: 5000,
+        title: "Authorization Error",
+        text:
+          `You don't have authorization for ${action}.\n Please contact with your super admin`,
+        color: "danger",
+        iconPack: "feather",
+        icon: "icon-lock",
+      });
+    },
+    deleteRD() {
+      if(!this.auth('report' , 'delete')) {
+        this.roleError('delete')
+        return false
+      }
+      db.collection('report_schedule').doc(this.existSchedule.id).delete()
+      this.activeSchedule = false
+      this.$vs.notify({
+          time: 5000,
+          title: "Deleted",
+          text: 'Schedule report is deleted.',
+          color: "success",
+          iconPack: "feather",
+          icon: "icon-check",
+        });
+    },
+    scheduleReport() {
+      let existSchedule = this.existSchedule
+      var to = []
+      var users = []
+      var teams = []
+      this.rTeam.map(team=> {
+        teams.push(team.id)
+        users = this.$store.getters['app/users'].filter(user=> user.team.indexOf(team.id)>-1 && user.status && user.rEmail!=undefined && user.rEmail)
+        users.map(user=> {
+          if(!to.find(item=> item.email == user.email))
+            to.push({
+              email: user.email,
+              name: user.name || '',
+              lang: user.lang || 'en-us',
+              title: this.reportTitle,
+            })
+        })
+      })
+      
+      if(existSchedule) {
+        if(!this.auth('report' , 'edit')) {
+          this.roleError('edit')
+          return false
+        }
+        db.collection('report_schedule').doc(existSchedule.id).update({
+          updated_by: JSON.parse(localStorage.getItem("userInfo")).id,
+          updated_at: new Date(),
+          start: this.sDate,
+          __repeat: this.sRepeat,
+          to: to,
+          team: teams
+        })
+        this.$vs.notify({
+          time: 5000,
+          title: "Updated",
+          text: 'Schedule report is updated.',
+          color: "success",
+          iconPack: "feather",
+          icon: "icon-check",
+        });
+      }else {
+        if(!this.auth('report' , 'create')) {
+          this.roleError('create')
+          return false
+        }
+        db.collection('report_schedule').add({
+          group: JSON.parse(localStorage.getItem("userInfo")).group,
+          reportID: this.$route.params.id,
+          created_by: JSON.parse(localStorage.getItem("userInfo")).id,
+          created_at: new Date(),
+          start: this.sDate,
+          __repeat: this.sRepeat,
+          to: to,
+          team: teams
+        })
+        this.$vs.notify({
+          time: 5000,
+          title: "Created",
+          text: 'Schedule report is created.',
+          color: "success",
+          iconPack: "feather",
+          icon: "icon-check",
+        });
+      }
+    },
     printReprot(file_name) {
       var title = document.title;
       document.title = file_name;
@@ -1026,11 +1213,24 @@ export default {
 </script>
 
 <style scoped>
-.page-title > span {
+.hasDatepickerIcon::after {
+  font-family: "feather" !important;
+  font-style: normal;
+  font-size: 20px;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1.7;
+  content: "\e83a";
+  position: absolute;
+  top: 3px;
+  right: 10px;
+}
+.page-title > p {
   color: #1e1c26;
   font-size: 24px;
 }
-.page-title > span.main-title {
+.page-title > .main-title {
   opacity: 0.54;
 }
 
@@ -1138,4 +1338,11 @@ export default {
     // }
   }
 }
+</style>
+
+<style>
+  .report-schedule .vs-dialog {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
 </style>

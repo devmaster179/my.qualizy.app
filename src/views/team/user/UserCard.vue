@@ -10,7 +10,7 @@
             <p class="karla text-sm">{{user.email}}</p>
           </div>
         </div>
-        <vs-dropdown vs-trigger-click v-if="cUserRole<2">
+        <vs-dropdown vs-trigger-click v-if="canEdit">
           <feather-icon icon="MoreVerticalIcon" class="cursor-pointer" />
           <vs-dropdown-menu class="vx-navbar-dropdown">
             <ul style="min-width: 9rem" class="p-0">
@@ -22,14 +22,13 @@
                 <p class="karla text-base ml-2">{{$t("edit")}}</p>
               </li>
               <li
-                @click="deleteConfirm"
+                @click="$emit('delete' , user)"
                 class="flex items-center py-1 px-2 my-1 cursor-pointer hover:bg-primary hover:text-white"
               >
                 <feather-icon icon="Trash2Icon" class="cursor-pointer w-5" />
                 <p class="karla text-base ml-2">{{$t("delete")}}</p>
               </li>
               <li
-                v-if="cUserRole==0"
                 @click="$emit('resend-invite' , user)"
                 class="flex items-center py-1 px-2 my-1 cursor-pointer hover:bg-primary hover:text-white"
               >
@@ -106,7 +105,7 @@
 
       <div class="flex items-center justify-between p-3 infor-item">
         <p class="karla title-text text-sm">{{$t("role")}}</p>
-        <p class="karla title-content" v-if="user.role">{{user.role.name}}</p>
+        <p class="karla title-content" v-if="user.role">{{$t(user.role.name.toLowerCase()) | capitalize}}</p>
       </div>
 
       <div class="flex items-center justify-between p-3 infor-item">
@@ -197,9 +196,17 @@ export default {
     };
   },
   computed: {
+    canEdit() {
+      let cRole = this.cUserRole
+      if(cRole==0) return true
+      var role = 4
+      if(this.user.role !== undefined && this.user.role.key != undefined) 
+        role = this.user.role.key 
+      return cRole <= role
+    },
     cUserRole() {
       var cUser = this.$store.getters["app/currentUser"];
-      if (cUser.role === undefined) return 5;
+      if (cUser.role === undefined) return 4;
       return cUser.role.key;
     },
     status: {

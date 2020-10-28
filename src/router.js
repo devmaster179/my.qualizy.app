@@ -214,7 +214,7 @@ const router = new Router({
                     component: () => import('@/views/team/Team.vue'),
                     meta: {
                         title: "User Manager - Qualizy",
-                        rule: 'admin',
+                        rule: 'visitor',
                     }
                 },
                 {
@@ -242,7 +242,8 @@ const router = new Router({
                     component: () => import('@/views/company/Company.vue'),
                     meta: {
                         title: "Company - Qualizy",
-                        rule: 'super admin',
+                        rule: 'visitor',
+                        // rule: 'super admin',
                     }
                 },
                 {

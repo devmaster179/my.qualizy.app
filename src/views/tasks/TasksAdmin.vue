@@ -214,6 +214,7 @@ import VSelect from "vue-select";
 import TaskItem from "./taskItem.vue";
 import LogSidebar from "./LogSidebar.vue";
 import { db } from "@/firebase/firebaseConfig";
+import UsereEditSidebarVue from '../team/user/UsereEditSidebar.vue';
 
 export default {
   components: {
@@ -288,27 +289,16 @@ export default {
       return date;
     },
     unshceduledTemplates() {
+      var cUser = this.$store.getters["app/currentUser"]
+      var locationList = this.$store.getters['app/locationList']
+      if((cUser.role == undefined || cUser.role.key > 0)  && locationList.length == 0)
+        locationList = cUser.location || []
+      var userTeam = cUser.team || []
       let templates = this.$store.getters["app/getBookedTemplate"]
         .filter((item) => {
           if (item.trashed !== undefined && item.trashed) return false;
-          if(item.content.teams !== undefined ) {
-            var userTeam = this.$store.getters["app/currentUser"].team
+          if(item.content.teams !== undefined && Array.isArray(item.content.teams)) {
             if(!item.content.teams.some(t=> userTeam.includes(t))) return false
-          }
-          if (this.$store.getters["app/locationList"].length > 0) {
-            if (
-              this.$store.getters["app/getTemplateById"](item.id).content
-                .location === undefined
-            )
-              return false;
-            if (
-              !this.$store.getters["app/locationList"].some((location) =>
-                this.$store.getters["app/getTemplateById"](
-                  item.id
-                ).content.location.includes(location)
-              )
-            )
-              return false;
           }
           if (this.tags != "") {
             if (item.content.templateLabel === undefined) return false;
@@ -339,6 +329,7 @@ export default {
       return unshceduledTemplate;
     },
     logs() {
+      var userTeam = this.$store.getters["app/currentUser"].team
       var dayFrom = 0;
       var dayTo = 0;
       var today = new Date();
@@ -367,14 +358,39 @@ export default {
         -1
       );
       var log = this.$store.getters["app/logs"];
+      var schedule
+      var cUser = this.$store.getters["app/currentUser"]
+      var locationList = this.$store.getters['app/locationList']
+      if(locationList.length==0) {
+        if(cUser.role == undefined || cUser.role.key == undefined || cUser.role.key>0) {
+          if(cUser.location !== undefined && Array.isArray(cUser.location) && cUser.location.length>0) {
+            locationList = cUser.location
+          } else {
+            locationList = ['no']
+          }
+        }
+      }
       log = log.filter((item) => {
+        
         var template = this.$store.getters["app/getTemplateById"](
           item.templateID
         );
 
         if (template === undefined) return false;
         if (template.trashed !== undefined && template.trashed) return false;
-
+        if(template.content.templateSD == 'bookmarked') {
+          if(template.content.teams!=undefined && Array.isArray(template.content.teams) && !template.content.teams.some(t=> userTeam.includes(t))) return false
+        } else {
+          schedule = this.$store.getters['app/getScheduleById'](item.schedule || '')
+          if(schedule == undefined) return false
+          if ((schedule.deleted !== undefined && schedule.deleted === true) || (schedule.active !== undefined && !schedule.active)) return false;
+          var scheduleTeam = schedule.assign.concat(schedule.monitor || [])
+          if(!scheduleTeam.some(t=> userTeam.includes(t))) return false
+          if(schedule.location== undefined) return false
+          if(locationList.length>0) {
+            if(locationList.indexOf(schedule.location[0])<0) return false
+          }
+        }
         if (this.status == "noDue") {
           if (item.time !== undefined) return false;
         }
@@ -386,16 +402,6 @@ export default {
         )
           return false;
         if (item.initial !== undefined && item.initial) return false;
-
-        if (this.$store.getters["app/locationList"].length > 0) {
-          if (template.content.location === undefined) return false;
-          if (
-            !this.$store.getters["app/locationList"].some((location) =>
-              template.content.location.includes(location)
-            )
-          )
-            return false;
-        }
 
         if (item.updated_at.nanoseconds === undefined) {
           return (
@@ -467,53 +473,59 @@ export default {
             0
           ).getDate();
         }
-
-        var teams = this.$store.getters["app/getUserById"](
-          JSON.parse(localStorage.getItem("userInfo")).id
-        );
-
-        var schedules = this.$store.getters["app/schedules"].sort(
-          (a, b) =>
-            b.updated_at.toDate().getTime() - a.updated_at.toDate().getTime()
-        );
+        var cUser = this.$store.getters["app/currentUser"]
+        var userTeam = cUser.team || []
+        if(!Array.isArray(userTeam)) userTeam = []
+        var locationList = this.$store.getters['app/locationList']
+        if(locationList.length==0) {
+          if(cUser.role == undefined || cUser.role.key == undefined || cUser.role.key>0) {
+            if(cUser.location !== undefined && Array.isArray(cUser.location) && cUser.location.length>0) {
+              locationList = cUser.location
+            } else {
+              locationList = ['no']
+            }
+          }
+        }
+        var schedules = this.$store.getters["app/schedules"]
 
         schedules = schedules.filter((schedule) => {
-          if (schedule.active !== undefined && !schedule.active) return false;
+          if(schedule.location==undefined) return false
+          let scheduleLocation = schedule.location[0] 
+          if ((schedule.deleted !== undefined && schedule.deleted === true) || (schedule.active !== undefined && !schedule.active)) return false;
+          if(locationList.length>0) {
+            if(locationList.indexOf(scheduleLocation)<0) return false
+          }
           var template = this.$store.getters["app/getTemplateById"](
             schedule.template
           );
+          var scheduleTeam = schedule.assign.concat(schedule.monitor || [])
           if (template === undefined) return false;
           if (template.trashed !== undefined && template.trashed) return false;
+          if (template.content.templateSD == 'bookmarked') return false
           if (
             template.content.templateTitle
               .toLowerCase()
               .indexOf(this.search.toLowerCase()) < 0
           )
             return false;
+
+          if (!scheduleTeam.some((item) => userTeam.includes(item))) return false
           if (this.teams != "") {
-            if (!schedule.assign.some((item) => this.teams.includes(item)))
+            if (!scheduleTeam.some((item) => this.teams.includes(item)))
               return false;
           }
-          if (this.$store.getters["app/locationList"].length > 0) {
-            if (
-              this.$store.getters["app/getTemplateById"](schedule.template)
-                .content.location === undefined
-            )
-              return false;
-            return this.$store.getters["app/locationList"].some((item) =>
-              this.$store.getters["app/getTemplateById"](
-                schedule.template
-              ).content.location.includes(item)
-            );
-          } else return true;
+          if (this.tags != "") {
+            if (template.content.templateLabel === undefined) return false;
+            if(!template.content.templateLabel.some((item) => this.tags.includes(item))) return false
+          }
+
+          return true;
         });
         var taskTime = "";
         var interval = 1;
         var validSchedules = [];
         for (let i = dayFrom; i <= dayTo; i++) {
           schedules.map((schedule) => {
-            if (schedule.deleted !== undefined && schedule.deleted === true)
-              return;
             schedule.dueTimes.map((duetime) => {
               if (duetime.nanoseconds !== undefined)
                 taskTime = duetime.toDate();
@@ -535,6 +547,8 @@ export default {
                     )
                   )
                     validSchedules.push({
+                      schedule: schedule.id,
+                      assign: schedule.assign,
                       templateID: schedule.template,
                       time: new Date(
                         today.getFullYear(),
@@ -550,6 +564,8 @@ export default {
                   this.checkScheule(i, taskTime, interval, schedule._repeat)
                 ) {
                   validSchedules.push({
+                    schedule: schedule.id,
+                    assign: schedule.assign,
                     templateID: schedule.template,
                     time: new Date(
                       today.getFullYear(),
@@ -564,13 +580,12 @@ export default {
             });
           });
         }
-
-        validSchedules = validSchedules.sort(
-          (a, b) => a.time.getTime() - b.time.getTime()
-        );
         validSchedules = validSchedules.filter((task) => {
           return !this.checkLog(task, status);
         });
+        validSchedules = validSchedules.sort(
+          (a, b) => a.time.getTime() - b.time.getTime()
+        );
         if (this.status != "") {
           validSchedules = validSchedules.filter((item) => {
             if (this.status == "due") {
@@ -582,27 +597,18 @@ export default {
             }
           });
         }
-
-        if (this.tags == "") return validSchedules;
-        else {
-          return validSchedules.filter((schedule) => {
-            let template = this.$store.getters["app/getTemplateById"](
-              schedule.templateID
-            );
-            if (template.content.templateLabel === undefined) return false;
-            return template.content.templateLabel.some((item) =>
-              this.tags.includes(item)
-            );
-          });
-        }
+        return validSchedules
       };
     },
     checkLog() {
       return (task, status) => {
         let log = this.$store.getters["app/getLogByTidTime"](
           task.templateID,
-          task.time
+          task.time,
+          task.schedule,
+          task.assign
         );
+        
         if (status == "task") {
           // if (log !== undefined && !log.initial) return true;
           // else return false;
@@ -728,6 +734,19 @@ export default {
     // tasks() {
     //   return this.$store.getters["app/template"];
     // }
+    auth() {
+      return action => {
+        let authList = this.$store.getters['app/auth']
+        var cUser = this.$store.getters["app/currentUser"];
+        if(cUser == undefined || cUser.role == undefined) return false
+        else if(cUser.role.key == 0) 
+          return true
+        else if(authList.records[cUser.role.name.toLowerCase()][action])
+          return true
+        else 
+          return false
+      }
+    }
   },
   methods: {
     filter(val) {
@@ -738,12 +757,12 @@ export default {
       this.dueDate = val.dueDate;
       this.logTiem = val.logTime;
     },
-    roleError() {
+    roleError(action) {
       this.$vs.notify({
         time: 5000,
         title: "Authorization Error",
         text:
-          "You don't have authorization for this case.\n Please contact with your super admin",
+          `You don't have authorization for ${action} log.\n Please contact with your super admin`,
         color: "danger",
         iconPack: "feather",
         icon: "icon-lock",
@@ -751,6 +770,21 @@ export default {
       });
     },
     editLog(log) {
+      
+      if(!this.auth('edit'))  {
+        this.roleError('edit')
+        return false
+      }
+      if(log.schedule != undefined) {
+        var schedule = this.$store.getters['app/getScheduleById'](log.schedule)
+        var cUser = this.$store.getters["app/currentUser"];
+        var cTeam = cUser.team || []
+        if(!Array.isArray(cTeam)) cTeam = []
+        if(!cTeam.some(ct=>schedule.assign.includes(ct))) {
+          this.monitorNotify()
+          return false
+        }
+      }
       this.$vs.loading();
       this.logID = log.id;
 
@@ -764,17 +798,33 @@ export default {
           this.isSidebarActive = true;
         });
     },
+    monitorNotify() {
+      this.$vs.notify({
+        time: 5000,
+        title: "Monitor",
+        text:
+          `You can only monitor this task.`,
+        color: "primary",
+        iconPack: "feather",
+        icon: "icon-info",
+        // position:'bottom-center'
+      });
+    },
     async assign(task, unscheduled = false) {
-      var that = this;
-      var cUser = this.$store.getters["app/currentUser"];
-      if (cUser == undefined || cUser.role === undefined) {
-        this.roleError();
+      if(task.assign != undefined) {
+        var cUser = this.$store.getters["app/currentUser"];
+        var cTeam = cUser.team || []
+        if(!Array.isArray(cTeam)) cTeam = []
+        if(!cTeam.some(ct=>task.assign.includes(ct))) {
+          this.monitorNotify()
+          return false
+        }
+      }
+      if(!this.auth('create')) {
+        this.roleError('create');
         return false;
       }
-      if (cUser.role.key > 3) {
-        this.roleError();
-        return false;
-      }
+      const that = this
       this.$vs.loading();
       var updated_at = new Date();
       var pages = [];
@@ -865,6 +915,7 @@ export default {
             pages.push({ questions: questions, title: page.title });
           });
           db.collection("logs").add({
+            schedule: task.schedule,
             initial: unscheduled,
             time: task.time,
             templateID: task.templateID,
