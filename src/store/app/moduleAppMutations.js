@@ -219,6 +219,7 @@ export default {
     state.tempClosedAnswer = state.tempClosedAnswer.filter((item, index) => index != query)
   },
   CHN_TEMP_TEMPLATE(state, query) {
+    console.log('CHN_TEMP_TEMPLATE1:', query);
     if (query.target == "answer") {
       if (query.key == "instruction")
         state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].type = { id: state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].type.id, instruction: query.val }
@@ -297,8 +298,11 @@ export default {
       }
       else if (query.key == 'delete')
         state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers = state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers.filter((item, index) => index !== query.index.answer)
-      else if (query.key == 'action')
-        state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].action = query.val
+      else if (query.key == 'action') {
+        let action = state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].action;
+        if (!Array.isArray(action)) action = [action];
+        state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].action = [...action, query.val]
+      }
       else if (query.key == 'score')
         state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].score = query.val
       else if (query.key == 'addSection') {
