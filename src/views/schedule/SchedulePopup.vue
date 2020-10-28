@@ -53,7 +53,7 @@
       </div>
       <div class="vx-row mb-base">
         <div class="vx-col w-full">
-          <p class="text-item">{{$t('monitor') | capitalize}}</p>
+          <p class="text-item">{{$t('monitoring') | capitalize}}</p>
           <multiselect
             v-model="mUser"
             :placeholder="$t('select teams')"

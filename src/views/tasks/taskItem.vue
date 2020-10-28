@@ -98,8 +98,9 @@
             >{{calcTime(task.updated_at)|duration('humanize' , true) | capitalize}}</span>
           </div>
         </div>
-        <div class="flex items-center justify-end mt-1" v-if="monitor">
-          <span class="karla mr-1 text-warning">Monitoring</span><vs-icon icon-pack="feather" icon="icon-eye"/>
+        <div class="flex items-center justify-end mt-1 text-warning" v-if="monitor">
+          <span class="karla mr-1 ">{{$t('monitoring')}}</span>
+          <vs-icon icon-pack="feather" icon="icon-eye" class="mt-1" />
         </div>
       </div>
     </div>

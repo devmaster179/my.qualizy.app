@@ -1,7 +1,7 @@
 export default {
     "en-gb": {
         "select teams": "Select teams",
-        "monitor": "Monitor",
+        "monitoring": "Monitoring",
         "delete shceduled email delivery": "Delete shceduled email delivery",
         'year': "Year",
         "repeat evey": "Repeat evey",
@@ -543,7 +543,7 @@ export default {
     },
     "en-us": {
         "select teams": "Select teams",
-        "monitor": "Monitor",
+        "monitoring": "Monitoring",
         "delete shceduled email delivery": "Delete shceduled email delivery",
         'year': "Year",
         "repeat evey": "Repeat evey",
@@ -1085,7 +1085,7 @@ export default {
     },
     "fr": {
         "select teams": "Select teams",
-        "monitor": "Monitor",
+        "monitoring": "Monitoring",
         "delete shceduled email delivery": "Delete shceduled email delivery",
         'year': "Year",
         "repeat evey": "Repeat evey",
@@ -1627,7 +1627,7 @@ export default {
     },
     "es": {
         "select teams": "Select teams",
-        "monitor": "Monitor",
+        "monitoring": "Monitoring",
         "delete shceduled email delivery": "Delete shceduled email delivery",
         'year': "Year",
         "repeat evey": "Repeat evey",
@@ -2115,7 +2115,7 @@ export default {
     },
     "it": {
         "select teams": "Select teams",
-        "monitor": "Monitor",
+        "monitoring": "Monitoring",
         "delete shceduled email delivery": "Delete shceduled email delivery",
         'year': "Year",
         "repeat evey": "Repeat evey",

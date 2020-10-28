@@ -23,6 +23,17 @@
       <div class="inline-block items-center">
         <div
           class="bg-clip py-2 px-3 rounded-lg ml-2 inline-block"
+          v-if="schedule.location"
+        >
+          <vs-icon icon-pack="feather" icon="icon-map-pin" class="mr-1" />
+          <span class="karla item-text">{{locaionInfo}}</span>
+        </div>
+      </div>
+    </td>
+    <td>
+      <div class="inline-block items-center">
+        <div
+          class="bg-clip py-2 px-3 rounded-lg ml-2 inline-block"
           v-for="(team,i) in teams"
           :class="{'hidden':i!=0 }"
           :key="i"
@@ -87,6 +98,11 @@ export default {
     }
   },
   computed: {
+    locaionInfo() {
+      let location = this.$store.getters['app/getLocationById'](this.schedule.location[0])
+      if(!location || location.deleted) return ''
+      return location.name
+    },
     role() {
       var cUser = this.$store.getters["app/currentUser"];
       if (cUser == undefined || cUser.role === undefined) {
