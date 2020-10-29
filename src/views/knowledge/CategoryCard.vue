@@ -104,11 +104,13 @@ export default {
       };
     },
     locations() {
-      let locations =
-        this.category.locations === undefined ? [] : this.category.locations;
-      locations = locations.filter(
-        (item) => this.locationInfo(item) !== undefined
-      );
+      let locations =this.category.locations === undefined ? [] : this.category.locations;
+
+      locations = locations.filter((item) => {
+        var location = this.locationInfo(item)
+        if(!location || location.deleted) return false
+        return true
+      });
       return locations;
     },
   },

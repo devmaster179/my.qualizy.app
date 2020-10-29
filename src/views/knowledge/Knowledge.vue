@@ -230,14 +230,37 @@ export default {
     },
     categories() {
       var categories = this.$store.getters["app/knowledge_category"];
-      let filteredLocation = this.$store.getters["app/locationList"]
-      if(filteredLocation.length>0)
-        categories = categories.filter(cat=> !!cat.locations && cat.locations.some(item=>filteredLocation.includes(item)))
-      if (this.search == "") return categories;
-      return categories.filter(
-        (item) =>
-          item.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1
-      );
+      var cUser = this.$store.getters["app/currentUser"]
+      var locationList = this.$store.getters['app/locationList']
+      if(locationList.length==0) {
+        if(cUser.role == undefined || cUser.role.key == undefined || cUser.role.key>0) {
+          if(cUser.location !== undefined && Array.isArray(cUser.location) && cUser.location.length>0) {
+            locationList = cUser.location
+          } else {
+            locationList = ['no']
+          }
+        }
+      }
+      categories = categories.filter(category => {
+        if(category.group!='global') {
+          if(locationList.length>0) {
+            if(!category.locations) return false
+            if(!category.locations.some(cl=>locationList.includes(cl))) return false
+          }
+        }
+        if(this.search!='') {
+          if(category.name.toLowerCase().indexOf(this.search.toLowerCase()) < 0) return false
+        }
+        return true
+      })
+      // if(filteredLocation.length>0)
+      //   categories = categories.filter(cat=> !!cat.locations && cat.locations.some(item=>filteredLocation.includes(item)))
+      // if (this.search == "") return categories;
+      // return categories.filter(
+      //   (item) =>
+      //     item.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1
+      // );
+      return categories
     },
   },
 };

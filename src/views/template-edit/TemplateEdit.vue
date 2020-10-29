@@ -98,9 +98,9 @@
                   class="tag-item inline-block ml-2"
                   v-for="(location,index) in template.content.location"
                   :key="index"
-                  :class="{'hidden':locationInfo(location)===undefined}"
+                  :class="{'hidden':locationInfo(location)===undefined || locationInfo(location).deleted}"
                 >
-                  <div v-if="locationInfo(location)!==undefined" class="flex items-center">
+                  <div v-if="locationInfo(location)!==undefined || locationInfo(location).deleted" class="flex items-center">
                     <vs-icon
                       size="10px"
                       icon-pack="feather"

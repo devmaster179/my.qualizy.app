@@ -716,44 +716,44 @@ export default {
     },
     users() {
       let users = this.$store.getters["app/users"];
-      users = users.filter(
-        (item) =>
-          item.id != JSON.parse(localStorage.getItem("userInfo")).id &&
-          item.deleted !== true
-      );
-      if (this.searchKey != "") {
-        users = users.filter((user) => {
+      var cUser = this.$store.getters["app/currentUser"]
+      var locationList = this.$store.getters['app/locationList']
+      if(locationList.length==0) {
+        if(cUser.role == undefined || cUser.role.key == undefined || cUser.role.key>0) {
+          if(cUser.location !== undefined && Array.isArray(cUser.location) && cUser.location.length>0) {
+            locationList = cUser.location
+          } else {
+            locationList = ['no']
+          }
+        }
+      }
+      users = users.filter((user) => {
+        if(user.id == JSON.parse(localStorage.getItem("userInfo")).id && user.deleted !== true)
+          return false
+        
+        if(locationList.length>0) {
+          if(user.location==undefined || !Array.isArray(user.location)) return false
+          if(!user.location.some(ul=>locationList.includes(ul))) return false
+        }
+        if (this.searchKey != "") {
           let teams = [];
           user.team.map((team) => {
             var teamInfo = this.$store.getters["app/getTeamById"](team);
             if (teamInfo && teamInfo.name)
               teams.push(this.$store.getters["app/getTeamById"](team).name);
           });
-          return (
-            user.name.toLowerCase().indexOf(this.searchKey.toLowerCase()) >
-              -1 ||
-            user.email.toLowerCase().indexOf(this.searchKey.toLowerCase()) >
-              -1 ||
-            (user.role &&
-              user.role.name
-                .toLowerCase()
-                .indexOf(this.searchKey.toLowerCase()) > -1) ||
-            teams.find(
-              (team) =>
-                team.toLowerCase().indexOf(this.searchKey.toLowerCase()) > -1
-            )
-          );
-        });
-      }
-      if (this.$store.getters["app/locationList"].length > 0) {
-        users = users.filter(
-          (user) =>
-            user.location &&
-            user.location.some((location) =>
-              this.$store.getters["app/locationList"].includes(location)
-            )
-        );
-      }
+
+          if( user.name.toLowerCase().indexOf(this.searchKey.toLowerCase()) < 0 && 
+              user.email.toLowerCase().indexOf(this.searchKey.toLowerCase()) < 0 &&
+              (user.role && user.role.name.toLowerCase().indexOf(this.searchKey.toLowerCase()) < 0) && 
+              !teams.find((team) =>team.toLowerCase().indexOf(this.searchKey.toLowerCase()) > -1 )
+          )
+              return false
+        }
+        return true
+
+      });
+
       return users;
     },
     validateForm() {

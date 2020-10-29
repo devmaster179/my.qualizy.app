@@ -422,12 +422,25 @@ export default {
       };
     },
     locations() {
+      var cUser = this.$store.getters["app/currentUser"]
+      var locationList = this.$store.getters['app/locationList']
+      if(locationList.length==0) {
+        if(cUser.role == undefined || cUser.role.key == undefined || cUser.role.key>0) {
+          if(cUser.location !== undefined && Array.isArray(cUser.location) && cUser.location.length>0) {
+            locationList = cUser.location
+          } else {
+            locationList = ['no']
+          }
+        }
+      }
       let locations = this.$store.getters["app/locations"].filter(item => {
+        if (locationList.length > 0) {
+          if(locationList.indexOf(item.id)<0) return false
+        }
         if (this.searchQuery !== "") {
           var country = item.country !== undefined ? item.country : "";
           var region = item.region !== undefined ? item.region : "";
           var area = item.area !== undefined ? item.area : "";
-
           return (
             (item.name.toLowerCase().indexOf(this.searchQuery.toLowerCase()) >
               -1 ||

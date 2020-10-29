@@ -300,8 +300,17 @@ export default {
     },
     // Group : Location, authorisation, chat name
     teams() {
-      let locationList = this.$store.getters["app/locationList"]
-
+      var cUser = this.$store.getters["app/currentUser"]
+      var locationList = this.$store.getters['app/locationList']
+      if(locationList.length==0) {
+        if(cUser.role == undefined || cUser.role.key == undefined || cUser.role.key>0) {
+          if(cUser.location !== undefined && Array.isArray(cUser.location) && cUser.location.length>0) {
+            locationList = cUser.location
+          } else {
+            locationList = ['no']
+          }
+        }
+      }
       let teams = this.$store.getters["app/teams"].filter(team=> {
         if (locationList.length > 0) {
           if(team.location == undefined || !Array.isArray(team.location)) return false

@@ -113,37 +113,52 @@ export default {
       var __schedules = [];
       var teamLocation 
       var tempTeam
-      var locationList = this.$store.getters["app/locationList"]
+      var cUser = this.$store.getters["app/currentUser"]
+      var locationList = this.$store.getters['app/locationList']
+      if(locationList.length==0) {
+        if(cUser.role == undefined || cUser.role.key == undefined || cUser.role.key>0) {
+          if(cUser.location !== undefined && Array.isArray(cUser.location) && cUser.location.length>0) {
+            locationList = cUser.location
+          } else {
+            locationList = ['no']
+          }
+        }
+      }
+
       schedules.map(schedule => {
         if (schedule.deleted || schedule._repeat === null) return;
+        if(locationList.length>0) {
+          if(!schedule.location) return
+          if(!schedule.location.some(sl=> locationList.includes(sl))) return 
+        }
         var template = this.$store.getters["app/getTemplateById"](
           schedule.template
         );
         if (template === undefined || template.content.templateSD=="bookmarked")  return;
-        if (locationList.length > 0) {
-          if (template.content.location === undefined) return;
-          if (
-            !locationList.some(item =>
-              template.content.location.includes(item)
-            )
-          )
-            return;
-          teamLocation = []
-          schedule.assign.map(team=> {
-            tempTeam = this.$store.getters['app/getTeamById'](team)
-            if(tempTeam.location == undefined || !Array.isArray(tempTeam.location)) return
-            tempTeam.location.map(location => {
-              if(teamLocation.indexOf(location) < 0) 
-                teamLocation.push(location)
-            })  
-          })
-          if (
-            !locationList.some(item =>
-              teamLocation.includes(item)
-            )
-          )
-            return;
-        }
+        // if (locationList.length > 0) {
+        //   if (template.content.location === undefined) return;
+        //   if (
+        //     !locationList.some(item =>
+        //       template.content.location.includes(item)
+        //     )
+        //   )
+        //     return;
+        //   teamLocation = []
+        //   schedule.assign.map(team=> {
+        //     tempTeam = this.$store.getters['app/getTeamById'](team)
+        //     if(tempTeam.location == undefined || !Array.isArray(tempTeam.location)) return
+        //     tempTeam.location.map(location => {
+        //       if(teamLocation.indexOf(location) < 0) 
+        //         teamLocation.push(location)
+        //     })  
+        //   })
+        //   if (
+        //     !locationList.some(item =>
+        //       teamLocation.includes(item)
+        //     )
+        //   )
+        //     return;
+        // }
         if (template.trashed) return;
         if (
           this.search == "" ||

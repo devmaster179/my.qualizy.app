@@ -280,13 +280,11 @@ export default {
       return cUser.role.key;
     },
     locations() {
-      let locations =
-        this.template.content.location === undefined
-          ? []
-          : this.template.content.location;
+      let locations = this.template.content.location === undefined ? [] : this.template.content.location;
       var __locations = [];
       locations.map((item) => {
-        if (this.$store.getters["app/getLocationById"](item) === undefined)
+        let location = this.$store.getters["app/getLocationById"](item)
+        if (location == undefined || location.deleted)
           return;
         __locations.push(item);
       });

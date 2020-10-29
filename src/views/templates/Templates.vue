@@ -206,10 +206,38 @@ export default {
       return this.width > 1000;
     },
     templates() {
+      var cUser = this.$store.getters["app/currentUser"]
+      var locationList = this.$store.getters['app/locationList']
+      var locationList1 = []
+      if(locationList.length==0) {
+        if(cUser.role == undefined || cUser.role.key == undefined || cUser.role.key>0) {
+          if(cUser.location !== undefined && Array.isArray(cUser.location) && cUser.location.length>0) {
+            locationList1 = cUser.location
+          }
+        }
+      }
+
       let templates = this.$store.getters["app/template"];
       var __templates = [];
       templates.map((template) => {
-        if (template.trashed !== undefined && template.trashed) return;
+        if (template.trashed) return;
+        if(locationList.length > 0 ) {
+          if(template.content.location!=undefined && Array.isArray(template.content.location) && template.content.location.length>0) {
+            if(!template.content.location.some(tl=> locationList.includes(tl))) return
+          }
+          else  
+            return  
+        } else {
+          if(locationList1.length == 0) {
+            if(template.content.location!=undefined && Array.isArray(template.content.location) && template.content.location.length>0) {
+              return 
+            }
+          }else {
+            if(template.content.location!=undefined && Array.isArray(template.content.location) && template.content.location.length>0) {
+              if(!template.content.location.some(tl=> locationList1.includes(tl))) return
+            }
+          }
+        }
         if (this.search != "") {
           if (
             template.content.templateTitle
@@ -222,14 +250,6 @@ export default {
           if (
             !template.content.templateLabel.some((item) =>
               this.templateTag.includes(item)
-            )
-          )
-            return;
-        }
-        if (this.$store.getters["app/locationList"].length > 0) {
-          if (
-            !template.content.location.some((location) =>
-              this.$store.getters["app/locationList"].includes(location)
             )
           )
             return;

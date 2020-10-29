@@ -72,7 +72,7 @@
         </vs-button>
         <vs-button
           @click="saveCategory"
-          :disabled="newCategory.name==''"
+          :disabled="newCategory.name=='' || categoryLocation.length==0"
           class="ml-4"
           color="rgba(108, 80, 240)"
           text-color="white"
@@ -177,7 +177,7 @@ export default {
     },
     categoryLocation: {
       get() {
-        return this.newCategory.locations;
+        return this.newCategory.locations.filter(location=>location && !location.deleted);
       },
       set(val) {
         this.newCategory.locations = [];
@@ -187,13 +187,29 @@ export default {
       }
     },
     locations() {
+      var cUser = this.$store.getters["app/currentUser"]
+      var locationList = this.$store.getters['app/locationList']
+      if(locationList.length==0) {
+        if(cUser.role == undefined || cUser.role.key == undefined || cUser.role.key>0) {
+          if(cUser.location !== undefined && Array.isArray(cUser.location) && cUser.location.length>0) {
+            locationList = cUser.location
+          } else {
+            locationList = ['no']
+          }
+        }
+      }
+
       var locations =  this.$store.getters["app/locations"].filter(
         item => item.deleted === undefined || !item.deleted
       );
-      let filteredLocation = this.$store.getters["app/locationList"]
-      if(filteredLocation.length > 0) {
+
+      if(locationList.length > 0) {
         locations = []
-        filteredLocation.map(location=> locations.push(this.$store.getters["app/getLocationById"](location)))
+        locationList.map(location=> {
+          var location1 = this.$store.getters["app/getLocationById"](location)
+          if(location1)
+            locations.push(location1)
+        }) 
       }
       return locations
 

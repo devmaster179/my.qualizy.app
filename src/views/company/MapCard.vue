@@ -52,9 +52,23 @@ export default {
   },
   computed: {
     markers() {
-      var locations = this.$store.getters["app/locations"].filter(
-        (item) => !item.deleted
-      );
+      var cUser = this.$store.getters["app/currentUser"]
+      var locationList = this.$store.getters['app/locationList']
+      if(locationList.length==0) {
+        if(cUser.role == undefined || cUser.role.key == undefined || cUser.role.key>0) {
+          if(cUser.location !== undefined && Array.isArray(cUser.location) && cUser.location.length>0) {
+            locationList = cUser.location
+          } else {
+            locationList = ['no']
+          }
+        }
+      }
+      var locations = this.$store.getters["app/locations"].filter(item=> {
+        if(locationList.length > 0) {
+          if(locationList.indexOf(item.id)<0) return false
+        }
+        return !item.deleted 
+      });
       let markers = [];
       locations.map((item) => {
         markers.push({

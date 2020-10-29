@@ -403,7 +403,7 @@ export default {
 
       if(locations.length == 0) {
         if(cUser.role == undefined || cUser.role.key == undefined || cUser.role.key>0) {
-          if(cUser.location !== undefined && Array.isArray(cUser.location)) {
+          if(cUser.location !== undefined && Array.isArray(cUser.location) && cUser.location.length>0) {
             filterLocations = cUser.location
           } else {
             filterLocations = ['no']
