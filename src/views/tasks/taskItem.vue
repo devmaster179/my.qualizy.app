@@ -97,7 +97,7 @@
           </div>
         </div>
         <div class="flex items-center justify-end mt-1" v-if="monitor">
-          <span class="karla mr-1 text-warning">You can do only monitor</span><vs-icon icon-pack="feather" icon="icon-eye"/>
+          <span class="karla mr-1 text-warning">Monitoring</span><vs-icon icon-pack="feather" icon="icon-eye"/>
         </div>
       </div>
     </div>
