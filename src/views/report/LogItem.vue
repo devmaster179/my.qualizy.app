@@ -16,7 +16,7 @@
             icon="icon-chevron-down"
           />
         </div>
-        <div class="text-right">
+        <div class="text-right" v-if="log.updated_at">
           <span
             style="font-size: 14px;font-weight: bold; color: #1e1c26;"
           >{{log.updated_at.toDate() | moment('DD MMM YYYY')}}</span>

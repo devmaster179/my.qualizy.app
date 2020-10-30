@@ -1,6 +1,6 @@
 <template>
   <div id="tasks" class="px-2">
-    <div class="sm:flex justify-between" v-if="!isSidebarActive">
+    <div class="sm:flex justify-between" v-if="!isSidebarActive && !logDetailsActive ">
       <div class="flex items-end">
         <p class="karla-bold page-title">{{$t("tasks")}}</p>
         <p
@@ -60,7 +60,7 @@
       class="bg-white mt-2 block sm:hidden"
       style="min-width:160px;"
     />
-    <swiper :options="swiperOption" v-if="!isSidebarActive">
+    <swiper :options="swiperOption" v-if="!isSidebarActive && !logDetailsActive">
       <swiper-slide>
         <div class="mt-4">
           <div class="pr4">
@@ -185,6 +185,14 @@
       <!-- </div> -->
     </swiper>
     <schedule-popup :open="activeSchedule" @close="activeSchedule=false" />
+    <log-details
+      parent="#tasks"
+      :logID="logID"
+      :pages="pages"
+      :template="template"
+      :isSidebarActive="logDetailsActive"
+      @closeSidebar="logDetailsActive=false"
+    />
     <log-sidebar
       parent="#tasks"
       :logID="logID"
@@ -213,6 +221,7 @@ import VuePerfectScrollbar from "vue-perfect-scrollbar";
 import VSelect from "vue-select";
 import TaskItem from "./taskItem.vue";
 import LogSidebar from "./LogSidebar.vue";
+import LogDetails from "./LogDetails.vue";
 import { db } from "@/firebase/firebaseConfig";
 import UsereEditSidebarVue from '../team/user/UsereEditSidebar.vue';
 
@@ -228,9 +237,11 @@ export default {
     Swiper,
     SwiperSlide,
     CompletedItem,
+    LogDetails
   },
   data() {
     return {
+      logDetailsActive: false,
       search: "",
       status: "",
       tags: "",
@@ -770,7 +781,6 @@ export default {
       });
     },
     editLog(log) {
-      
       if(!this.auth('edit'))  {
         this.roleError('edit')
         return false
@@ -781,7 +791,9 @@ export default {
         var cTeam = cUser.team || []
         if(!Array.isArray(cTeam)) cTeam = []
         if(!cTeam.some(ct=>schedule.assign.includes(ct))) {
-          this.monitorNotify()
+          this.logDetailsActive = true
+          this.template = log.templateID;
+          this.pages = log.logs;
           return false
         }
       }
@@ -816,7 +828,90 @@ export default {
         var cTeam = cUser.team || []
         if(!Array.isArray(cTeam)) cTeam = []
         if(!cTeam.some(ct=>task.assign.includes(ct))) {
-          this.monitorNotify()
+          var pages = [];
+          let template = this.$store.getters["app/getTemplateById"](
+            task.templateID
+          );
+          template.content.pages.map((page, pIndex) => {
+            var questions = [];
+            page.questions.map((question, qIndex) => {
+              var answers = [];
+              question.answers.map((answer, aIndex) => {
+                var date = new Date();
+                let answerType = this.$store.getters["app/getTemplateTypeById"](
+                  answer.type.id
+                );
+                if (answerType == undefined) return;
+                if (
+                  (answerType.type == "opened answers" &&
+                    answerType.content == "number") ||
+                  answerType.content == "temperature" ||
+                  answerType.content == "score" ||
+                  answerType.content == "star"
+                )
+                  answers.push({
+                    ref: answer,
+                    loged: false,
+                    value: 0,
+                    time: "",
+                    user: "",
+                  });
+                else if (answerType.content == "date")
+                  answers.push({
+                    ref: answer,
+                    loged: false,
+                    value: "",
+                    time: "",
+                    user: "",
+                  });
+                else if (answerType.content == "automatic date and time stamp")
+                  answers.push({
+                    ref: answer,
+                    loged: true,
+                    value: new Date(),
+                    time: date,
+                    user: JSON.parse(localStorage.getItem("userInfo")).id,
+                  });
+                else if (answerType.content == "automatic user stamp")
+                  answers.push({
+                    ref: answer,
+                    loged: true,
+                    value: JSON.parse(localStorage.getItem("userInfo")).id,
+                    time: date,
+                    user: JSON.parse(localStorage.getItem("userInfo")).id,
+                  });
+                else if (answerType.type == "attachments")
+                  answers.push({
+                    ref: answer,
+                    loged: false,
+                    images: [],
+                    time: "",
+                    user: "",
+                  });
+                else if (answerType.content == "instruction")
+                  answers.push({
+                    ref: answer,
+                    loged: true,
+                    value: "",
+                    time: date,
+                    user: JSON.parse(localStorage.getItem("userInfo")).id,
+                  });
+                else
+                  answers.push({
+                    ref: answer,
+                    loged: false,
+                    value: "",
+                    time: "",
+                    user: "",
+                  });
+              });
+              questions.push({ answers: answers, title: question.title });
+            });
+            pages.push({ questions: questions, title: page.title });
+          });
+          this.pages = pages
+          this.template = task.templateID
+          this.logDetailsActive = true
           return false
         }
       }
