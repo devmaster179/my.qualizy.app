@@ -202,7 +202,8 @@
           </div>
         </div>
       <div class="template-assign mt-4" v-if="templateSD=='bookmarked'">
-        <p class="title">{{$t("teams")}}</p>
+        <p class="title"> Only available for</p>
+        <!-- <p class="title">{{$t("teams")}}</p> -->
         <v-select v-model="team" :options="teams" label="name" multiple/>
       </div>
       </div>

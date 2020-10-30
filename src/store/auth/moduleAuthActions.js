@@ -298,6 +298,7 @@ export default {
           "Location name": location,
           lang: user.lang || "en-us",
           phone: phone,
+          "App creator": !!user.who,
           company: {
             id: company.id,
             name: company.bussiness,
@@ -306,6 +307,7 @@ export default {
             "Number of locations": locations.length || 0,
             // "Job title": company.job || "Job title"
           },
+
           hide_default_launcher: true
           // user_hash: hash1
         });
