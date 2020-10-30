@@ -1,5 +1,6 @@
 <template>
   <vx-card class="w-full mb-4 cursor-pointer task-card">
+    {{task.group}} , {{task.id}}
     <div slot="no-body" class>
       <div
         v-if="task.time!==undefined && calcOverTime<0"
