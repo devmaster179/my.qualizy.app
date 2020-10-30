@@ -313,7 +313,7 @@ export default {
         });
 
         payload.intercom.trackEvent('login', {
-          Email: user.email,
+          email: user.email,
           name: user.name,
         })
         payload.mixpanel.identify(user.id)

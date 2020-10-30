@@ -558,7 +558,8 @@ export default {
 
       var tags = [];
       this.tag.map((item) => tags.push(item.id));
-      db.collection("reports").add({
+      var newReport = db.collection('reports').doc()
+      newReport.set({
         title: this.reportTitle,
         description: this.description,
         visible: this.visible,
@@ -570,16 +571,24 @@ export default {
         updated_at: new Date(),
         created_by: JSON.parse(localStorage.getItem("userInfo")).id,
         group: JSON.parse(localStorage.getItem("userInfo")).group,
-      });
+      })
       this.$mixpanel.track("Create Report" , {
         distinct_id: JSON.parse(localStorage.getItem("userInfo")).id,
+        id: newReport.id,
         title: this.reportTitle,
         group: JSON.parse(localStorage.getItem("userInfo")).group
       })
 
       this.$userflow.track("Create Report" , {
+        id: newReport.id,
         title: this.reportTitle,
         group: JSON.parse(localStorage.getItem("userInfo")).group
+      })
+      this.$intercom.trackEvent('Create Log', {
+        group: JSON.parse(localStorage.getItem("userInfo")).group,
+        email: JSON.parse(localStorage.getItem("userInfo")).email,
+        id: newReport.id,
+        title: this.reportTitle,
       })
       this.$router.push("/report");
     },
