@@ -621,9 +621,9 @@ export default {
         );
         
         if (status == "task") {
-          // if (log !== undefined && !log.initial) return true;
-          // else return false;
+
           if (log === undefined) return false;
+          else return true
           var result = false;
           log.logs.map((page) => {
             page.questions.map((question) => {

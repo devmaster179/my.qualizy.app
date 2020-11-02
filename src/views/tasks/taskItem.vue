@@ -13,7 +13,7 @@
           style="font-size:12px;  color:rgba(var(--vs-danger) , .8);"
         >{{calcTime(task.time) | duration('humanize' , true) | leftTime}} left</span>
       </div>
-      <div class="py-8 px-5">
+      <div class="pt-8 pb-4 px-5">
         <div class="flex items-center mb-5">
           <img
             :src="require(`../../assets/images/template_image/${templateInfo(task.templateID).content.templateImage}`)"
@@ -38,7 +38,7 @@
               v-else
               class="dueText"
               :class="{'text-danger':calcTime(task.time)<0}"
-            >{{calcTime(task.time) < 0 ? $t("overdue"): $t("to do") | capitalize}}</label>
+            >{{calcTime(task.time)<0 ? $t("overdue"): $t("to do") | capitalize}}</label>
             <span
               class="pl-2"
             >{{calcTime(task.time)<0 ? "" : 'Due'}} {{calcTime(task.time) | duration('humanize' , true) | capitalize}}</span>
@@ -98,9 +98,14 @@
             >{{calcTime(task.updated_at)|duration('humanize' , true) | capitalize}}</span>
           </div>
         </div>
-        <div class="flex items-center justify-end mt-1 text-warning" v-if="monitor">
-          <span class="karla mr-1 ">{{$t('monitoring')}}</span>
-          <vs-icon icon-pack="feather" icon="icon-eye" class="mt-1" />
+        <div class="flex items-center justify-between mt-2">
+          <div>
+            <vs-icon @click.stop="deleteLog"  v-if="progress ||  (task.logs !==undefined && task.time===undefined)" class="hover:text-danger" icon-pack="feather" icon="icon-trash-2" size="18px"/>
+          </div>
+          <div class="flex items-center mt-1 text-warning" v-if="monitor">
+            <span class="karla mr-1 ">{{$t('monitoring')}}</span>
+            <vs-icon icon-pack="feather" icon="icon-eye" class="mt-1" />
+          </div>
         </div>
       </div>
     </div>
@@ -108,6 +113,8 @@
 </template>
 
 <script>
+import { db } from "@/firebase/firebaseConfig";
+
 export default {
   props: {
     progress: {
@@ -123,13 +130,59 @@ export default {
       required: true,
     },
   },
+
   data() {
     return {
       labelColapes: false,
       now: new Date(),
     };
   },
+  methods: {
+    deleteLog() {
+      if(!this.auth('delete')) {
+        this.roleError('delete')
+        return false
+      }
+      this.$vs.dialog({
+        type: "confirm",
+        color: "danger",
+        title: this.$t(`are you sure to delete ?`),
+        text: `${this.$t("you are about to delete")}`,
+        accept: this.deleteLog1,
+        acceptText: this.$t("delete"),
+        cancelText: this.$t("cancel"),
+      });
+    },
+    deleteLog1() {
+      db.collection("logs").doc(this.task.id).delete()
+    },
+    roleError(action) {
+      this.$vs.notify({
+        time: 5000,
+        title: "Authorization Error",
+        text:
+          `You don't have authorization for ${action} log.\n Please contact with your super admin`,
+        color: "danger",
+        iconPack: "feather",
+        icon: "icon-lock",
+        // position:'bottom-center'
+      });
+    }
+  },
   computed: {
+    auth() {
+      return action => {
+        let authList = this.$store.getters['app/auth']
+        var cUser = this.$store.getters["app/currentUser"];
+        if(cUser == undefined || cUser.role == undefined) return false
+        else if(cUser.role.key == 0) 
+          return true
+        else if(authList.records[cUser.role.name.toLowerCase()][action])
+          return true
+        else 
+          return false
+      }
+    },
     scheduleLocation() {
       return id => {
         if(!id) return this.$t('no location')
