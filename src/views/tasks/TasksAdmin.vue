@@ -621,9 +621,9 @@ export default {
         );
         
         if (status == "task") {
-          // if (log !== undefined && !log.initial) return true;
-          // else return false;
+
           if (log === undefined) return false;
+          else return true
           var result = false;
           log.logs.map((page) => {
             page.questions.map((question) => {
@@ -920,7 +920,7 @@ export default {
         return false;
       }
       const that = this
-      this.$vs.loading();
+      // this.$vs.loading();
       var updated_at = new Date();
       var pages = [];
       let template = this.$store.getters["app/getTemplateById"](
@@ -1025,6 +1025,11 @@ export default {
               distinct_id: JSON.parse(localStorage.getItem("userInfo")).id,
               id: id
             })
+            that.$intercom.trackEvent('Create Log', {
+              group: JSON.parse(localStorage.getItem("userInfo")).group,
+              email: JSON.parse(localStorage.getItem("userInfo")).email,
+              id: id,
+            })
             that.$userflow.track("Create Log" , {
               id: id
             })
@@ -1120,7 +1125,8 @@ export default {
           });
           pages.push({ questions: questions, title: page.title });
         });
-        db.collection("logs").add({
+        var newLogRef = db.collection('logs').doc()
+        newLogRef.set({
           key: "pinned",
           initial: unscheduled,
           templateID: task.templateID,
@@ -1128,21 +1134,24 @@ export default {
           updated_at: updated_at,
           updated_by: JSON.parse(localStorage.getItem("userInfo")).id,
           group: JSON.parse(localStorage.getItem("userInfo")).group,
-        });
-        that.getLogID(updated_at, task.templateID).then((id) => {
-          that.$vs.loading.close();
-          that.$mixpanel.track("Create Log" , {
-            distinct_id: JSON.parse(localStorage.getItem("userInfo")).id,
-            id: id
-          })
-          that.$userflow.track("Create Log" , {
-            id: id
-          })
-          that.logID = id;
-          that.pages = pages;
-          that.template = task.templateID;
-          that.isSidebarActive = true;
-        });
+        })
+        this.$vs.loading.close();
+        this.$intercom.trackEvent('Create Log', {
+          group: JSON.parse(localStorage.getItem("userInfo")).group,
+          email: JSON.parse(localStorage.getItem("userInfo")).email,
+          id: newLogRef.id,
+        })
+        this.$mixpanel.track("Create Log" , {
+          distinct_id: JSON.parse(localStorage.getItem("userInfo")).id,
+          id: newLogRef.id
+        })
+        this.$userflow.track("Create Log" , {
+          id: newLogRef.id
+        })
+        this.logID = newLogRef.id;
+        this.pages = pages;
+        this.template = task.templateID;
+        this.isSidebarActive = true;
       }
     },
     getLogID(createdAt, templateID) {
