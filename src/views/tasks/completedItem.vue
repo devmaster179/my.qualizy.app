@@ -1,7 +1,9 @@
 <template>
   <vx-card class="w-full mb-4 cursor-pointer task-card">
-    {{task.group}} , {{task.id}}
-    <div slot="no-body" class>
+    <div slot="no-body" >
+      <!-- <div v-if="task.time">
+        {{task.time.toDate()}}
+      </div> -->
       <div
         v-if="task.time!==undefined && calcOverTime<0"
         class="flex items-center mb-2 p-2 rounded-lg justify-center"
@@ -83,9 +85,12 @@
         >
           <vs-icon icon="arrow_drop_down" :class="{'rotate180':labelColapes}" class="times2" />
         </div>
-        <div class="flex items-center justify-end mt-1 text-warning" v-if="monitor">
-          <span class="karla mr-1 ">{{$t('monitoring')}}</span>
-          <vs-icon icon-pack="feather" icon="icon-eye" class="mt-1"/>
+        <div class="flex items-center justify-between">
+          <vs-icon  @click.stop="deleteLog"  class="mt-1 hover:text-danger" size="18px"  icon-pack="feather" icon="icon-trash-2"/>
+          <div class="flex items-center justify-end mt-1 text-warning" v-if="monitor">
+            <span class="karla mr-1 ">{{$t('monitoring')}}</span>
+            <vs-icon icon-pack="feather" icon="icon-eye" class="mt-1"/>
+          </div>
         </div>
       </div>
     </div>
@@ -93,6 +98,8 @@
 </template>
 
 <script>
+import { db } from "@/firebase/firebaseConfig";
+
 export default {
   props: {
     pinned: {
@@ -110,7 +117,40 @@ export default {
       now: new Date()
     };
   },
+  methods: {
+    deleteLog() {
+      if(!this.auth('delete')) {
+        this.roleError('delete')
+        return false
+      }
+      this.$vs.dialog({
+        type: "confirm",
+        color: "danger",
+        title: this.$t(`are you sure to delete ?`),
+        text: `${this.$t("you are about to delete")}`,
+        accept: this.deleteLog1,
+        acceptText: this.$t("delete"),
+        cancelText: this.$t("cancel"),
+      });
+    },
+    deleteLog1() {
+      db.collection("logs").doc(this.task.id).delete()
+    },
+  },
   computed: {
+    auth() {
+      return action => {
+        let authList = this.$store.getters['app/auth']
+        var cUser = this.$store.getters["app/currentUser"];
+        if(cUser == undefined || cUser.role == undefined) return false
+        else if(cUser.role.key == 0) 
+          return true
+        else if(authList.records[cUser.role.name.toLowerCase()][action])
+          return true
+        else 
+          return false
+      }
+    },
     monitor() {
       if(this.task.schedule == undefined) return false
       let schedule = this.$store.getters['app/getScheduleById'](this.task.schedule)

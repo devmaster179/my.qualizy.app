@@ -302,12 +302,25 @@ export default {
     unshceduledTemplates() {
       var cUser = this.$store.getters["app/currentUser"]
       var locationList = this.$store.getters['app/locationList']
-      if((cUser.role == undefined || cUser.role.key > 0)  && locationList.length == 0)
-        locationList = cUser.location || []
+      if(locationList.length==0) {
+        if(cUser.role == undefined || cUser.role.key == undefined || cUser.role.key>0) {
+          if(cUser.location !== undefined && Array.isArray(cUser.location) && cUser.location.length>0) {
+            locationList = cUser.location
+          } else {
+            locationList = ['no']
+          }
+        }
+      }
+
       var userTeam = cUser.team || []
       let templates = this.$store.getters["app/getBookedTemplate"]
         .filter((item) => {
+          
           if (item.trashed !== undefined && item.trashed) return false;
+          if(locationList.length > 0) {
+            if(!item.content.location || !Array.isArray(item.content.location)) return false
+            if(!locationList.some(ll=> item.content.location.includes(ll))) return false
+          }
           if(item.content.teams !== undefined && Array.isArray(item.content.teams)) {
             if(!item.content.teams.some(t=> userTeam.includes(t))) return false
           }
@@ -391,6 +404,10 @@ export default {
         if (template.trashed !== undefined && template.trashed) return false;
         if(template.content.templateSD == 'bookmarked') {
           if(template.content.teams!=undefined && Array.isArray(template.content.teams) && !template.content.teams.some(t=> userTeam.includes(t))) return false
+          if(locationList.length>0) {
+            if(!template.content.location || !Array.isArray(template.content.location)) return false
+            if(!locationList.some(ll=> template.content.location.includes(ll))) return false
+          }
         } else {
           schedule = this.$store.getters['app/getScheduleById'](item.schedule || '')
           if(schedule == undefined) return false

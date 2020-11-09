@@ -1626,6 +1626,7 @@ export default {
         "SunDay": "Dimanche",
     },
     "es": {
+        "to do": "to do",
         "select teams": "Select teams",
         "monitoring": "Monitoring",
         "delete shceduled email delivery": "Delete shceduled email delivery",
