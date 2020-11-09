@@ -212,7 +212,8 @@ export default {
     },
   },
 
-  created() {},
+  created() {
+  },
 
   methods: {
     pressEnter() {

@@ -220,9 +220,16 @@ export default {
   },
   computed: {
     globalTags() {
-      return this.$store.getters["app/labels"].filter(
-        (item) => item.group == "global"
-      );
+      const locale = this.$i18n.locale || 'en-us'
+      return this.$store.getters["app/labels"].filter(item => {
+        if(item.group != "global") return false
+        if(item.lang) {
+          if(item.lang != locale) return false
+        }else {
+          if(locale != 'en-us') return false
+        }
+        return true
+      });
     },
     templateInfo() {
       return (id) => {
@@ -230,7 +237,7 @@ export default {
       };
     },
     pTemplates() {
-      let templates = this.$store.getters["app/publicTemplates"];
+      let templates = this.$store.getters["app/publicTemplates"](this.$i18n.locale);
       if (this.searchTemplate != "") {
         templates = templates.filter(
           (template) =>

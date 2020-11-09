@@ -27,7 +27,19 @@ export default {
   },
 
   //============publicTemplate=================
-  publicTemplates: state => {
+  publicTemplates: state => locale => {
+    if(locale) {
+      return state.publicTemplates.filter(item=> {
+        if(item.lang) {
+          if (item.lang == 'en' && locale == 'en-gb') return true
+          else if(item.lang != locale) return false
+        } else {
+          if(locale != 'en-gb') return false
+        }
+        return true 
+      })
+    }
+
     return state.publicTemplates
   },
   //============TemplateLabels=================

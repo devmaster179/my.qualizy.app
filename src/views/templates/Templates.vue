@@ -216,7 +216,6 @@ export default {
           }
         }
       }
-
       let templates = this.$store.getters["app/template"];
       var __templates = [];
       templates.map((template) => {
@@ -230,7 +229,7 @@ export default {
         } else {
           if(locationList1.length == 0) {
             if(template.content.location!=undefined && Array.isArray(template.content.location) && template.content.location.length>0) {
-              return 
+              // return 
             }
           }else {
             if(template.content.location!=undefined && Array.isArray(template.content.location) && template.content.location.length>0) {

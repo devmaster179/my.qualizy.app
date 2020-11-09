@@ -32,6 +32,7 @@
             :placeholder="$t('Select template')"
             label="title"
             track-by="id"
+            :disabled="location==null"
             :options="templates"
           />
         </div>
@@ -494,21 +495,18 @@ export default {
       })
     },
     templates() {
+      if(this.location == null || this.location.id == undefined) return []
       let filterLocations = []
       // this.$store.getters["app/locationList"]
-      
       let templates = this.$store.getters["app/template"].filter(template=> {
-        return template.trashed == undefined || !template.trashed
-        // if(filterLocations.length > 0)
-        //   return template.content.location.some(item=>filterLocations.includes(item))
-        // else 
-        //   return true
+        if(template.trashed !== undefined && template.trashed) return false
+        if(template.content.location!=undefined && Array.isArray(template.content.location) && template.content.location.length>0 &&  template.content.location.indexOf(this.location.id) < 0) return false
+        return true
       });
 
       var __templates = [];
       templates.map((template) => {
         if (
-          template.trashed ||
           template.content.templateSD != "schedule this template"
         )
           return;
@@ -517,6 +515,7 @@ export default {
           title: template.content.templateTitle,
         });
       });
+
       return __templates;
     },
 

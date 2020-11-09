@@ -3,7 +3,7 @@
     <template v-if="!auth('user and team settings' , 'view')">
       <no-auth/>
     </template>
-    <div class="page-header flex items-center justify-between">
+    <div class="page-header flex items-center justify-between" v-else>
       <div class="sm:flex">
         <p class="text-2xl color-my-black karla-bold">{{$t("users management")}}</p>
         <div class="switch-tab flex items-center sm:ml-12 mt-2 sm:mt-0">

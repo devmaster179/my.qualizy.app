@@ -33,6 +33,7 @@
         </div>
         <div class="flex justify-between">
           <p class="karla-bold dueText" v-if="task.time!==undefined">
+            <!-- {{task.time.seconds!=undefined ? new Date(task.time.toDate()) : task.time}} -->
             <label v-if="progress" class="dueText text-primary">{{$t("in progress")}}</label>
             <label
               v-else
