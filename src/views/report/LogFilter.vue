@@ -127,7 +127,27 @@ export default {
     templates() {
       let templates = this.$store.getters["app/template"];
       let __templates = [];
+      var cUser = this.$store.getters["app/currentUser"]
+      var locationList = this.$store.getters['app/locationList']
+      if(locationList.length==0) {
+        if(cUser.role == undefined || cUser.role.key == undefined || cUser.role.key>0) {
+          if(cUser.location !== undefined && Array.isArray(cUser.location) && cUser.location.length>0) {
+            locationList = cUser.location
+          } else {
+            locationList = ['no']
+          }
+        }
+      }
       templates.map(template => {
+        if(template.trashed !== undefined && template.trashed) return
+        if(template.content.location) {
+          if(locationList.length > 0) {
+            if(!locationList.some(ll=>template.content.location.includes(ll))) return
+          }
+        }
+        if(template.location) {
+
+        }
         __templates.push({
           name: template.content.templateTitle,
           id: template.id

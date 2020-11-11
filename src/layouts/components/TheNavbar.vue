@@ -306,14 +306,15 @@ export default {
     },
 
     unreadNotifications() {
-      var cUser = this.$store.getters["app/currentUser"];
-      if (cUser == undefined) return [];
-      var notify = this.$store.getters["app/unreadNotifications"](cUser);
-      return notify.filter(
-        (item) =>
-          this.$store.getters["app/getTemplateById"](item.templateId) !==
-          undefined
-      );
+      return []
+      // var cUser = this.$store.getters["app/currentUser"];
+      // if (cUser == undefined) return [];
+      // var notify = this.$store.getters["app/unreadNotifications"](cUser);
+      // return notify.filter(
+      //   (item) =>
+      //     this.$store.getters["app/getTemplateById"](item.templateId) !==
+      //     undefined
+      // );
     },
     country() {
       return (locale) => {

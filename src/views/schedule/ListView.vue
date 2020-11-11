@@ -6,6 +6,7 @@
           <th>{{$t("template name")}}</th>
           <th>{{$t("location")}}</th>
           <th>{{$t("teams")}}</th>
+          <th>{{$t("monitoring")}}</th>
           <th></th>
         </tr>
       </thead>

@@ -220,13 +220,13 @@ export default {
   },
   computed: {
     globalTags() {
-      const locale = this.$i18n.locale || 'en-us'
+      const locale = this.$i18n.locale || 'en-gb'
       return this.$store.getters["app/labels"].filter(item => {
         if(item.group != "global") return false
-        if(item.lang) {
+        if(!item.lang) {
+          if(locale != 'en-gb') return false
+        } else {
           if(item.lang != locale) return false
-        }else {
-          if(locale != 'en-us') return false
         }
         return true
       });

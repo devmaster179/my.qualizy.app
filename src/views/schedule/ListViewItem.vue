@@ -69,6 +69,44 @@
       </div>
     </td>
     <td>
+      <div class="inline-block items-center">
+        <div
+          class="bg-clip py-2 px-3 rounded-lg ml-2 inline-block"
+          v-for="(team,i) in monitors"
+          :class="{'hidden':i!=0 }"
+          :key="i"
+        >
+          <vs-icon icon-pack="feather" icon="icon-users" class="mr-1" />
+          <span class="karla item-text">{{team.name}}</span>
+        </div>
+
+        <vs-dropdown
+          v-if="monitors.length>1"
+          vs-custom-content
+          class="cursor-pointer mr-4"
+          vs-trigger-click
+        >
+          <p
+            class="karla bg-clip py-2 px-3 rounded-lg ml-2 inline-block cursor-pointer item-text items-center"
+          >+{{teams.length-1}}</p>
+          <vs-dropdown-menu class="vx-navbar-dropdown">
+            <ul style="min-width: 9rem" class="p-0">
+              <li
+                class="flex items-center py-1 px-2 my-1 cursor-pointer"
+                v-for="(team,lIndex) in teams"
+                :key="lIndex"
+              >
+                <template>
+                  <vs-icon icon-pack="feather" icon="icon-users" class="mr-1" />
+                  <span class="ml-2 karla">{{team.name}}</span>
+                </template>
+              </li>
+            </ul>
+          </vs-dropdown-menu>
+        </vs-dropdown>
+      </div>
+    </td>
+    <td>
       <div class="flex items-center justify-end">
         <feather-icon
           v-if="role<3"
@@ -112,6 +150,16 @@ export default {
     },
     template() {
       return this.$store.getters["app/getTemplateById"](this.schedule.template);
+    },
+    
+    monitors() {
+      let teamIDs = this.schedule.monitor || [];
+      var teams = [];
+      teamIDs.map(item => {
+        let team = this.$store.getters["app/getTeamById"](item);
+        if (team !== undefined) teams.push(team);
+      });
+      return teams;
     },
     teams() {
       let teamIDs = this.schedule.assign;
