@@ -343,7 +343,8 @@ export default {
   watch: {
     location(val) {
       this.teams = []
-      this.mUser = []
+      // this.mUser = []
+      // this.user = []
     },
     repeat(val) {
       if (!this.update) this.selectedDays = [];
@@ -373,11 +374,11 @@ export default {
         this.mUser = [];
         this.schedule.assign.map((item) => {
           var user = this.users.find((user) => user.id == item);
-          if (user !== undefined) this.user.push(user);
+          if (user) this.user.push(user);
         });
         this.schedule.monitor.map((item) => {
           var user = this.users.find((user) => user.id == item);
-          if (user !== undefined) this.mUser.push(user);
+          if (user) this.mUser.push(user);
         });
         this.repeat = this.schedule._repeat;
 

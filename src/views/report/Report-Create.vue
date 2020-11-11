@@ -520,16 +520,6 @@ export default {
             (filters.status != "passed" && falied);
         }
 
-        // console.log("filterFrom=================   ", filterFrom, "\n");
-        // console.log("filterTo=================   ", filterTo, "\n");
-        // console.log("userFlag=================   ", userFlag, "\n");
-        // console.log("teamFlag=================   ", teamFlag, "\n");
-        // console.log("filterTemplate=================   ", filterTemplate, "\n");
-        // console.log("filterLabel=================   ", filterLabel, "\n");
-        // console.log("filterStatus=================   ", filterStatus, "\n");
-        // console.log("\n");
-        // console.log("\n");
-
         return (
           filterFrom &&
           filterTo &&
@@ -540,7 +530,10 @@ export default {
           filterStatus
         );
       });
-      return logs;
+      return logs.sort(
+        (a, b) =>
+          b.updated_at.toDate().getTime() - a.updated_at.toDate().getTime()
+      );
     },
     visibles() {
       return [

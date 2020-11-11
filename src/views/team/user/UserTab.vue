@@ -474,6 +474,8 @@ export default {
             resolve("OK");
           }
         } else {
+          var locations = this.$store.getters['app/locationList']
+          if(locations.length == 0) locations = this.$store.getters["app/currentUser"].location;
           db.collection("users")
             .where("email", "==", item.email)
             .get()
@@ -491,7 +493,7 @@ export default {
                       map: "",
                       phone: "",
                       job_title: "",
-                      location: this.$store.getters['app/locationList'],
+                      location: locations,
                       photo: "",
                       team: [],
                       status: true,

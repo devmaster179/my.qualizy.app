@@ -299,13 +299,27 @@ export default {
     },
     templates() {
       let templates = this.$store.getters["app/template"];
-      let filterLocations = this.$store.getters["app/locationList"]
-      if(filterLocations.length > 0)
-        templates =  templates.filter(template=> !!template.content.location && template.content.location.some(item=> filterLocations.includes(item)))
-
-      let __templates = [];
+      var cUser = this.$store.getters["app/currentUser"]
+      var locationList = this.$store.getters['app/locationList']
+      if(locationList.length==0) {
+        if(cUser.role == undefined || cUser.role.key == undefined || cUser.role.key>0) {
+          if(cUser.location !== undefined && Array.isArray(cUser.location) && cUser.location.length>0) {
+            locationList = cUser.location
+          } else {
+            locationList = ['no']
+          }
+        }
+      }
+      
+      var __templates = [];
 
       templates.map((template) => {
+        if(template.trashed !== undefined && template.trashed) return
+        if(template.content.location) {
+          if(locationList.length > 0) {
+            if(!locationList.some(ll=>template.content.location.includes(ll))) return
+          }
+        }
         __templates.push({
           name: template.content.templateTitle,
           id: template.id,
