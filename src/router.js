@@ -189,25 +189,25 @@ const router = new Router({
                         parent: 'report',
                     }
                 },
-                {
-                    path: '/analytics',
-                    name: 'analytics',
-                    component: () => import('@/views/analytics/Analytics.vue'),
-                    meta: {
-                        title: "Analytics - Qualizy",
-                        rule: 'visitor',
-                        breadcrumb: [{
-                            title: 'Home',
-                            url: '/'
-                        },
-                        {
-                            title: 'analytics',
-                            active: true
-                        }
-                        ],
-                        pageTitle: 'analytics'
-                    }
-                },
+                // {
+                //     path: '/analytics',
+                //     name: 'analytics',
+                //     component: () => import('@/views/analytics/Analytics.vue'),
+                //     meta: {
+                //         title: "Analytics - Qualizy",
+                //         rule: 'visitor',
+                //         breadcrumb: [{
+                //             title: 'Home',
+                //             url: '/'
+                //         },
+                //         {
+                //             title: 'analytics',
+                //             active: true
+                //         }
+                //         ],
+                //         pageTitle: 'analytics'
+                //     }
+                // },
                 {
                     path: '/team',
                     name: 'team',
@@ -408,7 +408,7 @@ router.afterEach(() => {
 
 router.beforeEach((to, from, next) => {
     const nearestWithTitle = to.matched.slice().reverse().find(r => r.meta && r.meta.title);
-    if (nearestWithTitle) document.title = nearestWithTitle.meta.title;
+    if (nearestWithTitle) document.title = nearestWithTitle.meta.title + " - Digital HACCP, Food Traceabilty and HSE solutions" ;
     firebase.auth().onAuthStateChanged(() => {
         const firebaseCurrentUser = firebase.auth().currentUser
         if (

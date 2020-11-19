@@ -297,11 +297,7 @@ export default {
           this.$intercom.trackEvent("Create Schedule", {
             Title: title,
           });
-          this.$mixpanel.track("Create Schedule" , {
-            distinct_id: JSON.parse(localStorage.getItem("userInfo")).id,
-            Title: title,
-            group: JSON.parse(localStorage.getItem("userInfo")).group
-          })
+
           this.$userflow.track("Create Schedule" , {
             Title: title,
             group: JSON.parse(localStorage.getItem("userInfo")).group

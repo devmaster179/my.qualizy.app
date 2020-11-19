@@ -10,6 +10,7 @@
 
 import Vue from 'vue'
 import App from './App.vue'
+
 import './registerServiceWorker'
 
 // Vuesax Component Framework
@@ -32,7 +33,6 @@ import '@/firebase/firebaseInit'
 
 // Vue.use(VueFireStore)
 // ACL --kk
-import acl from '@/acl/acl'
 
 
 // Theme Configurations
@@ -79,10 +79,6 @@ Vue.use(VueIntercom, {
 });
 
 
-import Mixpanel from "mixpanel-browser"
-
-Mixpanel.init("ee92027ccac8a7d338ad16ed3cb98709", { "api_host": "https://api-eu.mixpanel.com" }, "");
-Vue.prototype.$mixpanel = Mixpanel
 
 import userflow from 'userflow.js'
 userflow.init('ct_5yfuhnvqnna67gd5sqn7jxhijq')
@@ -196,6 +192,5 @@ new Vue({
   router,
   store,
   i18n,
-  acl,
   render: h => h(App)
 }).$mount('#app')

@@ -2,11 +2,10 @@
   <div class="min-h-screen" id="register-page">
     <div
       class="vx-row w-full min-h-screen"
-      :style="{'background-image': 'url(' + require('@/assets/images/pages/signup-bg.svg') + ')'}"
     >
       <div class="vx-col w-1/3 hidden lg:block pl-6 py-12 course-side">
         <div class="logo ml-8 mt-12">
-          <img class="cursor-pointer" :src="require('@/assets/images/logo/logo-text.png')" width="160px" @click="$router.push('/')" />
+          <img class="cursor-pointer" :src="require('@/assets/images/logo/logo-text.png')" @click="$router.push('/')" alt="Qualizy" />
         </div>
         <div class="side-section mt-12 ml-8 pt-12">
           <div class="course-item" v-for="(course,index)  in courses" :key="index">
@@ -42,8 +41,8 @@
           </div>
         </div>
         <div class="flex items-center ml-8 mt-12">
-          <p class="font-semibold">{{$t("already have an account")}} ?</p>
-          <p class="text-primary font-semibold cursor-pointer ml-4" @click="login">{{$t("login")}}</p>
+          <p class="">{{$t("already have an account")}} ?</p>
+          <p class="text-dark underline font-semibold cursor-pointer ml-4" @click="login">{{$t("login")}}</p>
         </div>
       </div>
       <div class="vx-col lg:w-2/3 w-full bg-white flex items-center justify-center">
@@ -62,9 +61,10 @@
             >
               <p class="text-center karla-bold text-2xl color-black w-full">{{$t("create account")}}</p>
               <div class="vx-col w-full">
-                <label class="caption">{{$t("user name")}}</label>
+                <label class="caption" for="user_name">{{$t("user name")}}</label>
                 <!-- regex:^[0-9]+ -->
                 <vs-input
+                  id="user_name"
                   v-validate="'required|min:3'"
                   data-vv-validate-on="blur"
                   class="w-full"
@@ -75,8 +75,9 @@
                 <span class="text-danger text-sm">{{ errors.first('username') }}</span>
               </div>
               <div class="vx-col w-full md:mt-base mt-3">
-                <label class="caption">{{$t("email")}}</label>
+                <label class="caption" for="email">{{$t("email")}}</label>
                 <vs-input
+                  id="email"
                   v-validate="'required|email'"
                   data-vv-validate-on="blur"
                   name="email"
@@ -88,9 +89,10 @@
                 <span class="text-danger text-sm">{{ errors.first('email') }}</span>
               </div>
               <div class="vx-col w-full md:mt-base mt-3">
-                <label class="caption">{{$t("password")}}</label>
+                <label class="caption" for="password">{{$t("password")}}</label>
                 <div class="relative">
                   <vs-input
+                    id="password"
                     ref="password"
                     :type="passwordType"
                     data-vv-validate-on="blur"
@@ -117,11 +119,12 @@
                 </div>
                 <span class="text-danger text-sm">{{ errors.first('password') }}</span>
               </div>
-              <div class="vx-col w-full md:mt-base mt-3">
+              <div class="vx-col w-full md:mt-base mt-3 flex items-center">
                 <vs-checkbox
+                  id="terms_condition"
                   v-model="isTermsConditionAccepted"
-                  class="md:mt-base mt-3"
-                >{{$t('I accept the terms & condition')}}</vs-checkbox>
+                ></vs-checkbox>
+                <label for="terms_condition">{{$t('I accept the terms & condition')}}</label>
               </div>
               <div class="vx-col w-full mt-base">
                 <vs-button
@@ -363,8 +366,6 @@ export default {
         notify: this.$vs.notify,
         closeAnimation: this.$vs.loading.close,
         intercom: this.$intercom,
-        acl: this.$acl,
-        mixpanel: this.$mixpanel,
         userflow: this.$userflow
       };
       // console.log(payload);
@@ -475,6 +476,8 @@ export default {
       ];
     },
     calendlyUrl() {
+      if(this.$i18n.locale == 'fr') 
+        return `https://calendly.com/qualizy/mise-en-place-gratuite?email=${this.userEmail}&name=${this.userName}&a1=${this.company}`;
       return `https://calendly.com/qualizy/training-call-with-a-qualizy-expert-2?email=${this.userEmail}&name=${this.userName}&a1=${this.company}`;
     },
     calcHeightSucess() {
@@ -563,7 +566,6 @@ export default {
 }
 .course-name {
   color: #1e1c26;
-  opacity: 0.54;
   text-transform: uppercase;
 }
 .course-content {

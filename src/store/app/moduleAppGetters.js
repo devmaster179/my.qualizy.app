@@ -185,104 +185,6 @@ export default {
     return state.logFilters
   },
 
-  filteredLogs: state => {
-    var logs = state.logs
-    logs = logs.filter(log => {
-      var template = state.templates.find((template) => {
-        return log.templateID == template.id
-      })
-      if (template == undefined) return false
-      if (template.trashed === undefined) return true
-      return !template.trashed
-    })
-    state.logFilters.map((item) => {
-      if (item.value != "") {
-        logs = logs.filter((log) => {
-          if (item.key == 'from')
-            return log.updated_at.toDate().getTime() >= item.value.getTime()
-          else if (item.key == 'to')
-            return log.updated_at.toDate().getTime() <= item.value.getTime()
-          else if (item.key == 'template') {
-            var ids = []
-            item.value.map(val => {
-              ids.push(val.id)
-            })
-            ids = ids.join()
-            return ids.search(log.templateID) > -1
-          } else if (item.key == 'users') {
-            var users = []
-            item.value.map(val => {
-              users.push(val.id)
-            })
-            var userFlag = false
-            log.logs.map(__log => {
-              if (userFlag) return
-              __log.questions.map(question => {
-                if (userFlag) return
-                question.answers.map(answer => {
-                  if (userFlag) return
-                  if (!answer.loged) return
-                  if (users.indexOf(answer.user) > -1)
-                    userFlag = true
-                })
-              })
-            })
-            return userFlag
-          } else if (item.key == 'teams') {
-            var teams = []
-            item.value.map(val => {
-              teams.push(val.id)
-            })
-            var teamFlag = false
-            log.logs.map(__log => {
-              if (teamFlag) return
-              __log.questions.map(question => {
-                if (teamFlag) return
-                question.answers.map(answer => {
-                  if (teamFlag) return
-                  if (!answer.loged) return
-                  var team = state.users.find(item => item.id == answer.user)
-                  if (team === undefined || team.team === undefined) return
-                  team = team.team
-                  teamFlag = teams.some(item => team.includes(item))
-                })
-              })
-            })
-            return teamFlag
-          } else if (item.key == 'label') {
-            var ids = []
-            item.value.map(val => {
-              ids.push(val.id)
-            })
-            ids = ids.join()
-            var template = state.templates.find((template) => {
-              return log.templateID == template.id
-            })
-            var labels = template.content.templateLabel
-            for (let i = 0; i < labels.length; i++) {
-              if (ids.search(labels[i]) !== -1)
-                return true
-            }
-          } else if (item.key == 'status') {
-            var falied = false
-            log.logs.map(page => {
-              page.questions.map(question => {
-                question.answers.map(answer => {
-                  if (answer.ref.type.failedAnswer && answer.ref.type.failedAnswer == answer.value)
-                    falied = true
-                })
-              })
-            })
-            if (item.value == 'Passed' && !falied)
-              return true
-            else if (item.value != 'Passed' && falied)
-              return true
-          }
-        })
-      }
-    })
-    return logs.sort((a, b) => b.updated_at.toDate().getTime() - a.updated_at.toDate().getTime())
-  },
   getLogFilters: state => {
     return state.logFilters.filter(filter => {
       return filter.value != ""
@@ -404,7 +306,7 @@ export default {
     return state.reports
   },
   reportByID: state => id => {
-    return state.reports.find(item => item.id = id)
+    return state.reports.find(item => item.id == id)
   },
 
   //====================suppliers=================================

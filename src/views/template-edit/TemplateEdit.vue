@@ -197,11 +197,6 @@ export default {
         id: id,
         Title: this.template.templateTitle
       });
-      this.$mixpanel.track("Create Template" , {
-        distinct_id: JSON.parse(localStorage.getItem("userInfo")).id,
-        template_id: id,
-        group: JSON.parse(localStorage.getItem("userInfo")).group
-      })
       this.$userflow.track("Create Template" , {
         template_id: id,
         group: JSON.parse(localStorage.getItem("userInfo")).group

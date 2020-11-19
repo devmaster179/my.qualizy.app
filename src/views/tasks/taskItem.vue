@@ -17,9 +17,8 @@
         <div class="flex items-center mb-5">
           <img
             :src="require(`../../assets/images/template_image/${templateInfo(task.templateID).content.templateImage}`)"
-            width="48px"
-            height="48px"
             class="mr-4"
+            :alt="templateInfo(task.templateID).content.templateTitle"
           />
           <div>
             <p
@@ -38,7 +37,7 @@
             <label
               v-else
               class="dueText"
-              :class="{'text-danger':calcTime(task.time)<0}"
+              :class="{'text-red':calcTime(task.time)<0}"
             >{{calcTime(task.time)<0 ? $t("overdue"): $t("to do") | capitalize}}</label>
             <span
               class="pl-2"
@@ -50,7 +49,7 @@
           >{{$t('in progress')}}</p>
           <p
             class="karla-bold dueText"
-            :class="{'text-danger':calcProgressColor=='danger'}"
+            :class="{'text-red':calcProgressColor=='danger'}"
             v-if="!pinned || task.logs !==undefined"
           >{{calcComplete.text}}</p>
         </div>
@@ -101,9 +100,9 @@
         </div>
         <div class="flex items-center justify-between mt-2">
           <div>
-            <vs-icon @click.stop="deleteLog"  v-if="progress ||  (task.logs !==undefined && task.time===undefined)" class="hover:text-danger" icon-pack="feather" icon="icon-trash-2" size="18px"/>
+            <vs-icon @click.stop="deleteLog"  v-if="progress ||  (task.logs !==undefined && task.time===undefined)" class="hover:text-red" icon-pack="feather" icon="icon-trash-2" size="18px"/>
           </div>
-          <div class="flex items-center mt-1 text-warning" v-if="monitor">
+          <div class="flex items-center mt-1 text-black" v-if="monitor">
             <span class="karla mr-1 ">{{$t('monitoring')}}</span>
             <vs-icon icon-pack="feather" icon="icon-eye" class="mt-1" />
           </div>
@@ -156,6 +155,7 @@ export default {
     },
     deleteLog1() {
       db.collection("logs").doc(this.task.id).delete()
+      this.$store.commit('app/DELETE_LOG' , this.task.id)
     },
     roleError(action) {
       this.$vs.notify({
@@ -294,6 +294,9 @@ export default {
 };
 </script>
 <style scoped>
+.dueText.text-red {
+  color: #b10000;
+}
 .times2 {
   transition: all 0.2 ease;
   transform: rotate(0deg) scale(1.6);
@@ -310,17 +313,10 @@ export default {
   opacity: 0.7;
 }
 .dueText {
-  color: #1e1c26;
-}
-.dueText span {
-  opacity: 0.54;
+  color: #1f1c2dc4;
 }
 .templateLabelBadge {
   background: #f5f5fa;
-}
-.templateLabelBadge p {
-  color: 0;
-  opacity: 0.54;
 }
 .task-card:hover {
   transform: translateY(-5px);

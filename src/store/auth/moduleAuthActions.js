@@ -76,8 +76,6 @@ export default {
         dispatch('getCurrentUser', {
           email: payload.userDetails.email,
           intercom: payload.intercom,
-          acl: payload.acl,
-          mixpanel: payload.mixpanel
         }).then(() => {
           firebase.auth().currentUser.delete()
           router.push(router.currentRoute.query.to || '/');
@@ -115,8 +113,6 @@ export default {
       notify: payload.notify,
       closeAnimation: payload.closeAnimation,
       intercom: payload.intercom,
-      acl: payload.acl,
-      mixpanel: payload.mixpanel
     }
     if (!payload.checkbox_remember_me) {
       firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
@@ -153,8 +149,6 @@ export default {
       notify: payload.notify,
       closeAnimation: payload.closeAnimation,
       intercom: payload.intercom,
-      acl: payload.acl,
-      mixpanel: payload.mixpanel,
       userflow: payload.userflow
     }
     // If remember_me is enabled change firebase Persistence
@@ -202,7 +196,6 @@ export default {
           reject(new Error('This email address blocked already. \n Please contact your admin.'))
         else if (user.deleted !== undefined && user.deleted)
           reject(new Error('This email address deleted already. \n Please contact your admin.'))
-
         var company = await getCompany({ group: user.group })
         var teams = await getTeams({ group: user.group })
         var locations = await getLocations({ group: user.group })
@@ -284,6 +277,9 @@ export default {
 
         const hash = CryptoJS.HmacSHA256(result.docs[0].id, "ex0dlTc4U8KIzX7pw9udCQK5G9ukYhQauuU_7gQK")
         const hash1 = CryptoJS.enc.Hex.stringify(hash)
+        var userLocation = ''
+        if(user.location && Array.isArray(user.location))
+          userLocation = user.location.join()
         payload.intercom.boot({
           user_id: user.id,
           name: user.name,
@@ -294,7 +290,7 @@ export default {
           "Group name": company.bussiness,
           "Team id": user.team.join() || "",
           "Team name": team,
-          "Location id": user.location.join() || "",
+          "Location id": userLocation,
           "Location name": location,
           lang: user.lang || "en-us",
           phone: phone,
@@ -316,28 +312,6 @@ export default {
           email: user.email,
           name: user.name,
         })
-        payload.mixpanel.identify(user.id)
-        payload.mixpanel.people.set({
-          name: user.name,
-          "$email": user.email,
-          "Job Title": user.job_title || "",
-          "Role": roles[role],
-          "Group ID": user.group,
-          "Group Name": company.bussiness,
-          "Team id": user.team.join() || "",
-          "Team Name": team,
-          "Location ID": user.location.join() || "",
-          "Location Name": location,
-          phone: phone,
-          lang: user.lang || "en-us",
-          "Company size": company.employee || 5,
-          "Company industry": company.industry || "Business owner",
-          "Number of locations": locations.length || 0,
-        });
-        payload.mixpanel.track('Log In', {
-          distinct_id: user.id,
-          "$email": user.email,
-        })
 
         if (!payload.userflow.isIdentified()) {
           payload.userflow.identify(user.id, {
@@ -349,7 +323,7 @@ export default {
             "Group Name": company.bussiness,
             "Team id": user.team.join() || "",
             "Team Name": team,
-            "Location ID": user.location.join() || "",
+            "Location ID": userLocation,
             "Location Name": location,
             phone: phone,
             role: roles[role],
@@ -368,24 +342,9 @@ export default {
         db.collection('users').doc(user.id).update({
           last_visit: new Date(),
           chatStatus: 'online'
-        }).then(() => {
-          if (user.role === undefined)
-            payload.acl.change('visitor')
-          else {
-            if (user.role.key === undefined)
-              payload.acl.change('visitor')
-            else if (user.role.key == 0) {
-              payload.acl.change('super admin')
-            } else if (user.role.key == 1)
-              payload.acl.change('admin')
-            else
-              payload.acl.change('visitor')
-          }
-          commit('UPDATE_AUTHENTICATED_USER', Object.assign({}, user, {
-            id: result.docs[0].id
-          }))
-          resolve("Success!");
         })
+        commit('UPDATE_AUTHENTICATED_USER', user)
+        resolve("Success!");
       })
     })
 
@@ -421,8 +380,6 @@ export default {
         dispatch('getCurrentUser', {
           email: payload.userDetails.email,
           intercom: payload.intercom,
-          acl: payload.acl,
-          mixpanel: payload.mixpanel,
           userflow: payload.userflow
         }).then(() => {
           if (payload.signUp) {
@@ -488,8 +445,6 @@ export default {
         dispatch('getCurrentUser', {
           email: result.user.providerData[0].email,
           intercom: payload.intercom,
-          acl: payload.acl,
-          mixpanel: payload.mixpanel
         }).then(() => {
           // commit('UPDATE_AUTHENTICATED_USER', result.user.providerData[0])
           router.push(router.currentRoute.query.to || '/');
@@ -541,126 +496,6 @@ export default {
     // });
   },
 
-  // Facebook Login
-  loginWithFacebook({
-    state,
-    dispatch
-  }, payload) {
-    if (state.isUserLoggedIn()) {
-      payload.notify({
-        time: 7000,
-        title: 'Login Attempt',
-        text: 'You are already logged in!',
-        iconPack: 'feather',
-        icon: 'icon-alert-circle',
-        color: 'warning'
-      });
-      return false
-    }
-    const provider = new firebase.auth.FacebookAuthProvider();
-
-    firebase.auth().signInWithPopup(provider)
-      .then((result) => {
-        dispatch('getCurrentUser', {
-          email: result.user.providerData[0].email,
-          intercom: payload.intercom,
-          acl: payload.acl,
-          mixpanel: payload.mixpanel
-        }).then(() => {
-          // commit('UPDATE_AUTHENTICATED_USER', result.user.providerData[0])
-          router.push(router.currentRoute.query.to || '/');
-        }).catch((error) => {
-          firebase.auth().signOut()
-          payload.notify({
-            time: 7000,
-            title: 'Error',
-            text: error,
-            iconPack: 'feather',
-            icon: 'icon-alert-circle',
-            color: 'danger',
-          });
-        })
-      }).catch((err) => {
-        payload.closeAnimation()
-        payload.notify({
-          time: 7000,
-          title: 'Error',
-          text: err.message,
-          iconPack: 'feather',
-          icon: 'icon-alert-circle',
-          color: 'danger'
-        });
-      })
-  },
-
-  // Twitter Login
-  loginWithTwitter({
-    commit,
-    state
-  }, payload) {
-    if (state.isUserLoggedIn()) {
-      payload.notify({
-        time: 7000,
-        title: 'Login Attempt',
-        text: 'You are already logged in!',
-        iconPack: 'feather',
-        icon: 'icon-alert-circle',
-        color: 'warning'
-      });
-      return false
-    }
-    const provider = new firebase.auth.TwitterAuthProvider();
-
-    firebase.auth().signInWithPopup(provider)
-      .then((result) => {
-        router.push(router.currentRoute.query.to || '/');
-        commit('UPDATE_AUTHENTICATED_USER', result.user.providerData[0])
-      }).catch((err) => {
-        payload.notify({
-          time: 7000,
-          title: 'Error',
-          text: err.message,
-          iconPack: 'feather',
-          icon: 'icon-alert-circle',
-          color: 'danger'
-        });
-      })
-  },
-
-  // Github Login
-  loginWithGithub({
-    commit,
-    state
-  }, payload) {
-    if (state.isUserLoggedIn()) {
-      payload.notify({
-        time: 7000,
-        title: 'Login Attempt',
-        text: 'You are already logged in!',
-        iconPack: 'feather',
-        icon: 'icon-alert-circle',
-        color: 'warning'
-      });
-      return false
-    }
-    const provider = new firebase.auth.GithubAuthProvider();
-
-    firebase.auth().signInWithPopup(provider)
-      .then((result) => {
-        router.push(router.currentRoute.query.to || '/');
-        commit('UPDATE_AUTHENTICATED_USER', result.user.providerData[0])
-      }).catch((err) => {
-        payload.notify({
-          time: 7000,
-          title: 'Error',
-          text: err.message,
-          iconPack: 'feather',
-          icon: 'icon-alert-circle',
-          color: 'danger'
-        });
-      })
-  },
-
   registerUser({
     dispatch
   }, payload) {
@@ -695,8 +530,6 @@ export default {
           notify: payload.notify,
           updateUsername: true,
           intercom: payload.intercom,
-          acl: payload.acl,
-          mixpanel: payload.mixpanel,
           userflow: payload.userflow,
           signUp: true
         }

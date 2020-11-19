@@ -10,11 +10,22 @@
 
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
-import i18nData from './i18nData'
+import engb from './en-gb'
+import enus from './en-us'
+import fr from './fr'
+import es from './es'
+import it from './it'
+
 
 Vue.use(VueI18n)
 
 export default new VueI18n({
   locale: 'en-us', // set default locale
-  messages: i18nData,
+  messages: {
+    "en-gb": engb,
+    "en-us": enus,
+    "fr": fr,
+    "es": es,
+    "it": it
+  }
 })

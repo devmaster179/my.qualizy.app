@@ -119,7 +119,6 @@
               <h3 class="text-white karla">{{ unreadNotifications.length }} New</h3>
               <p class="opacity-75 karla">App Notifications</p>
             </div>
-
             <VuePerfectScrollbar
               ref="mainSidebarPs"
               class="scroll-area--nofications-dropdown p-0 mb-10"
@@ -433,12 +432,6 @@ export default {
           });
           this.$intercom.shutdown();
 
-          this.$mixpanel.track("Sign out" , {
-            distinct_id: cUser.id,
-            "$email": cUser.email,
-            group: cUser.email.group
-          })
-
           this.$userflow.track("Sign out" , {
             email: cUser.email,
             group: cUser.email.group
@@ -446,7 +439,6 @@ export default {
           this.$userflow.reset()
 
           localStorage.removeItem("userLogin");
-          this.$acl.change("public");
           localStorage.removeItem("tokenExpiryKey");
         });
 

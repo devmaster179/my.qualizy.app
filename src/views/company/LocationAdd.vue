@@ -192,12 +192,6 @@ export default {
           group: JSON.parse(localStorage.getItem("userInfo")).group,
           id: id,
         });
-        this.$mixpanel.track("Add New Location", {
-          distinct_id: JSON.parse(localStorage.getItem("userInfo")).id,
-          name: addingObject.name,
-          address: addingObject.address,
-          group: JSON.parse(localStorage.getItem("userInfo")).group,
-        });
 
         this.$userflow.track("Add New Location", {
           name: addingObject.name,

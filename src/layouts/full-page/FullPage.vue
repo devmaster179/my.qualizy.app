@@ -14,8 +14,8 @@
       v-if="!path"
       v-model="indexActive"
       :color="colorx"
-      text-color="rgba(108,80,240,0.7)"
-      active-text-color="rgba(var(--vs-success),1)"
+      text-color="rgba(var(--vs-dark),1)"
+      active-text-color="rgba(var(--vs-dark),1)"
       class="myNavbar text-white"
     >
       <div slot="title">
@@ -24,10 +24,11 @@
             class="mt-2"
             @click="$router.push('/').catch(err => {})"
             :src="require('@/assets/images/logo/logo-text.png')"
-            style="max-height:50px;"
+            alt="Qualizy"
           />
         </vs-navbar-title>
       </div>
+        <vs-spacer></vs-spacer>
 
       <vs-navbar-item index="page-login">
         <span class="cursor-pointer block p-4 pb-1" @click="login">{{$t("sign in")}}</span>
@@ -40,8 +41,6 @@
       <vs-navbar-item index="page-template">
         <span class="cursor-pointer block p-4 pb-1" @click="template">{{$t("templates")}}</span>
       </vs-navbar-item>
-
-      <vs-spacer></vs-spacer>
     </vs-navbar>
     <router-view></router-view>
   </div>
@@ -109,7 +108,6 @@ export default {
     let myIp = await this.getMyIp();
 
     let ipInfo = await this.ipInfo(myIp.data);
-
     if (!ipInfo.success) {
     }
 

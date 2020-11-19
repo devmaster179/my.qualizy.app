@@ -389,16 +389,6 @@ export default {
         updated_at: new Date(),
         updated_by: JSON.parse(localStorage.getItem("userInfo")).id,
       });
-      this.$mixpanel.track("Ceate Food Item" , {
-        distinct_id: JSON.parse(localStorage.getItem("userInfo")).id,
-        type: this.type,
-        supplier: this.supplier,
-        name: this.fName,
-        "expire date": this.e_date,
-        forever: this.forever,
-        allergens: this.allergenss,
-        group: JSON.parse(localStorage.getItem("userInfo")).group
-      })
 
       this.$userflow.track("Ceate Food Item" , {
         type: this.type,

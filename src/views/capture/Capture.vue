@@ -23,8 +23,15 @@ export default {
       if (this.$route.params.ids == "") return [];
       var logIDs = this.$route.params.ids.split(",");
       logIDs.map(item => {
-        logs.push(this.$store.getters["app/getLogById"](item));
+        var log = this.$store.getters["app/getLogById"](item)
+        if(log) {
+          logs.push(this.$store.getters["app/getLogById"](item));
+        }
       });
+      if(logs.length>0) {
+        if(logs[0].group != JSON.parse(localStorage.getItem('userInfo')).group)
+          this.$router.push('/')
+      }
       return logs;
     }
   }

@@ -136,20 +136,6 @@ export default {
                   updated_at: new Date(),
                 });
       
-                // this.$intercom.trackEvent("Create KnowledgeBase Article", {
-                //   title: this.title,
-                //   file: downloadURL,
-                //   fileName: doc.name,
-                //   group: JSON.parse(localStorage.getItem("userInfo")).group
-                // });
-
-                this.$mixpanel.track("Create KnowledgeBase Article" , {
-                  distinct_id: JSON.parse(localStorage.getItem("userInfo")).id,
-                  title: this.title,
-                  file: downloadURL,
-                  fileName: doc.name,
-                  group: JSON.parse(localStorage.getItem("userInfo")).group
-                })
                 this.$userflow.track("Create KnowledgeBase Article" , {
                   title: this.title,
                   file: downloadURL,
