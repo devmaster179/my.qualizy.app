@@ -15,6 +15,8 @@ import TasksAdmin from "./TasksAdmin.vue";
 import TasksWorker from "./TasksWorker.vue";
 import NoAuth from "@/components/no-auth/NoAuth";
 
+import { db } from "@/firebase/firebaseConfig.js";
+
 export default {
   components: {
     TasksAdmin,
@@ -40,6 +42,6 @@ export default {
       }
       return cUser.role;
     }
-  }
+  },
 };
 </script>

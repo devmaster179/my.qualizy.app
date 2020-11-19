@@ -280,13 +280,13 @@ export default {
   computed: {
     teams() {
       return this.$store.getters["app/teams"].filter((team) => {
-        return true
-        // if(!item.active) return false
+        if(!team.active || team.deleted) return false
         // let selectedLocations = this.$store.getters["app/locationList"]
         // if(selectedLocations.length > 0) {
         //   if(team.location==undefined || !Array.isArray(team.location)) return false
         //   return team.location.some(item=> selectedLocations.includes(item))
         // }
+        return true
       });
     },
     team: {

@@ -1,4 +1,5 @@
 import firebase from 'firebase/app'
+// import 'firebase/performance'
 const config = {
     apiKey: "AIzaSyDBZC72kClDayfBoP-Bz1Ppx1cawcIiYRM",
     authDomain: "the-haccp-app-249610.firebaseapp.com",
@@ -18,3 +19,5 @@ const config = {
     // measurementId: "G-SQJE4PYDJ8"
 }
 firebase.initializeApp(config)
+// firebase.performance();
+

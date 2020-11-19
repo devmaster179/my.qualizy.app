@@ -250,7 +250,6 @@
 
 <script>
 import UserCard from "./UserCard.vue";
-import WorkplaceSearch from "../../../components/workplace-search/WorkplaceSearch.vue";
 import VuePerfectScrollbar from "vue-perfect-scrollbar";
 import CsvReader from "../../../components/csv-reader/CsvReader.vue";
 import UserEditSidebar from "./UsereEditSidebar.vue";
@@ -266,7 +265,6 @@ export default {
   components: {
     UserEditSidebar,
     UserCard,
-    WorkplaceSearch,
     VuePerfectScrollbar,
     CsvReader,
     ImportExcel,
@@ -513,11 +511,6 @@ export default {
                       group: JSON.parse(localStorage.getItem("userInfo")).group,
                       createdUserEmail: item.email,
                     });
-                    this.$mixpanel.track("Add New User" , {
-                      distinct_id: JSON.parse(localStorage.getItem("userInfo")).id,
-                      email: item.email,
-                      group: JSON.parse(localStorage.getItem("userInfo")).group
-                    })
                     this.$userflow.track("Add New User" , {
                       email: item.email,
                       group: JSON.parse(localStorage.getItem("userInfo")).group

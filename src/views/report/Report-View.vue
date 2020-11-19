@@ -689,15 +689,16 @@ export default {
       var locations = this.$store.getters["app/locationList"];
       var checkLog = []
       logs = logs.filter((log) => {
+        var template = this.$store.getters["app/getTemplateById"](
+          log.templateID
+        );
+        if(!template) return false
+
         if(log.time && log.time.seconds) {
           if(checkLog.find(check=> check.templateID == log.templateID && check.time == log.time.seconds))
             return false
           checkLog.push({templateID: log.templateID , time: log.time.seconds})
         }
-        
-        var template = this.$store.getters["app/getTemplateById"](
-          log.templateID
-        );
         if (locations.length > 0) {
           if (
             template.content.location == undefined ||
@@ -847,6 +848,33 @@ export default {
     },
   },
   methods: {
+    setLogs() {
+      if(this.filter.from == '') {
+        this.$vs.loading()
+        db.collection("logs").where("group", "==", JSON.parse(localStorage.getItem("userInfo")).group).get().then((q) => {
+          this.$vs.loading.close()
+        let logs = [];
+        q.forEach((doc) => {
+          logs.push(Object.assign({}, doc.data(), { id: doc.id }));
+        });
+        this.$store.dispatch("app/setLogs", logs);
+      });    
+      } else {
+        this.$vs.loading()
+        db.collection("logs").where("group","==",JSON.parse(localStorage.getItem("userInfo")).group)
+          .where('updated_at' , '>=' , this.filter.from)
+          .where('updated_at' , '<=' , this.filter.to)
+          .get().then((q) => {
+          this.$vs.loading.close()
+          let logs = [];
+          q.forEach((doc) => {
+            logs.push(Object.assign({}, doc.data(), { id: doc.id }));
+          });
+          this.$store.dispatch("app/setLogs", logs);
+        });    
+      }
+        
+    },
     roleError(action) {
       this.$vs.notify({
         time: 5000,
@@ -1110,15 +1138,16 @@ export default {
     },
   },
 
-  beforeMount() {
+  created() {
     let reportID = this.$route.params.id;
     this.shareUrl = `https://my.qualizy.app/#/public-report/${reportID}`;
     this.badge = `<a href="https://my.qualizy.app/#/public-report/${reportID}">
 <img src="https://my.qualizy.app${this.badgeURL}" class="width: 444px;height: 142px;object-fit: contain;">
 </a>`;
-    // let report = this.$store.getters["app/reportByID"](reportID);
+    var report = this.$store.getters["app/reportByID"](reportID);
+    if(!report || report.group != JSON.parse(localStorage.getItem('userInfo')).group) this.$router.push('/report')
     this.$vs.loading();
-    let report = db
+    report = db
       .collection("reports")
       .doc(reportID)
       .get()
@@ -1207,6 +1236,7 @@ export default {
           this.filter.to == ""
             ? ""
             : new Date(this.filter.to.setHours(23, 59, 59, 999));
+        this.setLogs()
       });
   },
 };

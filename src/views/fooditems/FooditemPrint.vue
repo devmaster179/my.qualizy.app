@@ -158,11 +158,6 @@ export default {
         link.href = img;
         link.click();
       });
-      this.$mixpanel.track("Print Food Item" , {
-        distinct_id: JSON.parse(localStorage.getItem("userInfo")).id,
-        name: this.item.name,
-        group: JSON.parse(localStorage.getItem("userInfo")).group
-      })
 
       this.$userflow.track("Print Food Item" , {
         name: this.item.name,

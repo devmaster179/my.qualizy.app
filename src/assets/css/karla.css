@@ -2,6 +2,8 @@
     font-family: "Karla";
     src:
         /* chrome, firefox */
+        local('Pacifico Regular'),
+        local('Pacifico-Regular'),
         url('../fonts/Karla/Karla-Regular.ttf') format('truetype'),
         url('../fonts/Karla/Karla-Bold.ttf') format('truetype'),
         url('../fonts/Karla/Karla-Italic.ttf') format('truetype'),

@@ -427,14 +427,16 @@ export default {
       var checkLog = []
 
       logs = logs.filter((log) => {
+        var template = this.$store.getters["app/getTemplateById"](
+          log.templateID
+        );
+        if(!template) return false
         if(log.time && log.time.seconds) {
           if(checkLog.find(check=> check.templateID == log.templateID && check.time == log.time.seconds))
             return false
           checkLog.push({templateID: log.templateID , time: log.time.seconds})
         }
-        var template = this.$store.getters["app/getTemplateById"](
-          log.templateID
-        );
+        
 
         if (
           locations.length > 0 &&
@@ -446,18 +448,12 @@ export default {
           )
             return false;
         }
-        var filterFrom = true;
-        var filterTo = true;
         var filterTemplate = false;
         var userFlag = true;
         var teamFlag = true;
         var filterLabel = true;
         var filterStatus = true;
-        if (filters.from !== undefined && filters.from != "")
-          filterFrom =
-            log.updated_at.toDate().getTime() >= filters.from.getTime();
-        if (filters.to !== undefined && filters.to != "")
-          filterTo = log.updated_at.toDate().getTime() <= filters.to.getTime();
+
         if (filters.template !== undefined && filters.template.length > 0) {
           filterTemplate = filters.template.indexOf(log.templateID) > -1;
         }
@@ -521,8 +517,6 @@ export default {
         }
 
         return (
-          filterFrom &&
-          filterTo &&
           userFlag &&
           teamFlag &&
           filterTemplate &&
@@ -565,13 +559,6 @@ export default {
         created_by: JSON.parse(localStorage.getItem("userInfo")).id,
         group: JSON.parse(localStorage.getItem("userInfo")).group,
       })
-      this.$mixpanel.track("Create Report" , {
-        distinct_id: JSON.parse(localStorage.getItem("userInfo")).id,
-        id: newReport.id,
-        title: this.reportTitle,
-        group: JSON.parse(localStorage.getItem("userInfo")).group
-      })
-
       this.$userflow.track("Create Report" , {
         id: newReport.id,
         title: this.reportTitle,
@@ -585,7 +572,35 @@ export default {
       })
       this.$router.push("/report");
     },
+    setLogs(filters) {
+      if(filters.from == '') {
+        this.$vs.loading()
+        db.collection("logs").where("group", "==", JSON.parse(localStorage.getItem("userInfo")).group).get().then((q) => {
+          this.$vs.loading.close()
+        let logs = [];
+        q.forEach((doc) => {
+          logs.push(Object.assign({}, doc.data(), { id: doc.id }));
+        });
+        this.$store.dispatch("app/setLogs", logs);
+      });    
+      } else {
+        this.$vs.loading()
+        db.collection("logs").where("group","==",JSON.parse(localStorage.getItem("userInfo")).group)
+          .where('updated_at' , '>=' , filters.from)
+          .where('updated_at' , '<=' , filters.to)
+          .get().then((q) => {
+          this.$vs.loading.close()
+          let logs = [];
+          q.forEach((doc) => {
+            logs.push(Object.assign({}, doc.data(), { id: doc.id }));
+          });
+          this.$store.dispatch("app/setLogs", logs);
+        });    
+      }
+        
+    },
     chnFilter(filters) {
+      this.setLogs(filters)
       this.reportFilterSidebar = false;
       this.filter = filters;
     },

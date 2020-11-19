@@ -145,11 +145,6 @@ export default {
     //         });
     //         this.$intercom.shutdown();
 
-    //         this.$mixpanel.track("Sign out" , {
-    //           distinct_id: cUser.id,
-    //           "$email": cUser.email,
-    //         })
-            
     //         this.$userflow.track("Sign out" , {
     //           email: cUser.email,
     //           group: cUser.email.group
@@ -160,7 +155,6 @@ export default {
     //         localStorage.removeItem("tokenExpiryKey");
     //         localStorage.removeItem("userLogin");
 
-    //         this.$acl.change("public");
 
     //       });
     //   }
@@ -168,10 +162,6 @@ export default {
     $route() {
       this.routeTitle = this.$route.meta.pageTitle;
       var cUser = this.$store.getters["app/currentUser"];
-      this.$mixpanel.track("Page View" , {
-        distinct_id: cUser.id,
-        "URL": window.location.href,
-      })
       this.$intercom.trackEvent("Page View", {
         "URL": window.location.href,
       });
@@ -240,6 +230,13 @@ export default {
     },
   },
   methods: {
+    deleteTrashedData() {
+      // db.collection('knowledge').where('deleted', '==' ,false).get().then(q => {
+      //   q.forEach(item=> {
+      //     // console.log(item.id)
+      //   })
+      // })
+    },
     setReportSchedule() {
       return new Promise((res,rej)=> {
         db.collection('report_schedule').where('group' , '==' ,  JSON.parse(localStorage.getItem("userInfo")).group).onSnapshot(q=> {
@@ -292,7 +289,6 @@ export default {
             })
           }
             this.$store.commit("app/SET_AUTH" , auth)
-
           resolve("OK")
         })
       })
@@ -316,7 +312,6 @@ export default {
               this.$i18n.locale = data.lang;
               this.$moment.locale(data.lang);
             }
-
             resolve("OK");
           });
       });
@@ -490,22 +485,19 @@ export default {
       });
     },
     setLogs() {
+      var date = new Date()
       return new Promise((resolve, reject) => {
         db.collection("logs")
           .where(
             "group",
             "==",
             JSON.parse(localStorage.getItem("userInfo")).group
-          )
+          ).where('updated_at' , '>' , date)
           .onSnapshot((q) => {
             let logs = [];
             q.forEach((doc) => {
-              // db.collection("logs")
-              //   .doc(doc.id)
-              //   .delete();
-              logs.push(Object.assign({}, doc.data(), { id: doc.id }));
+              this.$store.commit("app/UPDATE_LOG" , Object.assign({} , doc.data() , {id: doc.id}))  
             });
-            this.$store.dispatch("app/setLogs", logs);
             resolve("OK");
           });
       });
@@ -571,8 +563,10 @@ export default {
             if (
               doc.data().created_at == undefined ||
               doc.data().created_at == null
-            )
+            ){
               return;
+            }
+
             iots.push(Object.assign({}, doc.data(), { id: doc.id }));
           });
           this.$store.dispatch("app/setIots", iots);
@@ -594,8 +588,10 @@ export default {
               if (
                 doc.data().created_at == undefined ||
                 doc.data().created_at == null
-              )
+              ){
                 return;
+              }
+                
               suppliers.push(Object.assign({}, doc.data(), { id: doc.id }));
             });
             this.$store.dispatch("app/setSuppliers", suppliers);
@@ -646,7 +642,7 @@ export default {
       });
     },
     // fcm.onMessage((payload) => {
-    //     console.log('Message received. ', payload);
+    //     // console.log('Message received. ', payload);
     // });
 
     changeRouteTitle(title) {
@@ -677,11 +673,11 @@ export default {
     },
     updateStatus(key) {
       if (navigator.onLine) {
-        console.log("online");
+        // console.log("online");
         // gives Boolean
         // then do what you need like provide a message
       } else {
-        console.log("offline");
+        // console.log("offline");
       }
     },
   },
@@ -692,9 +688,7 @@ export default {
     BackToTop,
   },
   mounted() {
-    // this.$acl.onChange = newPermission => {
-    //   console.log("Has changed to", newPermission);
-    // };
+
     var user = JSON.parse(localStorage.getItem("userInfo"));
     var role = 4;
     var roles = ["Super admin", "Admin", "Supervisor", "Operator", "Auditor"];
@@ -731,6 +725,7 @@ export default {
     // window.addEventListener('offline',  this.updateStatus('offline'));
   },
   async created() {
+    // this.deleteTrashedData()
     var user = JSON.parse(localStorage.getItem("userInfo"));
     if (!this.$userflow.isIdentified()) {
       this.$userflow.identify(user.id)
@@ -773,29 +768,90 @@ export default {
     } else {
       this.updateNavbarColor(this.navbarColor);
     }
+    
     this.$vs.loading();
     this.$store.commit('app/SET_LOCATION_LIST' , [])
+    var mDate = new Date().getTime()
+    // var  mDate1 = new Date().getTime()
     await this.setReportSchedule()
+    // mDate1 = new Date().getTime()
+    // console.log((mDate1 - mDate) , 'setReportSchedule')
+    // mDate = mDate1
     await this.setAuth();
+    // mDate1 = new Date().getTime()
+    // console.log((mDate1 - mDate) , 'setAuth')
+    // mDate = mDate1
     await this.setCurrentUser();
+     // mDate1 = new Date().getTime()
+    // console.log((mDate1 - mDate) , 'setCurrentUser')
+    // mDate = mDate1
     await this.setUser();
+    // mDate1 = new Date().getTime()
+    // console.log((mDate1 - mDate) , 'setUser')
+    // mDate = mDate1
     await this.setAllergens();
+    // mDate1 = new Date().getTime()
+    // console.log((mDate1 - mDate) , 'setAllergens')
+    // mDate = mDate1
     await this.setSuppliers();
+    // mDate1 = new Date().getTime()
+    // console.log((mDate1 - mDate) , 'setSuppliers')
+    // mDate = mDate1
     await this.setFoodItems();
+    // mDate1 = new Date().getTime()
+    // console.log((mDate1 - mDate) , 'setFoodItems')
+    // mDate = mDate1
     await this.setTeams();
+    // mDate1 = new Date().getTime()
+    // console.log((mDate1 - mDate) , 'setTeams')
+    // mDate = mDate1
     await this.setLocations();
+    // mDate1 = new Date().getTime()
+    // console.log((mDate1 - mDate) , 'setLocations')
+    // mDate = mDate1
     await this.setTemplateLabels();
+    // mDate1 = new Date().getTime()
+    // console.log((mDate1 - mDate) , 'setTemplateLabels')
+    // mDate = mDate1
     await this.setTemplateTypes();
+    // mDate1 = new Date().getTime()
+    // console.log((mDate1 - mDate) , 'setTemplateTypes')
+    // mDate = mDate1
     await this.setTemplates();
+    // mDate1 = new Date().getTime()
+    // console.log((mDate1 - mDate) , 'setTemplates')
+    // mDate = mDate1
     await this.setPublicTemplates();
-
-    await this.setNotifications();
+    // mDate1 = new Date().getTime()
+    // console.log((mDate1 - mDate) , 'setPublicTemplates')
+    // mDate = mDate1
+    // await this.setNotifications();
+    // // mDate1 = new Date().getTime()
+    // // console.log((mDate1 - mDate) , 'setNotifications')
+    // // mDate = mDate1
     await this.setLogs();
+    // mDate1 = new Date().getTime()
+    // console.log((mDate1 - mDate) , 'setLogs')
+    // mDate = mDate1
     await this.setSchedules();
+    // mDate1 = new Date().getTime()
+    // console.log((mDate1 - mDate) , 'setSchedules')
+    // mDate = mDate1
     await this.setChat();
+    // mDate1 = new Date().getTime()
+    // console.log((mDate1 - mDate) , 'setChat')
+    // mDate = mDate1
     await this.setIots();
+    // mDate1 = new Date().getTime()
+    // console.log((mDate1 - mDate) , 'setIots')
+    // mDate = mDate1
     await this.setReports();
+    // mDate1 = new Date().getTime()
+    // console.log((mDate1 - mDate) , 'setReports')
+    // mDate = mDate1
     await this.setKnowledge();
+    // mDate1 = new Date().getTime()
+    // console.log((mDate1 - mDate) , 'setKnowledge')
     this.$vs.loading.close();
 
     // db.collection('notifications').where('group', '==', JSON.parse(localStorage.getItem('userInfo')).group).onSnapshot(q => {
@@ -811,7 +867,7 @@ export default {
     //                 color: change.doc.data().alertType,
     //             })
     //             messaging.getToken().then((refreshedToken) => {
-    //                 console.log('Token refreshed.',refreshedToken);
+    //                 // console.log('Token refreshed.',refreshedToken);
     //             // Indicate that the new Instance ID token has not yet been sent to the
     //             // app server.
     //             // setTokenSentToServer(false);
@@ -819,7 +875,7 @@ export default {
     //             // sendTokenToServer(refreshedToken);
     //             // ...
     //             }).catch((err) => {
-    //                 console.log('Unable to retrieve refreshed token ', err);
+    //                 // console.log('Unable to retrieve refreshed token ', err);
     //             // showToken('Unable to retrieve refreshed token ', err);
     //             });
     //         }

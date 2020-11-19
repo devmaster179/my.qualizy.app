@@ -33,8 +33,8 @@
           />
           <vs-button
             @click="activeSchedule = true"
-            text-color="#6c50f0"
-            color="rgba(108, 80, 240, 0.1)"
+            text-color="#2400d0"
+            color="#dedbf0"
             class="karla-bold ml-2 p-3 sm:px-5"
             type="filled"
           >{{$t("schedule")}}</vs-button>
@@ -241,6 +241,7 @@ export default {
   },
   data() {
     return {
+      init: true,
       logDetailsActive: false,
       search: "",
       status: "",
@@ -777,6 +778,54 @@ export default {
     }
   },
   methods: {
+    setLog() {
+      var dayFrom
+      var dayTo
+      var today = new Date();
+      if (this.rangeDay == "day") {
+        dayFrom = today.getDate();
+        dayTo = today.getDate();
+      } else if (this.rangeDay == "week") {
+        var day = today.getDay();
+        dayFrom = today.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
+        dayTo = dayFrom + 6;
+      } else if (this.rangeDay == "month") {
+        dayFrom = 1;
+        dayTo = new Date(
+          today.getFullYear(),
+          today.getMonth() + 1,
+          0
+        ).getDate();
+      }
+      dayFrom = new Date(today.getFullYear(), today.getMonth(), dayFrom);
+      dayTo = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        dayTo + 1,
+        0,
+        0,
+        -1
+      );
+      if(!this.init)
+        this.$vs.loading()
+      db.collection("logs")
+      .where(
+        "group",
+        "==",
+        JSON.parse(localStorage.getItem("userInfo")).group
+      ).where('updated_at' , '>' , dayFrom)
+      .get().then((q) => {
+        if(!this.init) {
+          this.$vs.loading.close()
+        }
+        this.init= false
+        let logs = [];
+        q.forEach((doc) => {
+          logs.push(Object.assign({}, doc.data(), { id: doc.id }));
+        });
+        this.$store.dispatch("app/setLogs", logs);
+      });    
+    },
     filter(val) {
       this.status = val.status;
       this.tags = val.tag;
@@ -1038,10 +1087,7 @@ export default {
           });
           that.getLogID(updated_at, task.templateID).then((id) => {
             that.$vs.loading.close();
-            that.$mixpanel.track("Create Log" , {
-              distinct_id: JSON.parse(localStorage.getItem("userInfo")).id,
-              id: id
-            })
+
             that.$intercom.trackEvent('Create Log', {
               group: JSON.parse(localStorage.getItem("userInfo")).group,
               email: JSON.parse(localStorage.getItem("userInfo")).email,
@@ -1158,10 +1204,7 @@ export default {
           email: JSON.parse(localStorage.getItem("userInfo")).email,
           id: newLogRef.id,
         })
-        this.$mixpanel.track("Create Log" , {
-          distinct_id: JSON.parse(localStorage.getItem("userInfo")).id,
-          id: newLogRef.id
-        })
+
         this.$userflow.track("Create Log" , {
           id: newLogRef.id
         })
@@ -1210,13 +1253,15 @@ export default {
       });
     },
   },
-  mounted() {
-    // this.wasSidebarOpen = this.$store.state.reduceButton;
-    // this.$store.commit("TOGGLE_REDUCE_BUTTON", true);
+  created() {
+    this.setLog()
   },
-  beforeDestroy() {
-    // if (!this.wasSidebarOpen) this.$store.commit("TOGGLE_REDUCE_BUTTON", false);
-  },
+  watch: {
+    rangeDay() {
+      console.log(this.init)
+      this.setLog()
+    }
+  }
 };
 </script>
 <style>
@@ -1236,7 +1281,6 @@ min-height: calc(100vh - 10em);
   color: #1e1c26;
 }
 .page-subtitle {
-  opacity: 0.54;
   font-size: 14px;
   color: #1e1c26;
 }

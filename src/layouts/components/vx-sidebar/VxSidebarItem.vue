@@ -138,7 +138,6 @@ export default {
     canSee() {
       if(this.slug == '' || this.slug === null || this.slug == undefined) return true
       return this.auth(this.slug , 'view')
-      // this.$acl.check(this.$store.state.userRole);
       // if (this.to) {
       //   if (
       //     this.to == "/templates" ||
@@ -153,7 +152,6 @@ export default {
 
       //   // var role_text = this.$router.match(this.to).meta.rule;
 
-      //   // return this.$acl.check(this.$router.match(this.to).meta.rule);
       // }
       // return true;
     },

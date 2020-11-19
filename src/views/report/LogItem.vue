@@ -352,3 +352,9 @@ export default {
   background-color: #7367f030;
 }
 </style>
+
+<style >
+.open-item .vs-collapse-item--content {
+  max-height: unset!important;
+}
+</style>

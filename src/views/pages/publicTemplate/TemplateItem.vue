@@ -4,10 +4,7 @@
     <template slot="no-body">
       <!-- ITEM IMAGE -->
       <div class="item-img-container bg-white flex mt-base items-center justify-center">
-        <vs-avatar
-          :src="require(`@/assets/images/template_image/${item.content.templateImage}`)"
-          size="130px"
-        />
+        <img :src="require(`@/assets/images/template_image/${item.content.templateImage}`)" width="130px"/>
       </div>
       <div class="item-details px-4 md:pt-base pt-0">
         <!-- TITLE & DESCRIPTION -->

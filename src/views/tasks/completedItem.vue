@@ -11,21 +11,20 @@
       >
         <vs-icon icon-pack="feather" icon="icon-clock" color="rgba(var(--vs-danger) , .8)"></vs-icon>
         <span
-          class="karla-bold ml-2"
-          style="font-size:12px; color:rgba(var(--vs-danger) , .8);"
+          class="dueText text-red karla-bold ml-2 "
+          style="font-size:12px;"
         >{{$t('overdue')}}</span>
         <span
-          class="karla-bold ml-2"
-          style="font-size:12px;  color:rgba(var(--vs-danger) , .8);"
+          class="karla-bold ml-2 dueText text-red"
+          style="font-size:12px;"
         >{{calcOverTime | duration('humanize' , true) | capitalize}}</span>
       </div>
       <div class="py-8 px-5">
         <div class="flex items-center mb-5">
           <img
             :src="require(`../../assets/images/template_image/${templateInfo(task.templateID).content.templateImage}`)"
-            width="48px"
-            height="48px"
             class="mr-4"
+            :alt="templateInfo(task.templateID).content.templateTitle"
           />
           <div>
             <p
@@ -35,8 +34,6 @@
               <vs-icon size="12px" icon-pack="feather" icon="icon-map-pin"></vs-icon>
               <span class="karla locationText pl-1">{{scheduleLocation(task.schedule)}}</span>
             </template>
-            <!-- <vs-icon size="12px" icon-pack="feather" icon="icon-map-pin"></vs-icon>
-            <span class="karla locationText pl-1">{{templateLocation(task.templateID)}}</span> -->
           </div>
         </div>
         <div class="flex justify-between">
@@ -135,6 +132,7 @@ export default {
     },
     deleteLog1() {
       db.collection("logs").doc(this.task.id).delete()
+      this.$store.commit('app/DELETE_LOG' , this.task.id)
     },
   },
   computed: {
@@ -251,7 +249,11 @@ export default {
   }
 };
 </script>
+
 <style scoped>
+.dueText.text-red {
+  color: #b10000;
+}
 .times2 {
   transition: all 0.2 ease;
   transform: rotate(0deg) scale(1.6);
@@ -268,17 +270,10 @@ export default {
   opacity: 0.7;
 }
 .dueText {
-  color: #1e1c26;
-}
-.dueText span {
-  opacity: 0.54;
+  color: #1f1c2dc4;
 }
 .templateLabelBadge {
   background: #f5f5fa;
-}
-.templateLabelBadge p {
-  color: 0;
-  opacity: 0.54;
 }
 .task-card:hover {
   transform: translateY(-5px);

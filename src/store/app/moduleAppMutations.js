@@ -47,6 +47,22 @@ export default {
   SET_LOGS(state, query) {
     state.logs = query
   },
+  UPDATE_LOG(state,query) {
+    var index = state.logs.findIndex(item => item.id == query.id)
+    if(index>-1) {
+      state.logs[index] = query
+    }
+    else {
+      state.logs.push(query)
+    }
+    var temp = state.logs
+    state.logs = []
+    state.logs = temp
+
+  },
+  DELETE_LOG(state, query) {
+    state.logs = state.logs.filter(item=>item.id != query)
+  },
   SET_ITEMS(state, query) {
     state.items = query
   },

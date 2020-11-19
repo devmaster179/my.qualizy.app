@@ -83,10 +83,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss">
-.knowledge-base-jumbotron-content {
-  background-image: url("../../assets/images/pages/knowledge-base-cover.jpg");
-  background-size: cover;
-}
-</style>

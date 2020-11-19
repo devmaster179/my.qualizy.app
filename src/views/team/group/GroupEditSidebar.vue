@@ -135,11 +135,6 @@ export default {
           color: "success"
         });
         
-        this.$mixpanel.track("Add New Team" , {
-          distinct_id: JSON.parse(localStorage.getItem("userInfo")).id,
-          name: this.teamName,
-          group: JSON.parse(localStorage.getItem("userInfo")).group
-        })
 
         this.$userflow.track("Add New Team" , {
           name: this.teamName,

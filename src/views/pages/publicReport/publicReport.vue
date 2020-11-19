@@ -267,6 +267,9 @@ export default {
       var ontimeTask = true;
       var checkOnTimeTask = 0;
       logs.map((log) => {
+        if(!log.templateID) return 
+        var template = this.$store.getter['app/getTemplateById'](log.templateID)
+        if(!template) return
         ontime = 0;
         ontimeTask = true;
 
