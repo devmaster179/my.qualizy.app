@@ -685,8 +685,18 @@ export default {
     filteredLogs() {
       var filters = this.filter;
       var log = [];
+      var cUser = this.$store.getters["app/currentUser"]
+      var locationList = this.$store.getters['app/locationList']
+      if(locationList.length==0) {
+        if(cUser.role == undefined || cUser.role.key == undefined || cUser.role.key>0) {
+          if(cUser.location !== undefined && Array.isArray(cUser.location) && cUser.location.length>0) {
+            locationList = cUser.location
+          } else {
+            locationList = ['no']
+          }
+        }
+      }
       var logs = this.$store.getters["app/logs"];
-      var locations = this.$store.getters["app/locationList"];
       var checkLog = []
       logs = logs.filter((log) => {
         var template = this.$store.getters["app/getTemplateById"](
@@ -699,11 +709,11 @@ export default {
             return false
           checkLog.push({templateID: log.templateID , time: log.time.seconds})
         }
-        if (locations.length > 0) {
+        if (locationList.length > 0) {
           if (
             template.content.location == undefined ||
             !Array.isArray(template.content.location) ||
-            !locations.some((item) => template.content.location.includes(item))
+            !locationList.some((item) => template.content.location.includes(item))
           )
             return false;
         }

@@ -564,12 +564,6 @@ export default {
         title: this.reportTitle,
         group: JSON.parse(localStorage.getItem("userInfo")).group
       })
-      this.$intercom.trackEvent('Create Log', {
-        group: JSON.parse(localStorage.getItem("userInfo")).group,
-        email: JSON.parse(localStorage.getItem("userInfo")).email,
-        id: newReport.id,
-        title: this.reportTitle,
-      })
       this.$router.push("/report");
     },
     setLogs(filters) {

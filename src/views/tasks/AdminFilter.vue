@@ -17,7 +17,7 @@
     <VuePerfectScrollbar class="scroll-area--log-filter pt-4 pb-6 px-4" :settings="settings">
       <div class="mb-3">
         <p class="karla-bold">{{$t("status")}}</p>
-        <v-select :options="statuss" v-model="status" label="text" />
+        <v-select :clearable="false" :options="statuss" v-model="status" label="text" />
       </div>
       <div class="mb-3">
         <p class="karla-bold">{{$t("labels")}}</p>

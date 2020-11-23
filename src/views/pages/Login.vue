@@ -171,8 +171,8 @@ export default {
         },
         notify: this.$vs.notify,
         closeAnimation: this.$vs.loading.close,
-        intercom: this.$intercom,
-        userflow: this.$userflow
+        userflow: this.$userflow,
+        gist: this.$gist
       };
       this.$store.dispatch("auth/loginAttempt", payload);
     },
@@ -181,7 +181,6 @@ export default {
     loginWithGoogle() {
       this.$store.dispatch("auth/loginWithGoogle", {
         notify: this.$vs.notify,
-        intercom: this.$intercom,
       });
     },
 

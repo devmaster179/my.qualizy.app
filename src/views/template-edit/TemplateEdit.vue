@@ -193,10 +193,7 @@ export default {
         id: id,
         Title: this.template.templateTitle
       });
-      this.$intercom.trackEvent("Created a new template", {
-        id: id,
-        Title: this.template.templateTitle
-      });
+
       this.$userflow.track("Create Template" , {
         template_id: id,
         group: JSON.parse(localStorage.getItem("userInfo")).group

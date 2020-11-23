@@ -75,7 +75,6 @@ export default {
       .then(() => {
         dispatch('getCurrentUser', {
           email: payload.userDetails.email,
-          intercom: payload.intercom,
         }).then(() => {
           firebase.auth().currentUser.delete()
           router.push(router.currentRoute.query.to || '/');
@@ -112,7 +111,6 @@ export default {
       userDetails: payload.userDetails,
       notify: payload.notify,
       closeAnimation: payload.closeAnimation,
-      intercom: payload.intercom,
     }
     if (!payload.checkbox_remember_me) {
       firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
@@ -148,8 +146,8 @@ export default {
       userDetails: payload.userDetails,
       notify: payload.notify,
       closeAnimation: payload.closeAnimation,
-      intercom: payload.intercom,
-      userflow: payload.userflow
+      userflow: payload.userflow,
+      gist: payload.gist
     }
     // If remember_me is enabled change firebase Persistence
     if (!payload.checkbox_remember_me) {
@@ -280,8 +278,8 @@ export default {
         var userLocation = ''
         if(user.location && Array.isArray(user.location))
           userLocation = user.location.join()
-        payload.intercom.boot({
-          user_id: user.id,
+        
+        payload.gist.identify(user.id, {
           name: user.name,
           email: user.email,
           "Job Title": user.job_title || "",
@@ -301,18 +299,13 @@ export default {
             "Company size": company.employee || 5,
             "Company industry": company.industry || "Business owner",
             "Number of locations": locations.length || 0,
-            // "Job title": company.job || "Job title"
-          },
-
-          hide_default_launcher: true
-          // user_hash: hash1
+          }
         });
-
-        payload.intercom.trackEvent('login', {
+        payload.gist.track('login', {
           email: user.email,
           name: user.name,
         })
-
+        
         if (!payload.userflow.isIdentified()) {
           payload.userflow.identify(user.id, {
             name: user.name,
@@ -379,8 +372,8 @@ export default {
         // Close animation if passed as payload
         dispatch('getCurrentUser', {
           email: payload.userDetails.email,
-          intercom: payload.intercom,
-          userflow: payload.userflow
+          userflow: payload.userflow,
+          gist: payload.gist
         }).then(() => {
           if (payload.signUp) {
             if (router.currentRoute.query.to == undefined)
@@ -444,7 +437,6 @@ export default {
       .then((result) => {
         dispatch('getCurrentUser', {
           email: result.user.providerData[0].email,
-          intercom: payload.intercom,
         }).then(() => {
           // commit('UPDATE_AUTHENTICATED_USER', result.user.providerData[0])
           router.push(router.currentRoute.query.to || '/');
@@ -507,10 +499,6 @@ export default {
           email: payload.userDetails.email.email
         });
 
-        payload.intercom.trackEvent('sign-up', {
-          email: payload.userDetails.email.email
-        })
-
         if (payload.closeAnimation) payload.closeAnimation()
 
         payload.notify({
@@ -529,7 +517,6 @@ export default {
           userDetails: payload.userDetails,
           notify: payload.notify,
           updateUsername: true,
-          intercom: payload.intercom,
           userflow: payload.userflow,
           signUp: true
         }

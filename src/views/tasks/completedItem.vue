@@ -25,6 +25,7 @@
             :src="require(`../../assets/images/template_image/${templateInfo(task.templateID).content.templateImage}`)"
             class="mr-4"
             :alt="templateInfo(task.templateID).content.templateTitle"
+            width="48px" height="48px"
           />
           <div>
             <p

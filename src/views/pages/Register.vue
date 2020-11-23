@@ -365,7 +365,6 @@ export default {
         },
         notify: this.$vs.notify,
         closeAnimation: this.$vs.loading.close,
-        intercom: this.$intercom,
         userflow: this.$userflow
       };
       // console.log(payload);

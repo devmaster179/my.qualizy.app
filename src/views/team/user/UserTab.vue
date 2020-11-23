@@ -507,10 +507,7 @@ export default {
                       group: JSON.parse(localStorage.getItem("userInfo")).group,
                       createdUserEmail: item.email,
                     });
-                    this.$intercom.trackEvent("Added a user account", {
-                      group: JSON.parse(localStorage.getItem("userInfo")).group,
-                      createdUserEmail: item.email,
-                    });
+
                     this.$userflow.track("Add New User" , {
                       email: item.email,
                       group: JSON.parse(localStorage.getItem("userInfo")).group

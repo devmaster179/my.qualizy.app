@@ -294,9 +294,6 @@ export default {
           firebase.analytics().logEvent("Create Schedule", {
             Title: title,
           });
-          this.$intercom.trackEvent("Create Schedule", {
-            Title: title,
-          });
 
           this.$userflow.track("Create Schedule" , {
             Title: title,

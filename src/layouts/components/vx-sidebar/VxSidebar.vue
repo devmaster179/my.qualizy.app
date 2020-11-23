@@ -33,7 +33,7 @@
             alt="logo"
             class="cursor-pointer"
             v-if="logo"
-            style="max-height: 40px; max-width: 40px;"
+            width="40px" height="40px"
             @click="$router.push('/').catch(err => {})"
           />
         </div>
@@ -99,7 +99,6 @@
             icon="headset_mic"
             :featherIcon="false"
             supportButton
-            @click.native="$intercom.show()"
           >
             <span
               v-show="!sidebarItemsMin"
@@ -107,13 +106,6 @@
               style="font-size:10px; white-space: normal;"
             >{{$t('support') | capitalize}}</span>
           </vx-sidebar-item>
-          <!-- <vs-button color="danger" size="large" class="py-4" type="gradient" icon-pack="feather" icon="icon-life-buoy" @click="$intercom.show()" >
-                        <span v-show="!sidebarItemsMin" class="truncate">Support</span>
-          </vs-button>-->
-          <!-- <div class="p-3 mr-4 rounded-lg cursor-pointer flex items-center justify-center text-lg font-medium text-base text-primary bg-danger border border-solid border-danger">
-                        <vs-icon icon-pack="feather" icon="icon-life-buoy"/>
-                        <span class="ml-2 text-base text-primary">Add User</span>
-          </div>-->
         </div>
       </div>
     </vs-sidebar>

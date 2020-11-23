@@ -1,13 +1,13 @@
 <template>
   <div id="tasks" class="px-2">
-    <div class="sm:flex justify-between" v-if="!isSidebarActive && !logDetailsActive ">
+    <div class="flex justify-between" v-if="!isSidebarActive && !logDetailsActive ">
       <div class="flex items-end">
         <p class="karla-bold page-title">{{$t("tasks")}}</p>
         <p
           class="karla page-subtitle ml-2 mb-1 hidden lg:block"
         >({{tasks('task').length}} {{$t("tasks for")}} {{cationDate}} {{new Date()|moment("DD.MMM.YYYY")}})</p>
       </div>
-      <div class="sm:flex justify-end">
+      <div class="flex justify-end">
         <vs-input
           v-model="search"
           icon-pack="feather"
@@ -1088,11 +1088,6 @@ export default {
           that.getLogID(updated_at, task.templateID).then((id) => {
             that.$vs.loading.close();
 
-            that.$intercom.trackEvent('Create Log', {
-              group: JSON.parse(localStorage.getItem("userInfo")).group,
-              email: JSON.parse(localStorage.getItem("userInfo")).email,
-              id: id,
-            })
             that.$userflow.track("Create Log" , {
               id: id
             })
@@ -1199,11 +1194,6 @@ export default {
           group: JSON.parse(localStorage.getItem("userInfo")).group,
         })
         this.$vs.loading.close();
-        this.$intercom.trackEvent('Create Log', {
-          group: JSON.parse(localStorage.getItem("userInfo")).group,
-          email: JSON.parse(localStorage.getItem("userInfo")).email,
-          id: newLogRef.id,
-        })
 
         this.$userflow.track("Create Log" , {
           id: newLogRef.id
@@ -1254,6 +1244,7 @@ export default {
     },
   },
   created() {
+    console.log(this.$gist)
     this.setLog()
   },
   watch: {

@@ -41,10 +41,10 @@
       <feather-icon icon="InfoIcon" class="block mr-0"></feather-icon>
       <slot></slot>
     </router-link>-->
-    <a v-else-if="supportButton" class="cursor-pointer block text-center">
+    <span v-else-if="supportButton" class="cursor-pointer block text-center">
       <feather-icon icon="InfoIcon" class="block mr-0"></feather-icon>
       <slot></slot>
-    </a>
+    </span>
   </div>
 </template>
 

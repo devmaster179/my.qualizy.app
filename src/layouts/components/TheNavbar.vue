@@ -81,7 +81,7 @@
         <vs-dropdown vs-custom-content vs-trigger-click class="cursor-pointer">
           <span class="cursor-pointer flex i18n-locale">
             <img
-              class="h-4 w-5"
+              width="17px" height="14px"
               :src="require(`@/assets/images/flags/${$i18n.locale}.png`)"
               :alt="$i18n.locale"
             />
@@ -91,7 +91,7 @@
             <vs-dropdown-item v-for="locale in locales" :key="locale" @click="updateLocale(locale)">
               <div class="flex items-start">
                 <img
-                  class="h-4 w-5"
+                  width="17px" height="14px"
                   :src="require(`@/assets/images/flags/${country(locale).flag}.png`)"
                   :alt="locale"
                 />
@@ -186,8 +186,8 @@
                 key="onlineImg"
                 :src="activeUserImg"
                 alt="user-img"
-                width="40"
-                height="40"
+                width="40px"
+                height="40px"
                 class="rounded-full shadow-md cursor-pointer block"
               />
               <img
@@ -195,8 +195,8 @@
                 key="localImg"
                 :src="require(`@/assets/images/${activeUserImg}`)"
                 alt="user-img"
-                width="40"
-                height="40"
+                width="40px"
+                height="40px"
                 class="rounded-full shadow-md cursor-pointer block"
               />
             </div>
@@ -425,12 +425,6 @@ export default {
           firebase.analytics().logEvent("sign-out", {
             email: cUser.email,
           });
-
-          this.$intercom.trackEvent("sign out", {
-            user_id: cUser.id,
-            email: cUser.email
-          });
-          this.$intercom.shutdown();
 
           this.$userflow.track("Sign out" , {
             email: cUser.email,

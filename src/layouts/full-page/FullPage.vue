@@ -25,6 +25,7 @@
             @click="$router.push('/').catch(err => {})"
             :src="require('@/assets/images/logo/logo-text.png')"
             alt="Qualizy"
+            width="125px" height="50px"
           />
         </vs-navbar-title>
       </div>

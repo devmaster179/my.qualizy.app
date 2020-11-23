@@ -158,10 +158,7 @@ export default {
           group: JSON.parse(localStorage.getItem("userInfo")).group,
           id: id
         });
-        this.$intercom.trackEvent("Added a group", {
-          group: JSON.parse(localStorage.getItem("userInfo")).group,
-          id: id
-        });
+
         this.clear();
         this.isSidebarActiveLocal = false;
       });

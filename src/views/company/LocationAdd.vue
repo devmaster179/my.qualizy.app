@@ -188,10 +188,6 @@ export default {
           group: JSON.parse(localStorage.getItem("userInfo")).group,
           id: id,
         });
-        this.$intercom.trackEvent("Added a location", {
-          group: JSON.parse(localStorage.getItem("userInfo")).group,
-          id: id,
-        });
 
         this.$userflow.track("Add New Location", {
           name: addingObject.name,

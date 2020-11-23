@@ -125,46 +125,9 @@ export default {
     };
   },
   watch: {
-    // idlCalc(val) {
-    //   if (this.$store.state.idleVue.isIdle) {
-    //     var cUser = this.$store.getters["app/currentUser"];
-    //     // this.$router.push("/pages/login");
-
-    //     db.collection("users").doc(cUser.id).update({
-    //       chatStatus: "offline",
-    //     });
-    //     firebase
-    //       .auth()
-    //       .signOut()
-    //       .then(() => {
-    //         firebase.analytics().logEvent("sign-out", {
-    //           email: cUser.email,
-    //         });
-    //         this.$intercom.trackEvent("sign-out", {
-    //           email: cUser.email,
-    //         });
-    //         this.$intercom.shutdown();
-
-    //         this.$userflow.track("Sign out" , {
-    //           email: cUser.email,
-    //           group: cUser.email.group
-    //         })
-    //         this.$userflow.reset()
-
-    //         localStorage.removeItem("userLogin");
-    //         localStorage.removeItem("tokenExpiryKey");
-    //         localStorage.removeItem("userLogin");
-
-
-    //       });
-    //   }
-    // },
     $route() {
       this.routeTitle = this.$route.meta.pageTitle;
       var cUser = this.$store.getters["app/currentUser"];
-      this.$intercom.trackEvent("Page View", {
-        "URL": window.location.href,
-      });
     },
     isThemeDark(val) {
       if (this.navbarColor == "#fff" && val) {
@@ -710,17 +673,6 @@ export default {
     if (user.team !== undefined && user.team !== null && user.team !== "")
       team = user.team.join();
 
-    // this.$intercom.boot({
-    //     user_id: user.id,
-    //     name: user.name,
-    //     email: user.email,
-    //     group: user.group,
-    //     location: location,
-    //     phone: phone,
-    //     role: role,
-    //     team: team,
-    //     hide_default_launcher: true
-    // });
     // window.addEventListener('online',  this.updateStatus('online'));
     // window.addEventListener('offline',  this.updateStatus('offline'));
   },
@@ -749,18 +701,6 @@ export default {
     var role = 4;
     var roles = ["Super admin", "Admin", "Supervisor", "Operator", "Auditor"];
     if (user.role !== undefined) role = user.role.key;
-
-    this.$intercom.boot({
-      user_id: user.id,
-      name: user.name,
-      email: user.email,
-      group: user.group,
-      location: location,
-      phone: phone,
-      role: roles[role],
-      team: team,
-      hide_default_launcher: true,
-    });
 
     this.setSidebarWidth();
     if (this.navbarColor == "#fff" && this.isThemeDark) {
