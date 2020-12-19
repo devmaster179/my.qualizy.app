@@ -147,7 +147,7 @@ export default {
       notify: payload.notify,
       closeAnimation: payload.closeAnimation,
       userflow: payload.userflow,
-      gist: payload.gist
+      gist: payload.gist 
     }
     // If remember_me is enabled change firebase Persistence
     if (!payload.checkbox_remember_me) {
@@ -293,6 +293,10 @@ export default {
           lang: user.lang || "en-us",
           phone: phone,
           "App creator": !!user.who,
+          "Company name": company.bussiness,
+          "Company size": company.employee || 5,
+          "Company industry": company.industry || "Business owner",
+          "Number of locations": locations.length || 0,
           company: {
             id: company.id,
             name: company.bussiness,
@@ -301,7 +305,8 @@ export default {
             "Number of locations": locations.length || 0,
           }
         });
-        payload.gist.track('login', {
+        
+        payload.gist.track('Log In', {
           email: user.email,
           name: user.name,
         })
@@ -320,10 +325,11 @@ export default {
             "Location Name": location,
             phone: phone,
             role: roles[role],
-            lang: user.lang || "en-us",
+            locale_code: user.lang || "en-us",
             "Company size": company.employee || 5,
             "Company industry": company.industry || "Business owner",
             "Number of locations": locations.length || 0,
+            "App creator": !!user.who,
             // "Job title": company.job || "Job title"
           })
         }
@@ -616,7 +622,7 @@ export default {
               "Location Name": company,
               phone: payload.userDetails.phone,
               role: 0,
-              lang: language,
+              locale_code: language,
               created_at: createdDate.toISOString()
             })
             payload.userflow.track("Sign Up", {

@@ -48,13 +48,13 @@ export default [{
   icon: "BookOpenIcon",
   i18n: "templates",
 },
-// {
-//   url: '/analytics',
-//   name: 'Analytics',
-//   slug: 'analytics',
-//   icon: 'PieChartIcon',
-//   i18n: 'analytics'
-// },
+{
+  url: '/analytics',
+  name: 'Analytics',
+  slug: 'analytics',
+  icon: 'PieChartIcon',
+  i18n: 'analytics'
+},
 {
   url: "/report",
   name: "Report",
@@ -96,10 +96,10 @@ export default [{
 // },
 {
   url: "/chat",
-  name: "Chat",
+  name: "chat",
   slug: "",
   icon: "MessageSquareIcon",
-  i18n: "Chat",
+  i18n: "chat",
 },
   // {
   //   url: null,

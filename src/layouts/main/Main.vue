@@ -194,11 +194,23 @@ export default {
   },
   methods: {
     deleteTrashedData() {
-      // db.collection('knowledge').where('deleted', '==' ,false).get().then(q => {
+      // db.collection('fooditems').where('deleted', '==' ,true).get().then(q => {
       //   q.forEach(item=> {
-      //     // console.log(item.id)
+      //     db.collection("fooditems").doc(item.id).delete()
       //   })
       // })
+    },
+    setAnalytics() {
+      return new Promise((res,rej) => {
+        db.collection('analytics').where('group' , '==' ,  JSON.parse(localStorage.getItem("userInfo")).group).orderBy('updated_at','desc').orderBy('visible','desc').onSnapshot(q => {
+          var analytics = []
+          q.forEach(doc => {
+            analytics.push(Object.assign({}, doc.data(), {id: doc.id}))
+          });
+          this.$store.commit('app/SET_ANALYTICS', analytics)
+          res('ok')
+        })
+      })
     },
     setReportSchedule() {
       return new Promise((res,rej)=> {
@@ -677,6 +689,7 @@ export default {
     // window.addEventListener('offline',  this.updateStatus('offline'));
   },
   async created() {
+    window.gist.chat("hideLauncher");
     // this.deleteTrashedData()
     var user = JSON.parse(localStorage.getItem("userInfo"));
     if (!this.$userflow.isIdentified()) {
@@ -765,7 +778,7 @@ export default {
     // mDate1 = new Date().getTime()
     // console.log((mDate1 - mDate) , 'setPublicTemplates')
     // mDate = mDate1
-    // await this.setNotifications();
+    await this.setNotifications();
     // // mDate1 = new Date().getTime()
     // // console.log((mDate1 - mDate) , 'setNotifications')
     // // mDate = mDate1
@@ -792,6 +805,7 @@ export default {
     await this.setKnowledge();
     // mDate1 = new Date().getTime()
     // console.log((mDate1 - mDate) , 'setKnowledge')
+    await this.setAnalytics();
     this.$vs.loading.close();
 
     // db.collection('notifications').where('group', '==', JSON.parse(localStorage.getItem('userInfo')).group).onSnapshot(q => {

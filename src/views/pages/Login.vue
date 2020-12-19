@@ -172,7 +172,7 @@ export default {
         notify: this.$vs.notify,
         closeAnimation: this.$vs.loading.close,
         userflow: this.$userflow,
-        gist: this.$gist
+        gist: window.gist
       };
       this.$store.dispatch("auth/loginAttempt", payload);
     },

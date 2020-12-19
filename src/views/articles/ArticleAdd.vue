@@ -142,6 +142,12 @@ export default {
                   fileName: doc.name,
                   group: JSON.parse(localStorage.getItem("userInfo")).group
                 })
+                window.gist.track("Create KnowledgeBase Article" , {
+                  title: this.title,
+                  file: downloadURL,
+                  fileName: doc.name,
+                  group: JSON.parse(localStorage.getItem("userInfo")).group
+                })
               });
             }
           );

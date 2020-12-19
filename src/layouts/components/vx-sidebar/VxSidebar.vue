@@ -96,6 +96,7 @@
         </VuePerfectScrollbar>
         <div class="px-4 mt-4">
           <vx-sidebar-item
+            @click.native="toggleSupportChat"
             icon="headset_mic"
             :featherIcon="false"
             supportButton
@@ -149,6 +150,7 @@ export default {
     },
   },
   data: () => ({
+    showSupportChat: false,
     clickNotClose: false, // disable close sidebar on outside click
     reduce: false, // determines if sidebar is reduce - component property
     showCloseButton: false, // show close button in smaller devices
@@ -255,6 +257,17 @@ export default {
     },
   },
   methods: {
+    toggleSupportChat() {
+      // if(this.showSupportChat){
+        window.gist.chat('hideLauncher');
+        window.gist.chat('open')
+        // this.showSupportChat = false
+      // }
+      // else {
+      //   window.gist.chat('close')
+      //   this.showSupportChat = true
+      // }
+    },
     sidebarMouseEntered() {
       if (this.reduce) this.$store.commit("UPDATE_SIDEBAR_ITEMS_MIN", false);
       this.isMouseEnter = true;

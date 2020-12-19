@@ -189,25 +189,15 @@ const router = new Router({
                         parent: 'report',
                     }
                 },
-                // {
-                //     path: '/analytics',
-                //     name: 'analytics',
-                //     component: () => import('@/views/analytics/Analytics.vue'),
-                //     meta: {
-                //         title: "Analytics - Qualizy",
-                //         rule: 'visitor',
-                //         breadcrumb: [{
-                //             title: 'Home',
-                //             url: '/'
-                //         },
-                //         {
-                //             title: 'analytics',
-                //             active: true
-                //         }
-                //         ],
-                //         pageTitle: 'analytics'
-                //     }
-                // },
+                {
+                    path: '/analytics',
+                    name: 'analytics',
+                    component: () => import('@/views/analytics/Analytics.vue'),
+                    meta: {
+                        title: "Analytics - Qualizy",
+                        rule: 'visitor',
+                    }
+                },
                 {
                     path: '/team',
                     name: 'team',
@@ -399,6 +389,7 @@ const router = new Router({
 })
 
 router.afterEach(() => {
+    gist.trackPageView();
     // Remove initial loading
     const appLoading = document.getElementById('loading-bg')
     if (appLoading) {

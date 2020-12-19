@@ -193,6 +193,10 @@ export default {
           name: addingObject.name,
           group: JSON.parse(localStorage.getItem("userInfo")).group,
         });
+        window.gist.track("Add New Location", {
+          name: addingObject.name,
+          group: JSON.parse(localStorage.getItem("userInfo")).group,
+        });
       });
       this.init();
     },

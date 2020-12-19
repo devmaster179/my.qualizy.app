@@ -40,18 +40,46 @@ export default {
   methods: {
     detectFiles(fileList) {
       var that = this;
-      var reader = new FileReader();
+      var img = new Image()
+      var reader = new FileReader();  
       reader.onload = function(e) {
-        that.imagePreview = e.target.result;
+        img.src = e.target.result; 
+        that.imagePreview = e.target.result; 
         that.inUpload = true;
-      };
+        img.onload = function() {
+          var canvas = document.createElement("canvas");
+          var ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0);
+
+          var MAX_WIDTH = 400;
+          var MAX_HEIGHT = 300;
+          var width = img.width;
+          var height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          var ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, width, height);
+          var dataurl = canvas.toDataURL(fileList[0].type);
+          that.upload(dataurl,fileList[0].name, fileList[0].type);
+        }
+      }
       reader.readAsDataURL(fileList[0]);
 
-      Array.from(Array(fileList.length).keys()).map(x => {
-        this.upload(fileList[x]);
-      });
+      
     },
-    upload(file) {
+    upload(file, name, type) {
       var d = new Date();
       var storageRef = storage.ref();
       this.ref =
@@ -59,10 +87,11 @@ export default {
         "/" +
         JSON.parse(localStorage.getItem("userInfo")).id +
         "/logs/images/" +
-        file.name;
+        name;
 
       var mountainsRef = storageRef.child(this.ref);
-      var uploadTask = mountainsRef.put(file);
+      var uploadTask = mountainsRef.putString(file,'data_url' , {contentType:type});
+      // var uploadTask = mountainsRef.put(file);
 
       uploadTask.on(
         "state_changed",

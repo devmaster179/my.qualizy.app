@@ -6,7 +6,7 @@
           <h3
             class="karla-bold"
             style="font-size: 16px;"
-          >{{template(log.templateID).content.templateTitle | capitalize}}</h3>
+          >{{template(log.templateID).content.templateTitle | capitalize}} {{scheduleLocation}}</h3>
           <vs-icon
             class="font-bold ml-4 expand-icon"
             :class="{'on':expand , 'off':!expand}"
@@ -133,8 +133,8 @@
                     <a
                       :href="image.url"
                       target="_blank"
-                      v-for="image in answer.images"
-                      :key="image.ref"
+                      v-for="(image,imgIndex) in answer.images"
+                      :key="'img_'+imgIndex"
                       class="ml-1"
                       style="float: left"
                     >
@@ -202,6 +202,15 @@ export default {
     };
   },
   computed: {
+    scheduleLocation() {
+      return ''
+      // if(!this.log.schedule) return '-------- no schedule'
+      // else {
+      //     var schedule = this.$store.getters['app/getScheduleById'](this.log.schedule || '')
+      //     if(!schedule.location) return '----------- no location'
+      //     return "---------------" + this.$store.getters['app/getLocationById'](schedule.location[0]).name
+      // }
+    },
     convDate() {
       return (date) => {
         if (date.seconds === undefined) return date;

@@ -129,23 +129,22 @@
                   v-for="ntf in unreadNotifications"
                   :key="ntf.id"
                   class="flex justify-between px-4 py-4 notification cursor-pointer"
-                  :style="`background:rgba(var(--vs-${ntf.alertType}), .2) !important`"
                   @click="readNotification(ntf.id)"
                 >
                   <div class="flex items-start">
-                    <vs-avatar
+                    <!-- <vs-avatar
                       v-if="getTemplateInfo(ntf.templateId)!=undefined"
                       :src="require(`@/assets/images/template_image/${getTemplateInfo(ntf.templateId).content.templateImage}`)"
-                    />
-                    <!-- <feather-icon :icon="ntf.icon" :svgClasses="[`text-${ntf.category}`, 'stroke-current mr-1 h-6 w-6']"></feather-icon> -->
+                    /> -->
+      
+                    <feather-icon class="rounded-full" :icon="ntf.icon"  :svgClasses="[`text-${ntf.color}`, 'stroke-current mr-1 h-6 w-6']"></feather-icon>
                     <div class="mx-2">
                       <span
                         class="font-medium block notification-title"
-                        :class="[`text-${ntf.alertType}`]"
+                        :class="[`text-${ntf.color}`]"
                       >{{ ntf.title }}</span>
                       <small
                         class="font-light truncate"
-                        :class="[`text-${ntf.alertType}`]"
                       >{{ ntf.text }}</small>
                       <!-- <small
                         class="block"
@@ -156,7 +155,6 @@
                   </div>
                   <small
                     class="mt-1 whitespace-no-wrap karla"
-                    :class="[`text-${ntf.alertType}`]"
                   >{{ calcTime(ntf.updated_at.toDate()) | duration('humanize' , true) | shotTimeText }}</small>
                 </li>
               </ul>
@@ -230,7 +228,7 @@
                   @click="$router.push('/chat').catch(err => {})"
                 >
                   <feather-icon icon="MessageSquareIcon" svgClasses="w-4 h-4"></feather-icon>
-                  <span class="ml-2">{{$t("Chat")}}</span>
+                  <span class="ml-2">{{$t("chat")}}</span>
                 </li>
                 <vs-divider class="m-1"></vs-divider>
                 <li
@@ -305,15 +303,11 @@ export default {
     },
 
     unreadNotifications() {
-      return []
-      // var cUser = this.$store.getters["app/currentUser"];
-      // if (cUser == undefined) return [];
-      // var notify = this.$store.getters["app/unreadNotifications"](cUser);
-      // return notify.filter(
-      //   (item) =>
-      //     this.$store.getters["app/getTemplateById"](item.templateId) !==
-      //     undefined
-      // );
+      // return []
+      var cUser = this.$store.getters["app/currentUser"];
+      if (cUser == undefined) return [];
+      var notify = this.$store.getters["app/unreadNotifications"](cUser);
+      return notify.filter((item) => this.$store.getters["app/getTemplateById"](item.templateId) !==undefined && item.type.indexOf('app') > -1);
     },
     country() {
       return (locale) => {
@@ -412,8 +406,9 @@ export default {
       // if (this.$auth.profile) this.$auth.logOut();
 
       // if user is looged in via firebase
-      var cUser = this.$store.getters["app/currentUser"];
+      
 
+      var cUser = this.$store.getters["app/currentUser"];
 
       firebase
         .auth()
@@ -425,6 +420,13 @@ export default {
           firebase.analytics().logEvent("sign-out", {
             email: cUser.email,
           });
+
+          window.gist.track('Sign out', {
+            email: cUser.email,
+            group: cUser.email.group
+          });
+
+          window.gist.reset()
 
           this.$userflow.track("Sign out" , {
             email: cUser.email,

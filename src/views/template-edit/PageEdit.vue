@@ -127,23 +127,30 @@ export default {
       }, 10);
     },
     applyAnswer(id) {
-      let answerType = this.answerType(id);
-      this.$store.commit("app/CHN_TEMP_TEMPLATE", {
-        index: this.$store.getters["app/editAnswerIndexes"],
-        target: "answer",
-        key: "type",
-        val: id,
-        answerType: answerType
-      });
-      if(answerType.content == 'temperature') {
+      let template = this.template
+      let index = this.$store.getters["app/editAnswerIndexes"]
+      if(!template.content.pages[index.page].questions[index.question].answers[index.answer].type.id || template.content.pages[index.page].questions[index.question].answers[index.answer].type.id != id){
+        let answerType = this.answerType(id);
         this.$store.commit("app/CHN_TEMP_TEMPLATE", {
           index: this.$store.getters["app/editAnswerIndexes"],
           target: "answer",
-          key: "tempUnit",
-          val: "℃",
+          key: "type",
+          val: id,
+          answerType: answerType
         });
+        if(answerType.content == 'temperature') {
+          this.$store.commit("app/CHN_TEMP_TEMPLATE", {
+            index: this.$store.getters["app/editAnswerIndexes"],
+            target: "answer",
+            key: "tempUnit",
+            val: "℃",
+          });
+        }
+
+        this.applyAction([])
+        this.applyScore([])
       }
-      
+
       setTimeout(() => {
         this.$store.commit("app/SET_EDIT_TYPE", false);
       }, 10);

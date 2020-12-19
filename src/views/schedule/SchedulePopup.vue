@@ -260,6 +260,7 @@ export default {
         mUser.push(item.id)
       })
       var the = this;
+      console.log(this.template)
       var title = this.template.title + " - " + this.$t(this.repeat);
 
       if (!this.update) {
@@ -296,6 +297,10 @@ export default {
           });
 
           this.$userflow.track("Create Schedule" , {
+            Title: title,
+            group: JSON.parse(localStorage.getItem("userInfo")).group
+          })
+          window.gist.track("Create Schedule" , {
             Title: title,
             group: JSON.parse(localStorage.getItem("userInfo")).group
           })

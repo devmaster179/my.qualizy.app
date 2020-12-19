@@ -43,8 +43,25 @@
       </div>
       <div class="fooditem-name mt-4">
         <p class="field-title">{{$t('food item name')}}</p>
-        <div class="flex items-center justify-between">
-          <vs-input v-model="fName" class="w-full mr-2" :placeholder="$t('food item name')" />
+        <div class="flex items-start justify-between">
+          <vue-simple-suggest
+            v-if="!updated"
+            @select="selectFooditem"
+            v-model="fName" 
+            :list="fooditems"
+            ref="suggestComponent"
+            :filter-by-query="true"
+            :min-length="3"
+             display-attribute="name"
+            :styles="autoCompleteStyle"
+          >
+            <div slot="suggestion-item" slot-scope="scope">
+                <div v-html="boldenSuggestion(scope)"></div>
+                <div>{{$t('batch number')}}: {{scope.suggestion.batch}}</div>
+                <div>{{calcExpire(scope.suggestion)}}</div>
+            </div>
+          </vue-simple-suggest>
+          <vs-input v-else v-model="fName" class="w-full mr-2" :placeholder="$t('food item name')" />
           <span
             class="rounded-lg px-1 pt-3 text-center cursor-pointer download"
             @click="scanEnable=!scanEnable"
@@ -66,17 +83,26 @@
         </div>
       </div>
       <div class="mess vx-row mt-4">
-        <div class="vx-col w-1/2 p-0 pr-2">
-          <p class="field-title">{{$t('quantity')}}</p>
-          <vs-input v-model="quantity" type="number" min="1" class="w-full" />
+        <div class="vx-col w-full p-0">
+          <div class="expiry-date">
+            <p class="field-title">{{$t("expiry date")}}</p>
+            <div class="no-expiry flex items-center my-3">
+              <vs-switch v-model="forever" />
+              <span class="ml-2">{{$t("no expiry")}}</span>
+            </div>
+            <datepicker
+              class="w-full"
+              v-if="!forever"
+              :placeholder="$t('from') | capitalize"
+              v-model="e_date"
+              :language="languages[$i18n.locale]"
+            ></datepicker>
+          </div>
         </div>
-        <div class="vx-col w-1/2 p-0 pl-2">
-          <p class="field-title">{{$t('unit of measure')}}</p>
-          <v-select
-            :options="['kg' , 'g' ,'lb' , 'oz','cup','pt','q.t','gal','box','pack','pc' , 'litre']"
-            v-model="unit"
-          />
-        </div>
+      </div>
+      <div class="batch mt-4" >
+        <p class="field-title">{{$t("batch number")}}</p>
+        <vs-input v-model="batch" class="w-full" />
       </div>
       <div class="info mt-8">
         <div class="flex items-center justify-center">
@@ -91,24 +117,20 @@
           </div>
         </div>
         <div class="info-content mt-4" :class="{'open':openInfo,'close':!openInfo}">
-          <div class="expiry-date">
-            <p class="field-title">{{$t("expiry date")}}</p>
-            <div class="no-expiry flex items-center my-3">
-              <vs-switch v-model="forever" />
-              <span class="ml-2">{{$t("no expiry")}}</span>
+          <div class="vx-row w-full">
+            <div class="vx-col w-1/2 p-0 pr-2">
+              <p class="field-title">{{$t('quantity')}}</p>
+              <vs-input v-model="quantity" type="number" min="1" class="w-full" />
             </div>
-            <datepicker
-              v-if="!forever"
-              :placeholder="$t('from') | capitalize"
-              v-model="e_date"
-              :language="languages[$i18n.locale]"
-            ></datepicker>
+            <div class="vx-col w-1/2 p-0 pl-2">
+              <p class="field-title">{{$t('unit of measure')}}</p>
+              <v-select
+                :options="['kg' , 'g' ,'lb' , 'oz','cup','pt','q.t','gal','box','pack','pc' , 'litre']"
+                v-model="unit"
+              />
+            </div>
           </div>
-          <vs-divider class="my-base"></vs-divider>
-          <div class="batch">
-            <p class="field-title mb-3">{{$t("batch number")}}</p>
-            <vs-input v-model="batch" class="w-full" />
-          </div>
+          
           <div class="allergens mt-4">
             <p class="field-title mb-3">{{$t("allergens")}}</p>
               <div class="inline-block mt-3" v-for="(allergen,index) in allergens" :key="index" style="min-width: 50%;">
@@ -201,7 +223,7 @@ import Supplier from "./Supplier";
 import Datepicker from "vuejs-datepicker";
 import * as lang from "vuejs-datepicker/src/locale";
 import { StreamBarcodeReader, ImageBarcodeReader } from "vue-barcode-reader";
-
+import VueSimpleSuggest from 'vue-simple-suggest'
 import { db } from "@/firebase/firebaseConfig";
 export default {
   props: {
@@ -228,9 +250,17 @@ export default {
     Datepicker,
     StreamBarcodeReader,
     ImageBarcodeReader,
+    VueSimpleSuggest
   },
   data() {
     return {
+      autoCompleteStyle: {
+        vueSimpleSuggest: "position-absolute mr-2 ",
+        inputWrapper: "",
+        defaultInput: "p-4 vs-input--input",
+        suggestions: "position-absolute list-group z-1000 border border-solid d-theme-border-grey-light border-t-0",
+        suggestItem: "list-group-item",
+      },
       scanEnable: false,
       ingredients: [],
       inFooditems: null,
@@ -255,6 +285,28 @@ export default {
     };
   },
   methods: {
+    selectFooditem(e) {
+      if(e.forever) {
+        this.forever = true
+      }
+      else {
+        var now = new Date()
+        var created_at = e.created_at.seconds ? e.created_at.toDate(): e.created_at
+        var e_date = e.e_date.seconds ? e.e_date.toDate(): e.e_date
+        var dayDiff = Math.round((e_date.getTime()-created_at.getTime())/(24*60*60*1000))
+        this.e_date = new Date(now.getTime() + dayDiff*24*60*60*1000)
+      }
+      this.allergenss = e.allergens
+      this.batch = e.batch || ''
+    },
+    boldenSuggestion(scope) {
+      if (!scope) return scope;
+      const { suggestion, query } = scope;
+      let result = this.$refs.suggestComponent.displayProperty(suggestion);
+      if (!query) return result;
+      const texts = query.split(/[\s-_/\\|.]/gm).filter(t => !!t) || [''];
+      return result.replace(new RegExp('(.*?)(' + texts.join('|') + ')(.*?)','gi'), '$1<b>$2</b>$3');
+    },
     generateBath() {
       return (
         Math.random()
@@ -390,15 +442,26 @@ export default {
         updated_by: JSON.parse(localStorage.getItem("userInfo")).id,
       });
 
-      this.$userflow.track("Ceate Food Item" , {
+      this.$userflow.track("Create food item" , {
         type: this.type,
         supplier: this.supplier,
         name: this.fName,
-        "expire date": this.e_date,
+        // "expire date": this.e_date,
         forever: this.forever,
-        allergens: this.allergenss,
+        // allergens: this.allergenss,
         group: JSON.parse(localStorage.getItem("userInfo")).group
       })
+
+      window.gist.track("Create food item" , {
+        type: this.type,
+        supplier: this.supplier,
+        name: this.fName,
+        // "expire date": this.e_date,
+        forever: this.forever,
+        // allergens: this.allergenss,
+        group: JSON.parse(localStorage.getItem("userInfo")).group
+      })
+
       this.isSidebarActiveLocal = false;
     },
     chn_supplier(val) {
@@ -406,6 +469,19 @@ export default {
     },
   },
   computed: {
+    calcExpire() {
+      return e=> {
+        if(e.forever)
+          return ''
+        var created_at = e.created_at.seconds ? e.created_at.toDate(): e.created_at
+        var e_date = e.e_date.seconds ? e.e_date.toDate(): e.e_date
+        var dayDiff = Math.round((e_date.getTime()-created_at.getTime())/(24*60*60*1000))
+        return `${this.$t('expire in')}: + ${dayDiff} ${this.$t('day(s)')}` ;
+      }
+    },
+    fooditems() {
+      return this.$store.getters['app/items']
+    },
     isValidCamera() {
       return !(
         navigator &&
@@ -486,6 +562,9 @@ export default {
   },
 };
 </script>
+<style lang="scss">
+@import "@/assets/scss/vuesax/extraComponents/autocomplete.scss";
+</style>
 <style>
 .fooditem-add.log-sidebar .vs-sidebar {
   background: white;

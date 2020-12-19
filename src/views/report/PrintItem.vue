@@ -133,7 +133,7 @@
                       <template
                         v-else-if="getType(questionTR.data.ref.type.id).type=='attachments'"
                       >
-                        <span v-for="(image,iIndex) in questionTR.data.images" :key="image.ref">
+                        <span v-for="(image,iIndex) in questionTR.data.images" :key="'image'+iIndex">
                           <a :href="image.url" target="_blank">
                             <span v-if="iIndex>0">,</span>
                             Attachment{{iIndex}}

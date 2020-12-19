@@ -198,6 +198,10 @@ export default {
         template_id: id,
         group: JSON.parse(localStorage.getItem("userInfo")).group
       })
+      window.gist.track("Create Template" , {
+        template_id: id,
+        group: JSON.parse(localStorage.getItem("userInfo")).group
+      })
     },
     updateIot(id, templateID, p, q, a) {
       return new Promise((resolve, reject) => {

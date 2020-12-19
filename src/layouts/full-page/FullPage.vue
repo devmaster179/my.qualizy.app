@@ -106,6 +106,7 @@ export default {
   },
 
   async created() {
+    window.gist.chat("hideLauncher");
     let myIp = await this.getMyIp();
 
     let ipInfo = await this.ipInfo(myIp.data);

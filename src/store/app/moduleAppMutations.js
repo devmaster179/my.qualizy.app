@@ -1,4 +1,10 @@
 export default {
+  SET_SENSOR_DATA(state,query) {
+    state.sensorDatas = query
+  },
+  SET_ANALYTICS(state, query) {
+    state.analytics = query
+  },
   SET_REPORT_SCHEDULE(state,query) {
     state.report_schedule = query
   },

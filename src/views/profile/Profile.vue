@@ -566,7 +566,7 @@ export default {
       return this.$store.getters["app/currentUser"];
     },
     userValid() {
-      return !this.errors.any() && this.isPhone && !this.digitError;
+      return !this.errors.any() && ( this.userPhone == '' || this.isPhone) && !this.digitError;
     },
     document() {
       return this.$store.getters["app/documents"];

@@ -1,7 +1,15 @@
 /* eslint-disable no-redeclare */
 export default {
+  sensorDatas: state=> {
+    return state.sensorDatas
+  },
+  analytics: state => {
+    return state.analytics
+  },
+  getAnalyticsByID: state => id => {
+    return state.analytics.find(item=> item.id == id)
+  },
   reportSchedule: state=> {
-    console.log(state.report_schedule)
     return state.report_schedule
   },
   getReportScheduleByID: (state) => (id) => {
@@ -270,7 +278,13 @@ export default {
   },
 
   getNotificationByT_Indexes: state => (infors) => {
-    return state.notifications.find(item => item.templateId == infors.tId && item.templateIndexes[0] == infors.indexes[0] && item.templateIndexes[1] == infors.indexes[1] && item.templateIndexes[2] == infors.indexes[2] && item.logID == infors.logID)
+    return state.notifications.find(
+      item => item.templateId == infors.tId && 
+      item.templateIndexes[0] == infors.indexes[0] && 
+      item.templateIndexes[1] == infors.indexes[1] && 
+      item.templateIndexes[2] == infors.indexes[2] && 
+      item.logID == infors.logID 
+    )
   },
   unreadNotifications: state => user => {
     // var notifications = state.notifications.filter(item => item.at != undefined && item.readIds.indexOf(user.id) < 0 && item.toTeam.some(team => user.team.includes(team)))

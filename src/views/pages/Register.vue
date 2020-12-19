@@ -3,7 +3,7 @@
     <div
       class="vx-row w-full min-h-screen"
     >
-      <div class="vx-col w-1/3 hidden lg:block pl-6 py-12 course-side">
+      <div class="vx-col w-1/3 hidden lg:block pl-6 py-12 course-side" style="height: calc( 100vh ); overflow: auto;">
         <div class="logo ml-8 mt-12">
           <img class="cursor-pointer" :src="require('@/assets/images/logo/logo-text.png')" @click="$router.push('/')" alt="Qualizy" />
         </div>
@@ -45,7 +45,7 @@
           <p class="text-dark underline font-semibold cursor-pointer ml-4" @click="login">{{$t("login")}}</p>
         </div>
       </div>
-      <div class="vx-col lg:w-2/3 w-full bg-white flex items-center justify-center">
+      <div class="vx-col lg:w-2/3 w-full bg-white flex justify-center" :class="{'items-center': currentPage<3}" style="height: calc( 100vh ); overflow: auto;">
         <!-- <VuePerfectScrollbar class="scroll-area px-4" :settings="settings" ref="pageLists"> -->
         <transition
           v-for="page in [0,1,2,3]"
@@ -61,7 +61,7 @@
             >
               <p class="text-center karla-bold text-2xl color-black w-full">{{$t("create account")}}</p>
               <div class="vx-col w-full">
-                <label class="caption" for="user_name">{{$t("user name")}}</label>
+                <label class="caption" for="user_name">{{$t("name")}}</label>
                 <!-- regex:^[0-9]+ -->
                 <vs-input
                   id="user_name"
@@ -119,13 +119,13 @@
                 </div>
                 <span class="text-danger text-sm">{{ errors.first('password') }}</span>
               </div>
-              <div class="vx-col w-full md:mt-base mt-3 flex items-center">
+              <!-- <div class="vx-col w-full md:mt-base mt-3 flex items-center">
                 <vs-checkbox
                   id="terms_condition"
                   v-model="isTermsConditionAccepted"
                 ></vs-checkbox>
                 <label for="terms_condition">{{$t('I accept the terms & condition')}}</label>
-              </div>
+              </div> -->
               <div class="vx-col w-full mt-base">
                 <vs-button
                   color="#6C50F0"
@@ -242,6 +242,12 @@
                   :disabled="!pageCheck(2)"
                 >{{$t("next")}}</vs-button>
               </div>
+              <div class="absolute skip-item cursor-pointer">
+                <div class="flex items-center hover:font-bold" @click="currentPage=3">
+                  <span class="text-sm mr-2" style="color: #6C50F0;">{{$t('skip')}}</span>
+                  <vs-icon color="#6C50F0" size="20px" icon-pack="feather" icon="icon-arrow-right"></vs-icon>
+                </div>
+              </div>
             </div>
             <div
               v-else-if="currentPage==page && currentPage==3"
@@ -251,15 +257,15 @@
               <div class="vx-col w-full">
                 <p
                   class="text-center karla-bold text-2xl color-black mb-4"
-                >{{$t("Grab a time here with an expert for a FREE 30 -minute training call (value £90)")}}</p>
+                >{{$t("Grab a time here with an expert for a FREE 30 -minute training call")}}</p>
                 <p
-                  class="text-sm color-black opacity-50 text-center"
+                  class="text-base color-black opacity-50 text-center"
                 >{{$t("Rather than spending hours trying out our software and reading documentation, We invite you to spend 30 minutes with our experts getting specific answers to your questions and having a true expert help you customise the product to your specific needs & workflow")}}</p>
               </div>
-              <div class="vx-row w-full">
-                <vue-calendly :url="calendlyUrl" :height="600"></vue-calendly>
+              <div class="vx-row w-full" style="margin-top:-30px;">
+                <vue-calendly :url="calendlyUrl" :height="1000"></vue-calendly>
               </div>
-              <div class="vx-col w-full mt-base flex items-center justify-between">
+              <div class="vx-col w-full flex items-center justify-between">
                 <vs-button
                   color="#ebe8fd"
                   class="w-full mr-4 karla-bold"
@@ -475,9 +481,10 @@ export default {
       ];
     },
     calendlyUrl() {
+      //  `https://calendly.com/qualizy/training-call-with-a-qualizy-expert-2?hide_event_type_details=1&hide_gdpr_banner=1&primary_color=7367f0`
       if(this.$i18n.locale == 'fr') 
-        return `https://calendly.com/qualizy/mise-en-place-gratuite?email=${this.userEmail}&name=${this.userName}&a1=${this.company}`;
-      return `https://calendly.com/qualizy/training-call-with-a-qualizy-expert-2?email=${this.userEmail}&name=${this.userName}&a1=${this.company}`;
+        return `https://calendly.com/qualizy/mise-en-place-gratuite?email=${this.userEmail}&name=${this.userName}&a1=${this.company}&hide_event_type_details=1&hide_gdpr_banner=1&primary_color=7367f0`;
+      return `https://calendly.com/qualizy/training-call-with-a-qualizy-expert-2?email=${this.userEmail}&name=${this.userName}&a1=${this.company}&hide_event_type_details=1&hide_gdpr_banner=1&primary_color=7367f0`;
     },
     calcHeightSucess() {
       return (i) => {
@@ -494,8 +501,8 @@ export default {
             this.errors.first("password") ||
             this.userName == "" ||
             this.userEmail == "" ||
-            this.userPassword == "" ||
-            !this.isTermsConditionAccepted
+            this.userPassword == "" 
+            // !this.isTermsConditionAccepted
           );
         } else if (page == 1) {
           return this.errors.first("companyname") || this.company == "";
@@ -533,7 +540,7 @@ export default {
 }
 .calendly {
   width: 100%;
-  min-height: 350px !important;
+  min-height: 600px !important;
   height: 100% !important;
 }
 </style>

@@ -379,7 +379,7 @@ export default {
             var answerObject = {
               title: answer.title,
               type: answer.type,
-              action: answer.action,
+              action: Array.isArray(answer.action) ? answer.action : [],
               mandatory: answer.mandatory,
               loged: loged,
               score: answer.score === undefined ? "" : answer.score,

@@ -372,22 +372,27 @@ export default {
       return `https://my.qualizy.app/#/public-report/${this.selectedID}`;
     },
     reports() {
-      let reports = this.$store.getters["app/reports"]
-        .filter(
-          (item) =>
-            item.title.toLowerCase().indexOf(this.search.toLowerCase()) > -1
-        )
-        .sort(
-          (a, b) =>
-            b.updated_at.toDate().getTime() - a.updated_at.toDate().getTime()
-        );
-      
-      let filterLocations = this.$store.getters["app/locationList"]
-      if(filterLocations.length == 0)
-        return reports
-      else 
-        return reports.filter(report => !!report.location && report.location.some(item=> filterLocations.includes(item)))
-      
+      var cUser = this.$store.getters["app/currentUser"]
+      var locationList = this.$store.getters['app/locationList']
+      if(locationList.length==0) {
+        if(cUser.role == undefined || cUser.role.key == undefined || cUser.role.key>0) {
+          if(cUser.location !== undefined && Array.isArray(cUser.location) && cUser.location.length>0) {
+            locationList = cUser.location
+          } else {
+            locationList = ['no']
+          }
+        }
+      }
+      let reports = this.$store.getters["app/reports"].filter((report) => {
+        if(locationList.length>0) {
+          if(!report.location || !report.location.some(item=> locationList.includes(item))) return false
+        }
+        if(this.search != "") {
+          if(report.title.toLowerCase().indexOf(this.search.toLowerCase()) < 0) return false
+        }
+        return true
+      }).sort((a, b) =>b.updated_at.toDate().getTime() - a.updated_at.toDate().getTime());
+      return reports
     },
   },
 };

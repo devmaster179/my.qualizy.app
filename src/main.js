@@ -12,7 +12,7 @@ import Vue from 'vue'
 import App from './App.vue'
 
 import './registerServiceWorker'
-
+import './gist'
 // Vuesax Component Framework
 import Vuesax from 'vuesax'
 import 'material-icons/iconfont/material-icons.css' //Material Icons
@@ -22,7 +22,7 @@ Vue.use(Vuesax)
 // // axios
 import axios from 'axios'
 Vue.prototype.$http = axios
-Vue.prototype.$gist = window.gist
+// Vue.prototype.$gist = gist
 
 // Firebase-kk
 import '@/firebase/firebaseInit'

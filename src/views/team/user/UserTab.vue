@@ -512,6 +512,10 @@ export default {
                       email: item.email,
                       group: JSON.parse(localStorage.getItem("userInfo")).group
                     })
+                    window.gist.track("Add New User" , {
+                      email: item.email,
+                      group: JSON.parse(localStorage.getItem("userInfo")).group
+                    })
                     this.sendMail(item.email, pass);
                     this.$vs.notify({
                       time: 7000,

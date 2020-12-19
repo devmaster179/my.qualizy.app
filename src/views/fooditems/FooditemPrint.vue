@@ -163,6 +163,11 @@ export default {
         name: this.item.name,
         group: JSON.parse(localStorage.getItem("userInfo")).group
       })
+      
+      window.gist.track("Print Food Item" , {
+        name: this.item.name,
+        group: JSON.parse(localStorage.getItem("userInfo")).group
+      })
     },
   },
 };
