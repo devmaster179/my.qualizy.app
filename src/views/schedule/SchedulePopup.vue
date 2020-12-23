@@ -260,6 +260,7 @@ export default {
         mUser.push(item.id)
       })
       var the = this;
+      console.log(this.template)
       var title = this.template.title + " - " + this.$t(this.repeat);
 
       if (!this.update) {
@@ -294,11 +295,12 @@ export default {
           firebase.analytics().logEvent("Create Schedule", {
             Title: title,
           });
-          this.$intercom.trackEvent("Create Schedule", {
-            Title: title,
-          });
 
           this.$userflow.track("Create Schedule" , {
+            Title: title,
+            group: JSON.parse(localStorage.getItem("userInfo")).group
+          })
+          window.gist.track("Create Schedule" , {
             Title: title,
             group: JSON.parse(localStorage.getItem("userInfo")).group
           })

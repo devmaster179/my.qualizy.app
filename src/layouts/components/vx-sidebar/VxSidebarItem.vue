@@ -33,18 +33,11 @@
       <feather-icon :icon="icon" :class="{'w-3 h-3': iconSmall}" class="block mr-0" v-else></feather-icon>
       <slot></slot>
     </router-link>
-    <!-- <router-link
-      v-else-if="supportButton"
-      class="router-link-active support-button cursor-pointer flex justify-center text-primary"
-    >
-      ddddddd
+
+    <span v-else-if="supportButton" class="cursor-pointer block text-center">
       <feather-icon icon="InfoIcon" class="block mr-0"></feather-icon>
       <slot></slot>
-    </router-link>-->
-    <a v-else-if="supportButton" class="cursor-pointer block text-center">
-      <feather-icon icon="InfoIcon" class="block mr-0"></feather-icon>
-      <slot></slot>
-    </a>
+    </span>
   </div>
 </template>
 

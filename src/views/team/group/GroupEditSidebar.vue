@@ -141,6 +141,12 @@ export default {
           group: JSON.parse(localStorage.getItem("userInfo")).group
         })
 
+        window.gist.track("Add New Team" , {
+          name: this.teamName,
+          group: JSON.parse(localStorage.getItem("userInfo")).group
+        })
+
+
         this.mate1.map(item => {
           let user = this.$store.getters["app/getUserById"](item);
           if (user == undefined) return;
@@ -158,10 +164,7 @@ export default {
           group: JSON.parse(localStorage.getItem("userInfo")).group,
           id: id
         });
-        this.$intercom.trackEvent("Added a group", {
-          group: JSON.parse(localStorage.getItem("userInfo")).group,
-          id: id
-        });
+
         this.clear();
         this.isSidebarActiveLocal = false;
       });

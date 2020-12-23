@@ -2,7 +2,8 @@ var date = new Date()
 date = new Date(date.getFullYear(), date.getMonth(), date.getDate())
 var from = new Date(date.getTime() - (10 * 24 * 60 * 60 * 1000));
 export default {
-
+  sensorDatas:[],
+  analytics:[],
   labels: [],
   templateTypes: [],
   templates: [],

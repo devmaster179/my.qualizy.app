@@ -329,28 +329,55 @@ export default {
     },
     users() {
       var users = this.$store.getters["app/users"]
-      let filteredLocation = this.$store.getters["app/locationList"]
-      if(filteredLocation.length > 0)
-        users = users.filter(user=> !!user.location && user.location.some(item=> filteredLocation.includes(item)))
+      var cUser = this.$store.getters["app/currentUser"]
+      var locationList = this.$store.getters['app/locationList']
+      if(locationList.length==0) {
+        if(cUser.role == undefined || cUser.role.key == undefined || cUser.role.key>0) {
+          if(cUser.location !== undefined && Array.isArray(cUser.location) && cUser.location.length>0) {
+            locationList = cUser.location
+          } else {
+            locationList = ['no']
+          }
+        }
+      }
       var __users = [];
-      users.map((item) => {
-        __users.push({ id: item.id, name: item.name });
+      users.map((user) => {
+        if(locationList>0) {
+          if(!user.location || !Array.isArray(user.location) || !user.location.some(item=> locationList.includes(item)))
+            return
+        }
+        __users.push({ id: user.id, name: user.name });
       });
       return __users;
     },
     teams() {
       var teams = this.$store.getters["app/teams"];
-      let filteredLocation = this.$store.getters["app/locationList"]
-      if(filteredLocation.length > 0)
-        teams = teams.filter(team=>!!team.location && team.location.some(item=>filteredLocation.includes(item)))
+      var users = this.$store.getters["app/users"]
+      var cUser = this.$store.getters["app/currentUser"]
+      var locationList = this.$store.getters['app/locationList']
+      if(locationList.length==0) {
+        if(cUser.role == undefined || cUser.role.key == undefined || cUser.role.key>0) {
+          if(cUser.location !== undefined && Array.isArray(cUser.location) && cUser.location.length>0) {
+            locationList = cUser.location
+          } else {
+            locationList = ['no']
+          }
+        }
+      }
+      
       var __teams = [];
-      teams.map((item) => {
+      teams.map((team) => {
         if (
-          (item.status !== undefined && !item.status) ||
-          (item.deleted !== undefined && item.deleted)
+          (team.status !== undefined && !team.status) ||
+          (team.deleted !== undefined && team.deleted)
         )
           return;
-        __teams.push({ id: item.id, name: item.name });
+        if(locationList.length > 0) {
+          if(!team.location || !Array.isArray(team.location) || !team.location.some(item=>locationList.includes(item))) {
+            return 
+          }
+        }
+        __teams.push({ id: team.id, name: team.name });
       });
       return __teams;
     },

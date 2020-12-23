@@ -25,6 +25,7 @@
             @click="$router.push('/').catch(err => {})"
             :src="require('@/assets/images/logo/logo-text.png')"
             alt="Qualizy"
+            width="125px" height="50px"
           />
         </vs-navbar-title>
       </div>
@@ -105,6 +106,7 @@ export default {
   },
 
   async created() {
+    window.gist.chat("hideLauncher");
     let myIp = await this.getMyIp();
 
     let ipInfo = await this.ipInfo(myIp.data);

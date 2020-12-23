@@ -125,46 +125,9 @@ export default {
     };
   },
   watch: {
-    // idlCalc(val) {
-    //   if (this.$store.state.idleVue.isIdle) {
-    //     var cUser = this.$store.getters["app/currentUser"];
-    //     // this.$router.push("/pages/login");
-
-    //     db.collection("users").doc(cUser.id).update({
-    //       chatStatus: "offline",
-    //     });
-    //     firebase
-    //       .auth()
-    //       .signOut()
-    //       .then(() => {
-    //         firebase.analytics().logEvent("sign-out", {
-    //           email: cUser.email,
-    //         });
-    //         this.$intercom.trackEvent("sign-out", {
-    //           email: cUser.email,
-    //         });
-    //         this.$intercom.shutdown();
-
-    //         this.$userflow.track("Sign out" , {
-    //           email: cUser.email,
-    //           group: cUser.email.group
-    //         })
-    //         this.$userflow.reset()
-
-    //         localStorage.removeItem("userLogin");
-    //         localStorage.removeItem("tokenExpiryKey");
-    //         localStorage.removeItem("userLogin");
-
-
-    //       });
-    //   }
-    // },
     $route() {
       this.routeTitle = this.$route.meta.pageTitle;
       var cUser = this.$store.getters["app/currentUser"];
-      this.$intercom.trackEvent("Page View", {
-        "URL": window.location.href,
-      });
     },
     isThemeDark(val) {
       if (this.navbarColor == "#fff" && val) {
@@ -231,11 +194,23 @@ export default {
   },
   methods: {
     deleteTrashedData() {
-      // db.collection('knowledge').where('deleted', '==' ,false).get().then(q => {
+      // db.collection('fooditems').where('deleted', '==' ,true).get().then(q => {
       //   q.forEach(item=> {
-      //     // console.log(item.id)
+      //     db.collection("fooditems").doc(item.id).delete()
       //   })
       // })
+    },
+    setAnalytics() {
+      return new Promise((res,rej) => {
+        db.collection('analytics').where('group' , '==' ,  JSON.parse(localStorage.getItem("userInfo")).group).orderBy('updated_at','desc').orderBy('visible','desc').onSnapshot(q => {
+          var analytics = []
+          q.forEach(doc => {
+            analytics.push(Object.assign({}, doc.data(), {id: doc.id}))
+          });
+          this.$store.commit('app/SET_ANALYTICS', analytics)
+          res('ok')
+        })
+      })
     },
     setReportSchedule() {
       return new Promise((res,rej)=> {
@@ -710,21 +685,11 @@ export default {
     if (user.team !== undefined && user.team !== null && user.team !== "")
       team = user.team.join();
 
-    // this.$intercom.boot({
-    //     user_id: user.id,
-    //     name: user.name,
-    //     email: user.email,
-    //     group: user.group,
-    //     location: location,
-    //     phone: phone,
-    //     role: role,
-    //     team: team,
-    //     hide_default_launcher: true
-    // });
     // window.addEventListener('online',  this.updateStatus('online'));
     // window.addEventListener('offline',  this.updateStatus('offline'));
   },
   async created() {
+    window.gist.chat("hideLauncher");
     // this.deleteTrashedData()
     var user = JSON.parse(localStorage.getItem("userInfo"));
     if (!this.$userflow.isIdentified()) {
@@ -749,18 +714,6 @@ export default {
     var role = 4;
     var roles = ["Super admin", "Admin", "Supervisor", "Operator", "Auditor"];
     if (user.role !== undefined) role = user.role.key;
-
-    this.$intercom.boot({
-      user_id: user.id,
-      name: user.name,
-      email: user.email,
-      group: user.group,
-      location: location,
-      phone: phone,
-      role: roles[role],
-      team: team,
-      hide_default_launcher: true,
-    });
 
     this.setSidebarWidth();
     if (this.navbarColor == "#fff" && this.isThemeDark) {
@@ -825,7 +778,7 @@ export default {
     // mDate1 = new Date().getTime()
     // console.log((mDate1 - mDate) , 'setPublicTemplates')
     // mDate = mDate1
-    // await this.setNotifications();
+    await this.setNotifications();
     // // mDate1 = new Date().getTime()
     // // console.log((mDate1 - mDate) , 'setNotifications')
     // // mDate = mDate1
@@ -852,6 +805,7 @@ export default {
     await this.setKnowledge();
     // mDate1 = new Date().getTime()
     // console.log((mDate1 - mDate) , 'setKnowledge')
+    await this.setAnalytics();
     this.$vs.loading.close();
 
     // db.collection('notifications').where('group', '==', JSON.parse(localStorage.getItem('userInfo')).group).onSnapshot(q => {

@@ -285,10 +285,6 @@ export default {
             group: JSON.parse(localStorage.getItem("userInfo")).group,
             id: res.id,
           });
-          this.$intercom.trackEvent("Added a FoodItem", {
-            group: JSON.parse(localStorage.getItem("userInfo")).group,
-            id: res.id,
-          });
           
         });
       this.clearFields();

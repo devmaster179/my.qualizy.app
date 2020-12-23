@@ -1,13 +1,13 @@
 <template>
   <div id="tasks" class="px-2">
-    <div class="sm:flex justify-between" v-if="!isSidebarActive && !logDetailsActive ">
+    <div class="flex justify-between" v-if="!isSidebarActive && !logDetailsActive ">
       <div class="flex items-end">
         <p class="karla-bold page-title">{{$t("tasks")}}</p>
         <p
           class="karla page-subtitle ml-2 mb-1 hidden lg:block"
         >({{tasks('task').length}} {{$t("tasks for")}} {{cationDate}} {{new Date()|moment("DD.MMM.YYYY")}})</p>
       </div>
-      <div class="sm:flex justify-end">
+      <div class="flex justify-end">
         <vs-input
           v-model="search"
           icon-pack="feather"
@@ -315,32 +315,6 @@ export default {
 
       var userTeam = cUser.team || []
       let templates = this.$store.getters["app/getBookedTemplate"]
-        .filter((item) => {
-          
-          if (item.trashed !== undefined && item.trashed) return false;
-          if(locationList.length > 0) {
-            if(!item.content.location || !Array.isArray(item.content.location)) return false
-            if(!locationList.some(ll=> item.content.location.includes(ll))) return false
-          }
-          if(item.content.teams !== undefined && Array.isArray(item.content.teams)) {
-            if(!item.content.teams.some(t=> userTeam.includes(t))) return false
-          }
-          if (this.tags != "") {
-            if (item.content.templateLabel === undefined) return false;
-            if (
-              !item.content.templateLabel.some((label) =>
-                this.tags.includes(label)
-              )
-            )
-              return false;
-          }
-
-          return (
-            item.content.templateTitle
-              .toLowerCase()
-              .indexOf(this.search.toLowerCase()) > -1
-          );
-        })
         .sort(
           (a, b) =>
             b.updated_at.toDate().getTime() - a.updated_at.toDate().getTime()
@@ -348,6 +322,28 @@ export default {
 
       var unshceduledTemplate = [];
       templates.map((template) => {
+        if (template.trashed) return 
+        if(locationList.length > 0) {
+          if(!template.content.location || !Array.isArray(template.content.location)) return 
+          if(!locationList.some(ll=> template.content.location.includes(ll))) return 
+        }
+        if(template.content.teams !== undefined && Array.isArray(template.content.teams) && template.content.teams.length>0) {
+          if(!template.content.teams.some(t=> userTeam.includes(t))) return 
+        }
+        if (this.tags != "") {
+          if (template.content.templateLabel === undefined) return 
+          if (
+            !item.content.templateLabel.some((label) =>
+              this.tags.includes(label)
+            )
+          )
+            return false;
+        }
+        if(this.search !='') {
+          if(template.content.templateTitle.toLowerCase().indexOf(this.search.toLowerCase())<0)
+            return 
+        }
+
         unshceduledTemplate.push({ templateID: template.id });
       });
 
@@ -400,11 +396,10 @@ export default {
         var template = this.$store.getters["app/getTemplateById"](
           item.templateID
         );
-
-        if (template === undefined) return false;
-        if (template.trashed !== undefined && template.trashed) return false;
+        if (!template) return false;
+        if (template.trashed) return false;
         if(template.content.templateSD == 'bookmarked') {
-          if(template.content.teams!=undefined && Array.isArray(template.content.teams) && !template.content.teams.some(t=> userTeam.includes(t))) return false
+          if(template.content.teams!=undefined && Array.isArray(template.content.teams) && template.content.teams.length>0 && !template.content.teams.some(t=> userTeam.includes(t))) return false
           if(locationList.length>0) {
             if(!template.content.location || !Array.isArray(template.content.location)) return false
             if(!locationList.some(ll=> template.content.location.includes(ll))) return false
@@ -895,14 +890,18 @@ export default {
         if(!Array.isArray(cTeam)) cTeam = []
         if(!cTeam.some(ct=>task.assign.includes(ct))) {
           var pages = [];
-          let template = this.$store.getters["app/getTemplateById"](
+          var template = this.$store.getters["app/getTemplateById"](
             task.templateID
           );
+          
+          template = JSON.parse(JSON.stringify(template))
+
           template.content.pages.map((page, pIndex) => {
             var questions = [];
             page.questions.map((question, qIndex) => {
               var answers = [];
               question.answers.map((answer, aIndex) => {
+                delete answer.action
                 var date = new Date();
                 let answerType = this.$store.getters["app/getTemplateTypeById"](
                   answer.type.id
@@ -989,9 +988,10 @@ export default {
       // this.$vs.loading();
       var updated_at = new Date();
       var pages = [];
-      let template = this.$store.getters["app/getTemplateById"](
+      var template = this.$store.getters["app/getTemplateById"](
         task.templateID
       );
+      template = JSON.parse(JSON.stringify(template))
       if (!unscheduled) {
         let log = this.$store.getters["app/getLogByTidTime"](
           task.templateID,
@@ -1003,6 +1003,7 @@ export default {
             page.questions.map((question, qIndex) => {
               var answers = [];
               question.answers.map((answer, aIndex) => {
+                delete answer.action
                 var date = new Date();
                 let answerType = this.$store.getters["app/getTemplateTypeById"](
                   answer.type.id
@@ -1088,14 +1089,14 @@ export default {
           that.getLogID(updated_at, task.templateID).then((id) => {
             that.$vs.loading.close();
 
-            that.$intercom.trackEvent('Create Log', {
-              group: JSON.parse(localStorage.getItem("userInfo")).group,
-              email: JSON.parse(localStorage.getItem("userInfo")).email,
-              id: id,
-            })
             that.$userflow.track("Create Log" , {
               id: id
             })
+
+            window.gist.track("Create Log" , {
+              id: id
+            })
+
             that.logID = id;
             that.pages = pages;
             that.template = task.templateID;
@@ -1116,6 +1117,7 @@ export default {
           page.questions.map((question, qIndex) => {
             var answers = [];
             question.answers.map((answer, aIndex) => {
+              delete answer.action
               var date = new Date();
               let answerType = this.$store.getters["app/getTemplateTypeById"](
                 answer.type.id
@@ -1199,13 +1201,11 @@ export default {
           group: JSON.parse(localStorage.getItem("userInfo")).group,
         })
         this.$vs.loading.close();
-        this.$intercom.trackEvent('Create Log', {
-          group: JSON.parse(localStorage.getItem("userInfo")).group,
-          email: JSON.parse(localStorage.getItem("userInfo")).email,
-          id: newLogRef.id,
-        })
 
         this.$userflow.track("Create Log" , {
+          id: newLogRef.id
+        })
+        window.gist.track("Create Log" , {
           id: newLogRef.id
         })
         this.logID = newLogRef.id;
@@ -1258,7 +1258,6 @@ export default {
   },
   watch: {
     rangeDay() {
-      console.log(this.init)
       this.setLog()
     }
   }

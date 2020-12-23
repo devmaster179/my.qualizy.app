@@ -228,7 +228,6 @@ export default {
             checkbox_remember_me: this.checkbox_remember_me,
             notify: this.$vs.notify,
             closeAnimation: this.$vs.loading.close,
-            intercom: this.$intercom,
           };
           this.$store.dispatch("auth/loginDigit", payload);
         });

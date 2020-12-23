@@ -146,7 +146,7 @@ export default {
             answers.push({
               title: answer.title,
               type: answer.type,
-              action: answer.action,
+              action: Array.isArray(answer.action)? answer.action : [] ,
               mandatory: answer.mandatory,
               score:
                 answer.score === undefined || !Array.isArray(answer.score)
@@ -202,7 +202,7 @@ export default {
                     {
                       title: "",
                       type: {},
-                      action: {},
+                      action: [],
                       mandatory: false,
                       score: [],
                       loged: "",

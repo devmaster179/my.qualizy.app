@@ -554,6 +554,7 @@ export default {
       var complted = 0;
       var ontime = 0;
       var scheduled = 0;
+      var defaultScore = 0
       var ontimeTask = true;
       var checkOnTimeTask = 0;
       logs.map((log) => {
@@ -599,7 +600,7 @@ export default {
                     var checkedScore = false;
                     answer.ref.score.map((scoreItem, sindex) => {
                       if (checkedScore) return;
-                      if (sindex == 0) var defaultScore = scoreItem.score;
+                      if (sindex == 0) defaultScore = scoreItem.score;
                       else {
                         if (scoreItem.condition == "equal") {
                           if (scoreItem.value0 == answer.value) {
@@ -647,6 +648,7 @@ export default {
                   }
 
                   scores += Math.round(score * 10) / 10;
+
                 } else if (
                   this.getTemplateType(answer.ref.type.id).type ==
                   "closed answers"
@@ -685,8 +687,19 @@ export default {
     filteredLogs() {
       var filters = this.filter;
       var log = [];
+      var cUser = this.$store.getters["app/currentUser"]
+      var userTeam = cUser.team || []
+      var locationList = this.$store.getters['app/locationList']
+      if(locationList.length==0) {
+        if(cUser.role == undefined || cUser.role.key == undefined || cUser.role.key>0) {
+          if(cUser.location !== undefined && Array.isArray(cUser.location) && cUser.location.length>0) {
+            locationList = cUser.location
+          } else {
+            locationList = ['no']
+          }
+        }
+      }
       var logs = this.$store.getters["app/logs"];
-      var locations = this.$store.getters["app/locationList"];
       var checkLog = []
       logs = logs.filter((log) => {
         var template = this.$store.getters["app/getTemplateById"](
@@ -699,29 +712,19 @@ export default {
             return false
           checkLog.push({templateID: log.templateID , time: log.time.seconds})
         }
-        if (locations.length > 0) {
-          if (
-            template.content.location == undefined ||
-            !Array.isArray(template.content.location) ||
-            !locations.some((item) => template.content.location.includes(item))
-          )
-            return false;
-        }
+
         var filterFrom = true;
         var filterTo = true;
-        var filterTemplate = false;
         var userFlag = true;
         var teamFlag = true;
         var filterLabel = true;
         var filterStatus = true;
+        var filterLocation = true
         if (filters.from !== undefined && filters.from != "")
           filterFrom =
             log.updated_at.toDate().getTime() >= filters.from.getTime();
         if (filters.to !== undefined && filters.to != "")
           filterTo = log.updated_at.toDate().getTime() <= filters.to.getTime();
-        if (filters.template !== undefined && filters.template.length > 0) {
-          filterTemplate = filters.template.indexOf(log.templateID) > -1;
-        }
 
         if (filters.user !== undefined && filters.user.length > 0) {
           userFlag = false;
@@ -781,14 +784,33 @@ export default {
             (filters.status != "passed" && falied);
         }
 
+        if(template.content.templateSD == 'bookmarked') {
+          if(template.content.teams!=undefined && Array.isArray(template.content.teams) && template.content.teams.length>0 && !template.content.teams.some(t=> userTeam.includes(t))) return false
+          if(locationList.length>0) {
+            if(!template.content.location || !Array.isArray(template.content.location)) return false
+            if(!locationList.some(ll=> template.content.location.includes(ll))) return false
+          }
+        }
+        else {
+          var schedule = this.$store.getters['app/getScheduleById'](log.schedule || '')
+          if(schedule == undefined) return false
+          if (schedule.deleted || (schedule.active !== undefined && !schedule.active)) return false;
+          var scheduleTeam = schedule.assign.concat(schedule.monitor || [])
+          if(!scheduleTeam.some(t=> userTeam.includes(t))) return false
+          if(schedule.location== undefined) return false
+          if(locationList.length>0) {
+            if(locationList.indexOf(schedule.location[0])<0) return false
+          }
+        }
+
         return (
           filterFrom &&
           filterTo &&
           userFlag &&
           teamFlag &&
-          filterTemplate &&
           filterLabel &&
-          filterStatus
+          filterStatus &&
+          filterLocation
         );
       });
       return logs.sort(
@@ -851,7 +873,7 @@ export default {
     setLogs() {
       if(this.filter.from == '') {
         this.$vs.loading()
-        db.collection("logs").where("group", "==", JSON.parse(localStorage.getItem("userInfo")).group).get().then((q) => {
+        db.collection("logs").where('templateID', 'in', this.filter.template.slice(0,10)).orderBy('updated_at','desc').get().then((q) => {
           this.$vs.loading.close()
         let logs = [];
         q.forEach((doc) => {
@@ -861,9 +883,11 @@ export default {
       });    
       } else {
         this.$vs.loading()
-        db.collection("logs").where("group","==",JSON.parse(localStorage.getItem("userInfo")).group)
+        db.collection("logs")
+          .where('templateID', 'in', this.filter.template.slice(0,10))
           .where('updated_at' , '>=' , this.filter.from)
           .where('updated_at' , '<=' , this.filter.to)
+          .orderBy('updated_at','desc')
           .get().then((q) => {
           this.$vs.loading.close()
           let logs = [];

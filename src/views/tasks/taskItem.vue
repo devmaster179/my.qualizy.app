@@ -19,10 +19,11 @@
             :src="require(`../../assets/images/template_image/${templateInfo(task.templateID).content.templateImage}`)"
             class="mr-4"
             :alt="templateInfo(task.templateID).content.templateTitle"
+            width="48px" height="48px"
           />
-          <div>
+          <div style="width: calc(100% - 4rem);">
             <p
-              class="karla-bold templateTitle"
+              class="karla-bold templateTitle truncate"
             >{{templateInfo(task.templateID).content.templateTitle}}</p>
             <template v-if="task.schedule">
               <vs-icon size="12px" icon-pack="feather" icon="icon-map-pin"></vs-icon>

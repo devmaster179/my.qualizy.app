@@ -32,11 +32,11 @@
           @click="selectedID = template.id"
         >
           <div class="flex items-center">
-            <vs-avatar
-              size="40px"
+            <img
               :src="
                 require(`../../assets/images/template_image/${template.content.templateImage}`)
               "
+              width="40px" height="40px"
             />
             <div>
               <p class="karla-bold templateTitle">{{ template.content.templateTitle }}</p>

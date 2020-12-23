@@ -125,7 +125,7 @@
               style="color:#6c50f0;"
               v-if="haveAction(answerContent.type.id)"
               @click="openAction"
-            >{{$t("Notification")}}</p>
+            >{{$t("notification")}}</p>
             <p
               class="karla-bold mr-2"
               style="color:#6c50f0;"
@@ -212,7 +212,7 @@ export default {
   },
   computed: {
     hadAction() {
-      return Object.keys(this.answerContent.action).length > 0;
+      return this.answerContent.action.length > 0;
     },
     hadScore() {
       return (

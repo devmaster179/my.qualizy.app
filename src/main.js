@@ -12,17 +12,17 @@ import Vue from 'vue'
 import App from './App.vue'
 
 import './registerServiceWorker'
-
+import './gist'
 // Vuesax Component Framework
 import Vuesax from 'vuesax'
 import 'material-icons/iconfont/material-icons.css' //Material Icons
 import 'vuesax/dist/vuesax.css'; // Vuesax
 Vue.use(Vuesax)
 
-
 // // axios
 import axios from 'axios'
 Vue.prototype.$http = axios
+// Vue.prototype.$gist = gist
 
 // Firebase-kk
 import '@/firebase/firebaseInit'
@@ -71,13 +71,6 @@ import 'moment/locale/en-gb'
 Vue.use(VueMoment, {
   moment
 })
-
-import VueIntercom from 'vue-intercom';
-Vue.use(VueIntercom, {
-  language: 'fr',
-  appId: 'neav79ns'
-});
-
 
 
 import userflow from 'userflow.js'

@@ -34,10 +34,10 @@
                   @click="sidebarActive=false"
                 />
                 <img :src="require(`../../assets/images/template_image/${templateInfo.content.templateImage}`)" width="37" height="37" class="rounded-full"/>
-                <span style="max-width: calc( 100vw - 11rem);"
-                  class="karla-bold template-title ml-2 truncate"
-                >{{templateInfo.content.templateTitle | capitalize}}</span>
+                
               </div>
+              <p class="karla-bold template-title ml-2 truncate"
+                >{{templateInfo.content.templateTitle | capitalize}}</p>
               <p class="karla-bold template-title">{{calcComplateStatus}}</p>
             </div>
           </div>
@@ -145,7 +145,7 @@
                         <div
                           v-else
                           class="flex items-center justify-center border border-solid rounded-lg py-3 cursor-pointer"
-                          @click="chnContent(pIndex,qIndex,aIndex,content.name,answer.ref.type.failedAnswer ,  answer.ref.action)"
+                          @click="chnContent(pIndex,qIndex,aIndex,content.name,answer.ref.type.failedAnswer ,  templateAction(pIndex,qIndex,aIndex))"
                         >
                           <span class="karla" v-if="getTemplateType(answer.ref.type.id).group=='global'">{{$t(content.name)}}</span>
                           <span class="karla" v-else>{{content.name | capitalize}}</span>
@@ -266,12 +266,12 @@
                           type="number"
                           class="w-full mr-1"
                           :value="pages[pIndex].questions[qIndex].answers[aIndex].value"
-                          @blur="chnValue($event,pIndex,qIndex,aIndex,'temperature',answer.ref.action)"
+                          @blur="chnValue($event,pIndex,qIndex,aIndex,'temperature',templateAction(pIndex,qIndex,aIndex))"
                         />
                         <span
                           style="font-size:20px;border:1px solid rgba(0, 0, 0, 0.2); width:48px;"
                           class="rounded-lg px-1 pt-2 text-center cursor-pointer numBtn"
-                          @click="chnValue(pages[pIndex].questions[qIndex].answers[aIndex].value * (-1),pIndex,qIndex,aIndex,'',answer.ref.action)"
+                          @click="chnValue(pages[pIndex].questions[qIndex].answers[aIndex].value * (-1),pIndex,qIndex,aIndex,'',templateAction(pIndex,qIndex,aIndex))"
                         >&plus;&#8725;&minus;</span>
                       </div>
                     </template>
@@ -605,6 +605,11 @@ export default {
   },
 
   computed: {
+    templateAction() {
+      return (p,q,a) => {
+        return this.templateInfo.content.pages[p].questions[q].answers[a].action
+      }
+    },
     isMobile() {
       return isMobile
     },
@@ -1184,9 +1189,7 @@ export default {
       this.initState = false;
       this.saveState = true;
       this.pages[pIndex].questions[qIndex].answers[aIndex].value = content;
-      // if(failed == content)
-      //     this.pages[pIndex].questions[qIndex].answers[aIndex].loged = false
-      // else this.pages[pIndex].questions[qIndex].answers[aIndex].loged = true
+
       this.pages[pIndex].questions[qIndex].answers[aIndex].loged = true;
 
       this.pages[pIndex].questions[qIndex].answers[aIndex].time = new Date();
@@ -1202,83 +1205,78 @@ export default {
           initial: false,
           logs: this.pages,
         });
-      var templateTitle = this.templateInfo.content.templateTitle;
 
-      if (action && action.content !== undefined) {
-        if (action.content.name == content) {
-          var notification = this.$store.getters[
-            "app/getNotificationByT_Indexes"
-          ]({
-            tId: this.template,
-            indexes: [pIndex, qIndex, aIndex],
-            logID: this.logID,
-            value: content,
-          });
-          if (notification == undefined) {
-            var mUsers = [];
-            action.toUser.map((id) => {
-              let team = this.$store.getters["app/getTeamById"](id);
-              if (team == undefined) return;
-              let user = this.$store.getters["app/users"].filter(
-                (item) => item.team.indexOf(id) > -1
-              );
-              user.map((item) => {
-                if (
-                  mUsers.find((mUser) => mUser.email == item.email) !=
-                    undefined ||
-                  item.rEmail === undefined ||
-                  !item.rEmail
-                )
-                  return;
-                mUsers.push({ email: item.email, name: item.name });
-              });
-            });
-            console.log({
-               readIds: [],
-              sendEmails: mUsers,
-              text:
-                "Captured " +
-                '"' +
-                content +
-                '" in ' +
-                '"' +
-                this.pages[pIndex].questions[qIndex].title +
-                '"',
-              type: "bookmarked",
+      if (action && Array.isArray(action)) {
+        action.map(actionItem => {
+          if (actionItem.content == content) {
+            var notification = this.$store.getters[
+              "app/getNotificationByT_Indexes"
+            ]({
+              tId: this.template,
+              indexes: [pIndex, qIndex, aIndex],
               logID: this.logID,
-              templateIndexes: [pIndex, qIndex, aIndex],
-              templateId: this.template,
-              title: templateTitle,
               value: content,
-              alertType: action.alertType,
-              toTeam: action.toUser,
-            })
-            // db.collection("notifications").add({
-            //   readIds: [],
-            //   sendEmails: mUsers,
-            //   text:
-            //     "Captured " +
-            //     '"' +
-            //     content +
-            //     '" in ' +
-            //     '"' +
-            //     this.pages[pIndex].questions[qIndex].title +
-            //     '"',
-            //   type: "bookmarked",
-            //   logID: this.logID,
-            //   templateIndexes: [pIndex, qIndex, aIndex],
-            //   templateId: this.template,
-            //   title: templateTitle,
-            //   value: content,
-            //   alertType: action.alertType,
-            //   toTeam: action.toUser,
-            //   group: JSON.parse(localStorage.getItem("userInfo")).group,
-            //   updated_by: JSON.parse(localStorage.getItem("userInfo")).id,
-            //   updated_at: new Date(),
-            //   at: firebase.firestore.FieldValue.serverTimestamp(),
-            // });
+            });
+
+            if (notification == undefined) {
+              var mUsers = [];
+              actionItem.teams.map((id) => {
+                let team = this.$store.getters["app/getTeamById"](id);
+                if (team == undefined) return;
+                let user = this.$store.getters["app/users"].filter(
+                  (item) => item.team.indexOf(id) > -1
+                );
+                user.map((item) => {
+                  if (
+                    mUsers.find((mUser) => mUser.email == item.email) !=
+                      undefined ||
+                    item.rEmail === undefined ||
+                    !item.rEmail
+                  )
+                    return;
+                  mUsers.push({ email: item.email, name: item.name });
+                });
+              });
+              db.collection("notifications").add({
+                icon: "CheckSquareIcon",
+                type: actionItem.types,
+                readIds: [],
+                sendEmails: mUsers,
+                text: actionItem.description,
+                logID: this.logID,
+                templateIndexes: [pIndex, qIndex, aIndex],
+                templateId: this.template,
+                title: actionItem.name,
+                value: content,
+                color: actionItem.color,
+                toTeam: actionItem.teams,
+                group: JSON.parse(localStorage.getItem("userInfo")).group,
+                updated_by: JSON.parse(localStorage.getItem("userInfo")).id,
+                updated_at: new Date(),
+                at: firebase.firestore.FieldValue.serverTimestamp(),
+              });
+            } else {
+              db.collection("notifications")
+                .doc(notification.id)
+                .update({
+                  type: actionItem.types,
+                  readIds: [],
+                  sendEmails: mUsers,
+                  text: actionItem.description,
+                  logID: this.logID,
+                  templateIndexes: [pIndex, qIndex, aIndex],
+                  templateId: this.template,
+                  title: actionItem.name,
+                  value: content,
+                  color: actionItem.color,
+                  toTeam: actionItem.teams,
+                  updated_by: JSON.parse(localStorage.getItem("userInfo")).id,
+                  updated_at: new Date(),
+                  at: firebase.firestore.FieldValue.serverTimestamp(),
+                })
+            }
           }
-        }
+        })
       }
     },
     plusPage() {

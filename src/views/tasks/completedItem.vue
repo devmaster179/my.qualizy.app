@@ -25,6 +25,7 @@
             :src="require(`../../assets/images/template_image/${templateInfo(task.templateID).content.templateImage}`)"
             class="mr-4"
             :alt="templateInfo(task.templateID).content.templateTitle"
+            width="48px" height="48px"
           />
           <div>
             <p
@@ -83,7 +84,7 @@
           <vs-icon icon="arrow_drop_down" :class="{'rotate180':labelColapes}" class="times2" />
         </div>
         <div class="flex items-center justify-between">
-          <vs-icon  @click.stop="deleteLog"  class="mt-1 hover:text-danger" size="18px"  icon-pack="feather" icon="icon-trash-2"/>
+          <!-- <vs-icon  @click.stop="deleteLog"  class="mt-1 hover:text-danger" size="18px"  icon-pack="feather" icon="icon-trash-2"/> -->
           <div class="flex items-center justify-end mt-1 text-warning" v-if="monitor">
             <span class="karla mr-1 ">{{$t('monitoring')}}</span>
             <vs-icon icon-pack="feather" icon="icon-eye" class="mt-1"/>

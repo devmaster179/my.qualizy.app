@@ -207,7 +207,6 @@
         <v-select v-model="team" :options="teams" label="name" multiple/>
       </div>
       </div>
-
     </VuePerfectScrollbar>
     <vs-divider />
     <div class="flex items-center justify-end">
@@ -218,7 +217,6 @@
         class="kalar ml-2 mr-4"
       >{{$t("cancel")}}</vs-button>
       <!-- @click="$router.push( { name:'category' , params:{id:item.id} } ).catch(err => {})" -->
-
       <vs-button v-if="showCreat" @click="goTemplateEdit">{{$t(`${state.split(" ")[0]}`)}}</vs-button>
     </div>
   </vs-popup>
