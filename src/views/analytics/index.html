@@ -1,0 +1,804 @@
+<div id="analytics">
+    <div class="page-header sm:flex items-center justify-between mb-base">
+        <div class="flex items-end">
+            <p class="karla-bold text-3xl" style="color:#1e1c26;">{{$t('analytics') | capitalize}}</p>
+            <p class="karla text-lg mb-1 ml-2" style="color:#1e1c26;">({{dateFilterDisp}})</p>
+        </div>
+        <div class="flex items-center justify-end">
+            <v-select v-if="analytics.length" v-model="analytic" :options="analytics" label="name" class="mr-2" style="min-width: 200px; background:white;"/>
+            <feather-icon
+                    @click="showFilter"
+                    class="p-2 shadow-drop w-10 rounded-lg d-theme-dark-bg cursor-pointer text-primary mr-2"
+                    icon="FilterIcon"
+            />
+            <vs-button @click="saveAnalyticsActive=true" :disabled="filters.template.length==0 && canSave">{{$t('save')}}</vs-button>
+        </div>
+    </div>
+    <b-tabs v-model="activeTab" @input="getData">
+        <b-tab-item :label="$t('compliance')" class="compliance">
+            <div class="row m-0 mb-5">
+                <b-tag v-for="(filter, key) in filters"
+                       v-if="filter.length > 0"
+                       @close="filters[key] = []"
+                       :key="key"
+                       attached
+                       :closable="key != 'date'"
+                       aria-close-label="Close tag"
+                       class="mr-2"
+                >
+                    <vs-icon icon-pack="feather" :icon="key == 'date' ? 'icon-calendar' : key == 'template' ? 'icon-layers' : key == 'users' ? 'icon-user' : key == 'teams' ? 'icon-users' : 'icon-settings'" />
+                    <span v-if="key != 'date'">
+                        {{ getFilterName(filter, key) }}
+                    </span>
+                    <span v-else>
+                        {{ filter | capitalize }}
+                    </span>
+                </b-tag>
+                <span class="cursor-pointer" @click="removeFlters">
+                    <vs-icon icon-pack="fa" icon="fa-eraser" />
+                    Clean all
+                </span>
+            </div>
+            <div class="row w-100 m-0 mb-5 justify-content-between sum">
+                <div class="col-md-4 pl-0">
+                    <div class="h-100 bg-white row m-0 align-items-center">
+                        <div class="col-4 h-100 row justify-content-center align-items-center">
+                            <div class="icon-bg row justify-content-center align-items-center" style="background-color: #cfecf5">
+                                <vs-icon icon-pack="feather" icon="icon-tablet" size="20px" color="#3980f6" />
+                            </div>
+                        </div>
+                        <div class="col-8">
+                            <small class="text-muted">Failed / Non failed (Compliance rate)</small>
+                            <h3 class="h3">{{ complianceRate }}</h3>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-md-4 pl-0">
+                    <div class="h-100 bg-white row m-0 align-items-center">
+                        <div class="col-4 h-100 row justify-content-center align-items-center">
+                            <div class="icon-bg row justify-content-center align-items-center" style="background-color: #e3d9ff">
+                                <vs-icon icon-pack="feather" icon="icon-map-pin" size="20px" color="#7166ed" />
+                            </div>
+                        </div>
+                        <div class="col-8">
+                            <small class="text-muted">Least performing location</small>
+                            <h3 class="h3">{{ leastPerformingLocation }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 pl-0">
+                    <div class="h-100 bg-white row m-0 align-items-center">
+                        <div class="col-4 h-100 row justify-content-center align-items-center">
+                            <div class="icon-bg row justify-content-center align-items-center" style="background-color: #ffeec1">
+                                <vs-icon icon-pack="feather" icon="icon-users" size="20px" color="#F4BE41" />
+                            </div>
+                        </div>
+                        <div class="col-8">
+                            <small class="text-muted">Least performing team</small>
+                            <h3 class="h3">N / A</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <template v-if="!compliancePerTemplates.length && !compliancePerLocations.length">
+                <vx-card>
+                    <div class="flex w-full mt-base">
+                        <div
+                                class="vx-col flex items-center flex-col sm:w-1/2 md:w-3/5 lg:w-3/4 xl:w-1/2 mx-auto text-center sm:mt-base mt-0"
+                                style="min-height:500px;"
+                        >
+                            <img
+                                    :src="require('../../assets/images/pages/report/empty-doc.svg')"
+                                    class="mx-auto mb-4 cursor-pointer"
+                                    @click="showFilter"
+                            />
+                            <h3
+                                    class="mt-base text-grey"
+                            >Select the options from right side bar to generate the analytics.</h3>
+                        </div>
+                    </div>
+                </vx-card>
+            </template>
+            <div class="compliance-per-templates w-100 m-0 mb-5 bg-white p-5 br-8" v-if="compliancePerTemplates.length">
+                <p class="font-weight-bold">Compliance per templates</p>
+                <b-table
+                        :data="compliancePerTemplates"
+                        icon-pack="fa"
+                        sort-icon="chevron-down"
+                        default-sort-direction="asc"
+                        paginated
+                >
+                    <b-table-column field="title" label="Template" sortable v-slot="props">
+                        {{ props.row.content.templateTitle }}
+                    </b-table-column>
+                    <b-table-column field="templateUsage" label="Template usage (qty.)" sortable v-slot="props">
+                        {{ 1 }}
+                    </b-table-column>
+                    <b-table-column field="tasksType" label="Tasks type" sortable v-slot="props">
+                        {{ 'Scheduled' }}
+                    </b-table-column>
+                    <b-table-column field="totalTasks" label="Total tasks" sortable v-slot="props">
+                        {{ props.row.totalTasks }}
+                    </b-table-column>
+                    <b-table-column field="failedTasks" label="Failed tasks" sortable v-slot="props">
+                        {{ props.row.failedTasks }}
+                    </b-table-column>
+                    <b-table-column field="compliance" label="Compliance" sortable v-slot="props">
+                        {{ props.row.compliance.toFixed(2) + ' %'}}
+                    </b-table-column>
+                </b-table>
+
+            </div>
+            <div class="compliance-per-locations w-100 m-0 bg-white p-5 br-8" v-if="compliancePerLocations.length">
+                <p class="font-weight-bold mb-3">Compliance per locations</p>
+                <b-table
+                        :data="compliancePerLocations"
+                        icon-pack="fa"
+                        sort-icon="chevron-down"
+                        default-sort-direction="asc"
+                        paginated
+                >
+                    <b-table-column field="name" label="Location" sortable v-slot="props">
+                        {{ props.row.name }}
+                    </b-table-column>
+                    <b-table-column field="totalTasks" label="Total tasks" sortable v-slot="props">
+                        {{ props.row.totalTasks }}
+                    </b-table-column>
+                    <b-table-column field="tasksType" label="Failed tasks" sortable v-slot="props">
+                        {{ props.row.failedTasks }}
+                    </b-table-column>
+                    <b-table-column field="compliance" label="Compliance" sortable v-slot="props">
+                        {{ ((props.row.totalTasks - props.row.failedTasks) / props.row.totalTasks * 100).toFixed(2) + ' %' }}
+                    </b-table-column>
+                </b-table>
+            </div>
+        </b-tab-item>
+
+        <b-tab-item :label="$t('scoring')">
+
+        </b-tab-item>
+
+        <b-tab-item :label="$t('overdue tasks')" class="overdue-tasks">
+            <div class="row m-0 mb-5">
+                <b-tag v-for="(filter, key) in filters"
+                       v-if="filter.length > 0"
+                       @close="filters[key] = []"
+                       :key="key"
+                       attached
+                       :closable="key != 'date'"
+                       aria-close-label="Close tag"
+                       class="mr-2"
+                >
+                    <vs-icon icon-pack="feather" :icon="key == 'date' ? 'icon-calendar' : key == 'template' ? 'icon-layers' : key == 'users' ? 'icon-user' : key == 'teams' ? 'icon-users' : 'icon-settings'" />
+                    <span v-if="key != 'date'">
+                        {{ getFilterName(filter, key) }}
+                    </span>
+                    <span v-else>
+                        {{ filter | capitalize }}
+                    </span>
+                </b-tag>
+                <span class="cursor-pointer" @click="removeFlters">
+                    <vs-icon icon-pack="fa" icon="fa-eraser" />
+                    Clean all
+                </span>
+            </div>
+            <div class="row w-100 m-0 mb-5 justify-content-between sum">
+                <div class="col-md-4 pl-0">
+                    <div class="h-100 bg-white row m-0 align-items-center">
+                        <div class="col-4 h-100 row justify-content-center align-items-center">
+                            <div class="icon-bg row justify-content-center align-items-center" style="background-color: #cfecf5">
+                                <vs-icon icon-pack="feather" icon="icon-tablet" size="20px" color="#3980f6" />
+                            </div>
+                        </div>
+                        <div class="col-8">
+                            <small class="text-muted">Overdue tasks out of total</small>
+                            <h3 class="h3">{{ (overdueTasks.length / allTasks * 100) + ' %'}}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 pl-0">
+                    <div class="h-100 bg-white row m-0 align-items-center">
+                        <div class="col-4 h-100 row justify-content-center align-items-center">
+                            <div class="icon-bg row justify-content-center align-items-center" style="background-color: #e3d9ff">
+                                <vs-icon icon-pack="feather" icon="icon-map-pin" size="20px" color="#7166ed" />
+                            </div>
+                        </div>
+                        <div class="col-8">
+                            <small class="text-muted">High failure rate location</small>
+                            <h3 class="h3">{{ failureRateLocation }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 pl-0">
+                    <div class="h-100 bg-white row m-0 align-items-center">
+                        <div class="col-4 h-100 row justify-content-center align-items-center">
+                            <div class="icon-bg row justify-content-center align-items-center" style="background-color: #ffeec1">
+                                <vs-icon icon-pack="feather" icon="icon-users" size="20px" color="#F4BE41" />
+                            </div>
+                        </div>
+                        <div class="col-8">
+                            <small class="text-muted">Team with most overdue tasks</small>
+                            <h3 class="h3">{{ failureTasksTeam }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row w-100 m-0 mb-5 justify-content-between">
+                <div class="col-md-6 pl-0">
+                    <div class="h-100 bg-white m-0 p-5 br-8">
+                        <p class="font-weight-bold mb-4">Overdue tasks per location</p>
+                        <div class="row h-100 w-100 m-0 align-items-center" v-if="pieChart1Options.labels.length">
+                            <div class="col-7 pl-0">
+                                <div class="border-bottom d-flex justify-content-between p-2" v-for="(data, i) in pieChart1Options.quantities" :key="i">
+                                    <div class="font-weight-bold d-flex align-items-center">
+                                        <div class="mr-2" :style="{height: '10px', width: '10px', borderRadius: '50%', backgroundColor: pieChart1Options.colors[i]}"></div>
+                                        <span>{{ data.name }}</span>
+                                    </div>
+                                    <div>{{ data.count }} ({{ (data.count / pieChart1Options.series.reduce((a, b) => a + b, 0)  * 100).toFixed(2)}}%)</div>
+                                </div>
+                            </div>
+                            <div class="col-5">
+                                <apexchart v-if="activeTab === 2" type="donut" :options="pieChart1Options" :series="pieChart1Options.series"></apexchart>
+                            </div>
+                        </div>
+                        <div class="h-100 d-flex justify-content-center align-items-center" v-else>
+                            No Data
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 pl-0">
+                    <div class="h-100 bg-white m-0 p-5 br-8">
+                        <p class="font-weight-bold mb-4">Overdue tasks by time</p>
+                        <apexchart v-if="activeTab === 2" :options="barChart1Options" :series="barChart1Options.series"></apexchart>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white m-0 p-5 br-8 w-100 mb-5" style="max-height: 442px">
+                <div class="row m-0 justify-content-between align-items-center">
+                    <p class="font-weight-bold">Overdue tasks by locations</p>
+<!--                    <v-select-->
+<!--                            label="name"-->
+<!--                            :options="[{name: 'test1'},{name: 'test2'},{name: 'test3'}]"-->
+<!--                            :value="'test1'"-->
+<!--                    />-->
+                </div>
+                <apexchart v-if="activeTab === 2" height="90%" :options="barChart2Options" :series="barChart2Options.series"></apexchart>
+            </div>
+            <div class="bg-white m-0 p-5 br-8 w-100 mb-5" style="max-height: 442px">
+                <div class="row m-0 align-items-center">
+                    <p class="font-weight-bold mr-5">Overdue tasks by templates</p>
+<!--                    <div class="dropdown border" style="border-radius: 5px">-->
+<!--                        <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">-->
+<!--                            <vs-icon class="mr-2" icon-pack="feather" icon="icon-map-pin"></vs-icon>-->
+<!--                            Location-->
+<!--                            <span class="caret"></span>-->
+<!--                        </button>-->
+<!--                        <ul class="dropdown-menu">-->
+<!--                            <li class="dropdown-submenu">-->
+<!--                                <button class="sub-menu btn w-100 text-left d-flex align-items-center justify-content-between" tabindex="-1">-->
+<!--                                    Country-->
+<!--                                    <vs-icon class="float-right" icon-pack="feather" icon="icon-chevron-right" />-->
+<!--                                </button>-->
+<!--                                <ul class="dropdown-menu">-->
+<!--                                    <li>-->
+<!--                                        <vs-checkbox-->
+<!--                                                class="vs-checkbox-small karla"-->
+<!--                                        >asd</vs-checkbox>-->
+<!--                                    </li>-->
+<!--                                    <li>-->
+<!--                                        <vs-checkbox-->
+<!--                                                class="vs-checkbox-small karla"-->
+<!--                                        >das</vs-checkbox>-->
+<!--                                    </li>-->
+<!--                                </ul>-->
+<!--                            </li>-->
+<!--                            <li class="dropdown-submenu">-->
+<!--                                <button class="sub-menu btn w-100 text-left d-flex align-items-center justify-content-between" tabindex="-1">-->
+<!--                                    Area-->
+<!--                                    <vs-icon class="float-right" icon-pack="feather" icon="icon-chevron-right" />-->
+<!--                                </button>-->
+<!--                                <ul class="dropdown-menu">-->
+<!--                                    <li>-->
+<!--                                        <vs-checkbox-->
+<!--                                                class="vs-checkbox-small karla"-->
+<!--                                        >asd</vs-checkbox>-->
+<!--                                    </li>-->
+<!--                                    <li>-->
+<!--                                        <vs-checkbox-->
+<!--                                                class="vs-checkbox-small karla"-->
+<!--                                        >das</vs-checkbox>-->
+<!--                                    </li>-->
+<!--                                </ul>-->
+<!--                            </li>-->
+<!--                            <li class="dropdown-submenu">-->
+<!--                                <button class="sub-menu btn w-100 text-left d-flex align-items-center justify-content-between" tabindex="-1">-->
+<!--                                    Region-->
+<!--                                    <vs-icon class="float-right" icon-pack="feather" icon="icon-chevron-right" />-->
+<!--                                </button>-->
+<!--                                <ul class="dropdown-menu">-->
+<!--                                    <li>-->
+<!--                                        <vs-checkbox-->
+<!--                                                class="vs-checkbox-small karla"-->
+<!--                                        >asd</vs-checkbox>-->
+<!--                                    </li>-->
+<!--                                    <li>-->
+<!--                                        <vs-checkbox-->
+<!--                                                class="vs-checkbox-small karla"-->
+<!--                                        >das</vs-checkbox>-->
+<!--                                    </li>-->
+<!--                                </ul>-->
+<!--                            </li>-->
+<!--                            <li class="dropdown-submenu">-->
+<!--                                <button class="sub-menu btn w-100 text-left d-flex align-items-center justify-content-between" tabindex="-1">-->
+<!--                                    City-->
+<!--                                    <vs-icon class="float-right" icon-pack="feather" icon="icon-chevron-right" />-->
+<!--                                </button>-->
+<!--                                <ul class="dropdown-menu">-->
+<!--                                    <li>-->
+<!--                                        <vs-checkbox-->
+<!--                                                class="vs-checkbox-small karla"-->
+<!--                                        >asd</vs-checkbox>-->
+<!--                                    </li>-->
+<!--                                    <li>-->
+<!--                                        <vs-checkbox-->
+<!--                                                class="vs-checkbox-small karla"-->
+<!--                                        >das</vs-checkbox>-->
+<!--                                    </li>-->
+<!--                                </ul>-->
+<!--                            </li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+                </div>
+                <apexchart v-if="activeTab === 2" height="90%" :options="barChart3Options" :series="barChart3Options.series"></apexchart>
+            </div>
+            <div class="bg-white m-0 p-5 br-8 w-100 mb-5">
+                <div class="row m-0 mb-3 justify-content-between align-items-center">
+                    <p class="font-weight-bold mr-5">List of overdue tasks</p>
+                    <b-button type="is-primary is-light">
+                        <vs-icon icon-pack="feather" icon="icon-download"></vs-icon>
+                    </b-button>
+                </div>
+                <b-table
+                    :data="overdueTasks"
+                    icon-pack="fa"
+                    sort-icon="chevron-down"
+                    default-sort-direction="asc"
+                    paginated
+                >
+                    <b-table-column field="location" label="Location" sortable v-slot="props">
+                        {{ props.row.location || ' - ' }}
+                    </b-table-column>
+                    <b-table-column field="team" label="Team" sortable v-slot="props">
+                        {{ props.row.team }}
+                    </b-table-column>
+                    <b-table-column field="template" label="Template" sortable v-slot="props">
+                        {{ props.row.template }}
+                    </b-table-column>
+                    <b-table-column field="deadline" label="Deadline" sortable v-slot="props">
+                        {{ props.row.deadline }}
+                    </b-table-column>
+                    <b-table-column field="overdue" label="Overdue" sortable v-slot="props">
+                        {{ props.row.overdue + ' days' }}
+                    </b-table-column>
+                    <b-table-column field="status" label="Status" sortable v-slot="props">
+                        {{ props.row.status }}
+                    </b-table-column>
+<!--                    <b-table-column label="Preview task" v-slot="props">-->
+
+<!--                    </b-table-column>-->
+                </b-table>
+            </div>
+        </b-tab-item>
+
+        <b-tab-item :label="$t('failed answers')" class="failed-answers">
+            <div class="row m-0 mb-5">
+                <b-tag v-for="(filter, key) in filters"
+                       v-if="filter.length > 0"
+                       @close="filters[key] = []"
+                       :key="key"
+                       attached
+                       :closable="key != 'date'"
+                       aria-close-label="Close tag"
+                       class="mr-2"
+                >
+                    <vs-icon icon-pack="feather" :icon="key == 'date' ? 'icon-calendar' : key == 'template' ? 'icon-layers' : key == 'users' ? 'icon-user' : key == 'teams' ? 'icon-users' : 'icon-settings'" />
+                    <span v-if="key != 'date'">
+                        {{ getFilterName(filter, key) }}
+                    </span>
+                    <span v-else>
+                        {{ filter | capitalize }}
+                    </span>
+                </b-tag>
+                <span class="cursor-pointer" @click="removeFlters">
+                    <vs-icon icon-pack="fa" icon="fa-eraser" />
+                    Clean all
+                </span>
+            </div>
+            <div class="row w-100 m-0 mb-5 justify-content-between sum">
+                <div class="col-md-4 pl-0">
+                    <div class="h-100 bg-white row m-0 align-items-center">
+                        <div class="col-4 h-100 row justify-content-center align-items-center">
+                            <div class="icon-bg row justify-content-center align-items-center" style="background-color: #cfecf5">
+                                <vs-icon icon-pack="feather" icon="icon-tablet" size="20px" color="#3980f6" />
+                            </div>
+                        </div>
+                        <div class="col-8">
+                            <small class="text-muted">Failed / Non failed</small>
+                            <h3 class="h3">{{ failedAnswersCompliance }}</h3>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-md-4 pl-0">
+                    <div class="h-100 bg-white row m-0 align-items-center">
+                        <div class="col-4 h-100 row justify-content-center align-items-center">
+                            <div class="icon-bg row justify-content-center align-items-center" style="background-color: #e3d9ff">
+                                <vs-icon icon-pack="feather" icon="icon-map-pin" size="20px" color="#7166ed" />
+                            </div>
+                        </div>
+                        <div class="col-8">
+                            <small class="text-muted">High failure rate location</small>
+                            <h3 class="h3">{{ failureRateLocation }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 pl-0">
+                    <div class="h-100 bg-white row m-0 align-items-center">
+                        <div class="col-4 h-100 row justify-content-center align-items-center">
+                            <div class="icon-bg row justify-content-center align-items-center" style="background-color: #ffeec1">
+                                <vs-icon icon-pack="feather" icon="icon-users" size="20px" color="#F4BE41" />
+                            </div>
+                        </div>
+                        <div class="col-8">
+                            <small class="text-muted">Least performing team</small>
+                            <h3 class="h3">{{ failureTasksTeam }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row w-100 m-0 mb-5 justify-content-between">
+                <div class="col-md-6 pl-0">
+                    <div class="h-100 bg-white m-0 p-5 br-8">
+                        <p class="font-weight-bold mb-4">Failed answers by location</p>
+                        <div class="row h-100 w-100 m-0 align-items-center" v-if="pieChart2Options.labels.length">
+                            <div class="col-7 pl-0">
+                                <div class="border-bottom d-flex justify-content-between p-2" v-for="(data, i) in pieChart2Options.quantities" :key="i">
+                                    <div class="font-weight-bold d-flex align-items-center">
+                                        <div class="mr-2" :style="{height: '10px', width: '10px', borderRadius: '50%', backgroundColor: pieChart2Options.colors[i]}"></div>
+                                        <span>{{ data.name }}</span>
+                                    </div>
+                                    <div>{{ data.count }} ({{ (data.count / pieChart2Options.series.reduce((a, b) => a + b, 0)  * 100).toFixed(2)}}%)</div>
+                                </div>
+                            </div>
+                            <div class="col-5">
+                                <apexchart type="donut" :options="pieChart2Options" :series="pieChart2Options.series"></apexchart>
+                            </div>
+                        </div>
+                        <div v-else class="h-100 d-flex justify-content-center align-items-center">
+                            No data
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 pl-0">
+                    <div class="h-100 bg-white m-0 p-5 br-8">
+                        <p class="font-weight-bold mb-4">Failed answers by time</p>
+                        <apexchart v-if="activeTab === 3" :options="barChart4Options" :series="barChart4Options.series"></apexchart>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <b-collapse
+                        class="card mb-3 show br-8"
+                        animation="slide"
+                        v-for="(template, i) of failedAnswerTemplates"
+                        :key="i"
+                        :open="isOpen == i"
+                        @open="isOpen = i"
+                >
+                    <div
+                            slot="trigger"
+                            slot-scope="props"
+                            class="card-header row m-0 align-items-center br-8 p-5"
+                            role="button"
+                    >
+                        <span class="font-weight-bold col-2">{{ template.content.templateTitle }}</span>
+                        <div class="col-8 p-0" style="height: 2px; background-color: #ebebeb"></div>
+                        <div class="col-2 text-right">
+                            <b-tag rounded class="mr-3 font-weight-bold">{{ template.content.pages[0].questions.length > 1 ? template.content.pages[0].questions.length + ' questions' : template.content.pages[0].questions.length + ' question' }}</b-tag>
+                            <b-icon class="expand-panel-icon" pack="fa" :icon="props.open ? 'sort-up' : 'sort-down'"></b-icon>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="content">
+                            <b-table
+                                    :data="template.content.pages[0].questions"
+                                    :paginated="template.content.pages[0].questions.length > 5"
+                                    :per-page="5"
+                                    icon-pack="fa"
+                                    sort-icon="chevron-down"
+                                    default-sort-direction="asc"
+                            >
+                                <b-table-column field="location" label="Location" sortable v-slot="props">
+                                    {{ props.row.location || ' - ' }}
+                                </b-table-column>
+                                <b-table-column field="team" label="Team" sortable v-slot="props">
+                                    {{ props.row.team }}
+                                </b-table-column>
+                                <b-table-column field="template" label="Template" sortable v-slot="props">
+                                    {{ props.row.template }}
+                                </b-table-column>
+                                <b-table-column field="section" label="Section" sortable v-slot="props">
+                                    {{ props.row.section || ' - ' }}
+                                </b-table-column>
+                                <b-table-column field="title" label="Question" sortable v-slot="props">
+                                    {{ props.row.title }}
+                                </b-table-column>
+                                <b-table-column field="answers.title" label="Answer" sortable v-slot="props">
+                                    {{ props.row.answers[0].title }}
+                                </b-table-column>
+                            </b-table>
+                        </div>
+                    </div>
+                </b-collapse>
+            </div>
+        </b-tab-item>
+
+        <b-tab-item :label="$t('temperature')" class="temperature">
+            <div class="row m-0 mb-5">
+                <b-tag v-for="(filter, key) in filters"
+                       v-if="filter.length > 0"
+                       @close="filters[key] = []"
+                       :key="key"
+                       attached
+                       :closable="key != 'date'"
+                       aria-close-label="Close tag"
+                       class="mr-2"
+                >
+                    <vs-icon icon-pack="feather" :icon="key == 'date' ? 'icon-calendar' : key == 'template' ? 'icon-layers' : key == 'users' ? 'icon-user' : key == 'teams' ? 'icon-users' : 'icon-settings'" />
+                    <span v-if="key != 'date'">
+                        {{ getFilterName(filter, key) }}
+                    </span>
+                    <span v-else>
+                        {{ filter | capitalize }}
+                    </span>
+                </b-tag>
+                <span class="cursor-pointer" @click="removeFlters">
+                    <vs-icon icon-pack="fa" icon="fa-eraser" />
+                    Clean all
+                </span>
+            </div>
+<!--            <div class="mb-4" v-for="(template,index) in templates" :key="index">-->
+<!--            </div>-->
+            <template v-if="templates.length==0">
+                <vx-card>
+                    <div class="flex w-full mt-base">
+                        <div
+                                class="vx-col flex items-center flex-col sm:w-1/2 md:w-3/5 lg:w-3/4 xl:w-1/2 mx-auto text-center sm:mt-base mt-0"
+                                style="min-height:500px;"
+                        >
+                            <img
+                                    :src="require('../../assets/images/pages/report/empty-doc.svg')"
+                                    class="mx-auto mb-4 cursor-pointer"
+                                    @click="showFilter"
+                            />
+                            <h3
+                                    class="mt-base text-grey"
+                            >Select the options from right side bar to generate the analytics.</h3>
+                        </div>
+                    </div>
+                </vx-card>
+            </template>
+            <div class="bg-white m-0 p-5 br-8 w-100 mb-5" style="max-height: 460px" v-else v-for="(template,index) in templates" :key="index">
+<!--                <div class="row m-0 justify-content-between align-items-center">-->
+<!--                    <p class="font-weight-bold">Temperature for [Template name - Fridge]</p>-->
+<!--                    <div class="d-flex align-items-center">-->
+<!--                        <v-select-->
+<!--                                label="name"-->
+<!--                                :options="[{name: 'Lvov'},{name: 'test2'},{name: 'test3'}]"-->
+<!--                                :value="'Lvov'"-->
+<!--                        />-->
+<!--                        <v-btn type="secondary">-->
+<!--                            <b-icon pack="fa" icon="fa-minus" />-->
+<!--                        </v-btn>-->
+<!--                        <v-btn type="secondary">-->
+<!--                            <b-icon pack="fa" icon="fa-plus" />-->
+<!--                        </v-btn>-->
+<!--                    </div>-->
+<!--                </div>-->
+                <TemperatureSection :template="template" :date="filters.date" />
+            </div>
+            <div class="bg-white m-0 p-5 br-8 w-100 mb-5" style="max-height: 460px">
+<!--                <div class="row m-0 justify-content-between align-items-center">-->
+<!--                    <p class="font-weight-bold">Temperature for [Template hot holding]</p>-->
+<!--                    <div class="d-flex align-items-center">-->
+<!--                        <v-select-->
+<!--                                label="name"-->
+<!--                                :options="[{name: 'Lvov'},{name: 'test2'},{name: 'test3'}]"-->
+<!--                                :value="'Lvov'"-->
+<!--                        />-->
+<!--                        <v-btn type="secondary">-->
+<!--                            <b-icon pack="fa" icon="fa-minus" />-->
+<!--                        </v-btn>-->
+<!--                        <v-btn type="secondary">-->
+<!--                            <b-icon pack="fa" icon="fa-plus" />-->
+<!--                        </v-btn>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <apexchart height="90%" v-if="activeTab === 4" :options="lineChart1Options" :series="lineChart1Series"></apexchart>-->
+            </div>
+        </b-tab-item>
+
+        <b-tab-item :label="$t('alerts')" class="alerts">
+            <div class="row m-0 mb-5">
+                <b-tag v-for="(filter, key) in filters"
+                       v-if="filter.length > 0"
+                       @close="filters[key] = []"
+                       :key="key"
+                       attached
+                       :closable="key != 'date'"
+                       aria-close-label="Close tag"
+                       class="mr-2"
+                >
+                    <vs-icon icon-pack="feather" :icon="key == 'date' ? 'icon-calendar' : key == 'template' ? 'icon-layers' : key == 'users' ? 'icon-user' : key == 'teams' ? 'icon-users' : 'icon-settings'" />
+                    <span v-if="key != 'date'">
+                        {{ getFilterName(filter, key) }}
+                    </span>
+                    <span v-else>
+                        {{ filter | capitalize }}
+                    </span>
+                </b-tag>
+                <span class="cursor-pointer" @click="removeFlters">
+                    <vs-icon icon-pack="fa" icon="fa-eraser" />
+                    Clean all
+                </span>
+            </div>
+            <div class="row w-100 m-0 mb-5 justify-content-between sum">
+                <div class="col-md-4 pl-0">
+                    <div class="h-100 bg-white row m-0 align-items-center">
+                        <div class="col-4 h-100 row justify-content-center align-items-center">
+                            <div class="icon-bg row justify-content-center align-items-center" style="background-color: #cfecf5">
+                                <vs-icon icon-pack="feather" icon="icon-tablet" size="20px" color="#3980f6" />
+                            </div>
+                        </div>
+                        <div class="col-8">
+                            <small class="text-muted">Number of alerts received</small>
+                            <h4 class="h4">{{ alerts.length }}</h4>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-md-4 pl-0">
+                    <div class="h-100 bg-white row m-0 align-items-center">
+                        <div class="col-4 h-100 row justify-content-center align-items-center">
+                            <div class="icon-bg row justify-content-center align-items-center" style="background-color: #e3d9ff">
+                                <vs-icon icon-pack="feather" icon="icon-map-pin" size="20px" color="#7166ed" />
+                            </div>
+                        </div>
+                        <div class="col-8">
+                            <small class="text-muted">Location with biggest number of alerts</small>
+                            <h4 class="h4">{{ biggestAlertsLocation }}</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 pl-0">
+                    <div class="h-100 bg-white row m-0 align-items-center">
+                        <div class="col-4 h-100 row justify-content-center align-items-center">
+                            <div class="icon-bg row justify-content-center align-items-center" style="background-color: #ffeec1">
+                                <vs-icon icon-pack="feather" icon="icon-users" size="20px" color="#F4BE41" />
+                            </div>
+                        </div>
+                        <div class="col-8">
+                            <small class="text-muted">Team with biggest number of alerts</small>
+                            <h4 class="h4">{{ biggestAlertsTeam }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white m-0 p-5 br-8 w-100 mb-5">
+                <div class="row m-0 mb-4 justify-content-between align-items-center">
+                    <p class="font-weight-bold">Alerts Log</p>
+                    <b-button type="is-primary is-light">
+                        <vs-icon icon-pack="feather" icon="icon-download"></vs-icon>
+                    </b-button>
+                </div>
+                <b-table
+                        :data="alerts"
+                        icon-pack="fa"
+                        sort-icon="chevron-down"
+                        default-sort-direction="asc"
+                        paginated
+                >
+                    <b-table-column field="title" label="Alert name" sortable v-slot="props">
+                        {{ props.row.title }}
+                    </b-table-column>
+                    <b-table-column field="location" label="Location" sortable v-slot="props">
+                        {{ props.row.location || ' - ' }}
+                    </b-table-column>
+                    <b-table-column field="teams" label="Teams" sortable v-slot="props">
+                        {{ props.row.teams.join(', ') || ' - ' }}
+                    </b-table-column>
+                    <b-table-column field="color" label="Type" sortable v-slot="props">
+                        <span :style="{color: props.row.color == 'danger' ? 'red' : props.row.color == 'success' ? 'green' : props.row.color == 'warning' ? 'orange' : ''}" v-if="props.row.color">{{ props.row.color }}</span>
+                        <span :style="{color: props.row.alertType == 'warning' ? 'orange' : props.row.alertType == 'danger' ? 'red' : props.row.alertType == 'success' ? 'green' : ''}" v-else>{{ props.row.alertType }}</span>
+                    </b-table-column>
+                    <b-table-column field="text" label="Message" sortable v-slot="props">
+                        {{ props.row.text }}
+                    </b-table-column>
+                </b-table>
+            </div>
+        </b-tab-item>
+
+    </b-tabs>
+<!--    <div class="page-content">-->
+<!--        <template v-if="templates.length==0">-->
+<!--            <vx-card>-->
+<!--                <div class="flex w-full mt-base">-->
+<!--                    <div-->
+<!--                            class="vx-col flex items-center flex-col sm:w-1/2 md:w-3/5 lg:w-3/4 xl:w-1/2 mx-auto text-center sm:mt-base mt-0"-->
+<!--                            style="min-height:500px;"-->
+<!--                    >-->
+<!--                        <img-->
+<!--                                :src="require('../../assets/images/pages/report/empty-doc.svg')"-->
+<!--                                class="mx-auto mb-4 cursor-pointer"-->
+<!--                                @click="showFilter"-->
+<!--                        />-->
+<!--                        <h3-->
+<!--                                class="mt-base text-grey"-->
+<!--                        >Select the options from right side bar to generate the analytics.</h3>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </vx-card>-->
+<!--        </template>-->
+<!--        <template v-else>-->
+<!--            <div class="mb-4" v-for="(template,index) in templates" :key="index">-->
+<!--                <AnalyticsItem :template="template" :filters="filters" @chnOption="chnOption"/>-->
+<!--            </div>-->
+<!--        </template>-->
+<!--    </div>-->
+    <analy-filter
+            @chnFilter="chnFilter"
+            :filters="filters"
+            :isSidebarActive="filterSidebar"
+            @closeSidebar="filterSidebar = false"
+    />
+    <vs-prompt
+            :is-valid="analyticsName!=''"
+            :title="$t('save analytics')"
+            :accept-text="$t('save') | capitalize"
+            :cancel-text="$t('cancel') | capitalize"
+            @accept="saveAnalytics"
+            :active.sync="saveAnalyticsActive"
+    >
+        <VuePerfectScrollbar class="p-0 mb-10" :settings="settings" style="height:20rem;">
+            <div class="vx-row">
+                <div class="vx-col w-full mb-4" v-if="analytic!=null">
+                    <vs-switch v-model="updateFlag">
+                        <span slot="on">{{$t('update')}}</span>
+                        <span slot="off">{{$t('save')}}</span>
+                    </vs-switch>
+                </div>
+                <div class="vx-col w-full mb-4">
+                    <label class="font-semibold">{{$t("name")}}</label>
+                    <vs-input v-model="analyticsName" class="w-full" placeholder="name" />
+                </div>
+                <div class="vx-col w-full">
+                    <label class="font-semibold">{{$t("visible to")}}</label>
+                    <div class="flex items-center mt-2">
+                        <div v-for="(visibleItem,vIndex) in visibles" :key="vIndex">
+                            <div class="flex items-center ml-4 cursor-pointer" @click="visible=visibleItem.key">
+                                <vs-icon icon="radio_button_checked" size="25px" color="primary" v-if="visibleItem.key==visible"/>
+                                <vs-icon icon="radio_button_unchecked" size="25px" v-else />
+                                <span class="karla" :class="{'text-primary':visibleItem.key==visible}">{{$t(visibleItem.text)}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="vx-col w-full mt-4" v-if="visible==1">
+                    <label class="font-semibold">{{$t('teams')}}</label>
+                    <v-select :reduce="teamItem=>teamItem.id" :options="teams" label="name" multiple v-model="team" />
+                </div>
+            </div>
+        </VuePerfectScrollbar>
+    </vs-prompt>
+</div>

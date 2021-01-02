@@ -315,3 +315,64 @@ body{
 .pmBtn .vs-con-input-label {
   width: 150px;
 }
+
+#analytics .b-tabs .tab-content {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.br-8 {
+  border-radius: 8px !important;
+}
+
+.pl-6 {
+  padding-left: 1.5rem !important;
+}
+
+.p-4 {
+  padding: 1rem !important;
+}
+
+.child-flex>*, .flex {
+  flex: initial !important;
+  max-width: initial !important;
+}
+
+.px-0 {
+  padding-left: initial !important;
+}
+
+table td, table th {
+  vertical-align: middle !important;
+}
+
+.v-data-table-header th > span {
+  margin-right: 5px;
+}
+
+.cursor-pointer {
+  cursor: pointer !important;
+}
+
+.v-data-footer {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.collapse-content, .collapse-trigger {
+  border-radius: 8px !important;
+}
+
+.expand-panel-icon {
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  background-color: #e3d9ff;
+}
+.expand-panel-icon i.fa-sort-down {
+  margin-top: -5px;
+}
+
+.expand-panel-icon i.fa-sort-up {
+  margin-top: 5px;
+}

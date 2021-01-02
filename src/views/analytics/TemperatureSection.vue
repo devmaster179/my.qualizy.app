@@ -1,7 +1,7 @@
 <template>
         <div class="p-4 m-4 vs-con-loading__container  mt-base rounded-lg border border-solid d-theme-border-grey-light" v-if="template">
             <div class="section-header">
-                <p class="karla text-lg font-bold">{{$t('temperature')}}</p>
+                <p class="karla text-lg font-bold">Temperature for [{{ $store.getters['app/getTemplateById'](template).content.templateTitle }} - Fridge]</p>
             </div>
             <div class="section-content mt-4">
                 <apexchart type="line" height="350" :options="chartOptions" :series="series"></apexchart>
@@ -12,7 +12,6 @@
 <script>
 import Apexchart from 'vue-apexcharts'
 import VSelect from 'vue-select'
-import { db } from "@/firebase/firebaseConfig.js";
 
 export default {
     props: {
@@ -34,14 +33,18 @@ export default {
             
             chartOptions: {
                 chart: {
+                    height: '100%',
+                    type: 'line',
                     toolbar: {
-                        show: true
+                        show: false
                     }
                 },
-                markers: {
-                    size: 1
+                dataLabels: {
+                    enabled: false
                 },
-
+                stroke: {
+                    curve: 'smooth'
+                },
                 xaxis: {
                     type: 'datetime',
                     categories: [],
@@ -51,15 +54,9 @@ export default {
 
                 },
                 yaxis: {
-                    title: {
-                        text: 'Temperature'
-                    },
+                    type: 'string',
+                    opposite: true,
                 },
-                legend: {
-                    position: 'top',
-                    horizontalAlign: 'left',
-                    floating: true,
-                }
             },
         }
     },
