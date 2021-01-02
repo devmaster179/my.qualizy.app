@@ -325,29 +325,9 @@ body{
   border-radius: 8px !important;
 }
 
-.pl-6 {
-  padding-left: 1.5rem !important;
-}
-
-.p-4 {
-  padding: 1rem !important;
-}
-
 .child-flex>*, .flex {
   flex: initial !important;
   max-width: initial !important;
-}
-
-.px-0 {
-  padding-left: initial !important;
-}
-
-table td, table th {
-  vertical-align: middle !important;
-}
-
-.v-data-table-header th > span {
-  margin-right: 5px;
 }
 
 .cursor-pointer {
