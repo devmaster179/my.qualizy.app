@@ -4,7 +4,7 @@
                 <p class="karla text-lg font-bold">Temperature for [{{ $store.getters['app/getTemplateById'](template).content.templateTitle }} - Fridge]</p>
             </div>
             <div class="section-content mt-4">
-                <apexchart type="line" height="350" :options="chartOptions" :series="series"></apexchart>
+                <apexchart type="line" height="300" :options="chartOptions" :series="series"></apexchart>
             </div>
         </div>
 </template>

@@ -6,8 +6,6 @@ import { db } from "@/firebase/firebaseConfig.js";
 import Vue from 'vue';
 import { Table, Tag, Tabs, Button, Collapse, Icon } from 'buefy';
 import 'bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'buefy/dist/buefy.css';
 import Apexchart from 'vue-apexcharts';
 import $ from 'jquery';
 import TemperatureSection from './TemperatureSection';
