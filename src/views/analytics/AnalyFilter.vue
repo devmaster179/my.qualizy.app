@@ -73,7 +73,7 @@
       </div>
     </VuePerfectScrollbar>
     <div class="flex flex-wrap items-center justify-center p-6" slot="footer">
-      <vs-button class="mr-6" :disabled="template.length==0" @click="commit">{{ $t("apply") }}</vs-button>
+      <vs-button class="mr-6" :disabled="!template.length && !user.length && !team.length && date == 'today'" @click="commit">{{ $t("apply") }}</vs-button>
       <vs-button
         type="border"
         color="danger"

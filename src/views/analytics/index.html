@@ -8,10 +8,10 @@
             <v-select v-if="analytics.length" v-model="analytic" :options="analytics" label="name" class="mr-2" style="min-width: 200px; background:white;"/>
             <feather-icon
                     @click="showFilter"
-                    class="p-2 shadow-drop w-10 rounded-lg d-theme-dark-bg cursor-pointer text-primary mr-2"
+                    class="p-2 shadow-drop w-10 rounded-lg d-theme-dark-bg cursor-pointer mr-2"
                     icon="FilterIcon"
             />
-            <vs-button @click="saveAnalyticsActive=true" :disabled="filters.template.length==0 && canSave">{{$t('save')}}</vs-button>
+            <vs-button style="border-radius: 6px" @click="saveAnalyticsActive=true" :disabled="filters.template.length==0 && canSave">{{$t('save')}}</vs-button>
         </div>
     </div>
     <b-tabs v-model="activeTab" @input="getData">
@@ -81,7 +81,7 @@
                     </div>
                 </div>
             </div>
-            <template v-if="!compliancePerTemplates.length && !compliancePerLocations.length">
+            <template v-if="!compliancePerTemplates.length && !compliancePerLocationsFiltered.length">
                 <vx-card>
                     <div class="flex w-full mt-base">
                         <div
@@ -130,10 +130,10 @@
                 </b-table>
 
             </div>
-            <div class="compliance-per-locations w-100 m-0 bg-white p-5 br-8" v-if="compliancePerLocations.length">
+            <div class="compliance-per-locations w-100 m-0 bg-white p-5 br-8" v-if="compliancePerLocationsFiltered.length">
                 <p class="font-weight-bold mb-3">Compliance per locations</p>
                 <b-table
-                        :data="compliancePerLocations"
+                        :data="compliancePerLocationsFiltered"
                         icon-pack="fa"
                         sort-icon="chevron-down"
                         default-sort-direction="asc"
@@ -205,7 +205,7 @@
                             </div>
                         </div>
                         <div class="col-8">
-                            <small class="text-muted">High failure rate location</small>
+                            <small class="text-muted">High overdue tasks per location</small>
                             <h3 class="h3">{{ failureRateLocation }}</h3>
                         </div>
                     </div>
@@ -230,19 +230,19 @@
                         <p class="font-weight-bold mb-4">Overdue tasks per location</p>
                         <div class="row h-100 w-100 m-0 align-items-center" v-if="pieChart1Options.labels.length">
                             <div class="col-7 pl-0">
-                                <div class="border-bottom d-flex justify-content-between p-2" v-for="(data, i) in pieChart1Options.quantities" :key="i">
+                                <div class="border-bottom d-flex justify-content-between p-2" v-for="(data, key) in pieChart1Options.quantities" :key="key" v-if="locations.includes(key)">
                                     <div class="font-weight-bold d-flex align-items-center">
-                                        <div class="mr-2" :style="{height: '10px', width: '10px', borderRadius: '50%', backgroundColor: pieChart1Options.colors[i]}"></div>
+                                        <div class="mr-2" :style="{height: '10px', width: '10px', borderRadius: '50%', backgroundColor: pieChart1Options.colors[key]}"></div>
                                         <span>{{ data.name }}</span>
                                     </div>
-                                    <div>{{ data.count }} ({{ (data.count / pieChart1Options.series.reduce((a, b) => a + b, 0)  * 100).toFixed(2)}}%)</div>
+                                    <div>{{ data.count }} ({{ (data.count / pieChart1Options.series.reduce((a, b) => a + b, 0) * 100).toFixed(2)}}%)</div>
                                 </div>
                             </div>
                             <div class="col-5">
                                 <apexchart v-if="activeTab === 2" type="donut" :options="pieChart1Options" :series="pieChart1Options.series"></apexchart>
                             </div>
                         </div>
-                        <div class="h-100 d-flex justify-content-center align-items-center" v-else>
+                        <div class="h-100 d-flex justify-content-center align-items-center mb-6" v-else>
                             No Data
                         </div>
                     </div>
@@ -250,7 +250,10 @@
                 <div class="col-md-6 pl-0">
                     <div class="h-100 bg-white m-0 p-5 br-8">
                         <p class="font-weight-bold mb-4">Overdue tasks by time</p>
-                        <apexchart v-if="activeTab === 2" :options="barChart1Options" :series="barChart1Options.series"></apexchart>
+                        <apexchart v-if="barChart1Options.series[0].data.length" :options="barChart1Options" :series="barChart1Options.series"></apexchart>
+                        <div class="h-100 d-flex justify-content-center align-items-center mb-6" v-else>
+                            No Data
+                        </div>
                     </div>
                 </div>
             </div>
@@ -360,7 +363,7 @@
                     </b-button>
                 </div>
                 <b-table
-                    :data="overdueTasks"
+                    :data="overdueTasksFiltered"
                     icon-pack="fa"
                     sort-icon="chevron-down"
                     default-sort-direction="asc"
@@ -439,7 +442,7 @@
                         </div>
                         <div class="col-8">
                             <small class="text-muted">High failure rate location</small>
-                            <h3 class="h3">{{ failureRateLocation }}</h3>
+                            <h3 class="h3">{{ failureAnswersLocation }}</h3>
                         </div>
                     </div>
                 </div>
@@ -463,9 +466,9 @@
                         <p class="font-weight-bold mb-4">Failed answers by location</p>
                         <div class="row h-100 w-100 m-0 align-items-center" v-if="pieChart2Options.labels.length">
                             <div class="col-7 pl-0">
-                                <div class="border-bottom d-flex justify-content-between p-2" v-for="(data, i) in pieChart2Options.quantities" :key="i">
+                                <div class="border-bottom d-flex justify-content-between p-2" v-for="(data, key) in pieChart2Options.quantities" :key="key" v-if="locations.includes(key)">
                                     <div class="font-weight-bold d-flex align-items-center">
-                                        <div class="mr-2" :style="{height: '10px', width: '10px', borderRadius: '50%', backgroundColor: pieChart2Options.colors[i]}"></div>
+                                        <div class="mr-2" :style="{height: '10px', width: '10px', borderRadius: '50%', backgroundColor: pieChart2Options.colors[key]}"></div>
                                         <span>{{ data.name }}</span>
                                     </div>
                                     <div>{{ data.count }} ({{ (data.count / pieChart2Options.series.reduce((a, b) => a + b, 0)  * 100).toFixed(2)}}%)</div>
@@ -483,7 +486,10 @@
                 <div class="col-md-6 pl-0">
                     <div class="h-100 bg-white m-0 p-5 br-8">
                         <p class="font-weight-bold mb-4">Failed answers by time</p>
-                        <apexchart v-if="activeTab === 3" :options="barChart4Options" :series="barChart4Options.series"></apexchart>
+                        <apexchart v-if="barChart4Options.series[0].data.length" :options="barChart4Options" :series="barChart4Options.series"></apexchart>
+                        <div class="h-100 d-flex justify-content-center align-items-center mb-6" v-else>
+                            No Data
+                        </div>
                     </div>
                 </div>
             </div>
@@ -491,7 +497,7 @@
                 <b-collapse
                         class="card mb-3 show br-8"
                         animation="slide"
-                        v-for="(template, i) of failedAnswerTemplates"
+                        v-for="(template, i) of failedAnswerTemplatesFiltered"
                         :key="i"
                         :open="isOpen == i"
                         @open="isOpen = i"

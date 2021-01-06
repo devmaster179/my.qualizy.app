@@ -63,10 +63,12 @@ export default {
             allTemplates: 0,
             compliancePerTemplates: [],
             compliancePerLocations: [],
+            compliancePerLocationsFiltered: [],
             overdueTasks: [],
+            overdueTasksFiltered: [],
             failedAnswerTemplates: [],
+            failedAnswerTemplatesFiltered: [],
             alerts: [],
-            rowsPerPageItems: [5, 10, 30, 50],
             pieChart1Options: {
                 labels: [],
                 series: [],
@@ -129,6 +131,9 @@ export default {
                 yaxis: {
                     opposite: true,
                 },
+                xaxis: {
+                    type: 'datetime',
+                },
                 plotOptions: {
                     bar: {
                         horizontal: false,
@@ -149,8 +154,7 @@ export default {
                 quantities:[],
                 series:[],
                 chart: {
-                    height: '100%',
-                    type: 'bar',
+                    type: 'line',
                     toolbar: {
                         show: false
                     }
@@ -174,13 +178,16 @@ export default {
                 xaxis: {
                     type: 'datetime',
                 },
+                markers: {
+                    size: 1
+                }
             },
             barChart3Options: {
                 quantities:[],
                 series:[],
                 chart: {
                     height: '100%',
-                    type: 'bar',
+                    type: 'line',
                     toolbar: {
                         show: false
                     }
@@ -204,6 +211,9 @@ export default {
                 xaxis: {
                     type: 'datetime',
                 },
+                markers: {
+                    size: 1
+                }
             },
             barChart4Options: {
                 quantities: [],
@@ -220,6 +230,9 @@ export default {
                 },
                 yaxis: {
                     opposite: true,
+                },
+                xaxis: {
+                    type: 'datetime',
                 },
                 plotOptions: {
                     bar: {
@@ -357,26 +370,27 @@ export default {
             if(this.from =='') this.from= new Date(0)
             if(this.to =='') this.to= new Date()
 
-            this.$vs.loading()
-            db.collection("logs").where('templateID', 'in' , this.filters.template)
-                .where('updated_at' , '>=' , this.from)
-                .where('updated_at' , '<=' , this.to)
-                .get().then((q) => {
-                this.$vs.loading.close()
-                let logs = [];
-                q.forEach((doc) => {
-                    logs.push(Object.assign({}, doc.data(), { id: doc.id }));
+            if(this.filters.template.length) {
+                this.$vs.loading()
+                db.collection("logs").where('templateID', 'in' , this.filters.template)
+                    .where('updated_at' , '>=' , this.from)
+                    .where('updated_at' , '<=' , this.to)
+                    .get().then((q) => {
+                    this.$vs.loading.close()
+                    let logs = [];
+                    q.forEach((doc) => {
+                        logs.push(Object.assign({}, doc.data(), { id: doc.id }));
+                    });
+                    this.$store.dispatch("app/setLogs", logs);
                 });
-                this.$store.dispatch("app/setLogs", logs);
-            });
-            db.collection('sensorDatas').where('templateID', 'in', this.filters.template).where('time', '>=' , this.from).where('time','<=' , this.to).orderBy('time','asc').get().then(q=> {
-                let sensorDatas = []
-                q.forEach(doc=> {
-                    sensorDatas.push(Object.assign({}, doc.data(), {id: doc.id}))
+                db.collection('sensorDatas').where('templateID', 'in', this.filters.template).where('time', '>=' , this.from).where('time','<=' , this.to).orderBy('time','asc').get().then(q=> {
+                    let sensorDatas = []
+                    q.forEach(doc=> {
+                        sensorDatas.push(Object.assign({}, doc.data(), {id: doc.id}))
+                    })
+                    this.$store.commit('app/SET_SENSOR_DATA', sensorDatas)
                 })
-                this.$store.commit('app/SET_SENSOR_DATA', sensorDatas)
-            })
-
+            }
         },
         chnFilter(filter) {
             this.filters.date = filter.date
@@ -397,6 +411,8 @@ export default {
             this.filters.teams = ft
             this.filterSidebar = false;
             this.setLog()
+            this.updateOverdueTasks()
+            this.updateFailedAnswers()
         },
         showFilter() {
             this.filterSidebar = true;
@@ -447,17 +463,17 @@ export default {
                                 if(date < new Date()) {
                                     let task = Object.assign({}, data, { id: doc.id });
                                     let correctDate = date.toLocaleDateString();
-                                    let key = correctDate.substring(0, correctDate.length - 5);
+                                    // let key = correctDate.substring(0, correctDate.length - 5);
 
                                     task.team = this.$store.getters["app/teams"].length ? this.$store.getters["app/teams"][0].name : '';
                                     task.deadline = correctDate;
                                     task.overdue = Math.ceil(Math.abs(new Date() - date) / (1000 * 60 * 60 * 24));
                                     task.active ? task.status = 'Active' : task.status = 'Failed';
 
-                                    if(!vm.barChart1Options.quantities[key]) {
-                                        vm.barChart1Options.quantities[key] = 1;
+                                    if(!vm.barChart1Options.quantities[correctDate]) {
+                                        vm.barChart1Options.quantities[correctDate] = 1;
                                     } else {
-                                        vm.barChart1Options.quantities[key]++;
+                                        vm.barChart1Options.quantities[correctDate]++;
                                     }
 
                                     if(data.location) {
@@ -469,6 +485,7 @@ export default {
                                             .then(snapshot => {
                                                 let location = snapshot.data();
                                                 task.location = location.name;
+                                                task.locationId = loc;
                                                 if(!vm.pieChart1Options.quantities[loc]) {
                                                     vm.pieChart1Options.quantities[loc] = {
                                                         name: location.name,
@@ -559,7 +576,7 @@ export default {
                             let data = doc.data();
                             let date = new Date(data.updated_at.toDate());
                             let correctDate = date.toLocaleDateString();
-                            let key = correctDate.substring(0, correctDate.length - 5);
+                            // let key = correctDate.substring(0, correctDate.length - 5);
                             if(data.content.pages && data.content.pages.length) {
                                 data.content.pages.forEach(page => {
                                     if(page.questions.length) {
@@ -578,10 +595,10 @@ export default {
                                                         if(template.content.location && template.content.location.length) {
                                                             let loc = template.content.location[0];
 
-                                                            if(!this.barChart4Options.quantities[key]) {
-                                                                this.barChart4Options.quantities[key] = 1;
+                                                            if(!this.barChart4Options.quantities[correctDate]) {
+                                                                this.barChart4Options.quantities[correctDate] = 1;
                                                             } else {
-                                                                this.barChart4Options.quantities[key]++;
+                                                                this.barChart4Options.quantities[correctDate]++;
                                                             }
 
                                                             db.collection('locations')
@@ -590,6 +607,7 @@ export default {
                                                                 .then(snapshot => {
                                                                     let location = snapshot.data();
                                                                     template.location = location.name;
+                                                                    template.locationId = loc;
                                                                     question.location = location.name;
 
                                                                     if(!this.pieChart2Options.quantities[loc]) {
@@ -653,58 +671,123 @@ export default {
                 case 1:
                     break;
                 case 2:
-                    for(let key in this.pieChart1Options.quantities) {
-                        if(!this.pieChart1Options.labels.find(el => el == this.pieChart1Options.quantities[key].name)) {
-                            this.pieChart1Options.series.push(+this.pieChart1Options.quantities[key].count);
-                            this.pieChart1Options.labels.push(this.pieChart1Options.quantities[key].name);
-                        }
-                    }
-                    for(let key in this.barChart1Options.quantities) {
-                        if(!this.barChart1Options.series[0].data.find(el => el.x == key)) {
-                            this.barChart1Options.series[0].data.push({
-                                x: key,
-                                y: this.barChart1Options.quantities[key]
-                            });
-                        }
-                    }
-                    for(let key in this.barChart2Options.quantities) {
-                        if(!this.barChart2Options.series.find(el => el.name == this.barChart2Options.quantities[key].location)) {
-                            this.barChart2Options.series.push({
-                                name: this.barChart2Options.quantities[key].location,
-                                data: this.barChart2Options.quantities[key].dates
-                            });
-                        }
-                    }
-                    for(let key in this.barChart3Options.quantities) {
-                        if(!this.barChart3Options.series.find(el => el.name == this.barChart3Options.quantities[key].template)) {
-                            this.barChart3Options.series.push({
-                                name: this.barChart3Options.quantities[key].template,
-                                data: this.barChart3Options.quantities[key].dates
-                            });
-                        }
-                    }
+                    this.updateOverdueTasks();
                     break;
                 case 3:
-                    for(let key in this.pieChart2Options.quantities) {
-                        if(!this.pieChart2Options.labels.find(el => el == this.pieChart2Options.quantities[key].name)) {
-                            this.pieChart2Options.series.push(+this.pieChart2Options.quantities[key].count);
-                            this.pieChart2Options.labels.push(this.pieChart2Options.quantities[key].name);
-                        }
-                    }
-                    for(let key in this.barChart4Options.quantities) {
-                        if(!this.barChart4Options.series[0].data.find(el => el.x == key)) {
-                            this.barChart4Options.series[0].data.push({
-                                x: key,
-                                y: this.barChart4Options.quantities[key]
-                            });
-                        }
-                    }
+                    this.updateFailedAnswers();
                     break;
                 case 4:
                     break;
                 case 5:
                     break;
             }
+        },
+        updateOverdueTasks() {
+            let locations = this.$store.getters['app/locationList'];
+            let locs = [];
+            this.pieChart1Options.series = [];
+            this.pieChart1Options.labels = [];
+            this.barChart2Options.series = [];
+            this.barChart3Options.series = [];
+            this.barChart1Options.series[0].data = [];
+            Vue.set(this.barChart1Options.series[0], 'data', []);
+            let ulen = this.filters.users.length;
+
+            if(ulen) {
+                this.filters.users.map(u => {
+                    let user = this.$store.getters['app/getUserById'](u);
+                    locs.concat(user.location);
+                });
+            }
+
+            this.compliancePerLocationsFiltered = this.compliancePerLocations.filter(el => {
+                if(ulen) {
+                    return locations.includes(el.id) && locs.includes(el.id);
+                } else {
+                    return locations.includes(el.id);
+                }
+            });
+
+            for(let key in this.pieChart1Options.quantities) {
+                if((ulen ? locs.includes(key) : true) && locations.includes(key) && !this.pieChart1Options.labels.find(el => el == this.pieChart1Options.quantities[key].name)) {
+                    this.pieChart1Options.series.push(+this.pieChart1Options.quantities[key].count);
+                    this.pieChart1Options.labels.push(this.pieChart1Options.quantities[key].name);
+                }
+            }
+            for(let key in this.barChart1Options.quantities) {
+                let date = new Date(key);
+                if(date >= this.from && date <= this.to && !this.barChart1Options.series[0].data.find(el => el.x == key)) {
+                    // Vue.set(this.barChart1Options.series[0].data, this.barChart1Options.series[0].data.length, {
+                    //     x: key,
+                    //     y: this.barChart1Options.quantities[key]
+                    // });
+                    this.barChart1Options.series[0].data.push({
+                        x: key,
+                        y: this.barChart1Options.quantities[key]
+                    });
+                }
+            }
+            for(let key in this.barChart2Options.quantities) {
+                if((ulen ? locs.includes(key) : true) && locations.includes(key) && !this.barChart2Options.series.find(el => el.name == this.barChart2Options.quantities[key].location)) {
+                    this.barChart2Options.series.push({
+                        name: this.barChart2Options.quantities[key].location,
+                        data: this.barChart2Options.quantities[key].dates
+                    });
+                }
+            }
+            for(let key in this.barChart3Options.quantities) {
+                if(this.templates.includes(key) && !this.barChart3Options.series.find(el => el.name == this.barChart3Options.quantities[key].template)) {
+                    this.barChart3Options.series.push({
+                        name: this.barChart3Options.quantities[key].template,
+                        data: this.barChart3Options.quantities[key].dates
+                    });
+                }
+            }
+
+            this.overdueTasksFiltered = this.overdueTasks.filter(task => {
+                if(task.location) {
+                    return locations.includes(task.locationId);
+                } else {
+                    return true;
+                }
+            });
+        },
+        updateFailedAnswers() {
+            let locations = this.$store.getters['app/locationList'];
+            let locs = [];
+            this.pieChart2Options.series = [];
+            this.pieChart2Options.labels = [];
+            let ulen = this.filters.users.length;
+
+            if(ulen) {
+                this.filters.users.map(u => {
+                    let user = this.$store.getters['app/getUserById'](u);
+                    locs.concat(user.location);
+                });
+            }
+
+            for(let key in this.pieChart2Options.quantities) {
+                if((ulen ? locs.includes(key) : true) && locations.includes(key) && !this.pieChart2Options.labels.find(el => el == this.pieChart2Options.quantities[key].name)) {
+                    this.pieChart2Options.series.push(+this.pieChart2Options.quantities[key].count);
+                    this.pieChart2Options.labels.push(this.pieChart2Options.quantities[key].name);
+                }
+            }
+            for(let key in this.barChart4Options.quantities) {
+                let date = new Date(key);
+                if(date >= this.from && date <= this.to && !this.barChart4Options.series[0].data.find(el => el.x == key)) {
+                    this.barChart4Options.series[0].data.push({
+                        x: key,
+                        y: this.barChart4Options.quantities[key]
+                    });
+                }
+            }
+            this.failedAnswerTemplatesFiltered = this.failedAnswerTemplates.filter(temp => {
+                if(temp.location) {
+                    return locations.includes(temp.locationId);
+                } else {
+                    return true;
+                }
+            })
         }
     },
     watch: {
@@ -772,10 +855,17 @@ export default {
                 else this.saved = false
             }
         },
+        locations() {
+            this.updateOverdueTasks();
+            this.updateFailedAnswers();
+        }
     },
     computed: {
         canSave() {
             return true
+        },
+        locations() {
+          return this.$store.getters['app/locationList'];
         },
         complianceRate() {
             if(!this.compliancePerTemplates.length) return 'N / A';
@@ -790,14 +880,14 @@ export default {
             return `${failed} / ${total - failed} (${failed / (total - failed) * 100} %)`;
         },
         leastPerformingLocation() {
-            if(!this.compliancePerLocations.length) return 'N / A';
-            this.compliancePerLocations.sort((a, b) => a.failedTasks - b.failedTasks);
-            return this.compliancePerLocations[0].failedTasks > 0 ? this.compliancePerLocations[0].name : 'N / A';
+            if(!this.compliancePerLocationsFiltered.length) return 'N / A';
+            this.compliancePerLocationsFiltered.sort((a, b) => a.failedTasks - b.failedTasks);
+            return this.compliancePerLocationsFiltered[0].failedTasks > 0 ? this.compliancePerLocationsFiltered[0].name : 'N / A';
         },
         failureRateLocation() {
             let arr = [];
             this.overdueTasks.forEach(task => {
-                if(task.location) {
+                if(task.location && this.locations.includes(task.locationId)) {
                     let obj = arr.find(el => el.name == task.location);
                     if(obj) {
                         obj.count++;
@@ -815,6 +905,14 @@ export default {
             } else {
                 return 'N / A';
             }
+        },
+        failureAnswersLocation() {
+            let arr = Object.values(this.pieChart2Options.quantities);
+            arr.sort((a, b) => (a.count - b.count));
+            if(arr.length && this.pieChart2Options.labels.includes(arr[0].name)) {
+                return arr[0].name
+            }
+            return 'N / A';
         },
         failureTasksTeam() {
             let arr = [];
@@ -839,8 +937,8 @@ export default {
             }
         },
         failedAnswersCompliance() {
-            if(!this.failedAnswerTemplates.length) return 'N / A';
-            return `${this.failedAnswerTemplates.length} / ${this.allTemplates} (${(this.failedAnswerTemplates.length / (this.allTemplates - this.failedAnswerTemplates.length) * 100).toFixed(2)} %)`;
+            if(!this.failedAnswerTemplatesFiltered.length) return 'N / A';
+            return `${this.failedAnswerTemplatesFiltered.length} / ${this.allTemplates} (${(this.failedAnswerTemplatesFiltered.length / (this.allTemplates - this.failedAnswerTemplatesFiltered.length) * 100).toFixed(2)} %)`;
         },
         biggestAlertsLocation() {
             let arr = [];
