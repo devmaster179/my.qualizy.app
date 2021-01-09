@@ -111,7 +111,7 @@ export default {
     } catch (error) {
       setTimeout(() => {
         window.gist.chat("hideLauncher");
-      }, 500);
+      }, 1000);
     }
     let myIp = await this.getMyIp();
 

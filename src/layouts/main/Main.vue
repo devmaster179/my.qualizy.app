@@ -689,7 +689,13 @@ export default {
     // window.addEventListener('offline',  this.updateStatus('offline'));
   },
   async created() {
-    window.gist.chat("hideLauncher");
+    try {
+      window.gist.chat("hideLauncher");
+    } catch (error) {
+      setTimeout(() => {
+        window.gist.chat("hideLauncher");
+      }, 1000);
+    }
     // this.deleteTrashedData()
     var user = JSON.parse(localStorage.getItem("userInfo"));
     if (!this.$userflow.isIdentified()) {
