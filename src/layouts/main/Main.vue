@@ -689,13 +689,9 @@ export default {
     // window.addEventListener('offline',  this.updateStatus('offline'));
   },
   async created() {
-    try {
+    document.addEventListener('gistChatReady', function () {
       window.gist.chat("hideLauncher");
-    } catch (error) {
-      setTimeout(() => {
-        window.gist.chat("hideLauncher");
-      }, 1000);
-    }
+    });
     // this.deleteTrashedData()
     var user = JSON.parse(localStorage.getItem("userInfo"));
     if (!this.$userflow.isIdentified()) {
