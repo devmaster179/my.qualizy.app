@@ -106,7 +106,13 @@ export default {
   },
 
   async created() {
-    window.gist.chat("hideLauncher");
+    try {
+      window.gist.chat("hideLauncher");
+    } catch (error) {
+      setTimeout(() => {
+        window.gist.chat("hideLauncher");
+      }, 500);
+    }
     let myIp = await this.getMyIp();
 
     let ipInfo = await this.ipInfo(myIp.data);
