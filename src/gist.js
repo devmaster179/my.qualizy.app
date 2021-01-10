@@ -13,5 +13,5 @@
         var c = gist.methods[i];
         gist[c] = gist.factory(c)
     }
-    s = d.createElement('script'), s.src = "https://widget.getgist.com", s.async = !0, e = d.getElementsByTagName(h)[0], e.appendChild(s), s.addEventListener('load', function(e) {}, !1), gist.setAppId("77kqnutu")
+    s = d.createElement('script'), s.src = "https://widget.getgist.com", s.async = !0, e = d.getElementsByTagName(h)[0], e.appendChild(s), s.addEventListener('load', function(e) {}, !1), gist.setAppId("77kqnutu"),gist.trackPageView()
 })(document, 'head', window);
