@@ -430,7 +430,7 @@ router.beforeEach((to, from, next) => {
             query: {
                 to: to.path
             }
-        }).catch({})
+        }).catch((err) => {});
     })
 
 });
