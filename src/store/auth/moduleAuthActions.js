@@ -524,6 +524,7 @@ export default {
           notify: payload.notify,
           updateUsername: true,
           userflow: payload.userflow,
+          gist: payload.gist,
           signUp: true
         }
 
