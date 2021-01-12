@@ -106,9 +106,7 @@ export default {
   },
 
   async created() {
-    document.addEventListener('gistChatReady', function () {
-      window.gist.chat("hideLauncher");
-    });
+    window.gist.chat("hideLauncher");
     let myIp = await this.getMyIp();
 
     let ipInfo = await this.ipInfo(myIp.data);

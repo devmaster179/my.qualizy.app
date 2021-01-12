@@ -388,14 +388,8 @@ const router = new Router({
     ],
 })
 
-router.afterEach((to, from) => {
-    const nearestWithTitle = to.matched.slice().reverse().find(r => r.meta && r.meta.title);
-    let title = "Digital HACCP, Food Traceabilty and HSE solutions";
-    if (nearestWithTitle){
-        title = nearestWithTitle.meta.title
-    }
-    window.gist.track("(Visit a page) <a href='"+location.href+"'>"+title+"</a>", {});
-    // gist.trackPageView();
+router.afterEach(() => {
+    gist.trackPageView();
     // Remove initial loading
     const appLoading = document.getElementById('loading-bg')
     if (appLoading) {
@@ -430,7 +424,7 @@ router.beforeEach((to, from, next) => {
             query: {
                 to: to.path
             }
-        }).catch((err) => {});
+        }).catch({})
     })
 
 });

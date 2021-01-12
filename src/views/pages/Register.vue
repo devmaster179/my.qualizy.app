@@ -371,8 +371,7 @@ export default {
         },
         notify: this.$vs.notify,
         closeAnimation: this.$vs.loading.close,
-        userflow: this.$userflow,
-        gist: window.gist
+        userflow: this.$userflow
       };
       // console.log(payload);
       this.$store.dispatch("auth/registerUser", payload);

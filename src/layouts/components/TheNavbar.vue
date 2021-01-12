@@ -426,6 +426,8 @@ export default {
             group: cUser.email.group
           });
 
+          window.gist.reset()
+
           this.$userflow.track("Sign out" , {
             email: cUser.email,
             group: cUser.email.group
