@@ -12,7 +12,11 @@
 <template>
   <div class="relative">
     <div class="vx-navbar-wrapper">
-      <vs-navbar class="vx-navbar navbar-custom" :color="navbarColor" :class="classObj">
+      <vs-navbar
+        class="vx-navbar navbar-custom"
+        :color="navbarColor"
+        :class="classObj"
+      >
         <!-- SM - OPEN SIDEBAR BUTTON -->
         <feather-icon
           class="sm:inline-flex xl:hidden cursor-pointer mr-1"
@@ -29,23 +33,34 @@
           >
             <feather-icon
               icon="MapPinIcon"
-              :svgClasses="['text-primary', 'w-6 h-6', {'text-white': navbarColor != '#fff'}]"
+              :svgClasses="[
+                'text-primary',
+                'w-6 h-6',
+                { 'text-white': navbarColor != '#fff' },
+              ]"
               class="p-2 mr-1 rounded-full"
-              style="background: rgba(var(--vs-primary),.15);"
+              style="background: rgba(var(--vs-primary), 0.15)"
             />
             <span
               class="font-semibold text-primary"
-              v-if="$store.getters['app/locationList'].length==1"
-            >{{$store.getters['app/getLocationById']($store.getters['app/locationList'][0]).name}}</span>
+              v-if="$store.getters['app/locationList'].length == 1"
+              >{{
+                $store.getters["app/getLocationById"](
+                  $store.getters["app/locationList"][0]
+                ).name
+              }}</span
+            >
             <span
               class="font-semibold text-primary text-sm sm:text-base"
-              v-if="$store.getters['app/locationList'].length>1"
-            >{{$store.getters['app/locationList'].length}} {{$t('locations')}}</span>
+              v-if="$store.getters['app/locationList'].length > 1"
+              >{{ $store.getters["app/locationList"].length }}
+              {{ $t("locations") }}</span
+            >
             <div
               v-click-outside="outside"
               class="absolute bookmark-list w-location sm:w-1/3 xl:w-1/4 mt-base"
               v-if="showLocationSelect"
-              style="left:10px;"
+              style="left: 10px"
             >
               <location-select
                 :autoFocus="true"
@@ -74,28 +89,38 @@
           <feather-icon
             icon="MessageSquareIcon"
             class="cursor-pointer mt-1 sm:mr-6 mr-2"
-            @click="$router.push('/chat').catch((err) =>{})"
+            @click="$router.push('/chat').catch((err) => {})"
           ></feather-icon>
         </div>
 
         <vs-dropdown vs-custom-content vs-trigger-click class="cursor-pointer">
           <span class="cursor-pointer flex i18n-locale">
             <img
-              width="17px" height="14px"
+              width="17px"
+              height="14px"
               :src="require(`@/assets/images/flags/${$i18n.locale}.png`)"
               :alt="$i18n.locale"
             />
-            <span class="hidden sm:block ml-2">{{ getCurrentLocaleData.lang }}</span>
+            <span class="hidden sm:block ml-2">{{
+              getCurrentLocaleData.lang
+            }}</span>
           </span>
           <vs-dropdown-menu class="w-48 i18n-dropdown vx-navbar-dropdown">
-            <vs-dropdown-item v-for="locale in locales" :key="locale" @click="updateLocale(locale)">
+            <vs-dropdown-item
+              v-for="locale in locales"
+              :key="locale"
+              @click="updateLocale(locale)"
+            >
               <div class="flex items-start">
                 <img
-                  width="17px" height="14px"
-                  :src="require(`@/assets/images/flags/${country(locale).flag}.png`)"
+                  width="17px"
+                  height="14px"
+                  :src="
+                    require(`@/assets/images/flags/${country(locale).flag}.png`)
+                  "
                   :alt="locale"
                 />
-                <span class="ml-2 karla">{{country(locale).lang}}</span>
+                <span class="ml-2 karla">{{ country(locale).lang }}</span>
               </div>
             </vs-dropdown-item>
           </vs-dropdown-menu>
@@ -108,15 +133,23 @@
           :badge="unreadNotifications.length"
         ></feather-icon>-->
         <!-- @click="viewAllNtf(unreadNotifications)" -->
-        <vs-dropdown vs-custom-content vs-trigger-click class="cursor-pointer ml-4">
+        <vs-dropdown
+          vs-custom-content
+          vs-trigger-click
+          class="cursor-pointer ml-4"
+        >
           <feather-icon
             icon="BellIcon"
             class="cursor-pointer mt-1 sm:mr-6 mr-2"
             :badge="unreadNotifications.length"
           ></feather-icon>
-          <vs-dropdown-menu class="notification-dropdown dropdown-custom vx-navbar-dropdown">
+          <vs-dropdown-menu
+            class="notification-dropdown dropdown-custom vx-navbar-dropdown"
+          >
             <div class="notification-top text-center p-5 bg-primary text-white">
-              <h3 class="text-white karla">{{ unreadNotifications.length }} New</h3>
+              <h3 class="text-white karla">
+                {{ unreadNotifications.length }} New
+              </h3>
               <p class="opacity-75 karla">App Notifications</p>
             </div>
             <VuePerfectScrollbar
@@ -136,16 +169,22 @@
                       v-if="getTemplateInfo(ntf.templateId)!=undefined"
                       :src="require(`@/assets/images/template_image/${getTemplateInfo(ntf.templateId).content.templateImage}`)"
                     /> -->
-      
-                    <feather-icon class="rounded-full" :icon="ntf.icon"  :svgClasses="[`text-${ntf.color}`, 'stroke-current mr-1 h-6 w-6']"></feather-icon>
+
+                    <feather-icon
+                      class="rounded-full"
+                      :icon="ntf.icon"
+                      :svgClasses="[
+                        `text-${ntf.color}`,
+                        'stroke-current mr-1 h-6 w-6',
+                      ]"
+                    ></feather-icon>
                     <div class="mx-2">
                       <span
                         class="font-medium block notification-title"
                         :class="[`text-${ntf.color}`]"
-                      >{{ ntf.title }}</span>
-                      <small
-                        class="font-light truncate"
-                      >{{ ntf.text }}</small>
+                        >{{ ntf.title }}</span
+                      >
+                      <small class="font-light truncate">{{ ntf.text }}</small>
                       <!-- <small
                         class="block"
                         v-if="ntf.taskTime"
@@ -153,9 +192,11 @@
                       <small class="block" v-else>Bookmarked</small>-->
                     </div>
                   </div>
-                  <small
-                    class="mt-1 whitespace-no-wrap karla"
-                  >{{ calcTime(ntf.updated_at.toDate()) | duration('humanize' , true) | shotTimeText }}</small>
+                  <small class="mt-1 whitespace-no-wrap karla">{{
+                    calcTime(ntf.updated_at.toDate())
+                      | duration("humanize", true)
+                      | shotTimeText
+                  }}</small>
                 </li>
               </ul>
             </VuePerfectScrollbar>
@@ -168,16 +209,24 @@
         </vs-dropdown>
         <div class="knowledge-section hidden sm:block">
           <vx-tooltip text="Switch User" position="bottom">
-            <feather-icon icon="UserCheckIcon" class="cursor-pointer mt-1 mr-4" @click="logout"></feather-icon>
+            <feather-icon
+              icon="UserCheckIcon"
+              class="cursor-pointer mt-1 mr-4"
+              @click="logout"
+            ></feather-icon>
           </vx-tooltip>
         </div>
         <!-- USER META -->
         <div class="the-navbar__user-meta flex items-center">
           <div class="text-right leading-tight hidden sm:block">
             <p class="font-semibold">{{ user_displayName }}</p>
-            <small>{{$t("available")}}</small>
+            <small>{{ $t("available") }}</small>
           </div>
-          <vs-dropdown vs-custom-content vs-trigger-click class="cursor-pointer">
+          <vs-dropdown
+            vs-custom-content
+            vs-trigger-click
+            class="cursor-pointer"
+          >
             <div class="con-img ml-3">
               <img
                 v-if="activeUserImg.startsWith('http')"
@@ -203,40 +252,55 @@
               <ul style="min-width: 9rem">
                 <li
                   class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white"
-                  @click="$router.push('/profile').catch(err => {})"
+                  @click="$router.push('/profile').catch((err) => {})"
                 >
-                  <feather-icon icon="UserIcon" svgClasses="w-4 h-4"></feather-icon>
-                  <span class="ml-2">{{$t("profile") | capitalize}}</span>
+                  <feather-icon
+                    icon="UserIcon"
+                    svgClasses="w-4 h-4"
+                  ></feather-icon>
+                  <span class="ml-2">{{ $t("profile") | capitalize }}</span>
                 </li>
                 <!-- <li class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white"><feather-icon icon="MailIcon" svgClasses="w-4 h-4"></feather-icon> <span class="ml-2">Inbox</span></li> -->
                 <li
                   class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white"
-                  @click="$router.push('/dashboard').catch(err => {})"
+                  @click="$router.push('/dashboard').catch((err) => {})"
                 >
-                  <feather-icon icon="CheckSquareIcon" svgClasses="w-4 h-4"></feather-icon>
-                  <span class="ml-2">{{$t("tasks")}}</span>
+                  <feather-icon
+                    icon="CheckSquareIcon"
+                    svgClasses="w-4 h-4"
+                  ></feather-icon>
+                  <span class="ml-2">{{ $t("tasks") }}</span>
                 </li>
                 <li
                   class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white sm:hidden block"
-                  @click="$router.push('/knowledge-page').catch(err => {})"
+                  @click="$router.push('/knowledge-page').catch((err) => {})"
                 >
-                  <feather-icon icon="InfoIcon" svgClasses="w-4 h-4"></feather-icon>
-                  <span class="ml-2">{{$t("knowledge base")}}</span>
+                  <feather-icon
+                    icon="InfoIcon"
+                    svgClasses="w-4 h-4"
+                  ></feather-icon>
+                  <span class="ml-2">{{ $t("knowledge base") }}</span>
                 </li>
                 <li
                   class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white sm:hidden block"
-                  @click="$router.push('/chat').catch(err => {})"
+                  @click="$router.push('/chat').catch((err) => {})"
                 >
-                  <feather-icon icon="MessageSquareIcon" svgClasses="w-4 h-4"></feather-icon>
-                  <span class="ml-2">{{$t("chat")}}</span>
+                  <feather-icon
+                    icon="MessageSquareIcon"
+                    svgClasses="w-4 h-4"
+                  ></feather-icon>
+                  <span class="ml-2">{{ $t("chat") }}</span>
                 </li>
                 <vs-divider class="m-1"></vs-divider>
                 <li
                   class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white"
                   @click="logout"
                 >
-                  <feather-icon icon="LogOutIcon" svgClasses="w-4 h-4"></feather-icon>
-                  <span class="ml-2">{{$t("logout") | capitalize}}</span>
+                  <feather-icon
+                    icon="LogOutIcon"
+                    svgClasses="w-4 h-4"
+                  ></feather-icon>
+                  <span class="ml-2">{{ $t("logout") | capitalize }}</span>
                 </li>
               </ul>
             </vs-dropdown-menu>
@@ -307,7 +371,11 @@ export default {
       var cUser = this.$store.getters["app/currentUser"];
       if (cUser == undefined) return [];
       var notify = this.$store.getters["app/unreadNotifications"](cUser);
-      return notify.filter((item) => this.$store.getters["app/getTemplateById"](item.templateId) !==undefined && item.type.indexOf('app') > -1);
+      return notify.filter(
+        (item) =>
+          this.$store.getters["app/getTemplateById"](item.templateId) !==
+            undefined && item.type.indexOf("app") > -1
+      );
     },
     country() {
       return (locale) => {
@@ -406,7 +474,6 @@ export default {
       // if (this.$auth.profile) this.$auth.logOut();
 
       // if user is looged in via firebase
-      
 
       var cUser = this.$store.getters["app/currentUser"];
 
@@ -421,16 +488,18 @@ export default {
             email: cUser.email,
           });
 
-          window.gist.track('Sign out', {
+          window.gist.track("Sign out", {
             email: cUser.email,
-            group: cUser.email.group
+            group: cUser.email.group,
           });
 
-          this.$userflow.track("Sign out" , {
+          // window.gist.reset()
+
+          this.$userflow.track("Sign out", {
             email: cUser.email,
-            group: cUser.email.group
-          })
-          this.$userflow.reset()
+            group: cUser.email.group,
+          });
+          this.$userflow.reset();
 
           localStorage.removeItem("userLogin");
           localStorage.removeItem("tokenExpiryKey");

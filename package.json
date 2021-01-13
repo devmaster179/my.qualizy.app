@@ -9,7 +9,7 @@
   "dependencies": {
     "@hscmap/vue-menu": "^2.10.0",
     "apexcharts": "^3.16.1",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "core-js": "^3.6.4",
     "crypto-js": "^4.0.0",
     "easy-circular-progress": "^1.0.4",
