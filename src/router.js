@@ -395,7 +395,7 @@ router.afterEach((to, from) => {
         title = nearestWithTitle.meta.title
     }
     window.gist.track("(Visit a page) <a href='"+location.href+"'>"+title+"</a>", {});
-    // gist.trackPageView();
+    gist.trackPageView();
     // Remove initial loading
     const appLoading = document.getElementById('loading-bg')
     if (appLoading) {
