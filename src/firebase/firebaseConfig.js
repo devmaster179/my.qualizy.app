@@ -5,7 +5,6 @@ let firebaseDB = firebase.firestore();
 // // Disable deprecated features
 firebaseDB.settings({
   cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED,
-  ignoreUndefinedProperties: true,
   // timestampsInSnapshots: true
 });
 
