@@ -22,22 +22,22 @@ import { Base64 } from "@/encode/encode.js";
 
 import CryptoJS from "crypto-js"
 
-var getCompany  = (payload)=> {
-  return new Promise((resolve)=> {
-    db.collection("companies").doc(payload.group).get().then(company=> {
-      resolve(Object.assign({}, company.data() , {id: company.id}))
+var getCompany = (payload) => {
+  return new Promise((resolve) => {
+    db.collection("companies").doc(payload.group).get().then(company => {
+      resolve(Object.assign({}, company.data(), { id: company.id }))
     })
   })
 }
 var getTeams = (payload) => {
   return new Promise((resolve) => {
-    db.collection("teams").where("group","==",payload.group).get().then(q => {
-        let teams = [];
-        q.forEach((doc) => {
-          teams.push(Object.assign({}, doc.data(), { id: doc.id }));
-        });
-        resolve(teams);
+    db.collection("teams").where("group", "==", payload.group).get().then(q => {
+      let teams = [];
+      q.forEach((doc) => {
+        teams.push(Object.assign({}, doc.data(), { id: doc.id }));
       });
+      resolve(teams);
+    });
   });
 }
 var getLocations = (payload) => {
@@ -147,7 +147,7 @@ export default {
       notify: payload.notify,
       closeAnimation: payload.closeAnimation,
       userflow: payload.userflow,
-      gist: payload.gist 
+      gist: payload.gist
     }
     // If remember_me is enabled change firebase Persistence
     if (!payload.checkbox_remember_me) {
@@ -181,11 +181,11 @@ export default {
     commit,
     dispatch
   }, payload) {
-    return new Promise( (resolve, reject) => {
+    return new Promise((resolve, reject) => {
       db.collection('users').where('email', '==', payload.email).get().then(async (result) => {
         var user
         if (!result.empty) {
-          user = Object.assign({}, result.docs[0].data(), { id: result.docs[0].id})
+          user = Object.assign({}, result.docs[0].data(), { id: result.docs[0].id })
         }
         else {
           reject(new Error('There is no user have this email. \n Please register to login.'))
@@ -212,9 +212,9 @@ export default {
         var location = []
         if (user.location !== undefined && user.location !== null && user.location !== '') {
           var lo
-          user.location.map(item=> {
-            lo = locations.find(l=>l.id == item)
-            if(lo)
+          user.location.map(item => {
+            lo = locations.find(l => l.id == item)
+            if (lo)
               location.push(lo.name)
           })
         }
@@ -276,9 +276,9 @@ export default {
         const hash = CryptoJS.HmacSHA256(result.docs[0].id, "ex0dlTc4U8KIzX7pw9udCQK5G9ukYhQauuU_7gQK")
         const hash1 = CryptoJS.enc.Hex.stringify(hash)
         var userLocation = ''
-        if(user.location && Array.isArray(user.location))
+        if (user.location && Array.isArray(user.location))
           userLocation = user.location.join()
-        
+
         payload.gist.identify(user.id, {
           name: user.name,
           email: user.email,
@@ -305,12 +305,12 @@ export default {
             "Number of locations": locations.length || 0,
           }
         });
-        
+
         payload.gist.track('Log In', {
           email: user.email,
           name: user.name,
         })
-        
+
         if (!payload.userflow.isIdentified()) {
           payload.userflow.identify(user.id, {
             name: user.name,
@@ -517,6 +517,78 @@ export default {
           color: 'success'
         });
 
+
+        // BEGIN activating templates
+        let userIndustry = payload.userDetails.industry
+        if (payload.userDetails.industry == "Restaurant") {
+          userIndustry = "Restaurant"
+        } else if (payload.userDetails.industry == "Cafe") {
+          userIndustry = "Coffee"
+        } else if (payload.userDetails.industry == "Food retail (Butcher, Fishmonger, etc..)") {
+          userIndustry = "Food retail"
+        } else if (payload.userDetails.industry == "Food production") {
+          userIndustry = "Food production"
+        } else if (payload.userDetails.industry == "Collectivity catering" || payload.userDetails.industry == "Caterer") {
+          userIndustry = "Catering"
+        } else {
+          userIndustry = "Other"
+        }
+        console.log('payload: ', payload)
+        console.log('payload.userDetails.locationInfo: ', payload.userDetails.locationInfo)
+        console.log('userIndustry: ', userIndustry)
+
+        let tags = [];
+        db.collection("template_labels")
+          .where("group", "in", [
+            "global",
+          ])
+          .where("name", "==", userIndustry)
+          .onSnapshot((q) => {
+            q.forEach((doc) => {
+              tags.push(doc.id);
+            });
+            console.log("getTemplateLabels", tags);
+          });
+
+        db.collection("templates")
+          .where("group", "==", "global")
+          .onSnapshot((q) => {
+            let publicTemplates = [];
+            q.forEach((doc) => {
+              publicTemplates.push(
+                Object.assign({}, doc.data(), { id: doc.id })
+              );
+            });
+
+            // tags = ["yFJrq75OgffqNIfDv2RP"];
+            // this.gTags.map((item) => tags.push(item.id));
+            let templates = publicTemplates.filter((template) =>
+              template.content.templateLabel.some((labels) =>
+                tags.includes(labels)
+              )
+            );
+
+            console.log("result.user", result.user);
+            console.log("tag filtered templates", templates);
+            templates.map((t) => {
+              var updated_at = new Date();
+              let temp = Object.assign({}, t,
+                {
+                  starred: false,
+                  trashed: false,
+                  created_by: result.user.id,
+                  updated_by: result.user.id,
+                  created_at: updated_at,
+                  updated_at: updated_at,
+                  group: result.user.uid
+                })
+              console.log('each before save', temp)
+              db.collection("templates").add(temp);
+            })
+          });
+
+        // END activating templates
+
         var group = result.user.uid;
 
         const newPayload = {
@@ -524,7 +596,6 @@ export default {
           notify: payload.notify,
           updateUsername: true,
           userflow: payload.userflow,
-          gist: payload.gist,
           signUp: true
         }
 
@@ -585,7 +656,7 @@ export default {
             created_by: 'app-creator',
             location: [res.id],
           }).then(res1 => {
-            let country_code = payload.userDetails.locationInfo.country_code
+            let country_code = payload.userDetails.locationInfo.country_code ? payload.userDetails.locationInfo.country_code : ''
             var language = "en-us"
             if (country_code.toLowerCase() == "gb")
               language = "en-gb"
@@ -635,6 +706,7 @@ export default {
         })
 
       }, (error) => {
+        console.log('error', error)
         if (payload.closeAnimation) payload.closeAnimation()
         payload.notify({
           time: 7000,
