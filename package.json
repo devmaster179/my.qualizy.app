@@ -15,7 +15,7 @@
     "easy-circular-progress": "^1.0.4",
     "emoji-mart-vue-fast": "^7.0.1",
     "file-saver": "^2.0.2",
-    "firebase": "^7.17.2",
+    "firebase": "^8.2.2",
     "flatpickr": "^4.6.3",
     "html2canvas": "^1.0.0-rc.5",
     "idle-vue": "^2.0.5",
