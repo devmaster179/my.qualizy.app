@@ -493,11 +493,61 @@ export default {
     //     }
     // });
   },
+  getRepeatByTemplateTitle(title) {
+    var repeat = false;
+    var dailyTitles = [
+      "Fridge temperature logs",
+      "Freezer temperature logs",
+      "Opening checks",
+      "Closing checks",
+      "Daily Cleaning schedule",
+      "Dialy internal audit",
+      "Personal Hygiene",
+    ];
+    var weeklyTitles = [
+      "Weekly food safety checklist",
+      "Weekly internal audit",
+    ];
+    var monthlyTitles = ["Monthly internal audit", "Thermometer calibration"];
+    if (dailyTitles.indexOf(title) > -1) {
+      repeat = "Daily";
+    } else if (weeklyTitles.indexOf(title) > -1) {
+      repeat = "Weekly";
+    } else if (monthlyTitles.indexOf(title) > -1) {
+      repeat = "Monthly";
+    }
 
+    return repeat;
+  },
   registerUser({
     dispatch
   }, payload) {
+    function getRepeatByTemplateTitle(title) {
+      var repeat = false;
+      var dailyTitles = [
+        "Fridge temperature logs",
+        "Freezer temperature logs",
+        "Opening checks",
+        "Closing checks",
+        "Daily Cleaning schedule",
+        "Dialy internal audit",
+        "Personal Hygiene",
+      ];
+      var weeklyTitles = [
+        "Weekly food safety checklist",
+        "Weekly internal audit",
+      ];
+      var monthlyTitles = ["Monthly internal audit", "Thermometer calibration"];
+      if (dailyTitles.indexOf(title) > -1) {
+        repeat = "Daily";
+      } else if (weeklyTitles.indexOf(title) > -1) {
+        repeat = "Weekly";
+      } else if (monthlyTitles.indexOf(title) > -1) {
+        repeat = "Monthly";
+      }
 
+      return repeat;
+    }
     // create user using firebase
     firebase.auth().createUserWithEmailAndPassword(payload.userDetails.email, payload.userDetails.password)
       .then((result) => {
@@ -516,77 +566,6 @@ export default {
           icon: 'icon-check',
           color: 'success'
         });
-
-        // BEGIN activating templates
-        let userIndustry = payload.userDetails.industry
-        if (payload.userDetails.industry == "Restaurant") {
-          userIndustry = "Restaurant"
-        } else if (payload.userDetails.industry == "Cafe") {
-          userIndustry = "Coffee"
-        } else if (payload.userDetails.industry == "Food retail (Butcher, Fishmonger, etc..)") {
-          userIndustry = "Food retail"
-        } else if (payload.userDetails.industry == "Food production") {
-          userIndustry = "Food production"
-        } else if (payload.userDetails.industry == "Collectivity catering" || payload.userDetails.industry == "Caterer") {
-          userIndustry = "Catering"
-        } else {
-          userIndustry = "Other"
-        }
-        console.log('payload: ', payload)
-        console.log('payload.userDetails.locationInfo: ', payload.userDetails.locationInfo)
-        console.log('userIndustry: ', userIndustry)
-
-        let tags = [];
-        db.collection("template_labels")
-          .where("group", "in", [
-            "global",
-          ])
-          .where("name", "==", userIndustry)
-          .onSnapshot((q) => {
-            q.forEach((doc) => {
-              tags.push(doc.id);
-            });
-            console.log("getTemplateLabels", tags);
-          });
-
-        db.collection("templates")
-          .where("group", "==", "global")
-          .onSnapshot((q) => {
-            let publicTemplates = [];
-            q.forEach((doc) => {
-              publicTemplates.push(
-                Object.assign({}, doc.data(), { id: doc.id })
-              );
-            });
-
-            // tags = ["yFJrq75OgffqNIfDv2RP"];
-            // this.gTags.map((item) => tags.push(item.id));
-            let templates = publicTemplates.filter((template) =>
-              template.content.templateLabel.some((labels) =>
-                tags.includes(labels)
-              )
-            );
-
-            console.log("result.user", result.user);
-            console.log("tag filtered templates", templates);
-            templates.map((t) => {
-              var updated_at = new Date();
-              let temp = Object.assign({}, t,
-                {
-                  starred: false,
-                  trashed: false,
-                  created_by: result.user.id,
-                  updated_by: result.user.id,
-                  created_at: updated_at,
-                  updated_at: updated_at,
-                  group: result.user.uid
-                })
-              console.log('each before save', temp)
-              db.collection("templates").add(temp);
-            })
-          });
-
-        // END activating templates
 
         var group = result.user.uid;
 
@@ -698,13 +677,174 @@ export default {
               locale_code: language,
               created_at: createdDate.toISOString()
             })
-            payload.userflow.track("Sign Up", {
-              email: payload.userDetails.email,
-              registered_at: createdDate.toISOString()
-            })
+
             dispatch('login', newPayload) //kkkkkkkk
+
+
+            // BEGIN activating templates/schedules/reports/knowledge_bases
+            let userIndustry = payload.userDetails.industry
+            if (payload.userDetails.industry == "Restaurant") {  // format industry text
+              userIndustry = "Restaurant"
+            } else if (payload.userDetails.industry == "Cafe") {
+              userIndustry = "Coffee"
+            } else if (payload.userDetails.industry == "Food retail (Butcher, Fishmonger, etc..)") {
+              userIndustry = "Food retail"
+            } else if (payload.userDetails.industry == "Food production") {
+              userIndustry = "Food production"
+            } else if (payload.userDetails.industry == "Collectivity catering" || payload.userDetails.industry == "Caterer") {
+              userIndustry = "Catering"
+            } else {
+              userIndustry = "Other"
+            }
+            console.log('payload: ', payload)
+            console.log('payload.userDetails.locationInfo: ', payload.userDetails.locationInfo)
+            console.log('userIndustry: ', userIndustry)
+
+            let tags = [];
+            db.collection("template_labels") // get tag ids by industry name == tag name && group == global
+              .where("group", "in", [
+                "global",
+              ])
+              .where("name", "==", userIndustry)
+              .onSnapshot((q) => {
+                q.forEach((doc) => {
+                  tags.push(doc.id);
+                });
+                console.log("getTemplateLabels", tags);
+              });
+
+            db.collection("templates") // get templates that has tag(same name with user industry)
+              .where("group", "==", "global")
+              .onSnapshot((q) => {
+                let publicTemplates = [];
+                q.forEach((doc) => {
+                  publicTemplates.push(
+                    Object.assign({}, doc.data(), { id: doc.id })
+                  );
+                });
+
+                let templates = publicTemplates.filter((template) => // filter template by tag
+                  template.content.templateLabel.some((labels) =>
+                    tags.includes(labels)
+                  )
+                );
+
+                console.log("result.user", result.user);
+                console.log("tag filtered templates", templates);
+                templates.map((t) => {
+                  var updated_at = new Date();
+                  let temp = Object.assign({}, t,
+                    {
+                      starred: false,
+                      trashed: false,
+                      created_by: result.user.id,
+                      updated_by: result.user.id,
+                      created_at: updated_at,
+                      updated_at: updated_at,
+                      group: result.user.uid
+                    })
+                  console.log('each before save', temp)
+                  db.collection("templates").add(temp) // deploy template
+                    .then(function (docRef) {
+                      console.log("Document written with ID: ", docRef.id);
+
+                      // BEGIN activating schedules
+                      if (temp.content.templateSD == "schedule this template") {
+                        var assignDates = [];
+                        var from = new Date();
+                        var beforeItem = "";
+                        var aTimes = [{ value: "08:00" }];
+                        aTimes.map((item) => {
+                          if (item.value == beforeItem) return;
+                          beforeItem = item.value;
+                          assignDates.push(
+                            new Date(
+                              from.getFullYear(),
+                              from.getMonth(),
+                              from.getDate(),
+                              item.value.split(":")[0],
+                              item.value.split(":")[1]
+                            )
+                          );
+                        });
+
+                        var teams = [res1.id];
+                        var mUser = [res1.id];
+                        var repeat = getRepeatByTemplateTitle(
+                          temp.content.templateTitle
+                        );
+                        var title = repeat
+                          ? temp.content.templateTitle + "-" + repeat
+                          : temp.content.templateTitle;
+
+                        let newSchedule = {
+                          location: [res.id],
+                          title: title,
+                          template: docRef.id,
+                          assign: teams,
+                          monitor: mUser,
+                          _repeat: repeat ? repeat : "No Repeat",
+                          dueTimes: assignDates,
+                          selectedDays: [],
+                          // interval: this.interval,
+                          group: result.user.uid,
+                          created_by: result.user.id,
+                          created_at: new Date(),
+                          updated_by: result.user.id,
+                          updated_at: new Date(),
+                          active: true,
+                        }
+                        console.log('schedule created', newSchedule)
+                        db.collection("schedules").add(newSchedule);
+                        // setTimeout(() => {
+                        //   firebase.analytics().logEvent("Create Schedule", {
+                        //     Title: title,
+                        //   });
+                        // }, 1000);
+                      }
+                      // END activating schedules
+
+                      // BEGIN activating reports
+                      let reportTitle = temp.content.templateTitle + " - This week"
+                      let newReport = {
+                        title: reportTitle,
+                        description: '',
+                        visible: 'Public',
+                        teams: [],
+                        tags: temp.content.templateLabel,
+                        filter: {
+                          date: "thisW",
+                          template: [docRef.id],
+                          team: [],
+                          label: [],
+                          user: [],
+                          status: ''
+                        },
+                        location: [res.id],
+                        created_at: new Date(),
+                        updated_at: new Date(),
+                        created_by: result.user.id,
+                        group: result.user.uid,
+                      }
+                      console.log('report created', newReport)
+                      db.collection('reports').add(newReport)
+                      // END activating reports
+
+
+                    })
+                    .catch(function (error) {
+                      console.error("Error adding template: ", error);
+                    });
+
+                })
+              });
+
+            // END activating templates/schedules/reports/knowledge_bases
+
           })
         })
+
+
 
       }, (error) => {
         if (payload.closeAnimation) payload.closeAnimation()

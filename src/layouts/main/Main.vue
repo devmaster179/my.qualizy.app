@@ -473,13 +473,102 @@ export default {
                 tags.includes(labels)
               )
             );
-
             console.log("tag filtered templates", templates);
+            templates.map((t) => {
+              var updated_at = new Date();
+              let temp = Object.assign({}, t, {
+                starred: false,
+                trashed: false,
+                created_by: JSON.parse(localStorage.getItem("userInfo")).id,
+                updated_by: JSON.parse(localStorage.getItem("userInfo")).id,
+                created_at: updated_at,
+                updated_at: updated_at,
+                group: JSON.parse(localStorage.getItem("userInfo")).group,
+              });
+              console.log("each before save", temp);
+              // if (temp.content.templateSD == "schedule this template") {
+              //   var assignDates = [];
+              //   var from = new Date();
+              //   var beforeItem = "";
+              //   var aTimes = [{ value: "08:00" }];
+              //   aTimes.map((item) => {
+              //     if (item.value == beforeItem) return;
+              //     beforeItem = item.value;
+              //     assignDates.push(
+              //       new Date(
+              //         from.getFullYear(),
+              //         from.getMonth(),
+              //         from.getDate(),
+              //         item.value.split(":")[0],
+              //         item.value.split(":")[1]
+              //       )
+              //     );
+              //   });
+
+              //   var teams = ["user.id"];
+              //   var mUser = [];
+              //   var repeat = this.getRepeatByTemplateTitle(
+              //     temp.content.templateTitle
+              //   );
+              //   var title = repeat
+              //     ? temp.content.templateTitle + "-" + repeat
+              //     : temp.content.templateTitle;
+
+              //   db.collection("schedules").add({
+              //     // location: [this.location.id],
+              //     title: title,
+              //     template: temp.id,
+              //     assign: teams,
+              //     monitor: mUser,
+              //     _repeat: repeat,
+              //     dueTimes: assignDates,
+              //     selectedDays: [],
+              //     // interval: this.interval,
+              //     group: JSON.parse(localStorage.getItem("userInfo")).group,
+              //     created_by: JSON.parse(localStorage.getItem("userInfo")).id,
+              //     created_at: new Date(),
+              //     updated_by: JSON.parse(localStorage.getItem("userInfo")).id,
+              //     updated_at: new Date(),
+              //     active: true,
+              //   });
+              //   setTimeout(() => {
+              //     firebase.analytics().logEvent("Create Schedule", {
+              //       Title: title,
+              //     });
+              //   }, 1000);
+              // }
+            });
 
             this.$store.dispatch("app/setPublicTemplates", publicTemplates);
             resolve("OK");
           });
       });
+    },
+    getRepeatByTemplateTitle(title) {
+      var repeat = false;
+      var dailyTitles = [
+        "Fridge temperature logs",
+        "Freezer temperature logs",
+        "Opening checks",
+        "Closing checks",
+        "Daily Cleaning schedule",
+        "Dialy internal audit",
+        "Personal Hygiene",
+      ];
+      var weeklyTitles = [
+        "Weekly food safety checklist",
+        "Weekly internal audit",
+      ];
+      var monthlyTitles = ["Monthly internal audit", "Thermometer calibration"];
+      if (dailyTitles.indexOf(title) > -1) {
+        repeat = "Daily";
+      } else if (weeklyTitles.indexOf(title) > -1) {
+        repeat = "Weekly";
+      } else if (monthlyTitles.indexOf(title) > -1) {
+        repeat = "Monthly";
+      }
+
+      return repeat;
     },
     setFoodItems() {
       return new Promise((resolve, reject) => {
