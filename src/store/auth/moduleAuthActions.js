@@ -839,7 +839,7 @@ export default {
                 })
               });
 
-            // BEGIN activating schedules
+            // BEGIN activating knowledge_bases
             db.collection("knowledge").add({
               name: payload.userDetails.industry,
               type: "category",
@@ -875,7 +875,7 @@ export default {
               .catch(function (error) {
                 console.error("Error adding knowledgebase category: ", error);
               });
-            // END activating schedules
+            // END activating knowledge_bases
 
             // END activating templates/schedules/reports/knowledge_bases
           })
