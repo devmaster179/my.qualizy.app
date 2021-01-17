@@ -285,14 +285,16 @@ export default {
           answers = [];
           if (question.answers === undefined) return;
           question.answers.map(answer => {
-            if (answer.type.id !== undefined)
-              answers.push({
-                title: answer.title,
-                type: answer.type,
-                action: answer.action,
-                mandatory: answer.mandatory,
-                score: answer.score
-              });
+            if (answer.type.id !== undefined){
+                answers.push({
+                  title: answer.title,
+                  type: answer.type,
+                  action: [],
+                  mandatory: answer.mandatory,
+                  score: answer.score
+                });
+            }
+            
           });
           if (answers.length > 0)
             questions.push({
@@ -379,7 +381,7 @@ export default {
           color: "success"
         });
       }
-      this.$router.push(`/templates`).catch(err => {});
+      this.$router.push("/templates").catch(err => {});
     },
     addPage() {
       this.$store.commit("app/CHN_TEMP_TEMPLATE", {

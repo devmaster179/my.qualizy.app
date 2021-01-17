@@ -876,9 +876,9 @@ export default {
       this.updateNavbarColor(this.navbarColor);
     }
 
-    this.$vs.loading();
-    this.$store.commit("app/SET_LOCATION_LIST", []);
-    var mDate = new Date().getTime();
+    // this.$vs.loading();
+    this.$store.commit('app/SET_LOCATION_LIST' , [])
+    var mDate = new Date().getTime()
     // var  mDate1 = new Date().getTime()
     await this.setReportSchedule();
     // mDate1 = new Date().getTime()
@@ -960,7 +960,7 @@ export default {
     // mDate1 = new Date().getTime()
     // console.log((mDate1 - mDate) , 'setKnowledge')
     await this.setAnalytics();
-    this.$vs.loading.close();
+    // this.$vs.loading.close();
 
     // db.collection('notifications').where('group', '==', JSON.parse(localStorage.getItem('userInfo')).group).onSnapshot(q => {
     //     q.docChanges().forEach(change => {
