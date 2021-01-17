@@ -857,20 +857,19 @@ export default {
                   .where("tags", "array-contains-any", tags)
                   .get()
                   .then((q) => {
-                    var knowledges = [];
                     q.forEach((doc) => {
                       if (doc.data().trashed) return;
+
                       let newKng = Object.assign({}, doc.data(), {
                         category: docRef.id,
                         group: result.user.uid,
                         updated_by: result.user.id,
                         updated_at: new Date(),
                       });
-                      console.log('report knowledge', newKng)
+
+                      console.log('knowledge created', newKng)
                       db.collection("knowledge").add(newKng);
                     });
-
-                    console.log("global knowledges", knowledges);
                   });
               })
               .catch(function (error) {
