@@ -407,6 +407,7 @@ export default {
             q.forEach((doc) => {
               labels.push(Object.assign({}, doc.data(), { id: doc.id }));
             });
+            console.log("setTemplateLabels", labels);
             this.$store.dispatch("app/setLabel", labels);
             resolve("OK");
           });

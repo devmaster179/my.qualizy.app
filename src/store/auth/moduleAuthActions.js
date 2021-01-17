@@ -839,8 +839,45 @@ export default {
                 })
               });
 
-            // END activating templates/schedules/reports/knowledge_bases
+            // BEGIN activating schedules
+            db.collection("knowledge").add({
+              name: payload.userDetails.industry,
+              type: "category",
+              image: "",
+              comment: '',
+              locations: [res.id],
+              group: result.user.uid,
+              updated_by: result.user.id,
+              updated_at: new Date(),
+            })
+              .then(function (docRef) {
+                db.collection("knowledge")
+                  .where("type", "==", "article")
+                  .where("group", "==", "global")
+                  .where("tags", "array-contains-any", tags)
+                  .get()
+                  .then((q) => {
+                    var knowledges = [];
+                    q.forEach((doc) => {
+                      if (doc.data().trashed) return;
+                      let newKng = Object.assign({}, doc.data(), {
+                        category: docRef.id,
+                        group: result.user.uid,
+                        updated_by: result.user.id,
+                        updated_at: new Date(),
+                      });
+                      db.collection("knowledge").add(newKng);
+                    });
 
+                    console.log("global knowledges", knowledges);
+                  });
+              })
+              .catch(function (error) {
+                console.error("Error adding knowledgebase category: ", error);
+              });
+            // END activating schedules
+
+            // END activating templates/schedules/reports/knowledge_bases
           })
         })
 

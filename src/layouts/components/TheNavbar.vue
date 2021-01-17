@@ -462,6 +462,7 @@ export default {
         });
     },
     updateLocale(locale) {
+      console.log("locale change", locale);
       this.$i18n.locale = locale;
       this.$moment.locale(locale);
     },
