@@ -131,7 +131,7 @@
                   color="#6C50F0"
                   class="w-full karla-bold"
                   :disabled="pageCheck(0)"
-                  @click="plusPage"
+                  @click.native="plusPage"
                 >{{$t("next")}}</vs-button>
               </div>
             </div>
@@ -195,10 +195,10 @@
                   color="#ebe8fd"
                   class="w-full mr-4 karla-bold"
                   text-color="#6c50f0"
-                  @click="minusPage"
+                  @click.native="minusPage"
                 >{{$t("back")}}</vs-button>
                 <vs-button
-                  @click="plusPage"
+                  @click.native="plusPage"
                   color="#6c50f0"
                   :disabled="pageCheck(1)"
                   class="w-full karla-bold"
@@ -233,10 +233,10 @@
                   color="#ebe8fd"
                   class="w-full mr-4 karla-bold"
                   text-color="#6c50f0"
-                  @click="minusPage"
+                  @click.native="minusPage"
                 >{{$t("back")}}</vs-button>
                 <vs-button
-                  @click="plusPage"
+                  @click.native="plusPage"
                   color="#6c50f0"
                   class="w-full karla-bold"
                   :disabled="!pageCheck(2)"
@@ -270,10 +270,10 @@
                   color="#ebe8fd"
                   class="w-full mr-4 karla-bold"
                   text-color="#6c50f0"
-                  @click="minusPage"
+                  @click.native="minusPage"
                 >{{$t("back")}}</vs-button>
                 <vs-button
-                  @click="registerUser"
+                  @click.native="registerUser"
                   color="#6c50f0"
                   class="w-full karla-bold"
                 >{{$t("finish")}}</vs-button>
