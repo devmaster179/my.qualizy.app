@@ -866,6 +866,7 @@ export default {
                         updated_by: result.user.id,
                         updated_at: new Date(),
                       });
+                      console.log('report knowledge', newKng)
                       db.collection("knowledge").add(newKng);
                     });
 
