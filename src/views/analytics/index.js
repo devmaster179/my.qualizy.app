@@ -60,15 +60,19 @@ export default {
             },
             activeTab: 0,
             allTasks: 0,
-            allTemplates: 0,
+            allLogs: 0,
             compliancePerTemplates: [],
             compliancePerLocations: [],
             compliancePerLocationsFiltered: [],
             overdueTasks: [],
             overdueTasksFiltered: [],
-            failedAnswerTemplates: [],
-            failedAnswerTemplatesFiltered: [],
+            failedAnswerLogs: [],
+            failedAnswerLogsFiltered: [],
             alerts: [],
+            alertsFiltered: [],
+            logs: [],
+            lpt: {name: 'N / A'},
+            fat: '',
             pieChart1Options: {
                 labels: [],
                 series: [],
@@ -260,8 +264,9 @@ export default {
             $(this).next('ul').toggle();
         });
 
+        this.setLog();
         this.getOverdueTasks();
-        this.getFailedAnswers();
+        // this.getFailedAnswers();
         this.getAlerts();
     },
     methods: {
@@ -372,8 +377,11 @@ export default {
 
             if(this.filters.template.length) {
                 this.$vs.loading()
+                let now = new Date();
+                let mdnght = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
                 db.collection("logs").where('templateID', 'in' , this.filters.template)
-                    .where('updated_at' , '>=' , this.from)
+                    .where('updated_at' , '>=' , this.filters.date == 'today' ? mdnght : this.from)
                     .where('updated_at' , '<=' , this.to)
                     .get().then((q) => {
                     this.$vs.loading.close()
@@ -411,8 +419,8 @@ export default {
             this.filters.teams = ft
             this.filterSidebar = false;
             this.setLog()
+            this.getFailedAnswers()
             this.updateOverdueTasks()
-            this.updateFailedAnswers()
         },
         showFilter() {
             this.filterSidebar = true;
@@ -448,6 +456,7 @@ export default {
             if(!this.overdueTasks.length) {
                 let vm = this;
                 this.$vs.loading();
+                vm.overdueTasks = [];
                 db.collection("schedules")
                     .where(
                         "group",
@@ -463,9 +472,7 @@ export default {
                                 if(date < new Date()) {
                                     let task = Object.assign({}, data, { id: doc.id });
                                     let correctDate = date.toLocaleDateString();
-                                    // let key = correctDate.substring(0, correctDate.length - 5);
 
-                                    task.team = this.$store.getters["app/teams"].length ? this.$store.getters["app/teams"][0].name : '';
                                     task.deadline = correctDate;
                                     task.overdue = Math.ceil(Math.abs(new Date() - date) / (1000 * 60 * 60 * 24));
                                     task.active ? task.status = 'Active' : task.status = 'Failed';
@@ -516,7 +523,18 @@ export default {
                                                     }
                                                 }
                                                 this.$vs.loading.close();
-                                            })
+                                            });
+
+                                        task.team = this.$store.getters["app/teams"].length ? this.$store.getters["app/teams"][0].name : '';
+
+                                        db.collection("teams")
+                                            .where("location", "array-contains", loc)
+                                            .get()
+                                            .then(q => {
+                                                q.forEach((doc) => {
+                                                    task.team = doc.data().name;
+                                                });
+                                            });
                                     }
 
                                     let temp = data.template;
@@ -562,107 +580,121 @@ export default {
             }
         },
         getFailedAnswers() {
-            if(!this.failedAnswerTemplates.length) {
-                this.$vs.loading();
-                db.collection("templates")
-                    .where(
-                        "group",
-                        "==",
-                        JSON.parse(localStorage.getItem("userInfo")).group
-                    )
-                    .onSnapshot((q) => {
-                        q.forEach((doc) => {
-                            this.allTemplates++;
-                            let data = doc.data();
-                            let date = new Date(data.updated_at.toDate());
-                            let correctDate = date.toLocaleDateString();
-                            // let key = correctDate.substring(0, correctDate.length - 5);
-                            if(data.content.pages && data.content.pages.length) {
-                                data.content.pages.forEach(page => {
-                                    if(page.questions.length) {
-                                        page.questions.forEach(question => {
-                                            if(question.answers.length) {
-                                                question.answers.forEach(answer => {
-                                                    let failed = answer.type.failedAnswer;
-                                                    let template = Object.assign({}, data, { id: doc.id });
+            this.$vs.loading();
+            this.failedAnswerLogs = [];
+            let now = new Date();
+            let mdnght = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-                                                    if(failed == 'Yes' || failed == 'Si' || failed == 'Oui' || failed == 'Sì') {
+            db.collection("logs")
+                .where('templateID', 'in' , this.filters.template)
+                .where('updated_at' , '>=' , this.filters.date == 'today' ? mdnght : this.from)
+                .where('updated_at' , '<=' , this.to)
+                .onSnapshot((q) => {
+                    q.forEach(doc => {
+                        this.allLogs++;
+                        let data = Object.assign({}, doc.data(), {id: doc.id});
+                        let date = new Date(data.updated_at.toDate());
+                        let correctDate = date.toLocaleDateString();
+                        this.logs.push(data);
 
-                                                        question.team = this.$store.getters["app/teams"].length ? this.$store.getters["app/teams"][0].name : '';
-                                                        question.template = data.content.templateTitle;
+                        let template = this.$store.getters["app/getTemplateById"](data.templateID);
+                        data.template = template.content.templateTitle;
 
+                        if(data.logs && data.logs.length) {
+                            data.logs.forEach(log => {
+                                if(log.questions.length) {
+                                    log.questions.forEach(question => {
+                                        let failed = false;
+                                        question.team = this.$store.getters["app/teams"].length ? this.$store.getters["app/teams"][0].name : '';
 
-                                                        if(template.content.location && template.content.location.length) {
-                                                            let loc = template.content.location[0];
+                                        if(question.answers.length) {
+                                            question.answers.forEach(answer => {
+                                                if (answer.ref.type.failedAnswer && answer.ref.type.failedAnswer == answer.value) {
+                                                    failed = true;
+                                                }
+                                            })
+                                        }
 
-                                                            if(!this.barChart4Options.quantities[correctDate]) {
-                                                                this.barChart4Options.quantities[correctDate] = 1;
-                                                            } else {
-                                                                this.barChart4Options.quantities[correctDate]++;
-                                                            }
-
-                                                            db.collection('locations')
-                                                                .doc(loc)
-                                                                .get()
-                                                                .then(snapshot => {
-                                                                    let location = snapshot.data();
-                                                                    template.location = location.name;
-                                                                    template.locationId = loc;
-                                                                    question.location = location.name;
-
-                                                                    if(!this.pieChart2Options.quantities[loc]) {
-                                                                        this.pieChart2Options.quantities[loc] = {
-                                                                            name: location.name,
-                                                                            count: 1
-                                                                        };
-                                                                    } else {
-                                                                        this.pieChart2Options.quantities[loc].count++;
-                                                                    }
-                                                                })
-                                                        }
-                                                        let tmp = this.failedAnswerTemplates.find(el => el.id == template.id);
-                                                        if(!tmp) {
-                                                            this.failedAnswerTemplates.push(template);
-                                                        }
+                                        if(failed) {
+                                            let log = this.failedAnswerLogs.find(el => el.id == data.id);
+                                            if(!log) {
+                                                if(template.content.location && template.content.location.length) {
+                                                    let loc = template.content.location[0];
+                                                    if(!this.barChart4Options.quantities[correctDate]) {
+                                                        this.barChart4Options.quantities[correctDate] = 1;
+                                                    } else {
+                                                        this.barChart4Options.quantities[correctDate]++;
                                                     }
-                                                })
+
+                                                    let location = this.$store.getters["app/getLocationById"](template.content.location[0]);
+                                                    template.location = location.name;
+                                                    template.locationId = loc;
+                                                    data.location = location.name;
+                                                    data.locationId = loc;
+
+                                                    if(!this.pieChart2Options.quantities[loc]) {
+                                                        this.pieChart2Options.quantities[loc] = {
+                                                            locId: loc,
+                                                            name: location.name,
+                                                            count: 1
+                                                        };
+                                                    } else {
+                                                        this.pieChart2Options.quantities[loc].count++;
+                                                    }
+                                                }
+                                                this.failedAnswerLogs.push(data);
                                             }
-                                        })
-                                    }
-                                });
-                            }
-                        });
-                        this.$vs.loading.close();
+                                        }
+                                    })
+                                }
+                            });
+                        }
                     });
-            }
+                    this.updateFailedAnswers();
+                    this.$vs.loading.close();
+                });
         },
         getAlerts() {
-            if(!this.alerts.length) {
-                this.$vs.loading();
-                db.collection("notifications")
-                    // .where(
-                    //     "group",
-                    //     "==",
-                    //     JSON.parse(localStorage.getItem("userInfo")).group
-                    // )
-                    .onSnapshot((q) => {
-                        q.forEach((doc) => {
-                            let alert = Object.assign({}, doc.data(), { id: doc.id });
-                            let teams = [];
-                            alert.toTeam.forEach(team => {
-                                db.collection('teams')
-                                    .doc(team)
-                                    .get()
-                                    .then(snapshot => {
-                                        teams.push(snapshot.data().name);
-                                    });
-                            });
-                            alert.teams = teams;
-                            this.alerts.push(alert);
+            this.alerts = [];
+            this.$vs.loading();
+            db.collection("notifications")
+                .where(
+                    "group",
+                    "==",
+                    JSON.parse(localStorage.getItem("userInfo")).group
+                )
+                .onSnapshot((q) => {
+                    q.forEach((doc) => {
+                        let alert = Object.assign({}, doc.data(), { id: doc.id });
+                        let teams = [];
+                        alert.toTeam.forEach(team => {
+                            db.collection('teams')
+                                .doc(team)
+                                .get()
+                                .then(snapshot => {
+                                    teams.push(snapshot.data().name);
+                                });
                         });
-                        this.$vs.loading.close();
+                        alert.teams = teams;
+                        db.collection('templates')
+                            .doc(alert.templateId)
+                            .get()
+                            .then(snapshot => {
+                                if(snapshot.data().content.location) {
+                                    let location = snapshot.data().content.location[0];
+                                    db.collection("locations")
+                                        .doc(location)
+                                        .get()
+                                        .then(loc => {
+                                            alert.location = Object.assign({}, loc.data(), {id: loc.id});
+                                        })
+                                }
+                            });
+
+                        this.alerts.push(alert);
                     });
-            }
+                    this.$vs.loading.close();
+                });
         },
         getData(tab) {
             switch(tab) {
@@ -679,6 +711,7 @@ export default {
                 case 4:
                     break;
                 case 5:
+                    this.updateAlerts();
                     break;
             }
         },
@@ -717,10 +750,6 @@ export default {
             for(let key in this.barChart1Options.quantities) {
                 let date = new Date(key);
                 if(date >= this.from && date <= this.to && !this.barChart1Options.series[0].data.find(el => el.x == key)) {
-                    // Vue.set(this.barChart1Options.series[0].data, this.barChart1Options.series[0].data.length, {
-                    //     x: key,
-                    //     y: this.barChart1Options.quantities[key]
-                    // });
                     this.barChart1Options.series[0].data.push({
                         x: key,
                         y: this.barChart1Options.quantities[key]
@@ -748,7 +777,7 @@ export default {
                 if(task.location) {
                     return locations.includes(task.locationId);
                 } else {
-                    return true;
+                    return false;
                 }
             });
         },
@@ -781,13 +810,22 @@ export default {
                     });
                 }
             }
-            this.failedAnswerTemplatesFiltered = this.failedAnswerTemplates.filter(temp => {
-                if(temp.location) {
-                    return locations.includes(temp.locationId);
+
+            this.failedAnswerLogsFiltered = this.failedAnswerLogs.filter(log => {
+                if(log.location) {
+                    return locations.includes(log.locationId);
                 } else {
-                    return true;
+                    return false;
                 }
-            })
+            });
+        },
+        updateAlerts() {
+            this.alertsFiltered = this.alerts.filter(el => {
+                if(el.location) {
+                    return this.locations.includes(el.location.id);
+                }
+                return false;
+            });
         }
     },
     watch: {
@@ -858,6 +896,10 @@ export default {
         locations() {
             this.updateOverdueTasks();
             this.updateFailedAnswers();
+            this.updateAlerts();
+        },
+        alerts() {
+            this.updateAlerts();
         }
     },
     computed: {
@@ -876,13 +918,29 @@ export default {
                total += tmp.totalTasks;
                failed += tmp.failedTasks;
             });
-
-            return `${failed} / ${total - failed} (${failed / (total - failed) * 100} %)`;
+            return `${failed} / ${total - failed} (${((total - failed) / total * 100).toFixed(2)} %)`;
         },
         leastPerformingLocation() {
-            if(!this.compliancePerLocationsFiltered.length) return 'N / A';
+            if(!this.compliancePerLocationsFiltered.length) return {name: 'N / A'};
             this.compliancePerLocationsFiltered.sort((a, b) => a.failedTasks - b.failedTasks);
-            return this.compliancePerLocationsFiltered[0].failedTasks > 0 ? this.compliancePerLocationsFiltered[0].name : 'N / A';
+            return this.compliancePerLocationsFiltered[0].failedTasks > 0 ?
+                this.compliancePerLocationsFiltered[this.compliancePerLocationsFiltered.length - 1] :
+                {name: 'N / A'};
+        },
+        leastPerformingTeam() {
+            if(!this.leastPerformingLocation.id) {
+                return {name: 'N / A'};
+            }
+
+            db.collection("teams")
+                .where("location", "array-contains", this.leastPerformingLocation.id)
+                .get()
+                .then(q => {
+                q.forEach((doc) => {
+                    Object.assign(this.lpt, doc.data(), { id: doc.id })
+                });
+            });
+            return this.lpt;
         },
         failureRateLocation() {
             let arr = [];
@@ -901,21 +959,14 @@ export default {
             });
             if(arr.length) {
                 arr.sort((a,b) => a.count - b.count);
-                return arr[0].name;
+                return arr[arr.length - 1].name;
             } else {
                 return 'N / A';
             }
         },
-        failureAnswersLocation() {
-            let arr = Object.values(this.pieChart2Options.quantities);
-            arr.sort((a, b) => (a.count - b.count));
-            if(arr.length && this.pieChart2Options.labels.includes(arr[0].name)) {
-                return arr[0].name
-            }
-            return 'N / A';
-        },
         failureTasksTeam() {
             let arr = [];
+            console.log('--------hey', this.overdueTasksFiltered);
             this.overdueTasks.forEach(task => {
                 if(task.team) {
                     let obj = arr.find(el => el.name == task.team);
@@ -923,33 +974,64 @@ export default {
                         obj.count++;
                     } else {
                         arr.push({
-                           name: task.team,
-                           count: 1
+                            name: task.team,
+                            count: 1
                         });
                     }
                 }
             });
+            console.log('---------',arr);
             if(arr.length) {
                 arr.sort((a,b) => a.count - b.count);
-                return arr[0].name;
+                return arr[arr.length - 1].name;
             } else {
                 return 'N / A';
             }
         },
+        failureAnswersLocation() {
+            let arr = Object.values(this.pieChart2Options.quantities);
+            arr.sort((a, b) => (a.count - b.count));
+            console.log(this.failedAnswerLogs[0]);
+
+            if(arr.length && this.pieChart2Options.labels.includes(arr[0].name)) {
+                return arr[arr.length - 1].name;
+            }
+            return 'N / A';
+        },
+        failureAnswersTeam() {
+            let arr = Object.values(this.pieChart2Options.quantities);
+            console.log(this.failedAnswerLogs[0]);
+
+            arr.sort((a, b) => (a.count - b.count));
+            if(arr.length && this.pieChart2Options.labels.includes(arr[0].name)) {
+                let fat = arr[arr.length - 1];
+                db.collection("teams")
+                    .where("location", "array-contains", fat.locId)
+                    .get()
+                    .then(q => {
+                        q.forEach((doc) => {
+                            this.fat = doc.data().name;
+                        });
+                    });
+                return this.fat;
+            }
+            return 'N / A';
+        },
         failedAnswersCompliance() {
-            if(!this.failedAnswerTemplatesFiltered.length) return 'N / A';
-            return `${this.failedAnswerTemplatesFiltered.length} / ${this.allTemplates} (${(this.failedAnswerTemplatesFiltered.length / (this.allTemplates - this.failedAnswerTemplatesFiltered.length) * 100).toFixed(2)} %)`;
+            if(!this.failedAnswerLogsFiltered.length) return 'N / A';
+            return `${this.failedAnswerLogsFiltered.length} / ${this.allLogs} (${(this.failedAnswerLogsFiltered.length / (this.allLogs - this.failedAnswerLogsFiltered.length) * 100).toFixed(2)} %)`;
         },
         biggestAlertsLocation() {
             let arr = [];
-            this.alerts.forEach(alert => {
-                if(alert.location) {
-                    let obj = arr.find(el => el.name == alert.location);
+            this.alertsFiltered.forEach(alert => {
+                if(alert.location && this.locations.includes(alert.location.id)) {
+                    let obj = arr.find(el => el.id == alert.location.id);
                     if(obj) {
                         obj.count++;
                     } else {
                         arr.push({
-                            name: alert.location,
+                            id: alert.id,
+                            name: alert.location.name,
                             count: 1
                         });
                     }
@@ -1000,55 +1082,65 @@ export default {
             }
 
             this.filters.template.map(item => {
-                var template = this.$store.getters['app/getTemplateById'](item);
+                let template = this.$store.getters['app/getTemplateById'](item);
                 if(!template) return false;
+                let tmp = this.compliancePerTemplates.find(el => el.id == item);
+                let logs = this.logs.filter(el => el.templateID == item);
 
-                template.failedTasks = 0;
-                template.totalTasks = 0;
-                template.content.pages.forEach(page => {
-                   page.questions.forEach(question => {
-                       question.answers.forEach(answer => {
-                           template.totalTasks++;
-                           let failed = answer.type.failedAnswer;
-                           if(failed == 'Yes' || failed == 'Si' || failed == 'Oui' || failed == 'Sì') {
-                               template.failedTasks++;
-                               if(template.content.location.length) {
-                                   let location = this.$store.getters["app/getLocationById"](template.content.location[0]);
-                                   let exist = this.compliancePerLocations.find(el => el.id == location.id);
-                                   if(exist) {
-                                       exist.totalTasks++;
-                                       exist.failedTasks++;
-                                   } else {
-                                       this.compliancePerLocations.push({
-                                           id: location.id,
-                                           name: location.name,
-                                           totalTasks: 1,
-                                           failedTasks: 1
-                                       });
-                                   }
-                               }
-                           } else {
-                               if(template.content.location.length) {
-                                   let location = this.$store.getters["app/getLocationById"](template.content.location[0]);
-                                   let exist = this.compliancePerLocations.find(el => el.id == location.id);
-                                   if(exist) {
-                                       exist.totalTasks++;
-                                   } else {
-                                       this.compliancePerLocations.push({
-                                           id: location.id,
-                                           name: location.name,
-                                           totalTasks: 1,
-                                           failedTasks: 0
-                                       });
-                                   }
-                               }
-                           }
-                       });
-                   });
-                });
-                template.compliance = (template.totalTasks - template.failedTasks) / template.totalTasks * 100;
-                let tmp = this.compliancePerTemplates.find(el => el.id == template.id);
-                !tmp && this.compliancePerTemplates.push(template);
+                if(!tmp && logs.length) {
+                    template.failedTasks = 0;
+                    template.totalTasks = 0;
+
+                    logs.forEach(log => {
+                        log.logs.forEach(lg => {
+                            lg.questions.forEach(question => {
+                                template.totalTasks++;
+                                let failed = false;
+                                let location = this.$store.getters["app/getLocationById"](template.content.location[0]);
+                                let exist = this.compliancePerLocations.find(el => el.id == location.id);
+
+                                question.answers.forEach(answer => {
+                                    if (answer.ref.type.failedAnswer && answer.ref.type.failedAnswer == answer.value) {
+                                        failed = true;
+                                    }
+                                });
+
+                                if(failed) {
+                                    template.failedTasks++;
+                                    if(template.content.location.length) {
+                                        if(exist) {
+                                            exist.totalTasks++;
+                                            exist.failedTasks++;
+                                        } else {
+                                            this.compliancePerLocations.push({
+                                                id: location.id,
+                                                name: location.name,
+                                                totalTasks: 1,
+                                                failedTasks: 1
+                                            });
+                                        }
+                                    }
+                                } else {
+                                    if(template.content.location.length) {
+                                        if(exist) {
+                                            exist.totalTasks++;
+                                        } else {
+                                            this.compliancePerLocations.push({
+                                                id: location.id,
+                                                name: location.name,
+                                                totalTasks: 1,
+                                                failedTasks: 0
+                                            });
+                                        }
+                                    }
+                                }
+                            });
+                        });
+                    });
+                    template.compliance = !template.totalTasks ? 'N / A' : (((template.totalTasks - template.failedTasks) / template.totalTasks * 100).toFixed(2) + '%');
+                    this.compliancePerTemplates.push(template);
+                    this.updateOverdueTasks();
+                }
                 if(locationList.length > 0) {
                     if(!template.content.location || !Array.isArray(template.content.location) || !template.content.location.some(lo=>locationList.includes(lo))) return
                 }

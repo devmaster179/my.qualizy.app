@@ -356,3 +356,7 @@ body{
 .expand-panel-icon i.fa-sort-up {
   margin-top: 5px;
 }
+
+.f-select ul.vs__dropdown-menu {
+  overflow-x: auto !important;
+}

@@ -63,7 +63,7 @@
                         </div>
                         <div class="col-8">
                             <small class="text-muted">Least performing location</small>
-                            <h3 class="h3">{{ leastPerformingLocation }}</h3>
+                            <h3 class="h3">{{ leastPerformingLocation.name }}</h3>
                         </div>
                     </div>
                 </div>
@@ -76,7 +76,7 @@
                         </div>
                         <div class="col-8">
                             <small class="text-muted">Least performing team</small>
-                            <h3 class="h3">N / A</h3>
+                            <h3 class="h3">{{ leastPerformingTeam.name }}</h3>
                         </div>
                     </div>
                 </div>
@@ -125,7 +125,7 @@
                         {{ props.row.failedTasks }}
                     </b-table-column>
                     <b-table-column field="compliance" label="Compliance" sortable v-slot="props">
-                        {{ props.row.compliance.toFixed(2) + ' %'}}
+                        {{ props.row.compliance}}
                     </b-table-column>
                 </b-table>
 
@@ -155,9 +155,9 @@
             </div>
         </b-tab-item>
 
-        <b-tab-item :label="$t('scoring')">
+<!--        <b-tab-item :label="$t('scoring')">-->
 
-        </b-tab-item>
+<!--        </b-tab-item>-->
 
         <b-tab-item :label="$t('overdue tasks')" class="overdue-tasks">
             <div class="row m-0 mb-5">
@@ -239,7 +239,7 @@
                                 </div>
                             </div>
                             <div class="col-5">
-                                <apexchart v-if="activeTab === 2" type="donut" :options="pieChart1Options" :series="pieChart1Options.series"></apexchart>
+                                <apexchart v-if="activeTab === 1" type="donut" :options="pieChart1Options" :series="pieChart1Options.series"></apexchart>
                             </div>
                         </div>
                         <div class="h-100 d-flex justify-content-center align-items-center mb-6" v-else>
@@ -266,7 +266,7 @@
 <!--                            :value="'test1'"-->
 <!--                    />-->
                 </div>
-                <apexchart v-if="activeTab === 2" height="90%" :options="barChart2Options" :series="barChart2Options.series"></apexchart>
+                <apexchart v-if="activeTab === 1" height="90%" :options="barChart2Options" :series="barChart2Options.series"></apexchart>
             </div>
             <div class="bg-white m-0 p-5 br-8 w-100 mb-5" style="max-height: 442px">
                 <div class="row m-0 align-items-center">
@@ -353,7 +353,7 @@
 <!--                        </ul>-->
 <!--                    </div>-->
                 </div>
-                <apexchart v-if="activeTab === 2" height="90%" :options="barChart3Options" :series="barChart3Options.series"></apexchart>
+                <apexchart v-if="activeTab === 1" height="90%" :options="barChart3Options" :series="barChart3Options.series"></apexchart>
             </div>
             <div class="bg-white m-0 p-5 br-8 w-100 mb-5">
                 <div class="row m-0 mb-3 justify-content-between align-items-center">
@@ -441,7 +441,7 @@
                             </div>
                         </div>
                         <div class="col-8">
-                            <small class="text-muted">High failure rate location</small>
+                            <small class="text-muted">High failure answers location</small>
                             <h3 class="h3">{{ failureAnswersLocation }}</h3>
                         </div>
                     </div>
@@ -455,7 +455,7 @@
                         </div>
                         <div class="col-8">
                             <small class="text-muted">Least performing team</small>
-                            <h3 class="h3">{{ failureTasksTeam }}</h3>
+                            <h3 class="h3">{{ failureAnswersTeam }}</h3>
                         </div>
                     </div>
                 </div>
@@ -497,7 +497,7 @@
                 <b-collapse
                         class="card mb-3 show br-8"
                         animation="slide"
-                        v-for="(template, i) of failedAnswerTemplatesFiltered"
+                        v-for="(log, i) of failedAnswerLogsFiltered"
                         :key="i"
                         :open="isOpen == i"
                         @open="isOpen = i"
@@ -508,31 +508,31 @@
                             class="card-header row m-0 align-items-center br-8 p-5"
                             role="button"
                     >
-                        <span class="font-weight-bold col-2">{{ template.content.templateTitle }}</span>
+                        <span class="font-weight-bold col-2">{{ log.template }}</span>
                         <div class="col-8 p-0" style="height: 2px; background-color: #ebebeb"></div>
                         <div class="col-2 text-right">
-                            <b-tag rounded class="mr-3 font-weight-bold">{{ template.content.pages[0].questions.length > 1 ? template.content.pages[0].questions.length + ' questions' : template.content.pages[0].questions.length + ' question' }}</b-tag>
+                            <b-tag rounded class="mr-3 font-weight-bold">{{ log.logs[0].questions.length > 1 ? log.logs[0].questions.length + ' questions' : log.logs[0].questions.length + ' question' }}</b-tag>
                             <b-icon class="expand-panel-icon" pack="fa" :icon="props.open ? 'sort-up' : 'sort-down'"></b-icon>
                         </div>
                     </div>
                     <div class="card-content">
                         <div class="content">
                             <b-table
-                                    :data="template.content.pages[0].questions"
-                                    :paginated="template.content.pages[0].questions.length > 5"
+                                    :data="log.logs[0].questions"
+                                    :paginated="log.logs[0].questions.length > 5"
                                     :per-page="5"
                                     icon-pack="fa"
                                     sort-icon="chevron-down"
                                     default-sort-direction="asc"
                             >
                                 <b-table-column field="location" label="Location" sortable v-slot="props">
-                                    {{ props.row.location || ' - ' }}
+                                    {{ log.location || ' - ' }}
                                 </b-table-column>
                                 <b-table-column field="team" label="Team" sortable v-slot="props">
                                     {{ props.row.team }}
                                 </b-table-column>
                                 <b-table-column field="template" label="Template" sortable v-slot="props">
-                                    {{ props.row.template }}
+                                    {{ log.template }}
                                 </b-table-column>
                                 <b-table-column field="section" label="Section" sortable v-slot="props">
                                     {{ props.row.section || ' - ' }}
@@ -541,7 +541,7 @@
                                     {{ props.row.title }}
                                 </b-table-column>
                                 <b-table-column field="answers.title" label="Answer" sortable v-slot="props">
-                                    {{ props.row.answers[0].title }}
+                                    {{ props.row.answers[0].value }}
                                 </b-table-column>
                             </b-table>
                         </div>
@@ -669,7 +669,7 @@
                         </div>
                         <div class="col-8">
                             <small class="text-muted">Number of alerts received</small>
-                            <h4 class="h4">{{ alerts.length }}</h4>
+                            <h4 class="h4">{{ alertsFiltered.length }}</h4>
                         </div>
                     </div>
 
@@ -709,7 +709,7 @@
                     </b-button>
                 </div>
                 <b-table
-                        :data="alerts"
+                        :data="alertsFiltered"
                         icon-pack="fa"
                         sort-icon="chevron-down"
                         default-sort-direction="asc"
@@ -719,10 +719,10 @@
                         {{ props.row.title }}
                     </b-table-column>
                     <b-table-column field="location" label="Location" sortable v-slot="props">
-                        {{ props.row.location || ' - ' }}
+                        {{ props.row.location ? props.row.location.name : ' - ' }}
                     </b-table-column>
                     <b-table-column field="teams" label="Teams" sortable v-slot="props">
-                        {{ props.row.teams.join(', ') || ' - ' }}
+                        {{ props.row.teams.join(', ') || ', ' }}
                     </b-table-column>
                     <b-table-column field="color" label="Type" sortable v-slot="props">
                         <span :style="{color: props.row.color == 'danger' ? 'red' : props.row.color == 'success' ? 'green' : props.row.color == 'warning' ? 'orange' : ''}" v-if="props.row.color">{{ props.row.color }}</span>
