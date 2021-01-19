@@ -617,7 +617,6 @@ export default {
                                         if(failed) {
                                             let log = this.failedAnswerLogs.find(el => el.id == data.id);
                                             if(!log) {
-                                                question.team = this.$store.getters["app/teams"].length ? this.$store.getters["app/teams"][0].name : '';
 
                                                 if(template.content.location && template.content.location.length) {
                                                     let loc = template.content.location[0];
@@ -642,16 +641,20 @@ export default {
                                                     } else {
                                                         this.pieChart2Options.quantities[loc].count++;
                                                     }
+                                                    let schedule = this.$store.getters["app/schedules"].find(el => el.template == template.id);
+                                                    question.team = [];
+                                                    data.team = [];
 
-                                                    db.collection("teams")
-                                                        .where("location", "array-contains", loc)
-                                                        .get()
-                                                        .then(q => {
-                                                            q.forEach((doc) => {
-                                                                question.team = doc.data().name;
-                                                                data.team = doc.data().name;
+                                                    schedule.assign.forEach(tm => {
+                                                        db.collection("teams")
+                                                            .doc(tm)
+                                                            .get()
+                                                            .then(snapshot => {
+                                                                question.team.push(snapshot.data().name);
+                                                                data.team.push(snapshot.data().name);
                                                             });
-                                                        });
+                                                    })
+
                                                 }
                                                 this.failedAnswerLogs.push(data);
                                             }
@@ -993,7 +996,7 @@ export default {
         },
         failureTasksTeam() {
             let arr = [];
-            console.log('1',this.pieChart2Options.labels[0]);
+            console.log(this.pieChart2Options.labels[0]);
             this.overdueTasks.forEach(task => {
                 if(task.team) {
                     let obj = arr.find(el => el.name == task.team);
@@ -1017,7 +1020,7 @@ export default {
         failureAnswersLocation() {
             let arr = Object.values(this.pieChart2Options.quantities);
             arr.sort((a, b) => (a.count - b.count));
-            console.log('2',this.pieChart2Options.labels[0]);
+            console.log(this.pieChart2Options.labels[0]);
 
             if(arr.length && this.pieChart2Options.labels.includes(arr[0].name)) {
                 return arr[arr.length - 1].name;

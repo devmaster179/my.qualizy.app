@@ -528,8 +528,8 @@
                                 <b-table-column field="location" label="Location" sortable v-slot="props">
                                     {{ log.location || ' - ' }}
                                 </b-table-column>
-                                <b-table-column field="team" label="Team" sortable v-slot="props">
-                                    {{ props.row.team ? props.row.team : log.team }}
+                                <b-table-column field="teams" label="Team" sortable v-slot="props">
+                                    {{ props.row.team ? props.row.team.join(', ') : log.team.join(', ') }}
                                 </b-table-column>
                                 <b-table-column field="template" label="Template" sortable v-slot="props">
                                     {{ log.template }}
