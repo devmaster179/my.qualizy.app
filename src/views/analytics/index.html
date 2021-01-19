@@ -455,7 +455,7 @@
                         </div>
                         <div class="col-8">
                             <small class="text-muted">Least performing team</small>
-                            <h3 class="h3">{{ failureAnswersTeam }}</h3>
+                            <h3 class="h3">{{ fat || 'N / A' }}</h3>
                         </div>
                     </div>
                 </div>
@@ -515,11 +515,11 @@
                             <b-icon class="expand-panel-icon" pack="fa" :icon="props.open ? 'sort-up' : 'sort-down'"></b-icon>
                         </div>
                     </div>
-                    <div class="card-content">
+                    <div class="card-content" v-for="(lg, j) in log.logs" :key="j">
                         <div class="content">
                             <b-table
-                                    :data="log.logs[0].questions"
-                                    :paginated="log.logs[0].questions.length > 5"
+                                    :data="lg.questions"
+                                    :paginated="lg.questions.length > 5"
                                     :per-page="5"
                                     icon-pack="fa"
                                     sort-icon="chevron-down"
@@ -529,7 +529,7 @@
                                     {{ log.location || ' - ' }}
                                 </b-table-column>
                                 <b-table-column field="team" label="Team" sortable v-slot="props">
-                                    {{ props.row.team }}
+                                    {{ props.row.team ? props.row.team : log.team }}
                                 </b-table-column>
                                 <b-table-column field="template" label="Template" sortable v-slot="props">
                                     {{ log.template }}
@@ -541,7 +541,7 @@
                                     {{ props.row.title }}
                                 </b-table-column>
                                 <b-table-column field="answers.title" label="Answer" sortable v-slot="props">
-                                    {{ props.row.answers[0].value }}
+                                    {{ !props.row.answers[0].value && props.row.answers[1] ? props.row.answers[1].value : props.row.answers[0].value }}
                                 </b-table-column>
                             </b-table>
                         </div>

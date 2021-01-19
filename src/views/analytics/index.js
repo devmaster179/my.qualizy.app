@@ -605,7 +605,6 @@ export default {
                                 if(log.questions.length) {
                                     log.questions.forEach(question => {
                                         let failed = false;
-                                        question.team = this.$store.getters["app/teams"].length ? this.$store.getters["app/teams"][0].name : '';
 
                                         if(question.answers.length) {
                                             question.answers.forEach(answer => {
@@ -618,6 +617,8 @@ export default {
                                         if(failed) {
                                             let log = this.failedAnswerLogs.find(el => el.id == data.id);
                                             if(!log) {
+                                                question.team = this.$store.getters["app/teams"].length ? this.$store.getters["app/teams"][0].name : '';
+
                                                 if(template.content.location && template.content.location.length) {
                                                     let loc = template.content.location[0];
                                                     if(!this.barChart4Options.quantities[correctDate]) {
@@ -641,6 +642,16 @@ export default {
                                                     } else {
                                                         this.pieChart2Options.quantities[loc].count++;
                                                     }
+
+                                                    db.collection("teams")
+                                                        .where("location", "array-contains", loc)
+                                                        .get()
+                                                        .then(q => {
+                                                            q.forEach((doc) => {
+                                                                question.team = doc.data().name;
+                                                                data.team = doc.data().name;
+                                                            });
+                                                        });
                                                 }
                                                 this.failedAnswerLogs.push(data);
                                             }
@@ -900,6 +911,22 @@ export default {
         },
         alerts() {
             this.updateAlerts();
+        },
+        failedAnswerLogsFiltered() {
+            let arr = Object.values(this.pieChart2Options.quantities);
+
+            arr.sort((a, b) => (a.count - b.count));
+            if(arr.length && this.pieChart2Options.labels.includes(arr[0].name)) {
+                let fat = arr[arr.length - 1];
+                db.collection("teams")
+                    .where("location", "array-contains", fat.locId)
+                    .get()
+                    .then(q => {
+                        q.forEach((doc) => {
+                            this.fat = doc.data().name;
+                        });
+                    });
+            }
         }
     },
     computed: {
@@ -966,7 +993,7 @@ export default {
         },
         failureTasksTeam() {
             let arr = [];
-            console.log('--------hey', this.overdueTasksFiltered);
+            console.log('1',this.pieChart2Options.labels[0]);
             this.overdueTasks.forEach(task => {
                 if(task.team) {
                     let obj = arr.find(el => el.name == task.team);
@@ -980,7 +1007,6 @@ export default {
                     }
                 }
             });
-            console.log('---------',arr);
             if(arr.length) {
                 arr.sort((a,b) => a.count - b.count);
                 return arr[arr.length - 1].name;
@@ -991,29 +1017,10 @@ export default {
         failureAnswersLocation() {
             let arr = Object.values(this.pieChart2Options.quantities);
             arr.sort((a, b) => (a.count - b.count));
-            console.log(this.failedAnswerLogs[0]);
+            console.log('2',this.pieChart2Options.labels[0]);
 
             if(arr.length && this.pieChart2Options.labels.includes(arr[0].name)) {
                 return arr[arr.length - 1].name;
-            }
-            return 'N / A';
-        },
-        failureAnswersTeam() {
-            let arr = Object.values(this.pieChart2Options.quantities);
-            console.log(this.failedAnswerLogs[0]);
-
-            arr.sort((a, b) => (a.count - b.count));
-            if(arr.length && this.pieChart2Options.labels.includes(arr[0].name)) {
-                let fat = arr[arr.length - 1];
-                db.collection("teams")
-                    .where("location", "array-contains", fat.locId)
-                    .get()
-                    .then(q => {
-                        q.forEach((doc) => {
-                            this.fat = doc.data().name;
-                        });
-                    });
-                return this.fat;
             }
             return 'N / A';
         },
