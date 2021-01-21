@@ -80,7 +80,7 @@
               class="video-launcher sm:mb-6"
               v-if="$route.meta.breadcrumb || $route.meta.pageTitle"
             >
-              <a href="#" @click="howtoTemplate">Watch this video to see how</a>
+              <a href="#" @click="howtoTemplate">Watch this video to see how it works</a>
             </div>
             <div class="content-area__content">
               <back-to-top bottom="5%" visibleoffset="500" v-if="!hideScrollToTop">

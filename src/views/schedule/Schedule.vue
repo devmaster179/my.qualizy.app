@@ -27,7 +27,7 @@
         </div>
       </div>
       <div class="video-launcher">
-        <a href="#" @click="howtoTemplate">Watch this video to see how</a>
+        <a href="#" @click="howtoTemplate">Watch this video to see how it works</a>
       </div>
       <div class="page-content">
         <template v-if="schedules.length>0">

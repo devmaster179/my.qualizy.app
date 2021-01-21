@@ -53,7 +53,7 @@
       </div>
     </div>
     <div class="video-launcher">
-      <a href="#" @click="howtoTemplate">Watch this video to see how</a>
+      <a href="#" @click="howtoTemplate">Watch this video to see how it works</a>
     </div>
     <v-select
        v-if="!isSidebarActive"
