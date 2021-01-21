@@ -689,7 +689,9 @@ export default {
     // window.addEventListener('offline',  this.updateStatus('offline'));
   },
   async created() {
-    window.gist.chat("hideLauncher");
+    document.addEventListener('gistChatReady', function () {
+      window.gist.chat("hideLauncher");
+    });
     // this.deleteTrashedData()
     var user = JSON.parse(localStorage.getItem("userInfo"));
     if (!this.$userflow.isIdentified()) {
@@ -722,7 +724,7 @@ export default {
       this.updateNavbarColor(this.navbarColor);
     }
     
-    this.$vs.loading();
+    // this.$vs.loading();
     this.$store.commit('app/SET_LOCATION_LIST' , [])
     var mDate = new Date().getTime()
     // var  mDate1 = new Date().getTime()
@@ -806,7 +808,7 @@ export default {
     // mDate1 = new Date().getTime()
     // console.log((mDate1 - mDate) , 'setKnowledge')
     await this.setAnalytics();
-    this.$vs.loading.close();
+    // this.$vs.loading.close();
 
     // db.collection('notifications').where('group', '==', JSON.parse(localStorage.getItem('userInfo')).group).onSnapshot(q => {
     //     q.docChanges().forEach(change => {
