@@ -36,6 +36,9 @@
           />
         </div>
       </div>
+      <div class="video-launcher">
+        <a href="#" @click="howtoTemplate">Watch this video to see how</a>
+      </div>
       <div class="vx-row" :class="{ 'items-grid-view match-height': reports.length > 0 }">
         <div class="flex w-full mt-base" v-if="reports.length < 1">
           <div
@@ -269,6 +272,10 @@ export default {
     };
   },
   methods: {
+    howtoTemplate(event) {
+      event.preventDefault();
+      this.$userflow.start('06a472b7-627a-474b-aba8-3bd5516ec3c5');
+    },
     shareReort() {},
 
     copyText(text) {
@@ -413,5 +420,10 @@ export default {
   .search-box {
     max-width: 170px !important;
   }
+}
+.video-launcher {
+  font-size: 10px;
+  height: 12px;
+  color: #844CF5;
 }
 </style>

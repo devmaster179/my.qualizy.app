@@ -52,6 +52,9 @@
         </div>
       </div>
     </div>
+    <div class="video-launcher">
+      <a href="#" @click="howtoTemplate">Watch this video to see how</a>
+    </div>
     <v-select
        v-if="!isSidebarActive"
       :options="ranges"
@@ -773,6 +776,10 @@ export default {
     }
   },
   methods: {
+    howtoTemplate(event) {
+      event.preventDefault();
+      this.$userflow.start('595f213b-5f1b-49eb-a647-fca0a8082fe7');
+    },
     setLog() {
       var dayFrom
       var dayTo
@@ -1296,6 +1303,11 @@ min-height: calc(100vh - 10em);
 } */
 .scroll-area-width {
   min-width: 100%;
+}
+.video-launcher {
+  font-size: 10px;
+  height: 12px;
+  color: #844CF5;
 }
 </style>
 

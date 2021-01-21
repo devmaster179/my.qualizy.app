@@ -32,6 +32,9 @@
             </div>
           </div>
         </div>
+        <div class="video-launcher">
+          <a href="#" @click="howtoTemplate">Watch this video to see how</a>
+        </div>
         <!-- <vs-input
         class="bg-white block md:hidden w-full my-2"
         v-model="search"
@@ -143,6 +146,10 @@ export default {
     };
   },
   methods: {
+    howtoTemplate(event) {
+      event.preventDefault();
+      this.$userflow.start('ae8c37e2-91ab-4225-8b59-9d7549546187');
+    },
     roleError(sub , action) {
       this.$vs.notify({
         time: 5000,
@@ -318,5 +325,10 @@ export default {
   font-size: 14px;
   color: #1e1c26;
   opacity: 0.54;
+}
+.video-launcher {
+  font-size: 10px;
+  height: 12px;
+  color: #844CF5;
 }
 </style>

@@ -20,6 +20,9 @@
           </vs-button>
         </div>
       </div>
+      <div class="video-launcher">
+        
+      </div>
       <div class="page-content mt-base">
         <div class="vx-row items-grid-view match-height">
           <div
@@ -138,6 +141,10 @@ export default {
     };
   },
   methods: {
+    howtoTemplate(event) {
+      event.preventDefault();
+      this.$userflow.start('fdd16cb5-6470-4367-a7d4-9cfb1ff88b07');
+    },
     roleError(action) {
       this.$vs.notify({
         time: 5000,
@@ -265,5 +272,11 @@ export default {
   },
 };
 </script>
-
-
+<style scoped>
+.video-launcher {
+  font-size: 10px;
+  height: 12px;
+  width: 1px;
+  color: #844CF5;
+}
+</style>

@@ -1,6 +1,6 @@
 <template>
   <div id="analytics">
-    <div class="page-header sm:flex items-center justify-between mb-base">
+    <div class="page-header sm:flex items-center justify-between">
       <div class="flex items-end">
         <p class="karla-bold text-3xl" style="color:#1e1c26;">{{$t('analytics') | capitalize}}</p>
         <p class="karla text-lg mb-1 ml-2" style="color:#1e1c26;">({{dateFilterDisp}})</p>
@@ -14,6 +14,9 @@
         />
         <vs-button @click="saveAnalyticsActive=true" :disabled="filters.template.length==0 && canSave">{{$t('save')}}</vs-button>
       </div>
+    </div>
+    <div class="video-launcher mb-base">
+      <a href="#" @click="howtoTemplate">Watch this video to see how</a>
     </div>
     <div class="page-content">
       <template v-if="templates.length==0">
@@ -137,6 +140,10 @@ export default {
     };
   },
   methods: {
+    howtoTemplate(event) {
+      event.preventDefault();
+      this.$userflow.start('5421dfd9-a174-43fb-b0cc-9f23949404ee');
+    },
     updateAnalytics() {
       db.collection('analytics').doc(this.analytic.id).update({
         locations: this.$store.getters['app/locationList'],
@@ -438,3 +445,10 @@ export default {
   },
 };
 </script>
+<style scoped>
+.video-launcher {
+  font-size: 10px;
+  height: 12px;
+  color: #844CF5;
+}
+</style>

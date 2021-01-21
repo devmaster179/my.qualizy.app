@@ -8,6 +8,9 @@
         class="page-title karla-bold text-2xl color-my-black"
       >{{$t("company profile") | capitalize}}</p>
     </div>
+    <div class="video-launcher">
+      
+    </div>
     <div class="vx-row items-grid-view match-height">
       <div class="vx-col md:w-1/2 w-full mt-4">
         <vx-card>
@@ -516,6 +519,10 @@ export default {
     }
   },
   methods: {
+    howtoTemplate(event) {
+      event.preventDefault();
+      this.$userflow.start('cf4f573b-f063-4aad-97ec-9e690607fa21');
+    },
     locationAdd() {
       if(!this.auth('user and team settings' , 'create')) {
         this.roleError('edit')
@@ -776,5 +783,11 @@ export default {
     height: 100%;
     opacity: 0.8;
   }
+}
+.video-launcher {
+  font-size: 10px;
+  height: 12px;
+  width: 1px;
+  color: #844CF5;
 }
 </style>

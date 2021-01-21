@@ -26,6 +26,9 @@
         </div>
       </div>
     </div>
+    <div class="video-launcher">
+      <a href="#" @click="howtoTemplate">Watch this video to see how</a>
+    </div>
     <div class="page-content">
       <user-tab v-if=" tab=='users'" />
       <group-tab v-else-if="tab=='teams'" />
@@ -49,6 +52,12 @@ export default {
     return {
       tab: "users",
     };
+  },
+  methods: {
+    howtoTemplate(event) {
+      event.preventDefault();
+      this.$userflow.start('37e5632c-5a97-4acd-bde7-070b9cf7aa03');
+    },
   },
   computed: {
     auth() {
@@ -96,5 +105,10 @@ export default {
 }
 .switch-tab div.active {
   background-color: rgba(108, 80, 240, 0.08);
+}
+.video-launcher {
+  font-size: 10px;
+  height: 12px;
+  color: #844CF5;
 }
 </style>
