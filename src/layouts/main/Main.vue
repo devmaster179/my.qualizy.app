@@ -396,6 +396,25 @@ export default {
     },
 
     setTemplateLabels() {
+      // db.collection("template_labels")
+      //   .where("group", "==", "global")
+      //   .where("lang", "==", "en-gb")
+      //   .get()
+      //   .then((q) => {
+      //     q.forEach((doc) => {
+      //       if (doc.data().trashed) return;
+      //       // db.collection("template_labels").doc(doc.id).delete();
+      //       var label = Object.assign({}, doc.data(), {
+      //         lang: "it",
+      //         name: doc.data()["name"] + "-LT",
+      //       });
+
+      //       console.log("doc template_labels", label);
+
+      //       db.collection("template_labels").add(label);
+      //     });
+      //   });
+
       return new Promise((resolve, reject) => {
         db.collection("template_labels")
           .where("group", "in", [
@@ -407,7 +426,11 @@ export default {
             q.forEach((doc) => {
               labels.push(Object.assign({}, doc.data(), { id: doc.id }));
             });
-
+            console.log(
+              'userInfo":  ',
+              JSON.parse(localStorage.getItem("userInfo"))
+            );
+            // console.log("app/setLabel:  ", labels);
             this.$store.dispatch("app/setLabel", labels);
             resolve("OK");
           });

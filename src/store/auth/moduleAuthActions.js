@@ -638,11 +638,12 @@ export default {
             let country_code = payload.userDetails.locationInfo.country_code ? payload.userDetails.locationInfo.country_code : ''
 
             var language = "en-us"
-            if (country_code.toLowerCase() == "gb")
+            if (country_code.toLowerCase() == "gb") {
               language = "en-gb"
-            else if (country_code.toLowerCase() == "fr" || country_code.toLowerCase() == "es" || country_code.toLowerCase() == "it")
+            }
+            else if (country_code.toLowerCase() == "fr" || country_code.toLowerCase() == "es" || country_code.toLowerCase() == "it") {
               language = country_code.toLowerCase()
-
+            }
             db.collection('users').doc(group).set({
               name: payload.userDetails.username,
               email: payload.userDetails.email,
@@ -696,6 +697,17 @@ export default {
             } else {
               userIndustry = "Other"
             }
+
+            if (language == 'en-us') {
+              userIndustry += "-US"
+            } else if (language == 'fr') {
+              userIndustry += "-FR"
+            } else if (language == 'es') {
+              userIndustry += "-ES"
+            } else if (language == 'it') {
+              userIndustry += "-LT"
+            }
+
             console.log('payload: ', payload)
             console.log('payload.userDetails.locationInfo: ', payload.userDetails.locationInfo)
             console.log('userIndustry: ', userIndustry)
@@ -706,16 +718,16 @@ export default {
                 "global",
               ])
               .where("name", "==", userIndustry)
-              .onSnapshot((q) => {
+              .where("lang", "==", language)
+              .get().then((q) => {
                 q.forEach((doc) => {
                   tags.push(doc.id);
                 });
                 console.log("getTemplateLabels", tags);
 
-
                 db.collection("templates") // get templates that has tag(same name with user industry)
                   .where("group", "==", "global")
-                  .onSnapshot((q) => {
+                  .get().then((q) => {
                     let publicTemplates = [];
                     q.forEach((doc) => {
                       publicTemplates.push(

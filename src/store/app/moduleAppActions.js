@@ -4,6 +4,11 @@ export default {
   }, query) {
     commit('SET_LABEL', query)
   },
+  setLabelFiltered({
+    commit
+  }, query) {
+    commit('SET_LABEL_FILTERED', query)
+  },
   setTemplateType({
     commit
   }, query) {
@@ -112,6 +117,12 @@ export default {
     commit
   }, query) {
     commit('SET_PUBLIC_TEMPLATES', query)
+  },
+
+  setPublicTemplatesFiltered({
+    commit
+  }, query) {
+    commit('SET_PUBLIC_TEMPLATES_FILTERED', query)
   },
 
   chatFileUploding({

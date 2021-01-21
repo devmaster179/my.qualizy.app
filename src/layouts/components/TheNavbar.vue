@@ -463,6 +463,30 @@ export default {
     },
     updateLocale(locale) {
       console.log("locale change", locale);
+      var language = "en-us";
+      if (locale == "gb") {
+        language = "en-gb";
+      } else if (locale == "fr" || locale == "es" || locale == "it") {
+        language = locale;
+      } else {
+        language = locale;
+      }
+      console.log("locale", locale, language);
+
+      let dbLabelIds = [];
+      db.collection("template_labels")
+        .where("group", "==", "global")
+        .where("lang", "==", language)
+        .get()
+        .then((q) => {
+          q.forEach((doc) => {
+            if (doc.data().trashed) return;
+            dbLabelIds.push(doc.id);
+          });
+          console.log("dbLabelIds: ", dbLabelIds);
+
+          this.$store.dispatch("app/setLabelFiltered", dbLabelIds);
+        });
       this.$i18n.locale = locale;
       this.$moment.locale(locale);
     },

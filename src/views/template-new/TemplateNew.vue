@@ -5,8 +5,10 @@
         <p
           class="main-title karla-bold mr-2 cursor-pointer"
           @click="$router.push('/templates')"
-        >{{$t("templates")}} ></p>
-        <p class="sub-title karla-bold">{{$t("add new template")}}</p>
+        >
+          {{ $t("templates") }} >
+        </p>
+        <p class="sub-title karla-bold">{{ $t("add new template") }}</p>
       </div>
     </div>
     <div class="page-content mt-base">
@@ -14,28 +16,50 @@
         <div class="vx-col lg:w-1/6 md:w-1/4 sm:w-1/2 w-full sm:px-2 px-0">
           <vx-card class="cursor-pointer" @click.native="createTemplate">
             <div class="text-center my-base">
-              <vs-icon color="#6c50f0" size="40px" icon-pack="feather" icon="icon-plus" />
+              <vs-icon
+                color="#6c50f0"
+                size="40px"
+                icon-pack="feather"
+                icon="icon-plus"
+              />
             </div>
-            <p class="template-type-text text-center karla-bold mb-base">{{$t("blank template")}}</p>
+            <p class="template-type-text text-center karla-bold mb-base">
+              {{ $t("blank template") }}
+            </p>
           </vx-card>
         </div>
-        <div class="vx-col lg:w-1/6 md:w-1/4 sm:w-1/2 w-full sm:px-2 px-0 mt-4 sm:mt-0">
+        <div
+          class="vx-col lg:w-1/6 md:w-1/4 sm:w-1/2 w-full sm:px-2 px-0 mt-4 sm:mt-0"
+        >
           <vx-card class="cursor-pointer">
             <div class="text-center my-base">
-              <vs-icon color="#6c50f0" size="40px" icon-pack="feather" icon="icon-upload" />
+              <vs-icon
+                color="#6c50f0"
+                size="40px"
+                icon-pack="feather"
+                icon="icon-upload"
+              />
             </div>
-            <p class="template-type-text text-center karla-bold mb-base">{{$t("order template")}}</p>
+            <p class="template-type-text text-center karla-bold mb-base">
+              {{ $t("order template") }}
+            </p>
           </vx-card>
         </div>
       </div>
       <div class="popular-templates mt-base">
         <div class="sm:flex items-center justify-between">
-          <p class="karla-bold text-lg color-my-black">{{$t("popular templates")}}</p>
+          <p class="karla-bold text-lg color-my-black">
+            {{ $t("popular templates") }}
+          </p>
           <div>
             <div class="flex items-center justify-end">
-              <vs-input v-model="searchTemplate" :placeholder="$t('Search')" class="mr-4" />
+              <vs-input
+                v-model="searchTemplate"
+                :placeholder="$t('Search')"
+                class="mr-4"
+              />
               <v-select
-                style="min-width:200px;"
+                style="min-width: 200px"
                 :options="globalTags"
                 v-model="gTags"
                 multiple
@@ -45,14 +69,24 @@
               >
                 <template slot="option" slot-scope="option">
                   <div class="flex items-center">
-                    <div class="h-2 w-2 rounded-full mr-2" :style="`background: ${option.color};`"></div>
-                    <span class="karla text-sm">{{option.name | capitalize}}</span>
+                    <div
+                      class="h-2 w-2 rounded-full mr-2"
+                      :style="`background: ${option.color};`"
+                    ></div>
+                    <span class="karla text-sm">{{
+                      option.name | capitalize
+                    }}</span>
                   </div>
                 </template>
                 <template slot="selected-option" slot-scope="option">
                   <div class="flex items-center">
-                    <div class="h-2 w-2 rounded-full mr-2" :style="`background: ${option.color};`"></div>
-                    <span class="karla text-sm">{{option.name | capitalize}}</span>
+                    <div
+                      class="h-2 w-2 rounded-full mr-2"
+                      :style="`background: ${option.color};`"
+                    ></div>
+                    <span class="karla text-sm">{{
+                      option.name | capitalize
+                    }}</span>
                   </div>
                 </template>
               </v-select>
@@ -62,36 +96,45 @@
         <div class="vx-row vx-row items-grid-view match-height">
           <div
             class="vx-col lg:w-1/4 md:w-1/3 sm:w-1/2 w-full mt-4"
-            v-for="(pTemplate,index) in pTemplates"
+            v-for="(pTemplate, index) in pTemplates"
             :key="index"
           >
-            <vx-card class="w-full cursor-pointer" @click.native="cloneTemplate(pTemplate)">
+            <vx-card
+              class="w-full cursor-pointer"
+              @click.native="cloneTemplate(pTemplate)"
+            >
               <div slot="no-body" class="pl-4 py-4 pr-3">
                 <div class="flex items-center">
                   <img
-                    :src="require(`@/assets/images/template_image/${pTemplate.content.templateImage}`)"
-                    style="width:40px;height:40px"
+                    :src="
+                      require(`@/assets/images/template_image/${pTemplate.content.templateImage}`)
+                    "
+                    style="width: 40px; height: 40px"
                   />
                   <div>
-                    <p
-                      class="karla-bold text-base color-my-black ml-3"
-                    >{{pTemplate.content.templateTitle}}</p>
-                    <p class="karla ml-3 text-sm">{{pTemplate.content.templateComment}}</p>
+                    <p class="karla-bold text-base color-my-black ml-3">
+                      {{ pTemplate.content.templateTitle }}
+                    </p>
+                    <p class="karla ml-3 text-sm">
+                      {{ pTemplate.content.templateComment }}
+                    </p>
                   </div>
                 </div>
-                
+
                 <div
                   class="inline-block template-lable rounded-lg mr-2 mt-3"
-                  v-for="(label,lIndex) in pTemplate.content.templateLabel"
+                  v-for="(label, lIndex) in pTemplate.content.templateLabel"
                   :key="lIndex"
-                  :class="{'hidden': !templateLabelInfo(label)}"
+                  :class="{ hidden: !templateLabelInfo(label) }"
                 >
                   <template v-if="templateLabelInfo(label)">
                     <div
                       class="h-2 w-2 rounded-full mr-2 inline-block"
                       :style="`background: ${templateLabelInfo(label).color};`"
                     ></div>
-                    <span class="karla text-sm">{{templateLabelInfo(label).name | capitalize}}</span>
+                    <span class="karla text-sm">{{
+                      templateLabelInfo(label).name | capitalize
+                    }}</span>
                   </template>
                 </div>
               </div>
@@ -102,7 +145,7 @@
     </div>
     <templatemaking-popup
       :open="activeCreateTemplate"
-      @close="activeCreateTemplate=false"
+      @close="activeCreateTemplate = false"
       :state="templateState"
     />
   </div>
@@ -110,6 +153,12 @@
 <script>
 import TemplatemakingPopup from "../template-making/TemplatemakingPopup";
 import VSelect from "vue-select";
+
+import firebase from "firebase/app";
+import "firebase/auth";
+
+import { db } from "@/firebase/firebaseConfig.js";
+
 export default {
   components: {
     TemplatemakingPopup,
@@ -122,6 +171,35 @@ export default {
       templateState: "",
       activeCreateTemplate: false,
     };
+  },
+  created() {
+    var language = "en-us";
+    if (this.$i18n.locale == "gb") {
+      language = "en-gb";
+    } else if (
+      this.$i18n.locale == "fr" ||
+      this.$i18n.locale == "es" ||
+      this.$i18n.locale == "it"
+    ) {
+      language = this.$i18n.locale;
+    } else {
+      language = this.$i18n.locale;
+    }
+
+    let dbLabelIds = [];
+    db.collection("template_labels")
+      .where("group", "==", "global")
+      .where("lang", "==", language)
+      .get()
+      .then((q) => {
+        q.forEach((doc) => {
+          if (doc.data().trashed) return;
+          dbLabelIds.push(doc.id);
+        });
+        console.log("dbLabelIds: ", dbLabelIds);
+
+        this.$store.dispatch("app/setLabelFiltered", dbLabelIds);
+      });
   },
   methods: {
     cloneTemplate(template) {
@@ -146,7 +224,7 @@ export default {
             answers.push({
               title: answer.title,
               type: answer.type,
-              action: Array.isArray(answer.action)? answer.action : [] ,
+              action: Array.isArray(answer.action) ? answer.action : [],
               mandatory: answer.mandatory,
               score:
                 answer.score === undefined || !Array.isArray(answer.score)
@@ -220,16 +298,19 @@ export default {
   },
   computed: {
     globalTags() {
-      const locale = this.$i18n.locale || 'en-gb'
-      return this.$store.getters["app/labels"].filter(item => {
-        if(item.group != "global") return false
-        if(!item.lang) {
-          if(locale != 'en-gb') return false
+      const locale = this.$i18n.locale || "en-gb";
+      let labels = this.$store.getters["app/labels"].filter((item) => {
+        if (item.group != "global") return false;
+        if (!item.lang) {
+          if (locale != "en-gb") return false;
         } else {
-          if(item.lang != locale) return false
+          if (item.lang != locale) return false;
         }
-        return true
+        return true;
       });
+
+      console.log("globalTags", labels);
+      return labels;
     },
     templateInfo() {
       return (id) => {
@@ -237,7 +318,9 @@ export default {
       };
     },
     pTemplates() {
-      let templates = this.$store.getters["app/publicTemplates"](this.$i18n.locale);
+      let templates = this.$store.getters["app/publicTemplates"](
+        this.$i18n.locale
+      );
       if (this.searchTemplate != "") {
         templates = templates.filter(
           (template) =>

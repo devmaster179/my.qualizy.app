@@ -1,21 +1,30 @@
 /* eslint-disable no-redeclare */
+
+import firebase from 'firebase/app'
+import 'firebase/auth'
+import '@firebase/analytics'
+
+import {
+  db
+} from "../../firebase/firebaseConfig"
+
 export default {
-  sensorDatas: state=> {
+  sensorDatas: state => {
     return state.sensorDatas
   },
   analytics: state => {
     return state.analytics
   },
   getAnalyticsByID: state => id => {
-    return state.analytics.find(item=> item.id == id)
+    return state.analytics.find(item => item.id == id)
   },
-  reportSchedule: state=> {
+  reportSchedule: state => {
     return state.report_schedule
   },
   getReportScheduleByID: (state) => (id) => {
     return state.report_schedule.find(item => item.reportID == id)
   },
-  auth: state=> {
+  auth: state => {
     return state.auth
   },
   ipInfo: state => {
@@ -36,19 +45,17 @@ export default {
 
   //============publicTemplate=================
   publicTemplates: state => locale => {
-    if(locale) {
-      return state.publicTemplates.filter(item=> {
-        if(item.lang) {
-          if (item.lang == 'en' && locale == 'en-gb') return true
-          else if(item.lang != locale) return false
-        } else {
-          if(locale != 'en-gb') return false
-        }
-        return true 
-      })
+    if (locale) {
+      let PTs = state.publicTemplates.filter((template) =>
+        template.content.templateLabel.some((labels) => state.labelsFiltered.includes(labels))
+      );
+      return PTs;
     }
 
     return state.publicTemplates
+  },
+  publicTemplatesFiltered: state => {
+    return state.publicTemplatesFiltered
   },
   //============TemplateLabels=================
   labels: state => {
@@ -106,8 +113,8 @@ export default {
       return item.id == id
     })
   },
-  getUsersByTeam: state=> (id) => {
-    return state.users.filter((user=> user.team.indexOf(id)>-1 && user.status))
+  getUsersByTeam: state => (id) => {
+    return state.users.filter((user => user.team.indexOf(id) > -1 && user.status))
   },
 
   //==============Team========================
@@ -163,9 +170,9 @@ export default {
   logs: state => {
     return state.logs
   },
-  getLogByTidTime: state => (id, time , sID , assign) => {
+  getLogByTidTime: state => (id, time, sID, assign) => {
     return state.logs.find((item) => {
-      return item.templateID == id && item.time !== undefined && item.time.toDate().getTime() == time.getTime() && item.schedule == sID 
+      return item.templateID == id && item.time !== undefined && item.time.toDate().getTime() == time.getTime() && item.schedule == sID
     })
   },
   getLogById: state => (id) => {
@@ -279,11 +286,11 @@ export default {
 
   getNotificationByT_Indexes: state => (infors) => {
     return state.notifications.find(
-      item => item.templateId == infors.tId && 
-      item.templateIndexes[0] == infors.indexes[0] && 
-      item.templateIndexes[1] == infors.indexes[1] && 
-      item.templateIndexes[2] == infors.indexes[2] && 
-      item.logID == infors.logID 
+      item => item.templateId == infors.tId &&
+        item.templateIndexes[0] == infors.indexes[0] &&
+        item.templateIndexes[1] == infors.indexes[1] &&
+        item.templateIndexes[2] == infors.indexes[2] &&
+        item.logID == infors.logID
     )
   },
   unreadNotifications: state => user => {
