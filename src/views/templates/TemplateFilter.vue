@@ -122,11 +122,11 @@ export default {
 
 <style lang="scss" scoped>
 .template-filter {
-  /deep/ .vs-sidebar--background {
+  ::v-deep .vs-sidebar--background {
     z-index: 52000;
   }
 
-  /deep/ .vs-sidebar {
+  ::v-deep .vs-sidebar {
     z-index: 52000;
     width: 500px;
     max-width: 100vw;
