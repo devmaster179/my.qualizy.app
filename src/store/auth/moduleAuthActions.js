@@ -712,7 +712,7 @@ export default {
             console.log('payload.userDetails.locationInfo: ', payload.userDetails.locationInfo)
             console.log('userIndustry: ', userIndustry)
 
-            let tags = [];
+            let tags = ['need-for-array-contains-any-filter'];
             db.collection("template_labels") // get tag ids by industry name == tag name && group == global
               .where("group", "in", [
                 "global",
