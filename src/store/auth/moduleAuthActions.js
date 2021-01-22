@@ -11,7 +11,6 @@
 import firebase from 'firebase/app'
 import 'firebase/auth'
 import '@firebase/analytics'
-
 import router from '@/router'
 
 import {
@@ -21,6 +20,7 @@ import {
 import { Base64 } from "@/encode/encode.js";
 
 import CryptoJS from "crypto-js"
+import { industryConfig } from "./industryConfig"
 
 var getCompany = (payload) => {
   return new Promise((resolve) => {
@@ -383,11 +383,11 @@ export default {
         }).then(() => {
           if (payload.signUp) {
             if (router.currentRoute.query.to == undefined)
-              router.push('/templates/template-new');
+              router.push('/dashboard');
             else if (router.currentRoute.query.to.includes('templates'))
               router.push(router.currentRoute.query.to)
             else
-              router.push('/templates/template-new');
+              router.push('/dashboard');
           } else
             router.push(router.currentRoute.query.to || '/');
 
@@ -637,9 +637,9 @@ export default {
           }).then(res1 => {
             let country_code = payload.userDetails.locationInfo.country_code ? payload.userDetails.locationInfo.country_code : ''
 
-            var language = "en-us"
-            if (country_code.toLowerCase() == "gb") {
-              language = "en-gb"
+            var language = "en-gb"
+            if (country_code.toLowerCase() == "us") {
+              language = "en-us"
             }
             else if (country_code.toLowerCase() == "fr" || country_code.toLowerCase() == "es" || country_code.toLowerCase() == "it") {
               language = country_code.toLowerCase()
@@ -684,35 +684,46 @@ export default {
 
             // BEGIN activating templates/schedules/reports/knowledge_bases
             let userIndustry = payload.userDetails.industry
+            let tagIndex = 0;
             if (payload.userDetails.industry == "Restaurant") {  // format industry text
+              tagIndex = 0
               userIndustry = "Restaurant"
             } else if (payload.userDetails.industry == "Cafe") {
+              tagIndex = 1
               userIndustry = "Coffee"
             } else if (payload.userDetails.industry == "Food retail (Butcher, Fishmonger, etc..)") {
+              tagIndex = 2
               userIndustry = "Food retail"
             } else if (payload.userDetails.industry == "Food production") {
+              tagIndex = 3
               userIndustry = "Food production"
-            } else if (payload.userDetails.industry == "Collectivity catering" || payload.userDetails.industry == "Caterer") {
+            } else if (payload.userDetails.industry == "Caterer") {
+              tagIndex = 4
               userIndustry = "Catering"
+            } else if (payload.userDetails.industry == "Collectivity catering") {
+              tagIndex = 5
+              userIndustry = "Collectivity"
+            } else if (payload.userDetails.industry == "Butchery") {
+              tagIndex = 6
+              userIndustry = "Butchery"
+            } else if (payload.userDetails.industry == "Hotel") {
+              tagIndex = 7
+              userIndustry = "Hotel"
+            } else if (payload.userDetails.industry == "Bakery") {
+              tagIndex = 8
+              userIndustry = "Bakery"
             } else {
+              tagIndex = 0
               userIndustry = "Other"
             }
 
-            if (language == 'en-us') {
-              userIndustry += "-US"
-            } else if (language == 'fr') {
-              userIndustry += "-FR"
-            } else if (language == 'es') {
-              userIndustry += "-ES"
-            } else if (language == 'it') {
-              userIndustry += "-LT"
-            }
+            userIndustry = industryConfig[tagIndex][language]
 
             console.log('payload: ', payload)
             console.log('payload.userDetails.locationInfo: ', payload.userDetails.locationInfo)
             console.log('userIndustry: ', userIndustry)
 
-            let tags = ['need-for-array-contains-any-filter'];
+            let tags = [];
             db.collection("template_labels") // get tag ids by industry name == tag name && group == global
               .where("group", "in", [
                 "global",
@@ -743,6 +754,8 @@ export default {
 
                     console.log("result.user", result.user);
                     console.log("tag filtered templates", templates);
+                    let tempBatch = db.batch()
+                    let newTemps = []
                     templates.map((t) => {
                       var updated_at = new Date();
                       let temp = Object.assign({}, t,
@@ -756,102 +769,105 @@ export default {
                           group: result.user.uid
                         })
                       console.log('each before save', temp)
-                      db.collection("templates").add(temp) // deploy template
-                        .then(function (docRef) {
-                          console.log("Document written with ID: ", docRef.id);
+                      var docRef = db.collection("templates").doc(); //automatically generate unique id
+                      tempBatch.set(docRef, temp);
 
-                          // BEGIN activating schedules
-                          if (temp.content.templateSD == "schedule this template") {
-                            var assignDates = [];
-                            var from = new Date();
-                            var beforeItem = "";
-                            var aTimes = [{ value: "08:00" }];
-                            aTimes.map((item) => {
-                              if (item.value == beforeItem) return;
-                              beforeItem = item.value;
-                              assignDates.push(
-                                new Date(
-                                  from.getFullYear(),
-                                  from.getMonth(),
-                                  from.getDate(),
-                                  item.value.split(":")[0],
-                                  item.value.split(":")[1]
-                                )
-                              );
-                            });
+                      newTemps.push({ id: docRef.id, temp: temp })
+                    })
+                    tempBatch.commit();
 
-                            var teams = [res1.id];
-                            var mUser = [res1.id];
-                            var repeat = getRepeatByTemplateTitle(
-                              temp.content.templateTitle
-                            );
-                            var title = repeat
-                              ? temp.content.templateTitle + "-" + repeat
-                              : temp.content.templateTitle;
+                    let scheduBatch = db.batch()
+                    let repoBatch = db.batch()
 
-                            let newSchedule = {
-                              location: [res.id],
-                              title: title,
-                              template: docRef.id,
-                              assign: teams,
-                              monitor: mUser,
-                              _repeat: repeat ? repeat : "No Repeat",
-                              dueTimes: assignDates,
-                              selectedDays: [],
-                              // interval: this.interval,
-                              group: result.user.uid,
-                              created_by: result.user.id,
-                              created_at: new Date(),
-                              updated_by: result.user.id,
-                              updated_at: new Date(),
-                              active: true,
-                            }
-                            console.log('schedule created', newSchedule)
-                            db.collection("schedules").add(newSchedule);
-                            // setTimeout(() => {
-                            //   firebase.analytics().logEvent("Create Schedule", {
-                            //     Title: title,
-                            //   });
-                            // }, 1000);
-                          }
-                          // END activating schedules
-
-                          // BEGIN activating reports
-                          let reportTitle = temp.content.templateTitle + " - This week"
-                          let newReport = {
-                            title: reportTitle,
-                            description: '',
-                            visible: 'Public',
-                            teams: [],
-                            tags: temp.content.templateLabel,
-                            filter: {
-                              date: "thisW",
-                              template: [docRef.id],
-                              team: [],
-                              label: [],
-                              user: [],
-                              status: ''
-                            },
-                            location: [res.id],
-                            created_at: new Date(),
-                            updated_at: new Date(),
-                            created_by: result.user.id,
-                            group: result.user.uid,
-                          }
-                          console.log('report created', newReport)
-                          db.collection('reports').add(newReport)
-                          // END activating reports
-
-
-                        })
-                        .catch(function (error) {
-                          console.error("Error adding template: ", error);
+                    newTemps.map(nt => {
+                      console.log('newTemps', nt)
+                      let temp = nt.temp
+                      // BEGIN activating schedules
+                      if (temp.content.templateSD == "schedule this template") {
+                        var assignDates = [];
+                        var from = new Date();
+                        var beforeItem = "";
+                        var aTimes = [{ value: "08:00" }];
+                        aTimes.map((item) => {
+                          if (item.value == beforeItem) return;
+                          beforeItem = item.value;
+                          assignDates.push(
+                            new Date(
+                              from.getFullYear(),
+                              from.getMonth(),
+                              from.getDate(),
+                              item.value.split(":")[0],
+                              item.value.split(":")[1]
+                            )
+                          );
                         });
 
+                        var teams = [res1.id];
+                        var mUser = [res1.id];
+                        var repeat = getRepeatByTemplateTitle(
+                          temp.content.templateTitle
+                        );
+                        var title = repeat
+                          ? temp.content.templateTitle + "-" + repeat
+                          : temp.content.templateTitle;
+
+                        let newSchedule = {
+                          location: [res.id],
+                          title: title,
+                          template: nt.id,
+                          assign: teams,
+                          monitor: mUser,
+                          _repeat: repeat ? repeat : "No Repeat",
+                          dueTimes: assignDates,
+                          selectedDays: [],
+                          // interval: this.interval,
+                          group: result.user.uid,
+                          created_by: result.user.id,
+                          created_at: new Date(),
+                          updated_by: result.user.id,
+                          updated_at: new Date(),
+                          active: true,
+                        }
+                        console.log('schedule created', newSchedule)
+                        var scdRef = db.collection("schedules").doc(); //automatically generate unique id
+                        scheduBatch.set(scdRef, newSchedule);
+                      }
+                      // END activating schedules
+
+                      // BEGIN activating reports
+                      let reportTitle = temp.content.templateTitle + " - This week"
+                      let newReport = {
+                        title: reportTitle,
+                        description: '',
+                        visible: 'Public',
+                        teams: [],
+                        tags: temp.content.templateLabel,
+                        filter: {
+                          date: "thisW",
+                          template: [nt.id],
+                          team: [],
+                          label: [],
+                          user: [],
+                          status: ''
+                        },
+                        location: [res.id],
+                        created_at: new Date(),
+                        updated_at: new Date(),
+                        created_by: result.user.id,
+                        group: result.user.uid,
+                      }
+                      console.log('report created', newReport)
+                      var repoRef = db.collection("reports").doc(); //automatically generate unique id
+                      repoBatch.set(repoRef, newReport);
+                      // END activating reports
                     })
+
+                    scheduBatch.commit();
+                    repoBatch.commit();
                   });
 
                 // BEGIN activating knowledge_bases
+
                 db.collection("knowledge").add({
                   name: payload.userDetails.industry,
                   type: "category",
@@ -869,6 +885,8 @@ export default {
                       .where("tags", "array-contains-any", tags)
                       .get()
                       .then((q) => {
+                        let kngBatch = db.batch()
+
                         q.forEach((doc) => {
                           if (doc.data().trashed) return;
 
@@ -880,8 +898,16 @@ export default {
                           });
 
                           console.log('knowledge created', newKng)
-                          db.collection("knowledge").add(newKng);
+                          var articleRef = db.collection("knowledge").doc(); //automatically generate unique id
+                          kngBatch.set(articleRef, newKng);
+
+                          // db.collection("knowledge").add(newKng);
                         });
+
+                        kngBatch.commit()
+                      })
+                      .catch(function (error) {
+                        console.error("Error adding knowledgebase article: ", error);
                       });
                   })
                   .catch(function (error) {
