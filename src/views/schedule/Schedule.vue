@@ -26,6 +26,9 @@
           </vs-button>
         </div>
       </div>
+      <div class="video-launcher">
+        <a href="#" @click="howtoTemplate">Watch this video to see how it works</a>
+      </div>
       <div class="page-content">
         <template v-if="schedules.length>0">
           <list-view :schedules="schedules" />
@@ -71,6 +74,10 @@ export default {
     };
   },
   methods: {
+    howtoTemplate(event) {
+      event.preventDefault();
+      this.$userflow.start('00cf7a4c-823b-4978-9b83-b2ca95325477');
+    },
     roleError(action) {
       this.$vs.notify({
         time: 5000,
@@ -184,3 +191,10 @@ export default {
   }
 };
 </script>
+<style scoped>
+.video-launcher {
+  font-size: 10px;
+  height: 12px;
+  color: #844CF5;
+}
+</style>

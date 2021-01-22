@@ -8,12 +8,12 @@
     class="add-new-data-sidebar items-no-padding"
     v-model="isSidebarActiveLocal"
   >
-    <div class="mt-6 flex items-center justify-between px-6">
-      <h4>{{ $t("select filter") | capitalize }}</h4>
+    <div class="mt-6 flex items-center justify-between">
+      <h4 class="pl-base h4">{{ $t("filters") | capitalize }}</h4>
       <feather-icon
         icon="XIcon"
         @click.stop="isSidebarActiveLocal = false"
-        class="cursor-pointer"
+        class="cursor-pointer pr-4 "
       ></feather-icon>
     </div>
     <vs-divider class="mb-0"></vs-divider>
@@ -22,8 +22,25 @@
       :settings="settings"
     >
       <div class="vx-row">
+        <div class="vx-col pl-base pr-4 pb-4 w-full">
+          <h5 class="mb-2">{{ $t("template") | capitalize }}</h5>
+          <v-select
+                  label="name"
+                  multiple
+                  :options="templates"
+                  v-model="template"
+          />
+        </div>
+        <div class="vx-col pl-base pr-4 pb-4 w-full">
+          <h5 class="mb-2">{{ $t("teams") | capitalize }}</h5>
+          <v-select v-model="team" :options="teams" label="name" multiple />
+        </div>
+        <div class="vx-col pl-base pr-4 pb-4 w-full">
+          <h5 class="mb-2">{{ $t("users") | capitalize }}</h5>
+          <v-select v-model="user" :options="users" label="name" multiple />
+        </div>
         <div class="vx-col pl-base pr-4w-full">
-          <h5 class="mb-0">{{ $t("date") | capitalize }}</h5>
+          <h5 class="mb-2">Time period</h5>
         </div>
         <div class="vx-col pl-base pr-4 pb-4 w-full">
           <v-select :options="dates" v-model="date" :clearable="false">
@@ -35,41 +52,28 @@
             </template>
           </v-select>
         </div>
-        <div class="vx-col pl-base pr-4 pb-4 w-full" v-if="date == 'custom'">
-          <h5 class="mb-0">{{ $t("from") | capitalize }}</h5>
-          <datepicker
-            :language="languages[$i18n.locale]"
-            :placeholder="$t('to') | capitalize"
-            v-model="from"
-          ></datepicker>
-          <h5 class="mb-0">{{ $t("to") | capitalize }}</h5>
-          <datepicker
-            :placeholder="$t('to') | capitalize"
-            :language="languages[$i18n.locale]"
-            v-model="to"
-          ></datepicker>
-        </div>
-        <div class="vx-col pl-base pr-4 pb-4 w-full">
-          <h5 class="mb-0">{{ $t("template") | capitalize }}</h5>
-          <v-select
-            label="name"
-            multiple
-            :options="templates"
-            v-model="template"
-          />
-        </div>
-        <div class="vx-col pl-base pr-4 pb-4 w-full">
-          <h5 class="mb-0">{{ $t("users") | capitalize }}</h5>
-          <v-select v-model="user" :options="users" label="name" multiple />
-        </div>
-        <div class="vx-col pl-base pr-4 pb-4 w-full">
-          <h5 class="mb-0">{{ $t("teams") | capitalize }}</h5>
-          <v-select v-model="team" :options="teams" label="name" multiple />
+        <div class="vx-col pl-base pr-4 pb-4 w-full" style="display: flex; justify-content: space-between" v-if="date == 'custom'">
+          <div>
+            <h5 class="mb-2">{{ $t("from") | capitalize }}</h5>
+            <datepicker
+                    :language="languages[$i18n.locale]"
+                    :placeholder="$t('from') | capitalize"
+                    v-model="from"
+            ></datepicker>
+          </div>
+          <div>
+            <h5 class="mb-2">{{ $t("to") | capitalize }}</h5>
+            <datepicker
+                    :placeholder="$t('to') | capitalize"
+                    :language="languages[$i18n.locale]"
+                    v-model="to"
+            ></datepicker>
+          </div>
         </div>
       </div>
     </VuePerfectScrollbar>
     <div class="flex flex-wrap items-center justify-center p-6" slot="footer">
-      <vs-button class="mr-6" :disabled="template.length==0" @click="commit">{{ $t("apply") }}</vs-button>
+      <vs-button class="mr-6" :disabled="!template.length && !user.length && !team.length && date == 'today'" @click="commit">{{ $t("apply") }}</vs-button>
       <vs-button
         type="border"
         color="danger"
@@ -316,11 +320,11 @@ export default {
 
 <style lang="scss" scoped>
 .add-new-data-sidebar {
-  /deep/ .vs-sidebar--background {
+  ::v-deep .vs-sidebar--background {
     z-index: 52010;
   }
 
-  /deep/ .vs-sidebar {
+  ::v-deep .vs-sidebar {
     z-index: 52010;
     width: 500px;
     max-width: 100vw;

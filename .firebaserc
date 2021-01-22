@@ -1,5 +1,17 @@
 {
   "projects": {
     "default": "the-haccp-app-249610"
+  },
+  "targets": {
+    "the-haccp-app-249610": {
+      "hosting": {
+        "qualizy": [
+          "analytics-updates"
+        ],
+        "analytics-updates": [
+          "qualizy"
+        ]
+      }
+    }
   }
 }

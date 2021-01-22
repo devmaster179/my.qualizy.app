@@ -106,11 +106,11 @@ export default {
 </script>
 <style lang="scss" scoped>
 .add-new-data-sidebar {
-  /deep/ .vs-sidebar--background {
+  ::v-deep .vs-sidebar--background {
     z-index: 52010;
   }
 
-  /deep/ .vs-sidebar {
+  ::v-deep .vs-sidebar {
     z-index: 52010;
     width: 500px;
     max-width: 100vw;

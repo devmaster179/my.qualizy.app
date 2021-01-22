@@ -209,11 +209,11 @@ export default {
 </script>
 <style lang="scss" scoped>
 .template-details {
-  /deep/ .vs-sidebar--background {
+  ::v-deep .vs-sidebar--background {
     z-index: 52010;
   }
 
-  /deep/ .vs-sidebar {
+  ::v-deep .vs-sidebar {
     z-index: 52010;
     width: 500px;
     max-width: 100vw;
@@ -231,7 +231,7 @@ export default {
       }
     }
   }
-  /deep/ .vs-sidebar-position-right {
+  ::v-deep .vs-sidebar-position-right {
     .vs-sidebar--items,
     .vs-sidebar--footer {
       background: aliceblue;

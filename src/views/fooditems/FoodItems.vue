@@ -53,6 +53,9 @@
             </div>
           </div>
         </div>
+        <div class="video-launcher">
+          <a href="#" @click="howtoTemplate">Watch this video to see how it works</a>
+        </div>
         <vs-input
           class="bg-white block md:hidden w-full my-2"
           v-model="search"
@@ -222,6 +225,10 @@ export default {
     };
   },
   methods: {
+    howtoTemplate(event) {
+      event.preventDefault();
+      this.$userflow.start('3eb696b5-0344-41fd-9143-5d61ee1b1bd7');
+    },
     addFoodItem() {
       if(!this.auth('food items' , 'create')) {
         this.roleError('create')
@@ -651,6 +658,11 @@ export default {
 }
 .times2.rotate180 {
   transform: rotate(180deg) scale(1.6);
+}
+.video-launcher {
+  font-size: 10px;
+  height: 12px;
+  color: #844CF5;
 }
 </style>
 <style>
