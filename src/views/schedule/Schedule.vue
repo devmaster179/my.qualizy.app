@@ -1,5 +1,5 @@
 <template>
-  <div id="schdules-page">
+  <div id="schdules-page" class="px-2">
     <template v-if="!auth('view')">
       <no-auth/>
     </template>

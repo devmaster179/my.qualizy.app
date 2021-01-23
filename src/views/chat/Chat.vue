@@ -11,7 +11,7 @@
 <template>
   <div
     id="chat-app"
-    class="border border-solid d-theme-border-grey-light rounded relative overflow-hidden"
+    class="border border-solid d-theme-border-grey-light rounded relative overflow-hidden px-2"
   >
     <vs-sidebar
       class="items-no-padding"

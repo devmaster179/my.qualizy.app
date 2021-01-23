@@ -1,5 +1,5 @@
 <template>
-  <div id="knowldge">
+  <div id="knowldge" class="px-2">
     <template v-if="!auth('view')">
       <no-auth/>
     </template>

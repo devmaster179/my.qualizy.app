@@ -1,5 +1,5 @@
 <template>
-  <div id="company">
+  <div id="company" class="px-2">
     <template v-if="!auth('user and team settings' , 'view')">
       <no-auth />
     </template>
