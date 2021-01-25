@@ -493,10 +493,19 @@ export default {
           .onSnapshot({ includeMetadataChanges: true }, (snapshot) => {
             snapshot.docChanges().forEach((change) => {
               if (change.type === "added") {
-                if (change.doc.data().created_at.nanoseconds !== undefined)
+                if (
+                  change.doc.data().created_at !== undefined &&
+                  change.doc.data().created_at.nanoseconds !== undefined
+                ) {
                   date = change.doc.data().created_at.toDate();
-                else date = change.doc.data().created_at;
-                if (date.getTime() == created_at.getTime()) {
+                } else {
+                  date = change.doc.data().created_at;
+                }
+                if (
+                  date != "" &&
+                  date != undefined &&
+                  date.getTime() == created_at.getTime()
+                ) {
                   id = change.doc.id;
                 }
               }

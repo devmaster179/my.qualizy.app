@@ -2,7 +2,7 @@
   <vs-popup
     classContent="popup-example"
     class="popup-image-upload"
-    :title="$t(`Upload your own images`)"
+    title="Upload your own images"
     :active.sync="activePrompt"
   >
     <VuePerfectScrollbar
