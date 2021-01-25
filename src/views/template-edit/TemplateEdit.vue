@@ -1,12 +1,18 @@
 <template>
-  <div id="template-edit" v-if="template.content!==undefined" style="margin-right:385px;">
+  <div
+    id="template-edit"
+    v-if="template.content !== undefined"
+    style="margin-right: 385px"
+  >
     <div class="page-header flex items-center justify-between">
       <div class="page-title flex items-center">
         <p
           class="main-title karla-bold mr-2 cursor-pointer"
           @click="$router.push('/templates')"
-        >{{$t("templates")}} ></p>
-        <p class="sub-title karla-bold">{{$t(pageTitle)}}</p>
+        >
+          {{ $t("templates") }} >
+        </p>
+        <p class="sub-title karla-bold">{{ $t(pageTitle) }}</p>
       </div>
       <div class="page-action flex items-center">
         <vs-icon
@@ -14,8 +20,8 @@
           icon="undo"
           size="20px"
           class="ml-2 rounded-lg d-theme-dark-bg cursor-pointer"
-          :class="{'disableIcon':!canUndo}"
-          style="height:40px; width:40px; padding:.7rem"
+          :class="{ disableIcon: !canUndo }"
+          style="height: 40px; width: 40px; padding: 0.7rem"
           @click="undo"
         />
         <vs-icon
@@ -23,13 +29,13 @@
           icon="redo"
           size="20px"
           class="ml-2 rounded-lg d-theme-dark-bg cursor-pointer"
-          :class="{'disableIcon':!canRedo}"
-          style="height:40px; width:40px; padding:.7rem"
+          :class="{ disableIcon: !canRedo }"
+          style="height: 40px; width: 40px; padding: 0.7rem"
           @click="redo"
         />
 
         <vs-button class="ml-2" @click.stop="saveTemplate">
-          <span class="karla save-text">{{$t("save")}}</span>
+          <span class="karla save-text">{{ $t("save") }}</span>
         </vs-button>
       </div>
     </div>
@@ -44,15 +50,17 @@
               <div class="template-title flex items-start justify-between">
                 <div class="template-name-section flex items-start w-full">
                   <img
-                    :src="require(`@/assets/images/template_image/${template.content.templateImage}`)"
-                    style="width:48px; height:48px;"
+                    :src="
+                      require(`@/assets/images/template_image/${template.content.templateImage}`)
+                    "
+                    style="width: 48px; height: 48px"
                   />
                   <div class="ml-2 w-full">
                     <vs-input
-                      @focus="editTemplateName=true, $event.target.select()"
-                      @blur="editTemplateName=false"
+                      @focus="(editTemplateName = true), $event.target.select()"
+                      @blur="editTemplateName = false"
                       v-model="templateTitle"
-                      :class="{'vs-input-no-border':!editTemplateName}"
+                      :class="{ 'vs-input-no-border': !editTemplateName }"
                       class="vs-input-no-shdow-focus edit-component w-full"
                       size="large"
                       :placeholder="$t('Untitled Template')"
@@ -60,18 +68,21 @@
                     <vs-textarea
                       @focus="kkk"
                       ref="templateComment"
-                      @blur="editTemplateComment=false"
-                      :class="{'vs-area-no-border': !editTemplateComment}"
+                      @blur="editTemplateComment = false"
+                      :class="{ 'vs-area-no-border': !editTemplateComment }"
                       :placeholder="$t('+ Add comment')"
                       v-model="templateComment"
                       class="edit-component vs-area-no-shdow-focus"
-                      style="margin-top: -3px;"
+                      style="margin-top: -3px"
                     />
                   </div>
                 </div>
-                <div class="template-title-action flex items-center" style="margin-top:5px;">
+                <div
+                  class="template-title-action flex items-center"
+                  style="margin-top: 5px"
+                >
                   <vs-icon
-                    v-if="template.content.templateSD=='bookmarked'"
+                    v-if="template.content.templateSD == 'bookmarked'"
                     icon-pack="feather"
                     size="20px"
                     icon="icon-clipboard"
@@ -87,8 +98,8 @@
                   <feather-icon
                     icon="Edit2Icon"
                     class="cursor-pointer hover:text-primary"
-                    style="width:20px; height:20px;"
-                    @click="activeCreateTemplate=true"
+                    style="width: 20px; height: 20px"
+                    @click="activeCreateTemplate = true"
                   />
                   <!-- <vs-icon icon-pack="feather" size="20px" icon="icon-edit-2" /> -->
                 </div>
@@ -96,35 +107,52 @@
               <div class="template-locations">
                 <div
                   class="tag-item inline-block ml-2"
-                  v-for="(location,index) in template.content.location"
+                  v-for="(location, index) in template.content.location"
                   :key="index"
-                  :class="{'hidden':locationInfo(location)===undefined || locationInfo(location).deleted}"
+                  :class="{
+                    hidden:
+                      locationInfo(location) === undefined ||
+                      (locationInfo(location) !== undefined &&
+                        locationInfo(location).deleted),
+                  }"
                 >
-                  <div v-if="locationInfo(location)!==undefined || locationInfo(location).deleted" class="flex items-center">
+                  <div
+                    v-if="
+                      locationInfo(location) !== undefined ||
+                      (locationInfo(location) !== undefined &&
+                        locationInfo(location).deleted)
+                    "
+                    class="flex items-center"
+                  >
                     <vs-icon
                       size="10px"
                       icon-pack="feather"
                       icon="icon-map-pin"
                       class="mr-1"
-                      style="padding-top:1px;"
+                      style="padding-top: 1px"
                     />
-                    <span class="karla map-text">{{locationInfo(location).name}}</span>
+                    <span class="karla map-text">{{
+                      locationInfo(location).name
+                    }}</span>
                   </div>
                 </div>
               </div>
               <div class="template-tags mt-4">
                 <div
                   class="tag-item inline-block ml-2"
-                  v-for="(tag,index) in template.content.templateLabel"
+                  v-for="(tag, index) in template.content.templateLabel"
                   :key="index"
-                  :class="{'hidden':tagInfo(tag)===undefined}"
+                  :class="{ hidden: tagInfo(tag) === undefined }"
                 >
-                  <div v-if="tagInfo(tag)!==undefined" class="flex items-center">
+                  <div
+                    v-if="tagInfo(tag) !== undefined"
+                    class="flex items-center"
+                  >
                     <div
                       class="h-2 w-2 rounded-full mr-1"
                       :style="`background: ${tagInfo(tag).color};`"
                     ></div>
-                    <span class="karla map-text">{{tagInfo(tag).name}}</span>
+                    <span class="karla map-text">{{ tagInfo(tag).name }}</span>
                   </div>
                 </div>
               </div>
@@ -133,7 +161,7 @@
         </div>
         <div
           class="template-pages mt-4"
-          v-for="(page,index) in template.content.pages"
+          v-for="(page, index) in template.content.pages"
           :key="index"
         >
           <page-edit :page="index" />
@@ -142,14 +170,15 @@
           <span
             @click="addPage"
             class="karla-bold text-primary text-sm cursor-pointer hover:underline"
-          >{{$t("add page")}}</span>
+            >{{ $t("add page") }}</span
+          >
         </div>
       </div>
     </VuePerfectScrollbar>
     <log-preview />
     <templatemaking-popup
       :open="activeCreateTemplate"
-      @close="activeCreateTemplate=false"
+      @close="activeCreateTemplate = false"
       :state="templateState"
       :showCreat="false"
     />
@@ -172,7 +201,7 @@ export default {
     PageEdit,
     LogPreview,
     VuePerfectScrollbar,
-    TemplatemakingPopup
+    TemplatemakingPopup,
   },
   data() {
     return {
@@ -180,10 +209,10 @@ export default {
       settings: {
         // perfectscrollbar settings
         maxScrollbarLength: 60,
-        wheelSpeed: 0.6
+        wheelSpeed: 0.6,
       },
       editTemplateComment: false,
-      editTemplateName: false
+      editTemplateName: false,
     };
   },
 
@@ -191,29 +220,27 @@ export default {
     trackEvents(id) {
       firebase.analytics().logEvent("Created a new template", {
         id: id,
-        Title: this.template.templateTitle
+        Title: this.template.templateTitle,
       });
 
-      this.$userflow.track("Create Template" , {
+      this.$userflow.track("Create Template", {
         template_id: id,
-        group: JSON.parse(localStorage.getItem("userInfo")).group
-      })
-      window.gist.track("Create Template" , {
+        group: JSON.parse(localStorage.getItem("userInfo")).group,
+      });
+      window.gist.track("Create Template", {
         template_id: id,
-        group: JSON.parse(localStorage.getItem("userInfo")).group
-      })
+        group: JSON.parse(localStorage.getItem("userInfo")).group,
+      });
     },
     updateIot(id, templateID, p, q, a) {
       return new Promise((resolve, reject) => {
-        db.collection("iots")
-          .doc(id)
-          .update({
-            templateID: templateID,
-            page: p,
-            question: q,
-            answer: a,
-            created_at: firebase.firestore.FieldValue.serverTimestamp()
-          });
+        db.collection("iots").doc(id).update({
+          templateID: templateID,
+          page: p,
+          question: q,
+          answer: a,
+          created_at: firebase.firestore.FieldValue.serverTimestamp(),
+        });
         resolve("OK");
       });
     },
@@ -225,7 +252,7 @@ export default {
           page: p,
           question: q,
           answer: a,
-          created_at: firebase.firestore.FieldValue.serverTimestamp()
+          created_at: firebase.firestore.FieldValue.serverTimestamp(),
         });
         resolve("OK");
       });
@@ -235,7 +262,7 @@ export default {
       var the = this;
       template.pages.map((page, p) => {
         page.questions.map((question, q) => {
-          question.answers.map(async function(answer, a) {
+          question.answers.map(async function (answer, a) {
             if (
               answer.type.macAddress !== undefined &&
               answer.type.macAddress !== ""
@@ -264,8 +291,8 @@ export default {
             JSON.parse(localStorage.getItem("userInfo")).group
           )
           .where("updated_at", "==", updated_at)
-          .onSnapshot({ includeMetadataChanges: true }, snapshot => {
-            snapshot.docChanges().forEach(change => {
+          .onSnapshot({ includeMetadataChanges: true }, (snapshot) => {
+            snapshot.docChanges().forEach((change) => {
               if (change.type === "added") {
                 id = change.doc.id;
               }
@@ -279,33 +306,32 @@ export default {
       var answers;
       var questions;
       var pages = [];
-      template.content.pages.map(page => {
+      template.content.pages.map((page) => {
         questions = [];
-        page.questions.map(question => {
+        page.questions.map((question) => {
           answers = [];
           if (question.answers === undefined) return;
-          question.answers.map(answer => {
-            if (answer.type.id !== undefined){
-                answers.push({
-                  title: answer.title,
-                  type: answer.type,
-                  action: [],
-                  mandatory: answer.mandatory,
-                  score: answer.score
-                });
+          question.answers.map((answer) => {
+            if (answer.type.id !== undefined) {
+              answers.push({
+                title: answer.title,
+                type: answer.type,
+                action: [],
+                mandatory: answer.mandatory,
+                score: answer.score,
+              });
             }
-            
           });
           if (answers.length > 0)
             questions.push({
               title: question.title,
-              answers: answers
+              answers: answers,
             });
         });
         if (questions.length > 0)
           pages.push({
             title: page.title,
-            questions: questions
+            questions: questions,
           });
       });
       if (pages.length == 0) {
@@ -315,7 +341,7 @@ export default {
           text: "Please check the template content",
           iconPack: "feather",
           icon: "icon-alert-circle",
-          color: "warning"
+          color: "warning",
         });
         return false;
       }
@@ -330,7 +356,7 @@ export default {
         templateImage: template.content.templateImage,
         templateLabel: template.content.templateLabel,
         templateSD: template.content.templateSD,
-        teams: template.content.teams || []
+        teams: template.content.teams || [],
       };
       if (
         this.$route.params.state == "create" ||
@@ -344,10 +370,10 @@ export default {
           updated_by: JSON.parse(localStorage.getItem("userInfo")).id,
           created_at: updated_at,
           updated_at: updated_at,
-          group: JSON.parse(localStorage.getItem("userInfo")).group
+          group: JSON.parse(localStorage.getItem("userInfo")).group,
         });
 
-        this.getTemplateID(updated_at).then(id => {
+        this.getTemplateID(updated_at).then((id) => {
           this.$vs.loading.close();
           this.$vs.notify({
             time: 7000,
@@ -355,7 +381,7 @@ export default {
             text: "Template have been created!",
             iconPack: "feather",
             icon: "icon-alert-circle",
-            color: "success"
+            color: "success",
           });
           this.iotProcess(savingTemplate, id);
           this.trackEvents(id);
@@ -366,7 +392,7 @@ export default {
           .update({
             content: savingTemplate,
             updated_by: JSON.parse(localStorage.getItem("userInfo")).id,
-            updated_at: updated_at
+            updated_at: updated_at,
           });
         this.iotProcess(savingTemplate, this.$route.params.id);
         setTimeout(() => {
@@ -378,10 +404,10 @@ export default {
           text: "Your template have been updated!",
           iconPack: "feather",
           icon: "icon-alert-circle",
-          color: "success"
+          color: "success",
         });
       }
-      this.$router.push("/templates").catch(err => {});
+      this.$router.push("/templates").catch((err) => {});
     },
     addPage() {
       this.$store.commit("app/CHN_TEMP_TEMPLATE", {
@@ -399,18 +425,18 @@ export default {
                   action: {},
                   mandatory: false,
                   score: [],
-                  loged: ""
-                }
-              ]
-            }
-          ]
-        }
+                  loged: "",
+                },
+              ],
+            },
+          ],
+        },
       });
     },
     kkk() {
       this.editTemplateComment = true;
       this.$refs.templateComment.$el.children[0].select();
-    }
+    },
   },
   computed: {
     templateState() {
@@ -418,12 +444,12 @@ export default {
     },
 
     tagInfo() {
-      return id => {
+      return (id) => {
         return this.$store.getters["app/getLabelById"](id);
       };
     },
     locationInfo() {
-      return id => {
+      return (id) => {
         return this.$store.getters["app/getLocationById"](id);
       };
     },
@@ -435,9 +461,9 @@ export default {
         this.$store.commit("app/CHN_TEMP_TEMPLATE", {
           target: "template",
           key: "chnComment",
-          val: val
+          val: val,
         });
-      }
+      },
     },
     templateTitle: {
       get() {
@@ -447,9 +473,9 @@ export default {
         this.$store.commit("app/CHN_TEMP_TEMPLATE", {
           target: "template",
           key: "chnTitle",
-          val: val
+          val: val,
         });
-      }
+      },
     },
     template() {
       return this.$store.getters["app/getTempTemplate"];
@@ -459,12 +485,12 @@ export default {
       else if (this.$route.params.state == "update") return "update template";
       else if (this.$route.params.state == "duplicate")
         return "duplicate template";
-    }
+    },
   },
   created() {
     if (this.$store.getters["app/getTempTemplate"].content === undefined)
       this.$router.push("/templates");
-  }
+  },
 };
 </script>
 
