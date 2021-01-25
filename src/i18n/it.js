@@ -500,5 +500,15 @@ export default {
     "SunDay": "Domenica",
     "Watch this video to see how it works": "Watch this video to see how it works",
     "Question Title": "Titre de Question",
-    "reprots": "Rapporti"
+    "reprots": "Rapporti",
+    "Restaurant": "Ristorante",  // begin industry tag
+    "Butchery": "Macelleria",
+    "Food production": "Unità produttiva",
+    "Coffee": "Caffé",
+    "Hotel": "Hotel",
+    "Catering": "Catering",
+    "Food retail": "Supermercato",
+    "Collectivity": "Comunità",
+    "Bakery": "Panificio",
+    "Other": "Altro", // end industry tag
 }

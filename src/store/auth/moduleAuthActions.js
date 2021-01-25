@@ -683,41 +683,14 @@ export default {
 
 
             // BEGIN activating templates/schedules/reports/knowledge_bases
-            let userIndustry = payload.userDetails.industry
-            let tagIndex = 0;
-            if (payload.userDetails.industry == "Restaurant") {  // format industry text
-              tagIndex = 0
-              userIndustry = "Restaurant"
-            } else if (payload.userDetails.industry == "Cafe") {
-              tagIndex = 1
-              userIndustry = "Coffee"
-            } else if (payload.userDetails.industry == "Food retail (Butcher, Fishmonger, etc..)") {
-              tagIndex = 2
-              userIndustry = "Food retail"
-            } else if (payload.userDetails.industry == "Food production") {
-              tagIndex = 3
-              userIndustry = "Food production"
-            } else if (payload.userDetails.industry == "Caterer") {
-              tagIndex = 4
-              userIndustry = "Catering"
-            } else if (payload.userDetails.industry == "Collectivity catering") {
-              tagIndex = 5
-              userIndustry = "Collectivity"
-            } else if (payload.userDetails.industry == "Butchery") {
-              tagIndex = 6
-              userIndustry = "Butchery"
-            } else if (payload.userDetails.industry == "Hotel") {
-              tagIndex = 7
-              userIndustry = "Hotel"
-            } else if (payload.userDetails.industry == "Bakery") {
-              tagIndex = 8
-              userIndustry = "Bakery"
-            } else {
-              tagIndex = 0
+            let userIndustry = parseInt(payload.userDetails.industry)
+
+            if (userIndustry == 1000) {
               userIndustry = "Other"
+            } else {
+              userIndustry = industryConfig[userIndustry][language]
             }
 
-            userIndustry = industryConfig[tagIndex][language]
 
             console.log('payload: ', payload)
             console.log('payload.userDetails.locationInfo: ', payload.userDetails.locationInfo)
