@@ -3,18 +3,26 @@
     <td>
       <div class="flex items-center">
         <img
-          :src="require(`@/assets/images/template_image/${template.content.templateImage}`)"
+          :src="
+            require(`@/assets/images/template_image/${template.content.templateImage}`)
+          "
           class="rouned-full mr-2"
           width="50"
           height="50"
         />
         <div>
-          <p
-            class="template-name karla-bold"
-          >{{template.content.templateTitle=="" ? $t("template name"): template.content.templateTitle}}</p>
-          <span
-            class="note"
-          >{{template.content.templateComment=="" ? $t("+ Add comment") : template.content.templateComment}}</span>
+          <p class="template-name karla-bold">
+            {{
+              template.content.templateTitle == ""
+                ? $t("template name")
+                : template.content.templateTitle
+            }}
+          </p>
+          <span class="note">{{
+            template.content.templateComment == ""
+              ? $t("+ Add comment")
+              : template.content.templateComment
+          }}</span>
         </div>
       </div>
     </td>
@@ -23,32 +31,34 @@
       <div class="inline-block items-center">
         <div
           class="bg-clip py-2 px-3 rounded-lg inline-block"
-          v-for="(location,i) in locations"
-          :class="{'hidden': getLocation(location)=== undefined || i!=0 }"
+          v-for="(location, i) in locations"
+          :class="{ hidden: getLocation(location) === undefined || i != 0 }"
           :key="i"
         >
           <vs-icon icon-pack="feather" icon="icon-map-pin" class="mr-1" />
-          <span class="karla item-text">{{getLocation(location).name}}</span>
+          <span class="karla item-text">{{ getLocation(location).name }}</span>
         </div>
 
         <vs-dropdown
-          v-if="locations.length>1"
+          v-if="locations.length > 1"
           vs-custom-content
           class="cursor-pointer mr-4"
           vs-trigger-click
         >
           <p
             class="bg-clip py-2 px-3 rounded-lg ml-2 inline-block cursor-pointer"
-          >+{{locations.length-1}}</p>
+          >
+            +{{ locations.length - 1 }}
+          </p>
           <vs-dropdown-menu class="vx-navbar-dropdown">
-            <div class="bg-white" style="min-width:20rem">
+            <div class="bg-white" style="min-width: 20rem">
               <div
                 class="inline-block bg-clip py-2 px-3 rounded-lg ml-2 mb-1 cursor-pointer"
-                v-for="(location,lIndex) in locations"
+                v-for="(location, lIndex) in locations"
                 :key="lIndex"
               >
                 <vs-icon icon-pack="feather" icon="icon-map-pin" class="mr-1" />
-                <span class="ml-2 karla">{{getLocation(location).name}}</span>
+                <span class="ml-2 karla">{{ getLocation(location).name }}</span>
               </div>
             </div>
           </vs-dropdown-menu>
@@ -59,39 +69,41 @@
       <div class="inline-block items-center">
         <div
           class="bg-clip py-2 px-3 rounded-lg ml-2 inline-block"
-          v-for="(tag,i) in tags"
-          :class="{'hidden': getTag(tag)=== undefined || i!=0 }"
+          v-for="(tag, i) in tags"
+          :class="{ hidden: getTag(tag) === undefined || i != 0 }"
           :key="i"
         >
-          <template v-if="getTag(tag)!==undefined">
+          <template v-if="getTag(tag) !== undefined">
             <div
               class="h-2 w-2 rounded-full mr-1 inline-block"
               :style="`background:${getTag(tag).color}`"
             ></div>
-            <span class="karla item-text">{{getTag(tag).name}}</span>
+            <span class="karla item-text">{{ getTag(tag).name }}</span>
           </template>
         </div>
         <vs-dropdown
           vs-custom-content
           class="cursor-pointer mr-4"
           vs-trigger-click
-          v-if="tags.length>1"
+          v-if="tags.length > 1"
         >
           <p
             class="karla item-text flex items-center bg-clip py-2 px-3 rounded-lg ml-2 cursor-pointer"
-          >+{{tags.length-1}}</p>
+          >
+            +{{ tags.length - 1 }}
+          </p>
           <vs-dropdown-menu class="vx-navbar-dropdown">
-            <div class="bg-white" style="min-width:20rem">
+            <div class="bg-white" style="min-width: 20rem">
               <div
                 class="inline-block bg-clip py-2 px-3 rounded-lg ml-2 cursor-pointer mb-2"
-                v-for="(tag,tIndex) in tags"
+                v-for="(tag, tIndex) in tags"
                 :key="tIndex"
               >
                 <div
                   class="h-2 w-2 rounded-full inline-block"
                   :style="`background: ${getTag(tag).color};`"
                 ></div>
-                <span class="ml-2 karla">{{getTag(tag).name}}</span>
+                <span class="ml-2 karla">{{ getTag(tag).name }}</span>
               </div>
             </div>
           </vs-dropdown-menu>
@@ -103,60 +115,82 @@
         icon-pack="feather"
         icon="icon-calendar"
         size="25px"
-        v-if="template.content.templateSD=='schedule this template'"
+        v-if="template.content.templateSD == 'schedule this template'"
       />
       <vs-icon
         icon-pack="feather"
         icon="icon-clipboard"
         size="25px"
-        v-else-if="template.content.templateSD=='bookmarked'"
+        v-else-if="template.content.templateSD == 'bookmarked'"
       />
-      <vs-icon icon-pack="feather" icon="icon-alert-octagon" size="25px" v-else />
+      <vs-icon
+        icon-pack="feather"
+        icon="icon-alert-octagon"
+        size="25px"
+        v-else
+      />
     </td>
-    <td style="text-align: center;">
-      <vs-dropdown vs-custom-content class="cursor-pointer mr-4" vs-trigger-click>
-        <feather-icon icon="MoreVerticalIcon" class="p-2 cursor-pointer" style="height:2.6rem;" />
+    <td style="text-align: center">
+      <vs-dropdown
+        vs-custom-content
+        class="cursor-pointer mr-4"
+        vs-trigger-click
+      >
+        <feather-icon
+          icon="MoreVerticalIcon"
+          class="p-2 cursor-pointer"
+          style="height: 2.6rem"
+        />
         <vs-dropdown-menu class="vx-navbar-dropdown">
           <ul style="min-width: 9rem" class="p-0">
             <li
               class="flex py-1 px-2 my-1 cursor-pointer hover:bg-primary hover:text-white"
-              v-if="template.content.templateSD=='schedule this template'"
-              @click="$emit('schedule',template.id)"
+              v-if="template.content.templateSD == 'schedule this template'"
+              @click="$emit('schedule', template.id)"
             >
-              <feather-icon icon="CalendarIcon" svgClasses="w-4 h-4"></feather-icon>
-              <span class="ml-2 karla">{{$t("new schedule")}}</span>
+              <feather-icon
+                icon="CalendarIcon"
+                svgClasses="w-4 h-4"
+              ></feather-icon>
+              <span class="ml-2 karla">{{ $t("new schedule") }}</span>
             </li>
             <li
               class="flex py-1 px-2 my-1 cursor-pointer hover:bg-primary hover:text-white"
               @click="editTemplate"
             >
-              <feather-icon icon="Edit2Icon" svgClasses="w-4 h-4"></feather-icon>
-              <span class="ml-2 karla">{{$t("edit")}}</span>
+              <feather-icon
+                icon="Edit2Icon"
+                svgClasses="w-4 h-4"
+              ></feather-icon>
+              <span class="ml-2 karla">{{ $t("edit") }}</span>
             </li>
             <li
               class="flex py-1 px-2 my-1 cursor-pointer hover:bg-primary hover:text-white"
               @click="duplicateTemplate"
             >
               <feather-icon icon="CopyIcon" svgClasses="w-4 h-4"></feather-icon>
-              <span class="ml-2 karla">{{$t("duplicate")}}</span>
+              <span class="ml-2 karla">{{ $t("duplicate") }}</span>
             </li>
 
             <li
               class="flex py-1 px-2 my-1 cursor-pointer hover:bg-primary hover:text-white"
               @click="deleteTemplate1"
             >
-              <feather-icon icon="Trash2Icon" svgClasses="w-4 h-4"></feather-icon>
-              <span class="ml-2 karla">{{$t("delete")}}</span>
+              <feather-icon
+                icon="Trash2Icon"
+                svgClasses="w-4 h-4"
+              ></feather-icon>
+              <span class="ml-2 karla">{{ $t("delete") }}</span>
             </li>
           </ul>
         </vs-dropdown-menu>
       </vs-dropdown>
       <feather-icon
-        :svgClasses="[{ 'text-primary fill-current': template.starred}]"
+        :svgClasses="[{ 'text-primary fill-current': template.starred }]"
         icon="BookmarkIcon"
         class="p-2"
-        :class="{'cursor-pointer': role<3}"
-        style="height:2.6rem;"
+        :class="{ 'cursor-pointer': role < 3 }"
+        style="height: 2.6rem"
         @click="stared"
       />
     </td>
@@ -215,24 +249,28 @@
             />
           </svg>
         </div>
-        <p
-          class="karla-bold text-2xl color-my-black text-center pt-base"
-        >{{$t("you are about to delete template")}}</p>
-        <p
-          class="karla-bold text-sm text-center mt-4"
-        >{{$t('this will delete your')}} &#10077;{{template.content.templateTitle}}&#10078; {{$t("template")}}</p>
-        <p class="karla-bold text-sm text-center">{{$t("are you sure to delete ?")}}</p>
+        <p class="karla-bold text-2xl color-my-black text-center pt-base">
+          {{ $t("you are about to delete template") }}
+        </p>
+        <p class="karla-bold text-sm text-center mt-4">
+          {{ $t("this will delete your") }} &#10077;{{
+            template.content.templateTitle
+          }}&#10078; {{ $t("template") }}
+        </p>
+        <p class="karla-bold text-sm text-center">
+          {{ $t("are you sure to delete ?") }}
+        </p>
         <div class="flex items-center justify-center mt-base">
           <vs-button class="ml-2" color="danger" @click="deleteTemplate">
-            <span class="karla">{{$t("yes, delete templete")}}</span>
+            <span class="karla">{{ $t("yes, delete templete") }}</span>
           </vs-button>
           <vs-button
-            @click="deletePrompt=false"
+            @click="deletePrompt = false"
             color="rgba(108, 80, 240, 0.1)"
             text-color="rgba(108, 80, 240)"
             class="kalar ml-2"
           >
-            <span class="karla">{{$t("cancel, keep templete")}}</span>
+            <span class="karla">{{ $t("cancel, keep templete") }}</span>
           </vs-button>
         </div>
       </div>
@@ -260,17 +298,15 @@ export default {
   },
   computed: {
     auth() {
-      return (sub,action) => {
-        let authList = this.$store.getters['app/auth']
+      return (sub, action) => {
+        let authList = this.$store.getters["app/auth"];
         var cUser = this.$store.getters["app/currentUser"];
-        if(cUser == undefined || cUser.role == undefined) return false
-        else if(cUser.role.key == 0) 
-          return true
-        else if(authList[sub][cUser.role.name.toLowerCase()][action])
-          return true
-        else 
-          return false
-      }
+        if (cUser == undefined || cUser.role == undefined) return false;
+        else if (cUser.role.key == 0) return true;
+        else if (authList[sub][cUser.role.name.toLowerCase()][action])
+          return true;
+        else return false;
+      };
     },
     role() {
       var cUser = this.$store.getters["app/currentUser"];
@@ -280,12 +316,14 @@ export default {
       return cUser.role.key;
     },
     locations() {
-      let locations = this.template.content.location === undefined ? [] : this.template.content.location;
+      let locations =
+        this.template.content.location === undefined
+          ? []
+          : this.template.content.location;
       var __locations = [];
       locations.map((item) => {
-        let location = this.$store.getters["app/getLocationById"](item)
-        if (location == undefined || location.deleted)
-          return;
+        let location = this.$store.getters["app/getLocationById"](item);
+        if (location == undefined || location.deleted) return;
         __locations.push(item);
       });
       return __locations;
@@ -302,7 +340,8 @@ export default {
           : this.template.content.templateLabel;
       var __tags = [];
       tags.map((item) => {
-        if (this.getTag(item) === undefined) return;
+        var tag = this.getTag(item);
+        if (tag === undefined || tag.group == "global") return;
         __tags.push(item);
       });
       return __tags;
@@ -314,23 +353,22 @@ export default {
     },
   },
   methods: {
-    roleError(sub , action) {
+    roleError(sub, action) {
       this.$vs.notify({
         time: 5000,
         title: "Authorization Error",
-        text:
-          `You don't have authorization to ${action} for ${sub}.\n Please contact with your super admin`,
+        text: `You don't have authorization to ${action} for ${sub}.\n Please contact with your super admin`,
         color: "danger",
         iconPack: "feather",
         icon: "icon-lock",
       });
     },
     deleteTemplate1() {
-      if(!this.auth('templates' , 'delete')) {
-        this.roleError('templates' , 'delete') 
-        return false
+      if (!this.auth("templates", "delete")) {
+        this.roleError("templates", "delete");
+        return false;
       }
-      this.deletePrompt=true
+      this.deletePrompt = true;
     },
     deleteTemplate() {
       this.deletePrompt = false;
@@ -352,9 +390,9 @@ export default {
     },
     acceptDelete() {},
     editTemplate() {
-      if(!this.auth('templates' , 'edit')) {
-        this.roleError('templates' , 'edit') 
-        return false
+      if (!this.auth("templates", "edit")) {
+        this.roleError("templates", "edit");
+        return false;
       }
       this.templateState = "update template";
       var pages = [];
@@ -398,7 +436,7 @@ export default {
       });
       let tempTemplate = {
         content: {
-          teams: this.template.content.teams || [] ,
+          teams: this.template.content.teams || [],
           location: this.template.content.location || [],
           templateTitle: this.template.content.templateTitle,
           templateComment: this.template.content.templateComment,
@@ -420,9 +458,9 @@ export default {
       });
     },
     duplicateTemplate() {
-      if(!this.auth('templates' , 'create')) {
-        this.roleError('templates' , 'create') 
-        return false
+      if (!this.auth("templates", "create")) {
+        this.roleError("templates", "create");
+        return false;
       }
       this.templateState = "duplicate template";
       var pages = [];
@@ -466,7 +504,7 @@ export default {
       });
       let tempTemplate = {
         content: {
-          teams: this.template.content.teams || [] ,
+          teams: this.template.content.teams || [],
           location: this.template.content.location,
           templateTitle: this.template.content.templateTitle,
           templateComment: this.template.content.templateComment,
@@ -483,9 +521,9 @@ export default {
       });
     },
     stared() {
-      if(!this.auth('templates' , 'edit')) {
-        this.roleError('templates' , 'edit') 
-        return false
+      if (!this.auth("templates", "edit")) {
+        this.roleError("templates", "edit");
+        return false;
       }
       var star = true;
       if (this.template.starred !== undefined) star = !this.template.starred;
