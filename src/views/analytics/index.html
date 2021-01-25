@@ -1,5 +1,5 @@
-<div id="analytics">
-    <div class="page-header sm:flex items-center justify-between mb-base">
+<div id="analytics" class="px-2">
+    <div class="page-header sm:flex items-center justify-between">
         <div class="flex items-end">
             <p class="karla-bold text-3xl" style="color:#1e1c26;">{{$t('analytics') | capitalize}}</p>
             <p class="karla text-lg mb-1 ml-2" style="color:#1e1c26;">({{dateFilterDisp}})</p>
@@ -13,6 +13,9 @@
             />
             <vs-button style="border-radius: 6px" @click="saveAnalyticsActive=true" :disabled="filters.template.length==0 && canSave">{{$t('save')}}</vs-button>
         </div>
+    </div>
+    <div class="video-launcher mb-base">
+      <a href="#" @click="howtoTemplate">{{ $t("Watch this video to see how it works") }}</a>
     </div>
     <b-tabs v-model="activeTab" @input="getData">
         <b-tab-item :label="$t('compliance')" class="compliance">

@@ -1,5 +1,5 @@
 <template>
-  <div id="company">
+  <div id="company" class="px-2">
     <template v-if="!auth('user and team settings' , 'view')">
       <no-auth />
     </template>
@@ -9,7 +9,7 @@
       >{{$t("company profile") | capitalize}}</p>
     </div>
     <div class="video-launcher">
-      
+      <a href="#" @click="howtoTemplate">{{ $t("Watch this video to see how it works") }}</a>      
     </div>
     <div class="vx-row items-grid-view match-height">
       <div class="vx-col md:w-1/2 w-full mt-4">
@@ -787,7 +787,6 @@ export default {
 .video-launcher {
   font-size: 10px;
   height: 12px;
-  width: 1px;
   color: #844CF5;
 }
 </style>

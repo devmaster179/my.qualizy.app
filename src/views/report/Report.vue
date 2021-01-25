@@ -37,7 +37,7 @@
         </div>
       </div>
       <div class="video-launcher">
-        <a href="#" @click="howtoTemplate">Watch this video to see how it works</a>
+        <a href="#" @click="howtoTemplate">{{ $t("Watch this video to see how it works") }}</a>
       </div>
       <div class="vx-row" :class="{ 'items-grid-view match-height': reports.length > 0 }">
         <div class="flex w-full mt-base" v-if="reports.length < 1">

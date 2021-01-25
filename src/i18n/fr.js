@@ -552,4 +552,5 @@ export default {
     "Friday": "Vendredi",
     "Saturday": "Samedi",
     "SunDay": "Dimanche",
+    "Watch this video to see how it works": "Watch this video to see how it works",
 }

@@ -270,6 +270,10 @@ export default {
         this.getAlerts();
     },
     methods: {
+        howtoTemplate(event) {
+          event.preventDefault();
+          this.$userflow.start('5421dfd9-a174-43fb-b0cc-9f23949404ee');
+        },
         updateAnalytics() {
             db.collection('analytics').doc(this.analytic.id).update({
                 locations: this.$store.getters['app/locationList'],

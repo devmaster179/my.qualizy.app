@@ -1,5 +1,5 @@
 <template>
-  <div id="knowldge">
+  <div id="knowldge" class="px-2">
     <template v-if="!auth('view')">
       <no-auth/>
     </template>
@@ -21,7 +21,7 @@
         </div>
       </div>
       <div class="video-launcher">
-        
+        <a href="#" @click="howtoTemplate">{{ $t("Watch this video to see how it works") }}</a>
       </div>
       <div class="page-content mt-base">
         <div class="vx-row items-grid-view match-height">
@@ -276,7 +276,6 @@ export default {
 .video-launcher {
   font-size: 10px;
   height: 12px;
-  width: 1px;
   color: #844CF5;
 }
 </style>
