@@ -313,6 +313,9 @@ export default {
       },
     };
   },
+  async mounted() {
+    await this.setTemplateImages();
+  },
   computed: {
     globalTags() {
       const locale = this.$i18n.locale || "en-gb";
@@ -529,6 +532,22 @@ export default {
       );
     },
     makeTemplate() {},
+    setTemplateImages() {
+      db.collection("template_images")
+        .where(
+          "created_by",
+          "==",
+          JSON.parse(localStorage.getItem("userInfo")).id
+        )
+        .onSnapshot((q) => {
+          let templateImages = [];
+          q.forEach((doc) => {
+            templateImages.push(Object.assign({}, doc.data(), { id: doc.id }));
+          });
+          console.log("templateImages: ", templateImages);
+          this.$store.dispatch("app/setTemplateImages", templateImages);
+        });
+    },
   },
 };
 </script>

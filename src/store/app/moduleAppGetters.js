@@ -72,6 +72,10 @@ export default {
     return state.templateTypes
   },
 
+  templateImages: state => {
+    return state.templateImages
+  },
+
   getTemplateTypeById: state => (id) => {
     return state.templateTypes.find(item => {
       return item.id == id

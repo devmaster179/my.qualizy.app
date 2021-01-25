@@ -50,10 +50,8 @@
               <div class="template-title flex items-start justify-between">
                 <div class="template-name-section flex items-start w-full">
                   <img
-                    :src="
-                      require(`@/assets/images/template_image/${template.content.templateImage}`)
-                    "
-                    style="width: 48px; height: 48px"
+                    :src="applyImage(template.content.templateImage)"
+                    style="width: 48px; height: 48px; border-radius: 50%"
                   />
                   <div class="ml-2 w-full">
                     <vs-input
@@ -217,6 +215,12 @@ export default {
   },
 
   methods: {
+    applyImage(image) {
+      if (image.indexOf("firebasestorage") > -1) {
+        return image;
+      }
+      return require(`@/assets/images/template_image/${image}`);
+    },
     trackEvents(id) {
       firebase.analytics().logEvent("Created a new template", {
         id: id,

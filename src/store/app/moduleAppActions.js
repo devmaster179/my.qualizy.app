@@ -14,6 +14,16 @@ export default {
   }, query) {
     commit('SET_TEMPLATE_TYPE', query)
   },
+  setTemplateImages({
+    commit
+  }, query) {
+    commit('SET_TEMPLATE_IMAGES', query)
+  },
+  addTemplateImage({
+    commit
+  }, query) {
+    commit('ADD_TEMPLATE_IMAGE', query)
+  },
   setTemplate({
     commit
   }, query) {

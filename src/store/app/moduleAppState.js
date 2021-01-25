@@ -7,6 +7,7 @@ export default {
   labels: [],
   labelsFiltered: [],
   templateTypes: [],
+  templateImages: [],
   templates: [],
   publicTemplates: [],
   publicTemplatesFiltered: [],

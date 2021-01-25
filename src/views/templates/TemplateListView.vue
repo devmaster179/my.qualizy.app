@@ -3,12 +3,11 @@
     <td>
       <div class="flex items-center">
         <img
-          :src="
-            require(`@/assets/images/template_image/${template.content.templateImage}`)
-          "
+          :src="applyImage(template.content.templateImage)"
           class="rouned-full mr-2"
           width="50"
           height="50"
+          style="border-radius: 50%"
         />
         <div>
           <p class="template-name karla-bold">
@@ -353,6 +352,12 @@ export default {
     },
   },
   methods: {
+    applyImage(image) {
+      if (image.indexOf("firebasestorage") > -1) {
+        return image;
+      }
+      return require(`@/assets/images/template_image/${image}`);
+    },
     roleError(sub, action) {
       this.$vs.notify({
         time: 5000,

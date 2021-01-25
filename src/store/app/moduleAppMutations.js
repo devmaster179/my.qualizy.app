@@ -35,6 +35,12 @@ export default {
   SET_TEMPLATE_TYPE(state, query) {
     state.templateTypes = query;
   },
+  SET_TEMPLATE_IMAGES(state, query) {
+    state.templateImages = query;
+  },
+  ADD_TEMPLATE_IMAGE(state, query) {
+    state.templateImages = [...state.templateImages, query];
+  },
   SET_TEMPLATE(state, query) {
     state.templates = query;
   },
