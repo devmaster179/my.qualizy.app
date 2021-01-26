@@ -493,59 +493,34 @@ export default {
     //     }
     // });
   },
-  getRepeatByTemplateTitle(title) {
-    var repeat = false;
-    var dailyTitles = [
-      "Fridge temperature logs",
-      "Freezer temperature logs",
-      "Opening checks",
-      "Closing checks",
-      "Daily Cleaning schedule",
-      "Dialy internal audit",
-      "Personal Hygiene",
-    ];
-    var weeklyTitles = [
-      "Weekly food safety checklist",
-      "Weekly internal audit",
-    ];
-    var monthlyTitles = ["Monthly internal audit", "Thermometer calibration"];
-    if (dailyTitles.indexOf(title) > -1) {
-      repeat = "Daily";
-    } else if (weeklyTitles.indexOf(title) > -1) {
-      repeat = "Weekly";
-    } else if (monthlyTitles.indexOf(title) > -1) {
-      repeat = "Monthly";
-    }
-
-    return repeat;
-  },
   registerUser({
     dispatch
   }, payload) {
     function getRepeatByTemplateTitle(title) {
       var repeat = false;
       var dailyTitles = [
-        "Fridge temperature logs",
-        "Freezer temperature logs",
-        "Opening checks",
-        "Closing checks",
-        "Daily Cleaning schedule",
-        "Dialy internal audit",
-        "Personal Hygiene",
+        "Fridge temperature log".toLowerCase(),
+        "Freezers temperature log".toLowerCase(),
+        "Opening checks".toLowerCase(),
+        "Closing checks".toLowerCase(),
+        "Daily Cleaning schedule".toLowerCase(),
+        "Daily internal audit".toLowerCase(),
+        "Personal Hygiene checks".toLowerCase(),
+        "Personal Hygiene".toLowerCase(),
       ];
       var weeklyTitles = [
-        "Weekly food safety checklist",
-        "Weekly internal audit",
+        "Weekly food safety checklist".toLowerCase(),
+        "Weekly internal audit".toLowerCase(),
       ];
-      var monthlyTitles = ["Monthly internal audit", "Thermometer calibration"];
-      if (dailyTitles.indexOf(title) > -1) {
+      var monthlyTitles = ["Monthly internal audit".toLowerCase(), "Thermometer calibration".toLowerCase(), "Thermometer calibration Record".toLowerCase()];
+      if (dailyTitles.indexOf(title.toLowerCase()) > -1) {
         repeat = "Daily";
-      } else if (weeklyTitles.indexOf(title) > -1) {
+      } else if (weeklyTitles.indexOf(title.toLowerCase()) > -1) {
         repeat = "Weekly";
-      } else if (monthlyTitles.indexOf(title) > -1) {
+      } else if (monthlyTitles.indexOf(title.toLowerCase()) > -1) {
         repeat = "Monthly";
       }
-
+      console.log('repeat compare title', title)
       return repeat;
     }
     // create user using firebase
@@ -580,18 +555,6 @@ export default {
 
         var company = payload.userDetails.company
         const createdDate = new Date()
-        db.collection('companies').doc(group).set({
-          logo: '',
-          bussiness: company,
-          address: 'Address',
-          phone: payload.userDetails.phone,
-          employee: payload.userDetails.employee,
-          industry: payload.userDetails.industry,
-          job: payload.userDetails.job,
-          trial: true,
-          created_at: createdDate,
-          updated_at: createdDate
-        })
 
         db.collection("locations").add({
           active: true,
@@ -691,6 +654,18 @@ export default {
               userIndustry = industryConfig[userIndustry][language]
             }
 
+            db.collection('companies').doc(group).set({
+              logo: '',
+              bussiness: company,
+              address: 'Address',
+              phone: payload.userDetails.phone,
+              employee: payload.userDetails.employee,
+              industry: userIndustry,
+              job: payload.userDetails.job,
+              trial: true,
+              created_at: createdDate,
+              updated_at: createdDate
+            })
 
             console.log('payload: ', payload)
             console.log('payload.userDetails.locationInfo: ', payload.userDetails.locationInfo)
@@ -735,12 +710,13 @@ export default {
                         {
                           starred: false,
                           trashed: false,
-                          created_by: result.user.id,
-                          updated_by: result.user.id,
+                          created_by: result.user.uid,
+                          updated_by: result.user.uid,
                           created_at: updated_at,
                           updated_at: updated_at,
-                          group: result.user.uid
+                          group: result.user.uid,
                         })
+                      temp.content.location = [res.id]
                       console.log('each before save', temp)
                       var docRef = db.collection("templates").doc(); //automatically generate unique id
                       tempBatch.set(docRef, temp);
@@ -795,15 +771,27 @@ export default {
                           selectedDays: [],
                           // interval: this.interval,
                           group: result.user.uid,
-                          created_by: result.user.id,
+                          created_by: result.user.uid,
                           created_at: new Date(),
-                          updated_by: result.user.id,
+                          updated_by: result.user.uid,
                           updated_at: new Date(),
                           active: true,
                         }
                         console.log('schedule created', newSchedule)
                         var scdRef = db.collection("schedules").doc(); //automatically generate unique id
                         scheduBatch.set(scdRef, newSchedule);
+
+                        db.collection("schedules")
+                          .where("group", "==", "global")
+                          .where("template", "==", nt.id)
+                          .get()
+                          .then((res) => {
+                            let schds = []
+                            res.forEach((doc) => {
+                              schds.push(doc.data)
+                            })
+                            console.log('template per schedule', schds)
+                          })
                       }
                       // END activating schedules
 
@@ -826,7 +814,7 @@ export default {
                         location: [res.id],
                         created_at: new Date(),
                         updated_at: new Date(),
-                        created_by: result.user.id,
+                        created_by: result.user.uid,
                         group: result.user.uid,
                       }
                       console.log('report created', newReport)
@@ -840,51 +828,50 @@ export default {
                   });
 
                 // BEGIN activating knowledge_bases
-
-                db.collection("knowledge").add({
-                  name: payload.userDetails.industry,
+                let newKng = {
+                  name: userIndustry,
                   type: "category",
                   image: "",
                   comment: '',
                   locations: [res.id],
                   group: result.user.uid,
-                  updated_by: result.user.id,
+                  updated_by: result.user.uid,
                   updated_at: new Date(),
-                })
-                  .then(function (docRef) {
-                    db.collection("knowledge")
-                      .where("type", "==", "article")
-                      .where("group", "==", "global")
-                      .where("tags", "array-contains-any", tags)
-                      .get()
-                      .then((q) => {
-                        let kngBatch = db.batch()
+                }
+                let kngCatBatch = db.batch()
+                var kngDocRef = db.collection("knowledge").doc(); //automatically generate unique id
+                kngCatBatch.set(kngDocRef, newKng);
+                kngCatBatch.commit();
 
-                        q.forEach((doc) => {
-                          if (doc.data().trashed) return;
+                db.collection("knowledge")
+                  .where("type", "==", "article")
+                  .where("group", "==", "global")
+                  .where("tags", "array-contains-any", tags)
+                  .get()
+                  .then((q) => {
+                    let kngAtcBatch = db.batch()
 
-                          let newKng = Object.assign({}, doc.data(), {
-                            category: docRef.id,
-                            group: result.user.uid,
-                            updated_by: result.user.id,
-                            updated_at: new Date(),
-                          });
+                    q.forEach((doc) => {
+                      if (doc.data().trashed) return;
 
-                          console.log('knowledge created', newKng)
-                          var articleRef = db.collection("knowledge").doc(); //automatically generate unique id
-                          kngBatch.set(articleRef, newKng);
-
-                          // db.collection("knowledge").add(newKng);
-                        });
-
-                        kngBatch.commit()
-                      })
-                      .catch(function (error) {
-                        console.error("Error adding knowledgebase article: ", error);
+                      let newKng = Object.assign({}, doc.data(), {
+                        category: kngDocRef.id,
+                        group: result.user.uid,
+                        updated_by: result.user.uid,
+                        updated_at: new Date(),
                       });
+
+                      console.log('knowledge created', newKng)
+                      var articleRef = db.collection("knowledge").doc(); //automatically generate unique id
+                      kngAtcBatch.set(articleRef, newKng);
+
+                      // db.collection("knowledge").add(newKng);
+                    });
+
+                    kngAtcBatch.commit()
                   })
                   .catch(function (error) {
-                    console.error("Error adding knowledgebase category: ", error);
+                    console.error("Error adding knowledgebase article: ", error);
                   });
 
               });

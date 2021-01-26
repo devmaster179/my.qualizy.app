@@ -106,10 +106,8 @@
               <div slot="no-body" class="pl-4 py-4 pr-3">
                 <div class="flex items-center">
                   <img
-                    :src="
-                      require(`@/assets/images/template_image/${pTemplate.content.templateImage}`)
-                    "
-                    style="width: 40px; height: 40px"
+                    :src="applyImage(pTemplate.content.templateImage)"
+                    style="width: 40px; height: 40px; border-radius: 50%"
                   />
                   <div>
                     <p class="karla-bold text-base color-my-black ml-3">
@@ -202,6 +200,12 @@ export default {
       });
   },
   methods: {
+    applyImage(image) {
+      if (image.indexOf("firebasestorage") > -1) {
+        return image;
+      }
+      return require(`@/assets/images/template_image/${image}`);
+    },
     cloneTemplate(template) {
       this.templateState = "duplicate template";
       var pages = [];

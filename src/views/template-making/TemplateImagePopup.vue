@@ -2,7 +2,7 @@
   <vs-popup
     classContent="popup-example"
     class="popup-image-upload"
-    title="Upload your own images"
+    :title="$t('Upload your own images')"
     :active.sync="activePrompt"
   >
     <VuePerfectScrollbar
@@ -21,7 +21,7 @@
     <vs-divider />
     <div class="flex items-center justify-end">
       <vs-button :disabled="activeUploading" @click="onUpload">{{
-        activeUploading ? "Uploading" : $t("Upload")
+        activeUploading ? $t("Uploading") : $t("Upload")
       }}</vs-button>
     </div>
   </vs-popup>

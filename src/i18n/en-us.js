@@ -556,4 +556,8 @@ export default {
     "Saturday": "Saturday",
     "SunDay": "Sunday",
     "Watch this video to see how it works": "Watch this video to see how it works",
+
+    "Upload your own images": "Upload your own images",
+    "Upload": "Upload",
+    "Uploading": "Uploading",
 }
