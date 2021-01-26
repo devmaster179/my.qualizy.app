@@ -1140,7 +1140,7 @@ export default {
                 answers.push({
                   ref: answer,
                   loged: false,
-                  value: 0,
+                  value: "",
                   time: "",
                   user: "",
                 });
