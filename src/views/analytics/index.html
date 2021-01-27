@@ -36,7 +36,7 @@
                 </b-tag>
                 <span class="cursor-pointer" @click="removeFlters">
                     <vs-icon icon-pack="fa" icon="fa-eraser" />
-                    Clean all
+                    {{ $t('clean_all') }}
                 </span>
             </div>
             <div class="row w-100 m-0 mb-5 justify-content-between sum">
@@ -48,7 +48,7 @@
                             </div>
                         </div>
                         <div class="col-8">
-                            <small class="text-muted">Failed / Non failed (Compliance rate)</small>
+                            <small class="text-muted">{{ $t('failed_non_failed') }}</small>
                             <h3 class="h3">{{ complianceRate }}</h3>
                         </div>
                     </div>
@@ -62,7 +62,7 @@
                             </div>
                         </div>
                         <div class="col-8">
-                            <small class="text-muted">Least performing location</small>
+                            <small class="text-muted">{{ $t('least_loc') }}</small>
                             <h3 class="h3">{{ leastPerformingLocation.name }}</h3>
                         </div>
                     </div>
@@ -75,7 +75,7 @@
                             </div>
                         </div>
                         <div class="col-8">
-                            <small class="text-muted">Least performing team</small>
+                            <small class="text-muted">{{ $t('least_team') }}</small>
                             <h3 class="h3">{{ leastPerformingTeam.name }}</h3>
                         </div>
                     </div>
@@ -95,13 +95,13 @@
                             />
                             <h3
                                     class="mt-base text-grey"
-                            >Select the options from right side bar to generate the analytics.</h3>
+                            >{{ $t('select_options') }}</h3>
                         </div>
                     </div>
                 </vx-card>
             </template>
             <div class="compliance-per-templates w-100 m-0 mb-5 bg-white p-5 br-8" v-if="compliancePerTemplates.length">
-                <p class="font-weight-bold">Compliance per templates</p>
+                <p class="font-weight-bold">{{ $t('compliance_per_templates') }}</p>
                 <b-table
                         :data="compliancePerTemplates"
                         icon-pack="fa"
@@ -131,7 +131,7 @@
 
             </div>
             <div class="compliance-per-locations w-100 m-0 bg-white p-5 br-8" v-if="compliancePerLocationsFiltered.length">
-                <p class="font-weight-bold mb-3">Compliance per locations</p>
+                <p class="font-weight-bold mb-3">{{ $t('compliance_per_locations') }}</p>
                 <b-table
                         :data="compliancePerLocationsFiltered"
                         icon-pack="fa"
@@ -154,11 +154,6 @@
                 </b-table>
             </div>
         </b-tab-item>
-
-<!--        <b-tab-item :label="$t('scoring')">-->
-
-<!--        </b-tab-item>-->
-
         <b-tab-item :label="$t('overdue tasks')" class="overdue-tasks">
             <div class="row m-0 mb-5">
                 <b-tag v-for="(filter, key) in filters"
@@ -180,7 +175,7 @@
                 </b-tag>
                 <span class="cursor-pointer" @click="removeFlters">
                     <vs-icon icon-pack="fa" icon="fa-eraser" />
-                    Clean all
+                    {{ $t('clean_all') }}
                 </span>
             </div>
             <div class="row w-100 m-0 mb-5 justify-content-between sum">
@@ -192,7 +187,7 @@
                             </div>
                         </div>
                         <div class="col-8">
-                            <small class="text-muted">Overdue tasks out of total</small>
+                            <small class="text-muted">{{ $t('overdue_tasks') }}</small>
                             <h3 class="h3">{{ (overdueTasks.length / allTasks * 100) + ' %'}}</h3>
                         </div>
                     </div>
@@ -205,7 +200,7 @@
                             </div>
                         </div>
                         <div class="col-8">
-                            <small class="text-muted">High overdue tasks per location</small>
+                            <small class="text-muted">{{ $t('high_overdue_tasks_loc') }}</small>
                             <h3 class="h3">{{ failureRateLocation }}</h3>
                         </div>
                     </div>
@@ -218,7 +213,7 @@
                             </div>
                         </div>
                         <div class="col-8">
-                            <small class="text-muted">Team with most overdue tasks</small>
+                            <small class="text-muted">{{ $t('high_overdue_tasks_team') }}</small>
                             <h3 class="h3">{{ failureTasksTeam }}</h3>
                         </div>
                     </div>
@@ -227,7 +222,7 @@
             <div class="row w-100 m-0 mb-5 justify-content-between">
                 <div class="col-md-6 pl-0">
                     <div class="h-100 bg-white m-0 p-5 br-8">
-                        <p class="font-weight-bold mb-4">Overdue tasks per location</p>
+                        <p class="font-weight-bold mb-4">{{ $t('overdue_tasks_per_loc') }}</p>
                         <div class="row h-100 w-100 m-0 align-items-center" v-if="pieChart1Options.labels.length">
                             <div class="col-7 pl-0">
                                 <div class="border-bottom d-flex justify-content-between p-2" v-for="(data, key) in pieChart1Options.quantities" :key="key" v-if="locations.includes(key)">
@@ -243,121 +238,35 @@
                             </div>
                         </div>
                         <div class="h-100 d-flex justify-content-center align-items-center mb-6" v-else>
-                            No Data
+                            {{ $t('no_data') }}
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6 pl-0">
                     <div class="h-100 bg-white m-0 p-5 br-8">
-                        <p class="font-weight-bold mb-4">Overdue tasks by time</p>
+                        <p class="font-weight-bold mb-4">{{ $t('overdue_tasks_by_time') }}</p>
                         <apexchart v-if="barChart1Options.series[0].data.length" :options="barChart1Options" :series="barChart1Options.series"></apexchart>
                         <div class="h-100 d-flex justify-content-center align-items-center mb-6" v-else>
-                            No Data
+                            {{ $t('no_data') }}
                         </div>
                     </div>
                 </div>
             </div>
             <div class="bg-white m-0 p-5 br-8 w-100 mb-5" style="max-height: 442px">
                 <div class="row m-0 justify-content-between align-items-center">
-                    <p class="font-weight-bold">Overdue tasks by locations</p>
-<!--                    <v-select-->
-<!--                            label="name"-->
-<!--                            :options="[{name: 'test1'},{name: 'test2'},{name: 'test3'}]"-->
-<!--                            :value="'test1'"-->
-<!--                    />-->
+                    <p class="font-weight-bold">{{ $t('overdue_tasks_by_loc') }}</p>
                 </div>
                 <apexchart v-if="activeTab === 1" height="90%" :options="barChart2Options" :series="barChart2Options.series"></apexchart>
             </div>
             <div class="bg-white m-0 p-5 br-8 w-100 mb-5" style="max-height: 442px">
                 <div class="row m-0 align-items-center">
-                    <p class="font-weight-bold mr-5">Overdue tasks by templates</p>
-<!--                    <div class="dropdown border" style="border-radius: 5px">-->
-<!--                        <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">-->
-<!--                            <vs-icon class="mr-2" icon-pack="feather" icon="icon-map-pin"></vs-icon>-->
-<!--                            Location-->
-<!--                            <span class="caret"></span>-->
-<!--                        </button>-->
-<!--                        <ul class="dropdown-menu">-->
-<!--                            <li class="dropdown-submenu">-->
-<!--                                <button class="sub-menu btn w-100 text-left d-flex align-items-center justify-content-between" tabindex="-1">-->
-<!--                                    Country-->
-<!--                                    <vs-icon class="float-right" icon-pack="feather" icon="icon-chevron-right" />-->
-<!--                                </button>-->
-<!--                                <ul class="dropdown-menu">-->
-<!--                                    <li>-->
-<!--                                        <vs-checkbox-->
-<!--                                                class="vs-checkbox-small karla"-->
-<!--                                        >asd</vs-checkbox>-->
-<!--                                    </li>-->
-<!--                                    <li>-->
-<!--                                        <vs-checkbox-->
-<!--                                                class="vs-checkbox-small karla"-->
-<!--                                        >das</vs-checkbox>-->
-<!--                                    </li>-->
-<!--                                </ul>-->
-<!--                            </li>-->
-<!--                            <li class="dropdown-submenu">-->
-<!--                                <button class="sub-menu btn w-100 text-left d-flex align-items-center justify-content-between" tabindex="-1">-->
-<!--                                    Area-->
-<!--                                    <vs-icon class="float-right" icon-pack="feather" icon="icon-chevron-right" />-->
-<!--                                </button>-->
-<!--                                <ul class="dropdown-menu">-->
-<!--                                    <li>-->
-<!--                                        <vs-checkbox-->
-<!--                                                class="vs-checkbox-small karla"-->
-<!--                                        >asd</vs-checkbox>-->
-<!--                                    </li>-->
-<!--                                    <li>-->
-<!--                                        <vs-checkbox-->
-<!--                                                class="vs-checkbox-small karla"-->
-<!--                                        >das</vs-checkbox>-->
-<!--                                    </li>-->
-<!--                                </ul>-->
-<!--                            </li>-->
-<!--                            <li class="dropdown-submenu">-->
-<!--                                <button class="sub-menu btn w-100 text-left d-flex align-items-center justify-content-between" tabindex="-1">-->
-<!--                                    Region-->
-<!--                                    <vs-icon class="float-right" icon-pack="feather" icon="icon-chevron-right" />-->
-<!--                                </button>-->
-<!--                                <ul class="dropdown-menu">-->
-<!--                                    <li>-->
-<!--                                        <vs-checkbox-->
-<!--                                                class="vs-checkbox-small karla"-->
-<!--                                        >asd</vs-checkbox>-->
-<!--                                    </li>-->
-<!--                                    <li>-->
-<!--                                        <vs-checkbox-->
-<!--                                                class="vs-checkbox-small karla"-->
-<!--                                        >das</vs-checkbox>-->
-<!--                                    </li>-->
-<!--                                </ul>-->
-<!--                            </li>-->
-<!--                            <li class="dropdown-submenu">-->
-<!--                                <button class="sub-menu btn w-100 text-left d-flex align-items-center justify-content-between" tabindex="-1">-->
-<!--                                    City-->
-<!--                                    <vs-icon class="float-right" icon-pack="feather" icon="icon-chevron-right" />-->
-<!--                                </button>-->
-<!--                                <ul class="dropdown-menu">-->
-<!--                                    <li>-->
-<!--                                        <vs-checkbox-->
-<!--                                                class="vs-checkbox-small karla"-->
-<!--                                        >asd</vs-checkbox>-->
-<!--                                    </li>-->
-<!--                                    <li>-->
-<!--                                        <vs-checkbox-->
-<!--                                                class="vs-checkbox-small karla"-->
-<!--                                        >das</vs-checkbox>-->
-<!--                                    </li>-->
-<!--                                </ul>-->
-<!--                            </li>-->
-<!--                        </ul>-->
-<!--                    </div>-->
+                    <p class="font-weight-bold mr-5">{{ $t('overdue_tasks_by_templates') }}</p>
                 </div>
                 <apexchart v-if="activeTab === 1" height="90%" :options="barChart3Options" :series="barChart3Options.series"></apexchart>
             </div>
             <div class="bg-white m-0 p-5 br-8 w-100 mb-5">
                 <div class="row m-0 mb-3 justify-content-between align-items-center">
-                    <p class="font-weight-bold mr-5">List of overdue tasks</p>
+                    <p class="font-weight-bold mr-5">{{ $t('overdue_tasks_list') }}</p>
                     <b-button type="is-primary is-light">
                         <vs-icon icon-pack="feather" icon="icon-download"></vs-icon>
                     </b-button>
@@ -387,9 +296,6 @@
                     <b-table-column field="status" label="Status" sortable v-slot="props">
                         {{ props.row.status }}
                     </b-table-column>
-<!--                    <b-table-column label="Preview task" v-slot="props">-->
-
-<!--                    </b-table-column>-->
                 </b-table>
             </div>
         </b-tab-item>
@@ -415,7 +321,7 @@
                 </b-tag>
                 <span class="cursor-pointer" @click="removeFlters">
                     <vs-icon icon-pack="fa" icon="fa-eraser" />
-                    Clean all
+                    {{ $t('clean_all') }}
                 </span>
             </div>
             <div class="row w-100 m-0 mb-5 justify-content-between sum">
@@ -427,7 +333,7 @@
                             </div>
                         </div>
                         <div class="col-8">
-                            <small class="text-muted">Failed / Non failed</small>
+                            <small class="text-muted">{{ $t('failed_non_failed') }}</small>
                             <h3 class="h3">{{ failedAnswersCompliance }}</h3>
                         </div>
                     </div>
@@ -441,7 +347,7 @@
                             </div>
                         </div>
                         <div class="col-8">
-                            <small class="text-muted">High failure answers location</small>
+                            <small class="text-muted">{{ $t('high_failure_answers_loc') }}</small>
                             <h3 class="h3">{{ failureAnswersLocation }}</h3>
                         </div>
                     </div>
@@ -454,7 +360,7 @@
                             </div>
                         </div>
                         <div class="col-8">
-                            <small class="text-muted">Least performing team</small>
+                            <small class="text-muted">{{ $t('least_performing_team') }}</small>
                             <h3 class="h3">{{ fat || 'N / A' }}</h3>
                         </div>
                     </div>
@@ -463,7 +369,7 @@
             <div class="row w-100 m-0 mb-5 justify-content-between">
                 <div class="col-md-6 pl-0">
                     <div class="h-100 bg-white m-0 p-5 br-8">
-                        <p class="font-weight-bold mb-4">Failed answers by location</p>
+                        <p class="font-weight-bold mb-4">{{ $t('failed_answers_by_loc') }}</p>
                         <div class="row h-100 w-100 m-0 align-items-center" v-if="pieChart2Options.labels.length">
                             <div class="col-7 pl-0">
                                 <div class="border-bottom d-flex justify-content-between p-2" v-for="(data, key) in pieChart2Options.quantities" :key="key" v-if="locations.includes(key)">
@@ -479,16 +385,16 @@
                             </div>
                         </div>
                         <div v-else class="h-100 d-flex justify-content-center align-items-center">
-                            No data
+                            {{ $t('no_data') }}
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6 pl-0">
                     <div class="h-100 bg-white m-0 p-5 br-8">
-                        <p class="font-weight-bold mb-4">Failed answers by time</p>
+                        <p class="font-weight-bold mb-4">{{ $t('failed_answers_by_time') }}</p>
                         <apexchart v-if="barChart4Options.series[0].data.length" :options="barChart4Options" :series="barChart4Options.series"></apexchart>
                         <div class="h-100 d-flex justify-content-center align-items-center mb-6" v-else>
-                            No Data
+                            {{ $t('no_data') }}
                         </div>
                     </div>
                 </div>
@@ -571,11 +477,9 @@
                 </b-tag>
                 <span class="cursor-pointer" @click="removeFlters">
                     <vs-icon icon-pack="fa" icon="fa-eraser" />
-                    Clean all
+                    {{ $t('clean_all') }}
                 </span>
             </div>
-<!--            <div class="mb-4" v-for="(template,index) in templates" :key="index">-->
-<!--            </div>-->
             <template v-if="templates.length==0">
                 <vx-card>
                     <div class="flex w-full mt-base">
@@ -590,48 +494,15 @@
                             />
                             <h3
                                     class="mt-base text-grey"
-                            >Select the options from right side bar to generate the analytics.</h3>
+                            >{{ $t('select_options') }}</h3>
                         </div>
                     </div>
                 </vx-card>
             </template>
             <div class="bg-white m-0 p-5 br-8 w-100 mb-5" style="max-height: 460px" v-else v-for="(template,index) in templates" :key="index">
-<!--                <div class="row m-0 justify-content-between align-items-center">-->
-<!--                    <p class="font-weight-bold">Temperature for [Template name - Fridge]</p>-->
-<!--                    <div class="d-flex align-items-center">-->
-<!--                        <v-select-->
-<!--                                label="name"-->
-<!--                                :options="[{name: 'Lvov'},{name: 'test2'},{name: 'test3'}]"-->
-<!--                                :value="'Lvov'"-->
-<!--                        />-->
-<!--                        <v-btn type="secondary">-->
-<!--                            <b-icon pack="fa" icon="fa-minus" />-->
-<!--                        </v-btn>-->
-<!--                        <v-btn type="secondary">-->
-<!--                            <b-icon pack="fa" icon="fa-plus" />-->
-<!--                        </v-btn>-->
-<!--                    </div>-->
-<!--                </div>-->
                 <TemperatureSection :template="template" :date="filters.date" />
             </div>
             <div class="bg-white m-0 p-5 br-8 w-100 mb-5" style="max-height: 460px">
-<!--                <div class="row m-0 justify-content-between align-items-center">-->
-<!--                    <p class="font-weight-bold">Temperature for [Template hot holding]</p>-->
-<!--                    <div class="d-flex align-items-center">-->
-<!--                        <v-select-->
-<!--                                label="name"-->
-<!--                                :options="[{name: 'Lvov'},{name: 'test2'},{name: 'test3'}]"-->
-<!--                                :value="'Lvov'"-->
-<!--                        />-->
-<!--                        <v-btn type="secondary">-->
-<!--                            <b-icon pack="fa" icon="fa-minus" />-->
-<!--                        </v-btn>-->
-<!--                        <v-btn type="secondary">-->
-<!--                            <b-icon pack="fa" icon="fa-plus" />-->
-<!--                        </v-btn>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--                <apexchart height="90%" v-if="activeTab === 4" :options="lineChart1Options" :series="lineChart1Series"></apexchart>-->
             </div>
         </b-tab-item>
 
@@ -656,7 +527,7 @@
                 </b-tag>
                 <span class="cursor-pointer" @click="removeFlters">
                     <vs-icon icon-pack="fa" icon="fa-eraser" />
-                    Clean all
+                    {{ $t('clean_all') }}
                 </span>
             </div>
             <div class="row w-100 m-0 mb-5 justify-content-between sum">
@@ -668,7 +539,7 @@
                             </div>
                         </div>
                         <div class="col-8">
-                            <small class="text-muted">Number of alerts received</small>
+                            <small class="text-muted">{{ $t('number_of_alerts') }}</small>
                             <h4 class="h4">{{ alertsFiltered.length }}</h4>
                         </div>
                     </div>
@@ -682,7 +553,7 @@
                             </div>
                         </div>
                         <div class="col-8">
-                            <small class="text-muted">Location with biggest number of alerts</small>
+                            <small class="text-muted">{{ $t('most_alerts_loc') }}</small>
                             <h4 class="h4">{{ biggestAlertsLocation }}</h4>
                         </div>
                     </div>
@@ -695,7 +566,7 @@
                             </div>
                         </div>
                         <div class="col-8">
-                            <small class="text-muted">Team with biggest number of alerts</small>
+                            <small class="text-muted">{{ $t('most_alerts_team') }}</small>
                             <h4 class="h4">{{ biggestAlertsTeam }}</h4>
                         </div>
                     </div>
@@ -703,7 +574,7 @@
             </div>
             <div class="bg-white m-0 p-5 br-8 w-100 mb-5">
                 <div class="row m-0 mb-4 justify-content-between align-items-center">
-                    <p class="font-weight-bold">Alerts Log</p>
+                    <p class="font-weight-bold">{{ $t('alerts_log') }}</p>
                     <b-button type="is-primary is-light">
                         <vs-icon icon-pack="feather" icon="icon-download"></vs-icon>
                     </b-button>
@@ -736,32 +607,6 @@
         </b-tab-item>
 
     </b-tabs>
-<!--    <div class="page-content">-->
-<!--        <template v-if="templates.length==0">-->
-<!--            <vx-card>-->
-<!--                <div class="flex w-full mt-base">-->
-<!--                    <div-->
-<!--                            class="vx-col flex items-center flex-col sm:w-1/2 md:w-3/5 lg:w-3/4 xl:w-1/2 mx-auto text-center sm:mt-base mt-0"-->
-<!--                            style="min-height:500px;"-->
-<!--                    >-->
-<!--                        <img-->
-<!--                                :src="require('../../assets/images/pages/report/empty-doc.svg')"-->
-<!--                                class="mx-auto mb-4 cursor-pointer"-->
-<!--                                @click="showFilter"-->
-<!--                        />-->
-<!--                        <h3-->
-<!--                                class="mt-base text-grey"-->
-<!--                        >Select the options from right side bar to generate the analytics.</h3>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </vx-card>-->
-<!--        </template>-->
-<!--        <template v-else>-->
-<!--            <div class="mb-4" v-for="(template,index) in templates" :key="index">-->
-<!--                <AnalyticsItem :template="template" :filters="filters" @chnOption="chnOption"/>-->
-<!--            </div>-->
-<!--        </template>-->
-<!--    </div>-->
     <analy-filter
             @chnFilter="chnFilter"
             :filters="filters"
@@ -786,7 +631,7 @@
                 </div>
                 <div class="vx-col w-full mb-4">
                     <label class="font-semibold">{{$t("name")}}</label>
-                    <vs-input v-model="analyticsName" class="w-full" placeholder="name" />
+                    <vs-input v-model="analyticsName" class="w-full" :placeholder="$t('name')" />
                 </div>
                 <div class="vx-col w-full">
                     <label class="font-semibold">{{$t("visible to")}}</label>
