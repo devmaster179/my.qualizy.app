@@ -30,7 +30,7 @@
           <div class="router-content" :class="{'mt-0': navbarType == 'hidden'}">
             <transition :name="routerTransition">
               <div
-                class="router-header flex flex-wrap items-center sm:mb-6"
+                class="router-header flex flex-wrap items-center"
                 v-if="$route.meta.breadcrumb || $route.meta.pageTitle"
               >
                 <div
@@ -46,7 +46,6 @@
                   v-if="$route.meta.breadcrumb"
                   :route="breadcrumb"
                 />
-
                 <!-- DROPDOWN -->
                 <!-- <vs-dropdown class="ml-auto md:block hidden cursor-pointer" vs-trigger-click>
                                 <vs-button radius icon="icon-settings" icon-pack="feather"></vs-button>
@@ -77,6 +76,12 @@
                 </vs-dropdown>-->
               </div>
             </transition>
+            <div 
+              class="video-launcher sm:mb-6"
+              v-if="$route.meta.breadcrumb || $route.meta.pageTitle"
+            >
+              <a href="#" @click="howtoTemplate">Watch this video to see how it works</a>
+            </div>
             <div class="content-area__content">
               <back-to-top bottom="5%" visibleoffset="500" v-if="!hideScrollToTop">
                 <vs-button icon-pack="feather" icon="icon-arrow-up" class="shadow-lg" />
@@ -193,6 +198,10 @@ export default {
     },
   },
   methods: {
+    howtoTemplate(event) {
+      event.preventDefault();
+      this.$userflow.start('2fad2cec-aba7-45ff-9ad1-6c9448700a24');
+    },
     deleteTrashedData() {
       // db.collection('fooditems').where('deleted', '==' ,true).get().then(q => {
       //   q.forEach(item=> {
@@ -840,6 +849,13 @@ export default {
   },
 };
 </script>
+<style scoped>
+.video-launcher {
+  font-size: 10px;
+  height: 12px;
+  color: #844CF5;
+}
+</style>
 <style>
 /* @media print{
         .no-print{
