@@ -559,7 +559,7 @@ export default {
     "delivery_schedule": 'Delivery Schedule',
     "create_schedule": 'Create custom schedule to receive regular reports via email.',
     "clean_all": 'Clean all',
-    "failed_non_failed": 'Failed / Non failed',
+    "failed_non_failed": "Failed / Non failed",
     "least_loc": 'Least performing location',
     "least_team": 'Least performing team',
     "select_options": 'Select the options from right side bar to generate the analytics.',
