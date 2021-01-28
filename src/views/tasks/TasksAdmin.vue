@@ -52,7 +52,7 @@
         </div>
       </div>
     </div>
-    <div class="video-launcher">
+    <div class="video-launcher" v-if="!this.isSidebarActive">
       <a href="#" @click="howtoTemplate">{{ $t("Watch this video to see how it works") }}</a>
     </div>
     <v-select
@@ -1140,7 +1140,7 @@ export default {
                 answers.push({
                   ref: answer,
                   loged: false,
-                  value: 0,
+                  value: "",
                   time: "",
                   user: "",
                 });
