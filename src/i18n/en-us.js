@@ -64,7 +64,7 @@ export default {
     "Tell us about your company so that we could customize your experience": "Tell us about your company so that we could customize your experience",
     "company name": "Company name",
     "type of company": "Type of company",
-    "Restaurant": "Restaurant",  // begin industry tag 
+    "Restaurant": "Restaurant",  // begin industry tag
     "Butchery": "Butchery",
     "Food production": "Food production",
     "Coffee": "Coffee",
@@ -73,7 +73,7 @@ export default {
     "Food retail": "Food retail",
     "Collectivity": "Collectivity",
     "Bakery": "Bakery",
-    "Other": "Other", // end industry tag 
+    "Other": "Other", // end industry tag
     "Number of employees": "Number of employees",
     "peoples": "Peoples",
     "more peoples": "more Peoples",
@@ -560,4 +560,12 @@ export default {
     "Upload your own images": "Upload your own images",
     "Upload": "Upload",
     "Uploading": "Uploading",
+
+    "company profile": "company profile",
+    "payments": "payments",
+    "locations": "locations",
+    "Billing Details": "Billing Details",
+    "Add billing details": "Add billing details",
+    "You reached the limit of free logs. Provide billing details to continue using the system.": "You reached the limit of free logs. Provide billing details to continue using the system.",
+    "Current logs usage per month": "Current logs usage per month",
 }

@@ -556,4 +556,17 @@ export default {
     "Saturday": "Saturday",
     "SunDay": "Sunday",
     "Watch this video to see how it works": "Watch this video to see how it works",
+
+
+    "Upload your own images": "Upload your own images",
+    "Upload": "Upload",
+    "Uploading": "Uploading",
+
+    "company profile": "company profile",
+    "payments": "payments",
+    "locations": "locations",
+    "Billing Details": "Billing Details",
+    "Add billing details": "Add billing details",
+    "You reached the limit of free logs. Provide billing details to continue using the system.": "You reached the limit of free logs. Provide billing details to continue using the system.",
+    "Current logs usage per month": "Current logs usage per month",
 }
