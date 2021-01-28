@@ -496,6 +496,7 @@ export default {
     "Friday": "Venerdì",
     "Saturday": "Sabato",
     "SunDay": "Domenica",
+    "Watch this video to see how it works": "Watch this video to see how it works",
     "Question Title": "Titre de Question",
     "reprots": "Rapporti",
     "save_as": 'Save as',

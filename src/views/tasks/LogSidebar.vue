@@ -1057,7 +1057,7 @@ export default {
     },
     chnValue(e, pIndex, qIndex, aIndex, type = "", action = false) {
       if (type == "temperature") e = Math.round(e.target.value * 100) / 100;
-      if (this.pages[pIndex].questions[qIndex].answers[aIndex].value == e)
+      if (this.pages[pIndex].questions[qIndex].answers[aIndex].value === e)
         return false;
 
       this.initState = false;

@@ -1,5 +1,5 @@
 <template>
-  <div id="templates">
+  <div id="templates" class="px-2">
     <template v-if="!auth('templates' , 'view')">
       <no-auth/>
     </template>
@@ -33,7 +33,7 @@
           </div>
         </div>
         <div class="video-launcher">
-          <a href="#" @click="howtoTemplate">Watch this video to see how it works</a>
+          <a href="#" @click="howtoTemplate">{{ $t("Watch this video to see how it works") }}</a>
         </div>
         <!-- <vs-input
         class="bg-white block md:hidden w-full my-2"
@@ -91,7 +91,7 @@
         <div class="page-header">
           <p class="page-title karla-bold">{{$t("templates")}}</p>
         </div>
-        <div class="page-content sm:mt-base mt-4 px-2">
+        <div class="page-content sm:mt-base mt-4">
           <vx-card>
             <div style="min-height: calc(100vh - 14rem);">
               <img

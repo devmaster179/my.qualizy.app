@@ -582,4 +582,5 @@ export default {
     "most_alerts_loc": 'Location with biggest number of alerts',
     "most_alerts_team": 'Team with biggest number of alerts',
     "alerts_log": 'Alerts log',
+    "Watch this video to see how it works": "Watch this video to see how it works",
 }
