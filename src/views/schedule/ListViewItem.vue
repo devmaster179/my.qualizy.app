@@ -1,6 +1,6 @@
 <template>
   <tr v-if="Object.keys(schedule).length>0">
-    <td>
+    <td class="td-schedule-title">
       <div class="flex items-center">
         <img
           :src="require(`@/assets/images/template_image/${template.content.templateImage}`)"
@@ -185,5 +185,8 @@ export default {
 <style scoped>
 .bg-clip {
   background: #ebebf1;
+}
+.td-schedule-title {
+  width: 65%;
 }
 </style>

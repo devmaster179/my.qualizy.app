@@ -1,6 +1,6 @@
 <template>
   <tr>
-    <td>
+    <td class="td-template-title">
       <div class="flex items-center">
         <img
           :src="require(`@/assets/images/template_image/${template.content.templateImage}`)"
@@ -500,6 +500,9 @@ export default {
 <style scoped>
 .bg-clip {
   background: #ebebf1;
+}
+.td-template-title {
+  width: 50%;
 }
 .template-name {
   font-size: 14px;
