@@ -34,7 +34,9 @@
                   <div>
                     <div class="log-count absolute left-0">0</div>
                     <div class="hight-bar invisible"></div>
-                    <div class="dollar-rate absolute left-0">Free</div>
+                    <div class="dollar-rate absolute left-0">
+                      {{ $t("Free") }}
+                    </div>
                   </div>
                   <div
                     v-for="item in logTrackInfos"
@@ -51,16 +53,18 @@
               </div>
               <div class="scroll-bar">
                 <div class="hight-bar">
-                  <span class="tooltiptext"><span>287 logs</span></span>
+                  <span class="tooltiptext"
+                    ><span>287 {{ $t("logs") }}</span></span
+                  >
                 </div>
               </div>
             </div>
           </div>
           <p class="current-log-text pt-5 pb-5">
             {{
-              $t(
-                "You need to log another 156 logs to reach a cheaper pricing plan."
-              )
+              $t("You need to log another ") +
+              156 +
+              $t("logs to reach a cheaper pricing plan. ")
             }}
             <vs-icon
               icon="error_outline"
@@ -69,15 +73,15 @@
             ></vs-icon>
           </p>
           <p class="text-2xl mb-5 mt-1">
-            Accrued amount to be paid this month:
-            <bold class="font-semibold">$16.78</bold>
+            {{ $t("Accrued amount to be paid this month:") }}
+            <span class="font-semibold">$16.78</span>
           </p>
         </div>
       </vx-card>
 
       <vx-card class="mt-6">
         <div class="" slot="no-body">
-          <div class="p-6">
+          <div class="p-6 inline-block w-10/12">
             <h4 class="font-semibold mt-2">
               {{
                 $t(
@@ -90,7 +94,7 @@
                 style="position: relative; top: 5px"
               ></vs-icon>
             </h4>
-            <p class="current-log-text pb-5">
+            <p class="current-log-text pb-5 pt-5">
               {{ $t("This referral program resets every month. ") }}
             </p>
             <vs-button
@@ -98,15 +102,182 @@
               color="#dedbf0"
               class="p-3 sm:px-5"
               type="filled"
-              >{{ $t("Invite another professional ") }}</vs-button
+              >+ {{ $t("Invite another professional ") }}</vs-button
             >
+          </div>
+          <div class="inline-block w-2/12 star-man-wrapper">
+            <img
+              class="w-full h-full"
+              :src="
+                require(`@/assets/images/pages/company/main-with-stars.png`)
+              "
+              alt="main-with-stars"
+            />
           </div>
         </div>
       </vx-card>
     </div>
+
     <div class="vx-col md:w-5/12 w-full mt-4">
       <vx-card>
-        <div class="sm:flex items-start">Hello</div>
+        <h4 class="font-semibold mt-2 mb-6">
+          {{ $t("Billing history") }}
+        </h4>
+
+        <div class="billing-history-table">
+          <vs-table
+            pagination
+            :maxItems="10"
+            :data="users"
+            hoverFlat
+            notSpacer
+            description
+            :description-items="[10]"
+            description-title="Entries"
+            description-connector="of"
+            description-body="Count"
+          >
+            <template slot="thead">
+              <vs-th sort-key="email"> Email </vs-th>
+              <vs-th sort-key="username"> Name </vs-th>
+              <vs-th sort-key="id"> Nro </vs-th>
+            </template>
+
+            <template slot-scope="{ data }">
+              <vs-tr :key="indextr" v-for="(tr, indextr) in data">
+                <vs-td :data="data[indextr].email">
+                  {{ data[indextr].email }}
+                </vs-td>
+
+                <vs-td :data="data[indextr].username">
+                  {{ data[indextr].username }}
+                </vs-td>
+
+                <vs-td :data="data[indextr].id">
+                  {{ data[indextr].id }}
+                </vs-td>
+              </vs-tr>
+            </template>
+          </vs-table>
+        </div>
+      </vx-card>
+    </div>
+
+    <div class="vx-col md:w-12/12 w-full mt-4 mb-20 block">
+      <vx-card>
+        <h4 class="font-semibold mt-2 mb-6">
+          {{
+            $t("Estimate how much you are currently saving by using Qualizy")
+          }}
+        </h4>
+        <div class="vx-row items-grid-view match-height">
+          <div class="vx-col md:w-7/12 w-full mt-4 block pl-0 pr-8">
+            <div class="slider-groups">
+              <div class="slider-group mb-10">
+                <p class="label">
+                  {{ $t("What is your average employee salary?") }}
+                  <vs-icon
+                    icon="error_outline"
+                    class="text-2xl"
+                    style="position: relative; top: 5px"
+                  ></vs-icon>
+                </p>
+                <div class="value-input mt-3">
+                  <vs-input
+                    size="default"
+                    type="number"
+                    v-model="dollarPerHour"
+                  />
+                  <span> {{ $t("an hour") }}</span>
+                </div>
+                <div class="value-slider">
+                  <vs-slider v-model="dollarPerHour" />
+                  <div class="hight-bar"></div>
+                  <div class="marks flex justify-between">
+                    <div>0</div>
+                    <div style="position: relative; left: 7px">50</div>
+                    <div>100</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="slider-group mb-10">
+                <p class="label">
+                  {{ $t("How many people do you have on your team?") }}
+                </p>
+                <div class="value-input mt-3">
+                  <vs-input size="default" type="number" v-model="employees" />
+                  <span> {{ $t("employees") }}</span>
+                </div>
+                <div class="value-slider">
+                  <vs-slider v-model="employees" />
+                  <div class="hight-bar"></div>
+                  <div class="marks flex justify-between">
+                    <div>0</div>
+                    <div style="position: relative; left: 5px">500</div>
+                    <div>100</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="slider-group mb-6">
+                <p class="label">
+                  {{ $t("How many fridges/freezers does your business have?") }}
+                </p>
+                <div class="value-input mt-3">
+                  <vs-input size="default" type="number" v-model="units" />
+                  <span> {{ $t("units") }}</span>
+                </div>
+                <div class="value-slider">
+                  <vs-slider v-model="units" />
+                  <div class="hight-bar"></div>
+                  <div class="marks flex justify-between">
+                    <div>0</div>
+                    <div style="position: relative; left: 7px">50</div>
+                    <div>100</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="vx-col md:w-5/12 w-full mt-4 block pl-8 pr-0">
+            <div class="dollar-infos">
+              <div class="info mb-8">
+                <p class="label">
+                  {{ $t("Your forecasted expenses using pen and paper") }}
+                  <vs-icon
+                    icon="error_outline"
+                    class="text-2xl"
+                    style="position: relative; top: 5px"
+                  ></vs-icon>
+                </p>
+                <h2 class="mt-2 font-bold">$ 2,098</h2>
+              </div>
+              <div class="info mb-8">
+                <p class="label">
+                  {{ $t("Expenses on Qualizy ") }}
+                </p>
+                <h2 class="mt-2 font-bold">$ 45</h2>
+              </div>
+              <div class="info mb-8">
+                <p class="label">
+                  {{ $t("Current saving") }}
+                </p>
+                <h1 class="text-4xl font-bold mt-2" style="color: #6c50f0">
+                  $ 2,053
+                </h1>
+              </div>
+            </div>
+
+            <p class="label">
+              This estimate is based on the informations you have provided and
+              an average time spent creating a record using Pen & Paper of 1:30
+              min per record and an average of 7 recording points per employees
+              per day (Temp logs, cleaning logs, delivery logs, food labelling
+              etc..)
+            </p>
+          </div>
+        </div>
       </vx-card>
     </div>
   </div>
@@ -117,6 +288,9 @@ import VxCard from "../../../components/vx-card/VxCard.vue";
 export default {
   data() {
     return {
+      dollarPerHour: 30,
+      employees: 34,
+      units: 60,
       logTrackInfos: [
         {
           width: 7,
@@ -152,6 +326,92 @@ export default {
           width: 32,
           logs: "260k",
           dolars: 0.0014,
+        },
+      ],
+      users: [
+        {
+          id: 1,
+          name: "Leanne Graham",
+          username: "Bret",
+          email: "Sincere@april.biz",
+          website: "hildegard.org",
+        },
+        {
+          id: 2,
+          name: "Ervin Howell",
+          username: "Antonette",
+          email: "Shanna@melissa.tv",
+          website: "anastasia.net",
+        },
+        {
+          id: 3,
+          name: "Clementine Bauch",
+          username: "Samantha",
+          email: "Nathan@yesenia.net",
+          website: "ramiro.info",
+        },
+        {
+          id: 4,
+          name: "Patricia Lebsack",
+          username: "Karianne",
+          email: "Julianne.OConner@kory.org",
+          website: "kale.biz",
+        },
+        {
+          id: 5,
+          name: "Chelsey Dietrich",
+          username: "Kamren",
+          email: "Lucio_Hettinger@annie.ca",
+          website: "demarco.info",
+        },
+        {
+          id: 6,
+          name: "Mrs. Dennis Schulist",
+          username: "Leopoldo_Corkery",
+          email: "Karley_Dach@jasper.info",
+          website: "ola.org",
+        },
+        {
+          id: 7,
+          name: "Kurtis Weissnat",
+          username: "Elwyn.Skiles",
+          email: "Telly.Hoeger@billy.biz",
+          website: "elvis.io",
+        },
+        {
+          id: 8,
+          name: "Nicholas Runolfsdottir V",
+          username: "Maxime_Nienow",
+          email: "Sherwood@rosamond.me",
+          website: "jacynthe.com",
+        },
+        {
+          id: 9,
+          name: "Glenna Reichert",
+          username: "Delphine",
+          email: "Chaim_McDermott@dana.io",
+          website: "conrad.com",
+        },
+        {
+          id: 10,
+          name: "Clementina DuBuque",
+          username: "Moriah.Stanton",
+          email: "Rey.Padberg@karina.biz",
+          website: "ambrose.net",
+        },
+        {
+          id: 10,
+          name: "Clementina DuBuque",
+          username: "Moriah.Stanton",
+          email: "Rey.Padberg@karina.biz",
+          website: "ambrose.net",
+        },
+        {
+          id: 10,
+          name: "Clementina DuBuque",
+          username: "Moriah.Stanton",
+          email: "Rey.Padberg@karina.biz",
+          website: "ambrose.net",
         },
       ],
     };
@@ -275,6 +535,109 @@ export default {
         border-width: 5px;
         border-style: solid;
         border-color: #555 transparent transparent transparent;
+      }
+    }
+  }
+}
+
+.star-man-wrapper {
+  position: absolute;
+  width: 19%;
+  height: 93%;
+  margin-left: -5%;
+  margin-top: 2%;
+}
+
+.billing-history-table {
+  .vs-table--content {
+    // border: 2px solid #f8f8f8;
+
+    .vs-con-tbody {
+      border: none;
+      table {
+        width: calc(100% - 1px);
+      }
+      .vs-table--tbody-table {
+        > thead {
+          border-bottom: 2px solid #f8f8f8;
+        }
+        > tr {
+          border-left: 2px solid #f8f8f8;
+          border-right: 2px solid #f8f8f8;
+          border-bottom: 1px solid #f8f8f8;
+
+          > td {
+            padding: 12px 10px;
+          }
+
+          &:last-child {
+            border-bottom: 2px solid #f8f8f8;
+          }
+        }
+      }
+    }
+  }
+  .con-pagination-table {
+    padding-left: 0;
+    padding-right: 0;
+    // margin-top: 20px;
+    .vs-row {
+      .vs-col {
+        padding-left: 0;
+        padding-right: 0;
+      }
+    }
+  }
+}
+
+.slider-groups {
+  .slider-group {
+    .label {
+    }
+    .value-input {
+      > .vs-input {
+        width: 80px;
+        display: inline-block;
+        margin-right: 10px;
+      }
+    }
+    .value-slider {
+      .con-vs-slider {
+        margin-bottom: 0;
+
+        .vs-slider--circle {
+          left: 26%;
+          border-radius: 0;
+          background: #7367f0;
+
+          &::after {
+            content: "=";
+            display: block;
+            transform: rotate(90deg);
+            color: white;
+            position: relative;
+            top: -4px;
+            left: -1px;
+            font-size: 17px;
+          }
+        }
+      }
+      .hight-bar {
+        background: #ebebf1;
+        position: relative;
+        margin-top: -8px;
+        width: 2px;
+        height: 12px;
+        border-radius: 1px;
+        left: 50%;
+        transform: translate(-50%);
+      }
+      .marks {
+        position: relative;
+
+        > div {
+          font-size: 12px;
+        }
       }
     }
   }

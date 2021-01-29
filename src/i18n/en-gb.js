@@ -569,4 +569,11 @@ export default {
     "Add billing details": "Add billing details",
     "You reached the limit of free logs. Provide billing details to continue using the system.": "You reached the limit of free logs. Provide billing details to continue using the system.",
     "Current logs usage per month": "Current logs usage per month",
+    "You need to log another 156 logs to reach a cheaper pricing plan.": "You need to log another 156 logs to reach a cheaper pricing plan.",
+    "You need to log another": "You need to log another",
+    "logs to reach a cheaper pricing plan.": "logs to reach a cheaper pricing plan.",
+    "Accrued amount to be paid this month:": "Accrued amount to be paid this month:",
+    "Free": "Free",
+    "logs": "logs",
+    "Billing history": "Billing history",
 }

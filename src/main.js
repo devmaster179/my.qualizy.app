@@ -19,6 +19,11 @@ import 'material-icons/iconfont/material-icons.css' //Material Icons
 import 'vuesax/dist/vuesax.css'; // Vuesax
 Vue.use(Vuesax)
 
+// Element UI
+// import ElementUI from 'element-ui';
+// import './assets/scss/element-ui-variables.scss';
+// Vue.use(ElementUI);
+
 // // axios
 import axios from 'axios'
 Vue.prototype.$http = axios

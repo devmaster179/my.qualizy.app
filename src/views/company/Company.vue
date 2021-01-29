@@ -1,11 +1,11 @@
 <template>
-  <!-- <div id="company" class="px-2">
+  <div id="company" class="px-2">
     <template v-if="!auth('user and team settings', 'view')">
       <no-auth />
     </template>
     <div class="page-header flex items-center justify-between">
       <div class="sm:flex">
-        <p class="page-title karla-bold text-2xl color-my-black m-2">
+        <p class="page-title karla-bold text-2xl color-my-black m-2 ml-4">
           {{ $t("company profile") | capitalize }}
         </p>
         <div class="switch-tab flex items-center sm:ml-12 mt-2 sm:mt-0">
@@ -26,7 +26,7 @@
         </div>
       </div>
     </div>
-    <div class="video-launcher">
+    <div class="video-launcher ml-4">
       <a href="#" @click="howtoTemplate">{{
         $t("Watch this video to see how it works")
       }}</a>
@@ -36,8 +36,7 @@
       <payment-tab v-if="tab == 'payments'" />
       <location-tab v-else-if="tab == 'locations'" />
     </div>
-  </div> -->
-  <location-tab />
+  </div>
 </template>
 
 <script>
