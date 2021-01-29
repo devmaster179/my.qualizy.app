@@ -759,16 +759,27 @@ export default {
                         var title = repeat
                           ? temp.content.templateTitle + "-" + repeat
                           : temp.content.templateTitle;
-
+                        let Ydays = ["Sunday", 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+                        let selectedDays = [];
+                        if (temp.selectedDays) {
+                          temp.selectedDays.map(day => {
+                            selectedDays.push({
+                              key: Ydays[day],
+                              value: day
+                            })
+                          })
+                        }
+                        let _repeat = temp._repeat ? temp._repeat : (repeat ? repeat : "No Repeat")
+                        let dueTimes = temp.dueTimes ? dueTimes : assignDates;
                         let newSchedule = {
                           location: [res.id],
                           title: title,
                           template: nt.id,
                           assign: teams,
                           monitor: mUser,
-                          _repeat: repeat ? repeat : "No Repeat",
-                          dueTimes: assignDates,
-                          selectedDays: [],
+                          _repeat: _repeat,
+                          dueTimes: dueTimes,
+                          selectedDays: selectedDays,
                           // interval: this.interval,
                           group: result.user.uid,
                           created_by: result.user.uid,
@@ -780,18 +791,6 @@ export default {
                         console.log('schedule created', newSchedule)
                         var scdRef = db.collection("schedules").doc(); //automatically generate unique id
                         scheduBatch.set(scdRef, newSchedule);
-
-                        db.collection("schedules")
-                          .where("group", "==", "global")
-                          .where("template", "==", nt.id)
-                          .get()
-                          .then((res) => {
-                            let schds = []
-                            res.forEach((doc) => {
-                              schds.push(doc.data)
-                            })
-                            console.log('template per schedule', schds)
-                          })
                       }
                       // END activating schedules
 
