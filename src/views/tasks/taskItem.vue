@@ -23,7 +23,7 @@
           />
           <div style="width: calc(100% - 4rem);">
             <p
-              class="karla-bold templateTitle truncate"
+              class="karla-bold templateTitle"
             >{{templateInfo(task.templateID).content.templateTitle}}</p>
             <template v-if="task.schedule">
               <vs-icon size="12px" icon-pack="feather" icon="icon-map-pin"></vs-icon>
