@@ -88,7 +88,7 @@ export default {
               time: 8000,
               title: "Success",
               text: `Reset password email have been sent !
-                               Pealse check your email.         
+                               Please check your mailbox.         
                         `,
               iconPack: "feather",
               icon: "icon-alert-circle",
