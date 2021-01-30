@@ -1,21 +1,21 @@
 export default {
-  SET_SENSOR_DATA(state,query) {
+  SET_SENSOR_DATA(state, query) {
     state.sensorDatas = query
   },
   SET_ANALYTICS(state, query) {
     state.analytics = query
   },
-  SET_REPORT_SCHEDULE(state,query) {
+  SET_REPORT_SCHEDULE(state, query) {
     state.report_schedule = query
   },
-  SET_AUTH(state ,query) {
+  SET_AUTH(state, query) {
     state.auth = query
   },
   CHN_AUTH(state, query) {
     const value = !state.auth[query.key][query.role][query.action]
     state.auth[query.key][query.role][query.action] = value
 
-    if(query.action == 'view' && !value) {
+    if (query.action == 'view' && !value) {
       state.auth[query.key][query.role].edit = false
       state.auth[query.key][query.role].create = false
       state.auth[query.key][query.role].delete = false
@@ -23,14 +23,23 @@ export default {
       state.auth[query.key][query.role].view = true
     }
   },
-  SET_IP_INFO(state , query) {
+  SET_IP_INFO(state, query) {
     state.ipInfo = query
   },
   SET_LABEL(state, query) {
     state.labels = query;
   },
+  SET_LABEL_FILTERED(state, query) {
+    state.labelsFiltered = query;
+  },
   SET_TEMPLATE_TYPE(state, query) {
     state.templateTypes = query;
+  },
+  SET_TEMPLATE_IMAGES(state, query) {
+    state.templateImages = query;
+  },
+  ADD_TEMPLATE_IMAGE(state, query) {
+    state.templateImages = [...state.templateImages, query];
   },
   SET_TEMPLATE(state, query) {
     state.templates = query;
@@ -53,9 +62,9 @@ export default {
   SET_LOGS(state, query) {
     state.logs = query
   },
-  UPDATE_LOG(state,query) {
+  UPDATE_LOG(state, query) {
     var index = state.logs.findIndex(item => item.id == query.id)
-    if(index>-1) {
+    if (index > -1) {
       state.logs[index] = query
     }
     else {
@@ -67,7 +76,7 @@ export default {
 
   },
   DELETE_LOG(state, query) {
-    state.logs = state.logs.filter(item=>item.id != query)
+    state.logs = state.logs.filter(item => item.id != query)
   },
   SET_ITEMS(state, query) {
     state.items = query
@@ -147,6 +156,9 @@ export default {
   SET_PUBLIC_TEMPLATES(state, query) {
     state.publicTemplates = query
   },
+  SET_PUBLIC_TEMPLATES_FILTERED(state, query) {
+    state.publicTemplatesFiltered = query
+  },
   SET_CHAT_FILE_UPLOADING(state, query) {
     state.chatFileUploading = {
       uploading: true,
@@ -201,7 +213,7 @@ export default {
   CHN_TEMPLATE_SD(state, query) {
     state.tempTemplate.content.templateSD = query
   },
-  CHN_TEMPLATE_TEAMS(state,query) {
+  CHN_TEMPLATE_TEAMS(state, query) {
     state.tempTemplate.content.teams = query
   },
   SET_TYPED_TEMPLATE_TYPE(state, query) {

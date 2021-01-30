@@ -13,7 +13,7 @@
     <VuePerfectScrollbar class="schedule-new-area p-4" :settings="settings">
       <div class="vx-row mb-base">
         <div class="vx-col w-full">
-          <p class="text-item">{{$t('select location')}}</p>
+          <p class="text-item">{{ $t("select location") }}</p>
           <multiselect
             v-model="location"
             :placeholder="$t('select location')"
@@ -26,13 +26,13 @@
 
       <div class="vx-row mb-base">
         <div class="vx-col w-full">
-          <p class="text-item">{{$t('Select template')}}</p>
+          <p class="text-item">{{ $t("Select template") }}</p>
           <multiselect
             v-model="template"
             :placeholder="$t('Select template')"
             label="title"
             track-by="id"
-            :disabled="location==null"
+            :disabled="location == null"
             :options="templates"
           />
         </div>
@@ -40,7 +40,7 @@
 
       <div class="vx-row mb-base">
         <div class="vx-col w-full">
-          <p class="text-item">{{$t('assignees') | capitalize}}</p>
+          <p class="text-item">{{ $t("assignees") | capitalize }}</p>
           <multiselect
             v-model="user"
             :placeholder="$t('select teams')"
@@ -48,13 +48,13 @@
             track-by="id"
             :options="users"
             :multiple="true"
-            :disabled="location==null"
+            :disabled="location == null"
           />
         </div>
       </div>
       <div class="vx-row mb-base">
         <div class="vx-col w-full">
-          <p class="text-item">{{$t('monitoring') | capitalize}}</p>
+          <p class="text-item">{{ $t("monitoring") | capitalize }}</p>
           <multiselect
             v-model="mUser"
             :placeholder="$t('select teams')"
@@ -62,13 +62,13 @@
             track-by="id"
             :options="users"
             :multiple="true"
-            :disabled="location==null"
+            :disabled="location == null"
           />
         </div>
       </div>
       <div class="vx-row mb-base">
         <div class="vx-col w-full">
-          <p class="text-item">{{$t('Schedule available from')}}</p>
+          <p class="text-item">{{ $t("Schedule available from") }}</p>
           <datepicker
             placeholder="Available from"
             v-model="aDate"
@@ -79,7 +79,7 @@
       </div>
       <div class="vx-row mb-base">
         <div class="vx-col w-full">
-          <p class="text-item">{{$t("frequency") | capitalize}}</p>
+          <p class="text-item">{{ $t("frequency") | capitalize }}</p>
           <multiselect
             :placeholder="$t('repeat rule')"
             :options="repeats"
@@ -88,15 +88,22 @@
           />
         </div>
       </div>
-      <div class="vx-row mb-base" v-if="repeat!='No Repeat'">
+      <div class="vx-row mb-base" v-if="repeat != 'No Repeat'">
         <div class="vx-col w-full">
-          <p class="text-item">{{$t("every")}} {{calcIntervalText}}</p>
-          <v-select :options="[1,2,3,4,5]" v-model="interval" class="w-full" />
+          <p class="text-item">{{ $t("every") }} {{ calcIntervalText }}</p>
+          <v-select
+            :options="[1, 2, 3, 4, 5]"
+            v-model="interval"
+            class="w-full"
+          />
         </div>
       </div>
-      <div class="vx-row mb-base" v-if="repeat!='No Repeat' && repeat!='Daily'">
-        <div class="vx-col w-full" v-if="repeat=='Weekly'">
-          <h6>{{$t("repeat days") | capitalize}}</h6>
+      <div
+        class="vx-row mb-base"
+        v-if="repeat != 'No Repeat' && repeat != 'Daily'"
+      >
+        <div class="vx-col w-full" v-if="repeat == 'Weekly'">
+          <h6>{{ $t("repeat days") | capitalize }}</h6>
           <multiselect
             :placeholder="$t('repeat days')"
             :options="week"
@@ -106,8 +113,8 @@
             :multiple="true"
           />
         </div>
-        <div class="vx-col w-full" v-else-if="repeat=='Monthly'">
-          <h6>{{$t("repeat days") | capitalize}}</h6>
+        <div class="vx-col w-full" v-else-if="repeat == 'Monthly'">
+          <h6>{{ $t("repeat days") | capitalize }}</h6>
           <multiselect
             :placeholder="$t('repeat days')"
             :options="days"
@@ -118,9 +125,13 @@
       </div>
       <div class="vx-row mb-base">
         <div class="vx-col w-full">
-          <h6>{{$t("due time") | capitalize}}</h6>
+          <h6>{{ $t("due time") | capitalize }}</h6>
           <!-- <flat-pickr class="w-full" v-for="(aTime,key) in aTimes" :key=key :value="aTime" :config="configdateTimePicker" placeholder="Available due" /> -->
-          <div class="flex justify-between mb-2" v-for="(aTime,key) in aTimes" :key="key">
+          <div
+            class="flex justify-between mb-2"
+            v-for="(aTime, key) in aTimes"
+            :key="key"
+          >
             <div class="hasClockIcon relative w-full">
               <flat-pickr
                 class="w-full"
@@ -129,7 +140,7 @@
                 placeholder="Available due"
               />
             </div>
-            <p class="flex items-center pl-4" v-if="aTimes.length>1">
+            <p class="flex items-center pl-4" v-if="aTimes.length > 1">
               <vs-icon
                 @click.native="removeTime(key)"
                 class="cursor-pointer hover:text-danger"
@@ -141,10 +152,9 @@
           </div>
         </div>
         <div class="vx-col w-full">
-          <h6
-            class="text-primary underline cursor-pointer"
-            @click="addATime"
-          >{{$t("add due time") | capitalize}}</h6>
+          <h6 class="text-primary underline cursor-pointer" @click="addATime">
+            {{ $t("add due time") | capitalize }}
+          </h6>
         </div>
       </div>
     </VuePerfectScrollbar>
@@ -225,7 +235,7 @@ export default {
       this.aTimes.push({ value: "08:00" });
     },
     clear() {
-      this.location = null
+      this.location = null;
       this.template = "";
       this.user = [];
       this.mUser = [];
@@ -255,12 +265,12 @@ export default {
       this.user.map((item) => {
         teams.push(item.id);
       });
-      var mUser = []
-      this.mUser.map(item=> {
-        mUser.push(item.id)
-      })
+      var mUser = [];
+      this.mUser.map((item) => {
+        mUser.push(item.id);
+      });
       var the = this;
-      console.log(this.template)
+      console.log(this.template);
       var title = this.template.title + " - " + this.$t(this.repeat);
 
       if (!this.update) {
@@ -296,14 +306,14 @@ export default {
             Title: title,
           });
 
-          this.$userflow.track("Create Schedule" , {
+          this.$userflow.track("Create Schedule", {
             Title: title,
-            group: JSON.parse(localStorage.getItem("userInfo")).group
-          })
-          window.gist.track("Create Schedule" , {
+            group: JSON.parse(localStorage.getItem("userInfo")).group,
+          });
+          window.gist.track("Create Schedule", {
             Title: title,
-            group: JSON.parse(localStorage.getItem("userInfo")).group
-          })
+            group: JSON.parse(localStorage.getItem("userInfo")).group,
+          });
         }, 1000);
       } else {
         db.collection("schedules")
@@ -340,7 +350,7 @@ export default {
   },
   watch: {
     location(val) {
-      this.teams = []
+      this.teams = [];
       // this.mUser = []
       // this.user = []
     },
@@ -359,11 +369,13 @@ export default {
         });
       }
       if (val && this.update) {
-        if(this.schedule.location == undefined) this.location = null
+        if (this.schedule.location == undefined) this.location = null;
         else {
-          var location = this.$store.getters['app/getLocationById'](this.schedule.location[0]) 
-          if(location == undefined || location.deleted) this.location = null
-          else this.location = location
+          var location = this.$store.getters["app/getLocationById"](
+            this.schedule.location[0]
+          );
+          if (location == undefined || location.deleted) this.location = null;
+          else this.location = location;
         }
         this.template = this.templates.find((item) => {
           return item.id == this.schedule.template;
@@ -396,26 +408,34 @@ export default {
   },
   computed: {
     locations() {
-      var locations = this.$store.getters["app/locationList"]
-      var filterLocations = []
-      var locations1 = this.$store.getters['app/locations']
-      let cUser = this.$store.getters['app/currentUser']
+      var locations = this.$store.getters["app/locationList"];
+      var filterLocations = [];
+      var locations1 = this.$store.getters["app/locations"];
+      let cUser = this.$store.getters["app/currentUser"];
 
-      if(locations.length == 0) {
-        if(cUser.role == undefined || cUser.role.key == undefined || cUser.role.key>0) {
-          if(cUser.location !== undefined && Array.isArray(cUser.location) && cUser.location.length>0) {
-            filterLocations = cUser.location
+      if (locations.length == 0) {
+        if (
+          cUser.role == undefined ||
+          cUser.role.key == undefined ||
+          cUser.role.key > 0
+        ) {
+          if (
+            cUser.location !== undefined &&
+            Array.isArray(cUser.location) &&
+            cUser.location.length > 0
+          ) {
+            filterLocations = cUser.location;
           } else {
-            filterLocations = ['no']
+            filterLocations = ["no"];
           }
         }
+      } else filterLocations = locations;
+      if (filterLocations.length == 0) {
+        return locations1.filter(
+          (item) => item.deleted == undefined || !item.deleted
+        );
       }
-      else
-        filterLocations = locations
-      if(filterLocations.length == 0 ) {
-        return locations1.filter(item=> item.deleted == undefined || !item.deleted)
-      }
-      return locations1.filter(item=> filterLocations.indexOf(item.id)>-1)
+      return locations1.filter((item) => filterLocations.indexOf(item.id) > -1);
     },
     calcIntervalText() {
       var txt = "";
@@ -475,40 +495,42 @@ export default {
       ];
     },
     users() {
-      var location = this.location == null ? "" : this.location.id
-      var teams = this.$store.getters['app/teams']
-      return teams = teams.filter(team=> {
-        if(team.active != undefined && !team.active) return false
-          var users = this.$store.getters['app/getUsersByTeam'](team.id)
-          var teamLocation = []
-          users.map(user=> {
-            if(user.location !== undefined && Array.isArray(user.location)) {
-              user.location.map(ul=> {
-                if(teamLocation.indexOf(ul)<0)
-                  teamLocation.push(ul)
-              })
-            }
-          })
-          if(teamLocation.indexOf(location)<0) return false
-          return true
-      })
+      var location = this.location == null ? "" : this.location.id;
+      var teams = this.$store.getters["app/teams"];
+      return (teams = teams.filter((team) => {
+        if (team.active != undefined && !team.active) return false;
+        var users = this.$store.getters["app/getUsersByTeam"](team.id);
+        var teamLocation = [];
+        users.map((user) => {
+          if (user.location !== undefined && Array.isArray(user.location)) {
+            user.location.map((ul) => {
+              if (teamLocation.indexOf(ul) < 0) teamLocation.push(ul);
+            });
+          }
+        });
+        if (teamLocation.indexOf(location) < 0) return false;
+        return true;
+      }));
     },
     templates() {
-      if(this.location == null || this.location.id == undefined) return []
-      let filterLocations = []
+      if (this.location == null || this.location.id == undefined) return [];
+      let filterLocations = [];
       // this.$store.getters["app/locationList"]
-      let templates = this.$store.getters["app/template"].filter(template=> {
-        if(template.trashed !== undefined && template.trashed) return false
-        if(template.content.location!=undefined && Array.isArray(template.content.location) && template.content.location.length>0 &&  template.content.location.indexOf(this.location.id) < 0) return false
-        return true
+      let templates = this.$store.getters["app/template"].filter((template) => {
+        if (template.trashed !== undefined && template.trashed) return false;
+        if (
+          template.content.location != undefined &&
+          Array.isArray(template.content.location) &&
+          template.content.location.length > 0 &&
+          template.content.location.indexOf(this.location.id) < 0
+        )
+          return false;
+        return true;
       });
 
       var __templates = [];
       templates.map((template) => {
-        if (
-          template.content.templateSD != "schedule this template"
-        )
-          return;
+        if (template.content.templateSD != "schedule this template") return;
         __templates.push({
           id: template.id,
           title: template.content.templateTitle,

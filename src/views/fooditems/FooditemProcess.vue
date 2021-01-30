@@ -11,7 +11,11 @@
   >
     <div class="mt-6 flex items-center justify-between px-6">
       <h4>{{ $t("add task") }}</h4>
-      <feather-icon icon="XIcon" @click.stop="isSidebarActiveLocal = false" class="cursor-pointer"></feather-icon>
+      <feather-icon
+        icon="XIcon"
+        @click.stop="isSidebarActiveLocal = false"
+        class="cursor-pointer"
+      ></feather-icon>
     </div>
     <vs-divider class="mb-0"></vs-divider>
     <div class="unschedule-container p-4">
@@ -23,7 +27,10 @@
         v-model="searchTitle"
         class="is-label-placeholder w-full"
       />
-      <VuePerfectScrollbar class="scroll-area--log-filter pt-4 pb-6" :settings="settings">
+      <VuePerfectScrollbar
+        class="scroll-area--log-filter pt-4 pb-6"
+        :settings="settings"
+      >
         <div
           v-for="(template, index) in unshceduledTemplates"
           :key="index"
@@ -34,14 +41,20 @@
           <div class="flex items-center">
             <vs-avatar
               size="40px"
-              :src="
-                require(`../../assets/images/template_image/${template.content.templateImage}`)
-              "
+              :src="applyImage(template.content.templateImage)"
             />
             <div>
-              <p class="karla-bold templateTitle">{{ template.content.templateTitle }}</p>
-              <vs-icon size="12px" icon-pack="feather" icon="icon-map-pin"></vs-icon>
-              <span class="karla locationText pl-1">{{ templateLocation(template) }}</span>
+              <p class="karla-bold templateTitle">
+                {{ template.content.templateTitle }}
+              </p>
+              <vs-icon
+                size="12px"
+                icon-pack="feather"
+                icon="icon-map-pin"
+              ></vs-icon>
+              <span class="karla locationText pl-1">{{
+                templateLocation(template)
+              }}</span>
             </div>
           </div>
         </div>
@@ -54,14 +67,15 @@
           color="rgba(108, 80, 240, 0.1)"
           @click="isSidebarActiveLocal = false"
           text-color="#6c50f0"
-        >{{$t("cancel") | capitalize}}</vs-button>
+          >{{ $t("cancel") | capitalize }}</vs-button
+        >
         <vs-button
           class="karla"
           color="#6c50f0"
           :disabled="selectedID == ''"
           @click="assginTemplate"
-            
-        >{{ $t("add task") }}</vs-button>
+          >{{ $t("add task") }}</vs-button
+        >
       </div>
     </div>
   </vs-sidebar>
@@ -71,13 +85,13 @@
 import VuePerfectScrollbar from "vue-perfect-scrollbar";
 export default {
   components: {
-    VuePerfectScrollbar
+    VuePerfectScrollbar,
   },
   props: {
     open: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   data() {
     return {
@@ -85,8 +99,8 @@ export default {
       searchTitle: "",
       settings: {
         maxScrollbarLength: 60,
-        wheelSpeed: 0.6
-      }
+        wheelSpeed: 0.6,
+      },
     };
   },
   watch: {
@@ -95,17 +109,23 @@ export default {
         this.searchTitle = "";
         this.selectedID = "";
       }
-    }
+    },
   },
   methods: {
     assginTemplate() {
-      this.$emit('assginTemplate', { templateID: this.selectedID }, true)
-      this.isSidebarActiveLocal = false
-    }
+      this.$emit("assginTemplate", { templateID: this.selectedID }, true);
+      this.isSidebarActiveLocal = false;
+    },
+    applyImage(image) {
+      if (image.indexOf("firebasestorage") > -1) {
+        return image;
+      }
+      return require(`@/assets/images/template_image/${image}`);
+    },
   },
   computed: {
     templateLocation() {
-      return template => {
+      return (template) => {
         if (
           template == undefined ||
           template.content.location === undefined ||
@@ -124,7 +144,7 @@ export default {
     unshceduledTemplates() {
       var templates = this.$store.getters["app/getBookedTemplate"];
 
-      templates = templates.filter(item => {
+      templates = templates.filter((item) => {
         if (
           (item.trashed === undefined || !item.trashed) &&
           item.content.templateTitle
@@ -133,9 +153,9 @@ export default {
         ) {
           var templateType;
           var res = false;
-          item.content.pages.map(page => {
-            page.questions.map(question => {
-              question.answers.map(answer => {
+          item.content.pages.map((page) => {
+            page.questions.map((question) => {
+              question.answers.map((answer) => {
                 templateType = this.$store.getters["app/getTemplateTypeById"](
                   answer.type.id
                 );
@@ -150,13 +170,14 @@ export default {
           return res;
         } else return false;
       });
-      return templates.filter(template => {
-        let filteredLocations = this.$store.getters["app/locationList"]
-        if(filteredLocations.length > 0) 
-          return template.content.location.some(item=> filteredLocations.includes(item))
-        else 
-          return true
-      })
+      return templates.filter((template) => {
+        let filteredLocations = this.$store.getters["app/locationList"];
+        if (filteredLocations.length > 0)
+          return template.content.location.some((item) =>
+            filteredLocations.includes(item)
+          );
+        else return true;
+      });
     },
     isSidebarActiveLocal: {
       get() {
@@ -164,9 +185,9 @@ export default {
       },
       set(val) {
         this.$emit("close");
-      }
-    }
-  }
+      },
+    },
+  },
 };
 </script>
 <style scoped>
