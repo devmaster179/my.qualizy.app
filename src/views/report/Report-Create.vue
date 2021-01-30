@@ -152,20 +152,20 @@
     <!-- :is-valid="!this.errors.any() && this.userName != ''" -->
     <vs-prompt
       :is-valid="reportTitle!=''"
-      :title="$t('New Report')"
-      :accept-text="$t('save') | capitalize"
+      :title="$t('save_as')"
       :cancel-text="$t('cancel') | capitalize"
+      :accept-text="$t('save') | capitalize"
       @accept="saveReport"
       :active.sync="activeSave"
     >
       <div class="vx-row">
         <div class="vx-coll w-full mb-4">
-          <label class="font-semibold">{{$t("report title")}}</label>
-          <vs-input v-model="reportTitle" class="w-full" placeholder="Report Title" />
+          <label class="font-semibold">{{ $t('report_name') }}</label>
+          <vs-input v-model="reportTitle" class="w-full" :placeholder="$t('report_name')" />
         </div>
         <div class="vx-coll w-full mb-4">
           <label class="font-semibold">{{$t("descriptions")}}</label>
-          <vs-textarea v-model="description" />
+          <vs-textarea v-model="description" :placeholder="$t('label')" />
         </div>
         <div class="vx-coll w-full">
           <label class="font-semibold">{{$t("visible to")}}</label>
@@ -562,9 +562,9 @@ export default {
     },
     visibles() {
       return [
-        { text: this.$t("Just me"), key: "Just me" },
-        { key: "Public", text: this.$t("public") },
         { key: "Teams", text: this.$t("teams") },
+        { key: "Just me", text: this.$t("me")},
+        { key: "Public", text: this.$t("public") },
       ];
     },
   },
