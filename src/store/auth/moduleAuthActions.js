@@ -770,7 +770,7 @@ export default {
                           })
                         }
                         let _repeat = temp._repeat ? temp._repeat : (repeat ? repeat : "No Repeat")
-                        let dueTimes = temp.dueTimes ? dueTimes : assignDates;
+                        let dueTimes = temp.dueTimes ? temp.dueTimes : assignDates;
                         let newSchedule = {
                           location: [res.id],
                           title: title,
@@ -788,7 +788,7 @@ export default {
                           updated_at: new Date(),
                           active: true,
                         }
-                        console.log('schedule created', newSchedule)
+                        console.log('schedule created', newSchedule, temp)
                         var scdRef = db.collection("schedules").doc(); //automatically generate unique id
                         scheduBatch.set(scdRef, newSchedule);
                       }

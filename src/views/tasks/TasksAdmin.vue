@@ -1,11 +1,15 @@
 <template>
   <div id="tasks" class="px-2">
-    <div class="flex justify-between" v-if="!isSidebarActive && !logDetailsActive ">
+    <div
+      class="flex justify-between"
+      v-if="!isSidebarActive && !logDetailsActive"
+    >
       <div class="flex items-end">
-        <p class="karla-bold page-title">{{$t("tasks")}}</p>
-        <p
-          class="karla page-subtitle ml-2 mb-1 hidden lg:block"
-        >({{tasks('task').length}} {{$t("tasks for")}} {{cationDate}} {{new Date()|moment("DD.MMM.YYYY")}})</p>
+        <p class="karla-bold page-title">{{ $t("tasks") }}</p>
+        <p class="karla page-subtitle ml-2 mb-1 hidden lg:block">
+          ({{ tasks("task").length }} {{ $t("tasks for") }} {{ cationDate }}
+          {{ new Date() | moment("DD.MMM.YYYY") }})
+        </p>
       </div>
       <div class="flex justify-end">
         <vs-input
@@ -21,15 +25,15 @@
           label="text"
           v-model="range"
           class="bg-white ml-2 hidden sm:block"
-          style="min-width:160px;"
+          style="min-width: 160px"
         />
         <div class="flex justify-end items-center">
           <feather-icon
-            @click="filterActive=true"
+            @click="filterActive = true"
             icon="FilterIcon"
             class="ml-2 rounded-lg d-theme-dark-bg cursor-pointer"
-            :class="{'text-primary':filterActive}"
-            style="height:40px; width:40px; padding:0.8rem;"
+            :class="{ 'text-primary': filterActive }"
+            style="height: 40px; width: 40px; padding: 0.8rem"
           />
           <vs-button
             @click="activeSchedule = true"
@@ -37,33 +41,39 @@
             color="#dedbf0"
             class="karla-bold ml-2 p-3 sm:px-5"
             type="filled"
-          >{{$t("schedule")}}</vs-button>
+            >{{ $t("schedule") }}</vs-button
+          >
           <vs-button
             class="ml-2 p-3 sm:px-5"
             color="#6c50f0"
             type="filled"
-            @click="unscheduleActive=true"
+            @click="unscheduleActive = true"
           >
             <div class="flex items-center">
               <vs-icon icon-pack="feather" class="mr-1" icon="icon-plus" />
-              <span class="karla">{{$t('add task')}}</span>
+              <span class="karla">{{ $t("add task") }}</span>
             </div>
           </vs-button>
         </div>
       </div>
     </div>
     <div class="video-launcher" v-if="!this.isSidebarActive">
-      <a href="#" @click="howtoTemplate">{{ $t("Watch this video to see how it works") }}</a>
+      <a href="#" @click="howtoTemplate">{{
+        $t("Watch this video to see how it works")
+      }}</a>
     </div>
     <v-select
-       v-if="!isSidebarActive"
+      v-if="!isSidebarActive"
       :options="ranges"
       label="text"
       v-model="range"
       class="bg-white mt-2 block sm:hidden"
-      style="min-width:160px;"
+      style="min-width: 160px"
     />
-    <swiper :options="swiperOption" v-if="!isSidebarActive && !logDetailsActive">
+    <swiper
+      :options="swiperOption"
+      v-if="!isSidebarActive && !logDetailsActive"
+    >
       <swiper-slide>
         <div class="mt-4">
           <div class="pr4">
@@ -74,18 +84,30 @@
                     <feather-icon
                       icon="ClipboardIcon"
                       class="text-black inline-flex rounded-full"
-                      style="background: rgba(30,28,38,.1); width:24px;height:24px; padding:5px;"
+                      style="
+                        background: rgba(30, 28, 38, 0.1);
+                        width: 24px;
+                        height: 24px;
+                        padding: 5px;
+                      "
                     ></feather-icon>
-                    <span class="karla-bold task-group-text ml-2">{{$t("scheduled") | capitalize}}</span>
+                    <span class="karla-bold task-group-text ml-2">{{
+                      $t("scheduled") | capitalize
+                    }}</span>
                   </div>
-                  <p class="karla-bold task-group-text">{{tasks('task').length}}</p>
+                  <p class="karla-bold task-group-text">
+                    {{ tasks("task").length }}
+                  </p>
                 </div>
               </div>
             </vx-card>
           </div>
-          <VuePerfectScrollbar :settings="settings" class="scroll-area-task pr4 mt-3">
+          <VuePerfectScrollbar
+            :settings="settings"
+            class="scroll-area-task pr4 mt-3"
+          >
             <task-item
-              v-for="(task,index) in tasks('task')"
+              v-for="(task, index) in tasks('task')"
               :task="task"
               :key="index"
               @click.native="assign(task)"
@@ -103,22 +125,34 @@
                     <feather-icon
                       icon="BriefcaseIcon"
                       class="text-warning inline-flex rounded-full"
-                      style="background: rgba(var(--vs-warning),.1); width:24px;height:24px;padding:5px;"
+                      style="
+                        background: rgba(var(--vs-warning), 0.1);
+                        width: 24px;
+                        height: 24px;
+                        padding: 5px;
+                      "
                     ></feather-icon>
-                    <p class="karla-bold task-group-text ml-2">{{$t("unscheduled")}}</p>
+                    <p class="karla-bold task-group-text ml-2">
+                      {{ $t("unscheduled") }}
+                    </p>
                   </div>
-                  <p class="karla-bold task-group-text">{{unshceduledTemplates.length}}</p>
+                  <p class="karla-bold task-group-text">
+                    {{ unshceduledTemplates.length }}
+                  </p>
                 </div>
               </div>
             </vx-card>
           </div>
-          <VuePerfectScrollbar :settings="settings" class="scroll-area-task pr4 mt-3">
+          <VuePerfectScrollbar
+            :settings="settings"
+            class="scroll-area-task pr4 mt-3"
+          >
             <task-item
               pinned
-              v-for="(task,index) in unshceduledTemplates"
+              v-for="(task, index) in unshceduledTemplates"
               :task="task"
               :key="index"
-              @click.native="assign(task,true)"
+              @click.native="assign(task, true)"
             ></task-item>
           </VuePerfectScrollbar>
         </div>
@@ -133,19 +167,31 @@
                     <feather-icon
                       icon="ClockIcon"
                       class="text-primary inline-flex rounded-full"
-                      style="background: rgba(var(--vs-primary),.1); width:24px;height:24px;padding:5px;"
+                      style="
+                        background: rgba(var(--vs-primary), 0.1);
+                        width: 24px;
+                        height: 24px;
+                        padding: 5px;
+                      "
                     ></feather-icon>
-                    <p class="karla-bold task-group-text ml-2">{{$t("in progress")}}</p>
+                    <p class="karla-bold task-group-text ml-2">
+                      {{ $t("in progress") }}
+                    </p>
                   </div>
-                  <p class="karla-bold task-group-text">{{logs.progress.length}}</p>
+                  <p class="karla-bold task-group-text">
+                    {{ logs.progress.length }}
+                  </p>
                 </div>
               </div>
             </vx-card>
           </div>
-          <VuePerfectScrollbar :settings="settings" class="scroll-area-task pr4 mt-3">
+          <VuePerfectScrollbar
+            :settings="settings"
+            class="scroll-area-task pr4 mt-3"
+          >
             <task-item
-              v-for="(log,index) in logs.progress"
-              :pinned="log.time===undefined"
+              v-for="(log, index) in logs.progress"
+              :pinned="log.time === undefined"
               :task="log"
               progress
               :key="index"
@@ -164,19 +210,31 @@
                     <feather-icon
                       icon="CheckIcon"
                       class="text-success inline-flex rounded-full"
-                      style="background: rgba(var(--vs-success),.1); width:24px;height:24px; padding:5px;"
+                      style="
+                        background: rgba(var(--vs-success), 0.1);
+                        width: 24px;
+                        height: 24px;
+                        padding: 5px;
+                      "
                     ></feather-icon>
-                    <p class="karla-bold task-group-text ml-2">{{$t("completed")}}</p>
+                    <p class="karla-bold task-group-text ml-2">
+                      {{ $t("completed") }}
+                    </p>
                   </div>
-                  <p class="karla-bold task-group-text">{{logs.complated.length}}</p>
+                  <p class="karla-bold task-group-text">
+                    {{ logs.complated.length }}
+                  </p>
                 </div>
               </div>
             </vx-card>
           </div>
-          <VuePerfectScrollbar :settings="settings" class="scroll-area-task pr-2 mt-3">
+          <VuePerfectScrollbar
+            :settings="settings"
+            class="scroll-area-task pr-2 mt-3"
+          >
             <completed-item
-              v-for="(task,index) in logs.complated"
-              :pinned="task.time===undefined"
+              v-for="(task, index) in logs.complated"
+              :pinned="task.time === undefined"
               :task="task"
               :key="index"
               @click.native="editLog(task)"
@@ -187,14 +245,14 @@
       <div class="swiper-pagination" slot="pagination"></div>
       <!-- </div> -->
     </swiper>
-    <schedule-popup :open="activeSchedule" @close="activeSchedule=false" />
+    <schedule-popup :open="activeSchedule" @close="activeSchedule = false" />
     <log-details
       parent="#tasks"
       :logID="logID"
       :pages="pages"
       :template="template"
       :isSidebarActive="logDetailsActive"
-      @closeSidebar="logDetailsActive=false"
+      @closeSidebar="logDetailsActive = false"
     />
     <log-sidebar
       parent="#tasks"
@@ -202,14 +260,18 @@
       :pages="pages"
       :template="template"
       :isSidebarActive="isSidebarActive"
-      @closeSidebar="isSidebarActive=false"
+      @closeSidebar="isSidebarActive = false"
     />
     <unschedule-sidebar
       :open="unscheduleActive"
-      @closeSidebar="unscheduleActive=false"
+      @closeSidebar="unscheduleActive = false"
       @assginTemplate="assign"
     ></unschedule-sidebar>
-    <admin-filter :open="filterActive" @closeSidebar="filterActive=false" @filter="filter" />
+    <admin-filter
+      :open="filterActive"
+      @closeSidebar="filterActive = false"
+      @filter="filter"
+    />
   </div>
 </template>
 
@@ -226,7 +288,7 @@ import TaskItem from "./taskItem.vue";
 import LogSidebar from "./LogSidebar.vue";
 import LogDetails from "./LogDetails.vue";
 import { db } from "@/firebase/firebaseConfig";
-import UsereEditSidebarVue from '../team/user/UsereEditSidebar.vue';
+import UsereEditSidebarVue from "../team/user/UsereEditSidebar.vue";
 
 export default {
   components: {
@@ -240,7 +302,7 @@ export default {
     Swiper,
     SwiperSlide,
     CompletedItem,
-    LogDetails
+    LogDetails,
   },
   data() {
     return {
@@ -304,37 +366,55 @@ export default {
       return date;
     },
     unshceduledTemplates() {
-      var cUser = this.$store.getters["app/currentUser"]
-      var locationList = this.$store.getters['app/locationList']
-      if(locationList.length==0) {
-        if(cUser.role == undefined || cUser.role.key == undefined || cUser.role.key>0) {
-          if(cUser.location !== undefined && Array.isArray(cUser.location) && cUser.location.length>0) {
-            locationList = cUser.location
+      var cUser = this.$store.getters["app/currentUser"];
+      var locationList = this.$store.getters["app/locationList"];
+      if (locationList.length == 0) {
+        if (
+          cUser.role == undefined ||
+          cUser.role.key == undefined ||
+          cUser.role.key > 0
+        ) {
+          if (
+            cUser.location !== undefined &&
+            Array.isArray(cUser.location) &&
+            cUser.location.length > 0
+          ) {
+            locationList = cUser.location;
           } else {
-            locationList = ['no']
+            locationList = ["no"];
           }
         }
       }
 
-      var userTeam = cUser.team || []
-      let templates = this.$store.getters["app/getBookedTemplate"]
-        .sort(
-          (a, b) =>
-            b.updated_at.toDate().getTime() - a.updated_at.toDate().getTime()
-        );
+      var userTeam = cUser.team || [];
+      let templates = this.$store.getters["app/getBookedTemplate"].sort(
+        (a, b) =>
+          b.updated_at.toDate().getTime() - a.updated_at.toDate().getTime()
+      );
 
       var unshceduledTemplate = [];
       templates.map((template) => {
-        if (template.trashed) return 
-        if(locationList.length > 0) {
-          if(!template.content.location || !Array.isArray(template.content.location)) return 
-          if(!locationList.some(ll=> template.content.location.includes(ll))) return 
+        if (template.trashed) return;
+        if (locationList.length > 0) {
+          if (
+            !template.content.location ||
+            !Array.isArray(template.content.location)
+          )
+            return;
+          if (
+            !locationList.some((ll) => template.content.location.includes(ll))
+          )
+            return;
         }
-        if(template.content.teams !== undefined && Array.isArray(template.content.teams) && template.content.teams.length>0) {
-          if(!template.content.teams.some(t=> userTeam.includes(t))) return 
+        if (
+          template.content.teams !== undefined &&
+          Array.isArray(template.content.teams) &&
+          template.content.teams.length > 0
+        ) {
+          if (!template.content.teams.some((t) => userTeam.includes(t))) return;
         }
         if (this.tags != "") {
-          if (template.content.templateLabel === undefined) return 
+          if (template.content.templateLabel === undefined) return;
           if (
             !item.content.templateLabel.some((label) =>
               this.tags.includes(label)
@@ -342,9 +422,13 @@ export default {
           )
             return false;
         }
-        if(this.search !='') {
-          if(template.content.templateTitle.toLowerCase().indexOf(this.search.toLowerCase())<0)
-            return 
+        if (this.search != "") {
+          if (
+            template.content.templateTitle
+              .toLowerCase()
+              .indexOf(this.search.toLowerCase()) < 0
+          )
+            return;
         }
 
         unshceduledTemplate.push({ templateID: template.id });
@@ -353,7 +437,7 @@ export default {
       return unshceduledTemplate;
     },
     logs() {
-      var userTeam = this.$store.getters["app/currentUser"].team
+      var userTeam = this.$store.getters["app/currentUser"].team;
       var dayFrom = 0;
       var dayTo = 0;
       var today = new Date();
@@ -382,40 +466,66 @@ export default {
         -1
       );
       var log = this.$store.getters["app/logs"];
-      var schedule
-      var cUser = this.$store.getters["app/currentUser"]
-      var locationList = this.$store.getters['app/locationList']
-      if(locationList.length==0) {
-        if(cUser.role == undefined || cUser.role.key == undefined || cUser.role.key>0) {
-          if(cUser.location !== undefined && Array.isArray(cUser.location) && cUser.location.length>0) {
-            locationList = cUser.location
+      var schedule;
+      var cUser = this.$store.getters["app/currentUser"];
+      var locationList = this.$store.getters["app/locationList"];
+      if (locationList.length == 0) {
+        if (
+          cUser.role == undefined ||
+          cUser.role.key == undefined ||
+          cUser.role.key > 0
+        ) {
+          if (
+            cUser.location !== undefined &&
+            Array.isArray(cUser.location) &&
+            cUser.location.length > 0
+          ) {
+            locationList = cUser.location;
           } else {
-            locationList = ['no']
+            locationList = ["no"];
           }
         }
       }
       log = log.filter((item) => {
-        
         var template = this.$store.getters["app/getTemplateById"](
           item.templateID
         );
         if (!template) return false;
         if (template.trashed) return false;
-        if(template.content.templateSD == 'bookmarked') {
-          if(template.content.teams!=undefined && Array.isArray(template.content.teams) && template.content.teams.length>0 && !template.content.teams.some(t=> userTeam.includes(t))) return false
-          if(locationList.length>0) {
-            if(!template.content.location || !Array.isArray(template.content.location)) return false
-            if(!locationList.some(ll=> template.content.location.includes(ll))) return false
+        if (template.content.templateSD == "bookmarked") {
+          if (
+            template.content.teams != undefined &&
+            Array.isArray(template.content.teams) &&
+            template.content.teams.length > 0 &&
+            !template.content.teams.some((t) => userTeam.includes(t))
+          )
+            return false;
+          if (locationList.length > 0) {
+            if (
+              !template.content.location ||
+              !Array.isArray(template.content.location)
+            )
+              return false;
+            if (
+              !locationList.some((ll) => template.content.location.includes(ll))
+            )
+              return false;
           }
         } else {
-          schedule = this.$store.getters['app/getScheduleById'](item.schedule || '')
-          if(schedule == undefined) return false
-          if ((schedule.deleted !== undefined && schedule.deleted === true) || (schedule.active !== undefined && !schedule.active)) return false;
-          var scheduleTeam = schedule.assign.concat(schedule.monitor || [])
-          if(!scheduleTeam.some(t=> userTeam.includes(t))) return false
-          if(schedule.location== undefined) return false
-          if(locationList.length>0) {
-            if(locationList.indexOf(schedule.location[0])<0) return false
+          schedule = this.$store.getters["app/getScheduleById"](
+            item.schedule || ""
+          );
+          if (schedule == undefined) return false;
+          if (
+            (schedule.deleted !== undefined && schedule.deleted === true) ||
+            (schedule.active !== undefined && !schedule.active)
+          )
+            return false;
+          var scheduleTeam = schedule.assign.concat(schedule.monitor || []);
+          if (!scheduleTeam.some((t) => userTeam.includes(t))) return false;
+          if (schedule.location == undefined) return false;
+          if (locationList.length > 0) {
+            if (locationList.indexOf(schedule.location[0]) < 0) return false;
           }
         }
         if (this.status == "noDue") {
@@ -500,35 +610,47 @@ export default {
             0
           ).getDate();
         }
-        var cUser = this.$store.getters["app/currentUser"]
-        var userTeam = cUser.team || []
-        if(!Array.isArray(userTeam)) userTeam = []
-        var locationList = this.$store.getters['app/locationList']
-        if(locationList.length==0) {
-          if(cUser.role == undefined || cUser.role.key == undefined || cUser.role.key>0) {
-            if(cUser.location !== undefined && Array.isArray(cUser.location) && cUser.location.length>0) {
-              locationList = cUser.location
+        var cUser = this.$store.getters["app/currentUser"];
+        var userTeam = cUser.team || [];
+        if (!Array.isArray(userTeam)) userTeam = [];
+        var locationList = this.$store.getters["app/locationList"];
+        if (locationList.length == 0) {
+          if (
+            cUser.role == undefined ||
+            cUser.role.key == undefined ||
+            cUser.role.key > 0
+          ) {
+            if (
+              cUser.location !== undefined &&
+              Array.isArray(cUser.location) &&
+              cUser.location.length > 0
+            ) {
+              locationList = cUser.location;
             } else {
-              locationList = ['no']
+              locationList = ["no"];
             }
           }
         }
-        var schedules = this.$store.getters["app/schedules"]
+        var schedules = this.$store.getters["app/schedules"];
 
         schedules = schedules.filter((schedule) => {
-          if(schedule.location==undefined) return false
-          let scheduleLocation = schedule.location[0] 
-          if ((schedule.deleted !== undefined && schedule.deleted === true) || (schedule.active !== undefined && !schedule.active)) return false;
-          if(locationList.length>0) {
-            if(locationList.indexOf(scheduleLocation)<0) return false
+          if (schedule.location == undefined) return false;
+          let scheduleLocation = schedule.location[0];
+          if (
+            (schedule.deleted !== undefined && schedule.deleted === true) ||
+            (schedule.active !== undefined && !schedule.active)
+          )
+            return false;
+          if (locationList.length > 0) {
+            if (locationList.indexOf(scheduleLocation) < 0) return false;
           }
           var template = this.$store.getters["app/getTemplateById"](
             schedule.template
           );
-          var scheduleTeam = schedule.assign.concat(schedule.monitor || [])
+          var scheduleTeam = schedule.assign.concat(schedule.monitor || []);
           if (template === undefined) return false;
           if (template.trashed !== undefined && template.trashed) return false;
-          if (template.content.templateSD == 'bookmarked') return false
+          if (template.content.templateSD == "bookmarked") return false;
           if (
             template.content.templateTitle
               .toLowerCase()
@@ -536,14 +658,20 @@ export default {
           )
             return false;
 
-          if (!scheduleTeam.some((item) => userTeam.includes(item))) return false
+          if (!scheduleTeam.some((item) => userTeam.includes(item)))
+            return false;
           if (this.teams != "") {
             if (!scheduleTeam.some((item) => this.teams.includes(item)))
               return false;
           }
           if (this.tags != "") {
             if (template.content.templateLabel === undefined) return false;
-            if(!template.content.templateLabel.some((item) => this.tags.includes(item))) return false
+            if (
+              !template.content.templateLabel.some((item) =>
+                this.tags.includes(item)
+              )
+            )
+              return false;
           }
 
           return true;
@@ -553,26 +681,51 @@ export default {
         var validSchedules = [];
         for (let i = dayFrom; i <= dayTo; i++) {
           schedules.map((schedule) => {
-            schedule.dueTimes.map((duetime) => {
-              if (duetime.nanoseconds !== undefined)
-                taskTime = duetime.toDate();
-              else taskTime = duetime;
-              interval =
-                schedule.interval === undefined ? 1 : schedule.interval;
-              if (
-                schedule._repeat == "Weekly" ||
-                schedule._repeat == "Monthly"
-              ) {
-                schedule.selectedDays.map((day) => {
+            console.log("schedule.dueTimes", schedule, schedule.dueTimes);
+            console.log("Array.isArray", Array.isArray(schedule.dueTimes));
+            if (
+              schedule.dueTimes != undefined &&
+              Array.isArray(schedule.dueTimes)
+            ) {
+              schedule.dueTimes.map((duetime) => {
+                if (duetime.nanoseconds !== undefined)
+                  taskTime = duetime.toDate();
+                else taskTime = duetime;
+                interval =
+                  schedule.interval === undefined ? 1 : schedule.interval;
+                if (
+                  schedule._repeat == "Weekly" ||
+                  schedule._repeat == "Monthly"
+                ) {
+                  if (schedule.selectedDays != undefined) {
+                    schedule.selectedDays.map((day) => {
+                      if (
+                        this.checkScheule(
+                          i,
+                          taskTime,
+                          interval,
+                          schedule._repeat,
+                          day
+                        )
+                      )
+                        validSchedules.push({
+                          schedule: schedule.id,
+                          assign: schedule.assign,
+                          templateID: schedule.template,
+                          time: new Date(
+                            today.getFullYear(),
+                            today.getMonth(),
+                            i,
+                            taskTime.getHours(),
+                            taskTime.getMinutes()
+                          ),
+                        });
+                    });
+                  }
+                } else {
                   if (
-                    this.checkScheule(
-                      i,
-                      taskTime,
-                      interval,
-                      schedule._repeat,
-                      day
-                    )
-                  )
+                    this.checkScheule(i, taskTime, interval, schedule._repeat)
+                  ) {
                     validSchedules.push({
                       schedule: schedule.id,
                       assign: schedule.assign,
@@ -585,26 +738,12 @@ export default {
                         taskTime.getMinutes()
                       ),
                     });
-                });
-              } else {
-                if (
-                  this.checkScheule(i, taskTime, interval, schedule._repeat)
-                ) {
-                  validSchedules.push({
-                    schedule: schedule.id,
-                    assign: schedule.assign,
-                    templateID: schedule.template,
-                    time: new Date(
-                      today.getFullYear(),
-                      today.getMonth(),
-                      i,
-                      taskTime.getHours(),
-                      taskTime.getMinutes()
-                    ),
-                  });
+                  }
                 }
-              }
-            });
+              });
+            } else {
+              console.log("undef schedules", schedule);
+            }
           });
         }
         validSchedules = validSchedules.filter((task) => {
@@ -624,7 +763,7 @@ export default {
             }
           });
         }
-        return validSchedules
+        return validSchedules;
       };
     },
     checkLog() {
@@ -635,11 +774,10 @@ export default {
           task.schedule,
           task.assign
         );
-        
-        if (status == "task") {
 
+        if (status == "task") {
           if (log === undefined) return false;
-          else return true
+          else return true;
           var result = false;
           log.logs.map((page) => {
             page.questions.map((question) => {
@@ -762,27 +900,25 @@ export default {
     //   return this.$store.getters["app/template"];
     // }
     auth() {
-      return action => {
-        let authList = this.$store.getters['app/auth']
+      return (action) => {
+        let authList = this.$store.getters["app/auth"];
         var cUser = this.$store.getters["app/currentUser"];
-        if(cUser == undefined || cUser.role == undefined) return false
-        else if(cUser.role.key == 0) 
-          return true
-        else if(authList.records[cUser.role.name.toLowerCase()][action])
-          return true
-        else 
-          return false
-      }
-    }
+        if (cUser == undefined || cUser.role == undefined) return false;
+        else if (cUser.role.key == 0) return true;
+        else if (authList.records[cUser.role.name.toLowerCase()][action])
+          return true;
+        else return false;
+      };
+    },
   },
   methods: {
     howtoTemplate(event) {
       event.preventDefault();
-      this.$userflow.start('595f213b-5f1b-49eb-a647-fca0a8082fe7');
+      this.$userflow.start("595f213b-5f1b-49eb-a647-fca0a8082fe7");
     },
     setLog() {
-      var dayFrom
-      var dayTo
+      var dayFrom;
+      var dayTo;
       var today = new Date();
       if (this.rangeDay == "day") {
         dayFrom = today.getDate();
@@ -808,25 +944,26 @@ export default {
         0,
         -1
       );
-      if(!this.init)
-        this.$vs.loading()
+      if (!this.init) this.$vs.loading();
       db.collection("logs")
-      .where(
-        "group",
-        "==",
-        JSON.parse(localStorage.getItem("userInfo")).group
-      ).where('updated_at' , '>' , dayFrom)
-      .get().then((q) => {
-        if(!this.init) {
-          this.$vs.loading.close()
-        }
-        this.init= false
-        let logs = [];
-        q.forEach((doc) => {
-          logs.push(Object.assign({}, doc.data(), { id: doc.id }));
+        .where(
+          "group",
+          "==",
+          JSON.parse(localStorage.getItem("userInfo")).group
+        )
+        .where("updated_at", ">", dayFrom)
+        .get()
+        .then((q) => {
+          if (!this.init) {
+            this.$vs.loading.close();
+          }
+          this.init = false;
+          let logs = [];
+          q.forEach((doc) => {
+            logs.push(Object.assign({}, doc.data(), { id: doc.id }));
+          });
+          this.$store.dispatch("app/setLogs", logs);
         });
-        this.$store.dispatch("app/setLogs", logs);
-      });    
     },
     filter(val) {
       this.status = val.status;
@@ -840,8 +977,7 @@ export default {
       this.$vs.notify({
         time: 5000,
         title: "Authorization Error",
-        text:
-          `You don't have authorization for ${action} log.\n Please contact with your super admin`,
+        text: `You don't have authorization for ${action} log.\n Please contact with your super admin`,
         color: "danger",
         iconPack: "feather",
         icon: "icon-lock",
@@ -849,20 +985,20 @@ export default {
       });
     },
     editLog(log) {
-      if(!this.auth('edit'))  {
-        this.roleError('edit')
-        return false
+      if (!this.auth("edit")) {
+        this.roleError("edit");
+        return false;
       }
-      if(log.schedule != undefined) {
-        var schedule = this.$store.getters['app/getScheduleById'](log.schedule)
+      if (log.schedule != undefined) {
+        var schedule = this.$store.getters["app/getScheduleById"](log.schedule);
         var cUser = this.$store.getters["app/currentUser"];
-        var cTeam = cUser.team || []
-        if(!Array.isArray(cTeam)) cTeam = []
-        if(!cTeam.some(ct=>schedule.assign.includes(ct))) {
-          this.logDetailsActive = true
+        var cTeam = cUser.team || [];
+        if (!Array.isArray(cTeam)) cTeam = [];
+        if (!cTeam.some((ct) => schedule.assign.includes(ct))) {
+          this.logDetailsActive = true;
           this.template = log.templateID;
           this.pages = log.logs;
-          return false
+          return false;
         }
       }
       this.$vs.loading();
@@ -882,8 +1018,7 @@ export default {
       this.$vs.notify({
         time: 5000,
         title: "Monitor",
-        text:
-          `You can only monitor this task.`,
+        text: `You can only monitor this task.`,
         color: "primary",
         iconPack: "feather",
         icon: "icon-info",
@@ -891,24 +1026,24 @@ export default {
       });
     },
     async assign(task, unscheduled = false) {
-      if(task.assign != undefined) {
+      if (task.assign != undefined) {
         var cUser = this.$store.getters["app/currentUser"];
-        var cTeam = cUser.team || []
-        if(!Array.isArray(cTeam)) cTeam = []
-        if(!cTeam.some(ct=>task.assign.includes(ct))) {
+        var cTeam = cUser.team || [];
+        if (!Array.isArray(cTeam)) cTeam = [];
+        if (!cTeam.some((ct) => task.assign.includes(ct))) {
           var pages = [];
           var template = this.$store.getters["app/getTemplateById"](
             task.templateID
           );
-          
-          template = JSON.parse(JSON.stringify(template))
+
+          template = JSON.parse(JSON.stringify(template));
 
           template.content.pages.map((page, pIndex) => {
             var questions = [];
             page.questions.map((question, qIndex) => {
               var answers = [];
               question.answers.map((answer, aIndex) => {
-                delete answer.action
+                delete answer.action;
                 var date = new Date();
                 let answerType = this.$store.getters["app/getTemplateTypeById"](
                   answer.type.id
@@ -981,24 +1116,24 @@ export default {
             });
             pages.push({ questions: questions, title: page.title });
           });
-          this.pages = pages
-          this.template = task.templateID
-          this.logDetailsActive = true
-          return false
+          this.pages = pages;
+          this.template = task.templateID;
+          this.logDetailsActive = true;
+          return false;
         }
       }
-      if(!this.auth('create')) {
-        this.roleError('create');
+      if (!this.auth("create")) {
+        this.roleError("create");
         return false;
       }
-      const that = this
+      const that = this;
       // this.$vs.loading();
       var updated_at = new Date();
       var pages = [];
       var template = this.$store.getters["app/getTemplateById"](
         task.templateID
       );
-      template = JSON.parse(JSON.stringify(template))
+      template = JSON.parse(JSON.stringify(template));
       if (!unscheduled) {
         let log = this.$store.getters["app/getLogByTidTime"](
           task.templateID,
@@ -1010,7 +1145,7 @@ export default {
             page.questions.map((question, qIndex) => {
               var answers = [];
               question.answers.map((answer, aIndex) => {
-                delete answer.action
+                delete answer.action;
                 var date = new Date();
                 let answerType = this.$store.getters["app/getTemplateTypeById"](
                   answer.type.id
@@ -1096,13 +1231,13 @@ export default {
           that.getLogID(updated_at, task.templateID).then((id) => {
             that.$vs.loading.close();
 
-            that.$userflow.track("Create Log" , {
-              id: id
-            })
+            that.$userflow.track("Create Log", {
+              id: id,
+            });
 
-            window.gist.track("Create Log" , {
-              id: id
-            })
+            window.gist.track("Create Log", {
+              id: id,
+            });
 
             that.logID = id;
             that.pages = pages;
@@ -1124,7 +1259,7 @@ export default {
           page.questions.map((question, qIndex) => {
             var answers = [];
             question.answers.map((answer, aIndex) => {
-              delete answer.action
+              delete answer.action;
               var date = new Date();
               let answerType = this.$store.getters["app/getTemplateTypeById"](
                 answer.type.id
@@ -1197,7 +1332,7 @@ export default {
           });
           pages.push({ questions: questions, title: page.title });
         });
-        var newLogRef = db.collection('logs').doc()
+        var newLogRef = db.collection("logs").doc();
         newLogRef.set({
           key: "pinned",
           initial: unscheduled,
@@ -1206,15 +1341,15 @@ export default {
           updated_at: updated_at,
           updated_by: JSON.parse(localStorage.getItem("userInfo")).id,
           group: JSON.parse(localStorage.getItem("userInfo")).group,
-        })
+        });
         this.$vs.loading.close();
 
-        this.$userflow.track("Create Log" , {
-          id: newLogRef.id
-        })
-        window.gist.track("Create Log" , {
-          id: newLogRef.id
-        })
+        this.$userflow.track("Create Log", {
+          id: newLogRef.id,
+        });
+        window.gist.track("Create Log", {
+          id: newLogRef.id,
+        });
         this.logID = newLogRef.id;
         this.pages = pages;
         this.template = task.templateID;
@@ -1261,13 +1396,13 @@ export default {
     },
   },
   created() {
-    this.setLog()
+    this.setLog();
   },
   watch: {
     rangeDay() {
-      this.setLog()
-    }
-  }
+      this.setLog();
+    },
+  },
 };
 </script>
 <style>
@@ -1307,7 +1442,7 @@ min-height: calc(100vh - 10em);
 .video-launcher {
   font-size: 10px;
   height: 12px;
-  color: #844CF5;
+  color: #844cf5;
 }
 </style>
 

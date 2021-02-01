@@ -5,7 +5,9 @@
         <div class="card-header p-6" slot="no-body">
           <div class="flex justify-between items-center pb-3">
             <h4 class="font-semibold">{{ $t("Billing Details") }}</h4>
-            <vs-button>{{ $t("Add billing details") }}</vs-button>
+            <vs-button @click="billingDetailPopup = true">{{
+              $t("Add billing details")
+            }}</vs-button>
           </div>
           <vs-alert
             :active="true"
@@ -54,7 +56,7 @@
               <div class="scroll-bar">
                 <div class="hight-bar">
                   <span class="tooltiptext"
-                    ><span>287 {{ $t("logs") }}</span></span
+                    ><span> 287 {{ $t("logs") }}</span></span
                   >
                 </div>
               </div>
@@ -62,15 +64,21 @@
           </div>
           <p class="current-log-text pt-5 pb-5">
             {{
-              $t("You need to log another ") +
+              $t("You need to log another") +
               156 +
-              $t("logs to reach a cheaper pricing plan. ")
+              $t("logs to reach a cheaper pricing plan.")
             }}
-            <vs-icon
-              icon="error_outline"
-              class="text-2xl"
-              style="position: relative; top: 5px"
-            ></vs-icon>
+            <vs-tooltip
+              class="inline-block cursor-pointer"
+              :text="$t(`Qualizy pricing is based on task logs...`)"
+              position="right"
+            >
+              <vs-icon
+                icon="error_outline"
+                class="text-2xl"
+                style="position: relative; top: 5px"
+              ></vs-icon>
+            </vs-tooltip>
           </p>
           <p class="text-2xl mb-5 mt-1">
             {{ $t("Accrued amount to be paid this month:") }}
@@ -95,14 +103,14 @@
               ></vs-icon>
             </h4>
             <p class="current-log-text pb-5 pt-5">
-              {{ $t("This referral program resets every month. ") }}
+              {{ $t("This referral program resets every month.") }}
             </p>
             <vs-button
               text-color="#2400d0"
               color="#dedbf0"
               class="p-3 sm:px-5"
               type="filled"
-              >+ {{ $t("Invite another professional ") }}</vs-button
+              >+ {{ $t("Invite another professional") }}</vs-button
             >
           </div>
           <div class="inline-block w-2/12 star-man-wrapper">
@@ -126,9 +134,10 @@
 
         <div class="billing-history-table">
           <vs-table
+            v-if="billings.length > 0"
             pagination
             :maxItems="10"
-            :data="users"
+            :data="billings"
             hoverFlat
             notSpacer
             description
@@ -159,6 +168,20 @@
               </vs-tr>
             </template>
           </vs-table>
+
+          <div
+            class="no-billings-div flex flex-wrap justify-center justify-items-center relative"
+            v-else
+          >
+            <p class="mt-12 mb-24">
+              {{ $t("You have no billing history yet") }}
+            </p>
+            <img
+              class="w-2/3 h-full"
+              :src="require(`@/assets/images/pages/company/no-billings.svg`)"
+              alt="no-billings"
+            />
+          </div>
         </div>
       </vx-card>
     </div>
@@ -255,7 +278,7 @@
               </div>
               <div class="info mb-8">
                 <p class="label">
-                  {{ $t("Expenses on Qualizy ") }}
+                  {{ $t("Expenses on Qualizy") }}
                 </p>
                 <h2 class="mt-2 font-bold">$ 45</h2>
               </div>
@@ -270,24 +293,30 @@
             </div>
 
             <p class="label">
-              This estimate is based on the informations you have provided and
-              an average time spent creating a record using Pen & Paper of 1:30
-              min per record and an average of 7 recording points per employees
-              per day (Temp logs, cleaning logs, delivery logs, food labelling
-              etc..)
+              {{ $t(`about_estimate`) }}
             </p>
           </div>
         </div>
       </vx-card>
     </div>
+
+    <billing-detail-popup
+      :open="billingDetailPopup"
+      @close="billingDetailPopup = false"
+    />
   </div>
 </template>
 
 <script>
+import BillingDetailPopup from "./BillingDetailPopup";
 import VxCard from "../../../components/vx-card/VxCard.vue";
 export default {
+  components: {
+    BillingDetailPopup,
+  },
   data() {
     return {
+      billingDetailPopup: false,
       dollarPerHour: 30,
       employees: 34,
       units: 60,
@@ -328,7 +357,7 @@ export default {
           dolars: 0.0014,
         },
       ],
-      users: [
+      billings: [
         {
           id: 1,
           name: "Leanne Graham",
@@ -586,6 +615,22 @@ export default {
         padding-left: 0;
         padding-right: 0;
       }
+    }
+  }
+
+  .no-billings-div {
+    //     margin-top: 50%;
+    // transform: translate(0, -50%);
+
+    p {
+      font-family: Karla;
+      font-style: normal;
+      font-weight: normal;
+      font-size: 24px;
+      line-height: 28px;
+      display: flex;
+      align-items: center;
+      text-align: center;
     }
   }
 }
