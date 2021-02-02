@@ -1078,7 +1078,6 @@ export default {
           logs: this.pages,
         });
 
-      console.log('action:', action, this.pages[pIndex].questions[qIndex].answers[aIndex]);
       const actions = type == "temperature" ? action : [action];
 
       actions.forEach(action => {

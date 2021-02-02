@@ -194,7 +194,6 @@ export default {
           if (doc.data().trashed) return;
           dbLabelIds.push(doc.id);
         });
-        console.log("dbLabelIds: ", dbLabelIds);
 
         this.$store.dispatch("app/setLabelFiltered", dbLabelIds);
       });
@@ -313,7 +312,6 @@ export default {
         return true;
       });
 
-      console.log("globalTags", labels);
       return labels;
     },
     templateInfo() {

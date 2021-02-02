@@ -1000,7 +1000,6 @@ export default {
         },
         failureTasksTeam() {
             let arr = [];
-            console.log(this.pieChart2Options.labels[0]);
             this.overdueTasks.forEach(task => {
                 if(task.team) {
                     let obj = arr.find(el => el.name == task.team);
@@ -1024,7 +1023,6 @@ export default {
         failureAnswersLocation() {
             let arr = Object.values(this.pieChart2Options.quantities);
             arr.sort((a, b) => (a.count - b.count));
-            console.log(this.pieChart2Options.labels[0]);
 
             if(arr.length && this.pieChart2Options.labels.includes(arr[0].name)) {
                 return arr[arr.length - 1].name;

@@ -345,7 +345,6 @@ export default {
     templateInfo() {
       return (id) => {
         let labels = this.$store.getters["app/getTemplateById"](id);
-        // console.log("labels: ", labels);
         return labels;
       };
     },
@@ -365,14 +364,12 @@ export default {
           filtered.push(label);
           return true;
         });
-        // console.log("labels: ", labels, filtered);
         return filtered;
       };
     },
     labelInfo() {
       return (id) => {
         let label = this.$store.getters["app/getLabelById"](id);
-        // console.log("label: ", label);
         return label;
       };
     },

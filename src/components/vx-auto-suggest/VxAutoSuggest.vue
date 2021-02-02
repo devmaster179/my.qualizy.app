@@ -159,7 +159,6 @@ export default {
       this.searchQuery = "";
     },
     filter_grp(grp) {
-      console.log(grp);
       let exactEle = grp.data.filter((item) => {
         return item[grp.key]
           .toLowerCase()

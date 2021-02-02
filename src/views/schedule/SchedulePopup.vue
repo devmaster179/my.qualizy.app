@@ -270,7 +270,6 @@ export default {
         mUser.push(item.id);
       });
       var the = this;
-      console.log(this.template);
       var title = this.template.title + " - " + this.$t(this.repeat);
 
       if (!this.update) {

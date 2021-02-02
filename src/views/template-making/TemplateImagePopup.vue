@@ -95,11 +95,9 @@ export default {
         `state_changed`,
         (snapshot) => {},
         (error) => {
-          console.log(error.message);
         },
         () => {
           storageRef.snapshot.ref.getDownloadURL().then((url) => {
-            console.log("url: ", url);
             this.picture = url;
 
             let tImage = {

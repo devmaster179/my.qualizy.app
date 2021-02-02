@@ -463,7 +463,6 @@ export default {
         userflow: this.$userflow,
         gist: window.gist,
       };
-      // console.log(payload);
       this.$store.dispatch("auth/registerUser", payload);
     },
     phoneValidate(formattedNumber, { number, isValid, country }) {

@@ -437,7 +437,6 @@ export default {
             }
           }
         });
-        console.log("tags", tags);
         return tags;
       };
     },

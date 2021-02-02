@@ -372,11 +372,9 @@ export default {
               var progress =
                 (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
               this.$store.dispatch("app/setFileProgress", progress);
-              console.log("Upload is " + progress + "% done");
               if (progress == 100) this.$store.dispatch("app/initFileUpload");
             },
             (error) => {
-              console.log(error);
             },
             () => {
               docUpload.snapshot.ref.getDownloadURL().then((downloadURL) => {
@@ -402,7 +400,6 @@ export default {
       this.showEmoticons = false;
     },
     addEmoji(e) {
-      console.log(e);
       if (e.native !== undefined) this.typedMessage += e.native;
     },
     readMessage() {

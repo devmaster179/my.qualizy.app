@@ -681,8 +681,6 @@ export default {
         var validSchedules = [];
         for (let i = dayFrom; i <= dayTo; i++) {
           schedules.map((schedule) => {
-            console.log("schedule.dueTimes", schedule, schedule.dueTimes);
-            console.log("Array.isArray", Array.isArray(schedule.dueTimes));
             if (
               schedule.dueTimes != undefined &&
               Array.isArray(schedule.dueTimes)
@@ -742,7 +740,6 @@ export default {
                 }
               });
             } else {
-              console.log("undef schedules", schedule);
             }
           });
         }
