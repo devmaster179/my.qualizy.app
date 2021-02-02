@@ -1,5 +1,5 @@
 <template>
-  <div id="company" class="px-2">
+  <!-- <div id="company" class="px-2">
     <template v-if="!auth('user and team settings', 'view')">
       <no-auth />
     </template>
@@ -36,8 +36,8 @@
       <payment-tab v-if="tab == 'payments'" />
       <location-tab v-else-if="tab == 'locations'" />
     </div>
-  </div>
-  <!-- <location-tab /> -->
+  </div> -->
+  <location-tab />
 </template>
 
 <script>
