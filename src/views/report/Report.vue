@@ -6,7 +6,7 @@
     <template>
       <div class="sm:flex justify-between">
         <div class="page-title">
-          <p class="karla-bold">{{ $t("report") | capitalize }}</p>
+          <p class="karla-bold">{{$t("reports") | capitalize}}</p>
         </div>
         <div class="page-action sm:flex items-center">
           <vs-input

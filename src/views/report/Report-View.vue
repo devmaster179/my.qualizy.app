@@ -6,7 +6,7 @@
         <p
           class="karla-bold main-title cursor-pointer"
           @click="$router.push('/report')"
-        >{{$t("report") | capitalize}}</p>
+        >{{$t("reports") | capitalize}}</p>
         <p class="karla-bold hidden sm:block ml-2 truncate">&nbsp;> {{reportTitle |capitalize}}</p>
       </div>
       <div class="flex items-center page-action">
@@ -53,7 +53,7 @@
           icon="icon-file-text"
           icon-pack="feather"
           type="filled"
-        >{{ $t("save") | capitalize }}</vs-button>
+        >{{ $t("save_report") | capitalize }}</vs-button>
       </div>
     </div>
 

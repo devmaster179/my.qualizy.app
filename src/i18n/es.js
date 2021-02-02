@@ -500,6 +500,7 @@ export default {
     "Saturday": "Sábado",
     "SunDay": "Domingo",
     "save_as": 'Save as',
+    "save_report": "Save report",
     "report_name": 'Report name',
     "me": 'Me (private)',
     "text": 'Text',
