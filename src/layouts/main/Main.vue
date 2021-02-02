@@ -9,25 +9,37 @@
 
 
 <template>
-  <div class="layout--main" :class="[navbarClasses, footerClasses, {'app-page': isAppPage}]">
+  <div
+    class="layout--main"
+    :class="[navbarClasses, footerClasses, { 'app-page': isAppPage }]"
+  >
     <vx-sidebar
       :sidebarItems="sidebarItems"
       :logo="require('@/assets/images/logo/logo.png')"
       title="Vuesax"
       parent=".layout--main"
     />
-    <div id="content-area" :class="[contentAreaClass, {'show-overlay': bodyOverlay}]">
+    <div
+      id="content-area"
+      :class="[contentAreaClass, { 'show-overlay': bodyOverlay }]"
+    >
       <div id="content-overlay"></div>
 
       <div class="content-wrapper">
         <the-navbar
           :navbarColor="navbarColor"
-          :class="[{'text-white': isNavbarDark && !isThemeDark}, {'text-base': !isNavbarDark && isThemeDark}]"
+          :class="[
+            { 'text-white': isNavbarDark && !isThemeDark },
+            { 'text-base': !isNavbarDark && isThemeDark },
+          ]"
           class="no-print"
         />
 
         <div class="router-view">
-          <div class="router-content" :class="{'mt-0': navbarType == 'hidden'}">
+          <div
+            class="router-content"
+            :class="{ 'mt-0': navbarType == 'hidden' }"
+          >
             <transition :name="routerTransition">
               <div
                 class="router-header flex flex-wrap items-center"
@@ -35,7 +47,10 @@
               >
                 <div
                   class="content-area__heading"
-                  :class="{'pr-4 border-0 md:border-r border-t-0 border-b-0 border-l-0 border-solid border-grey-light' : $route.meta.breadcrumb}"
+                  :class="{
+                    'pr-4 border-0 md:border-r border-t-0 border-b-0 border-l-0 border-solid border-grey-light':
+                      $route.meta.breadcrumb,
+                  }"
                 >
                   <h2 class="mb-1">{{ $t(routeTitle) | capitalize }}</h2>
                 </div>
@@ -83,8 +98,16 @@
               <a href="#" @click="howtoTemplate">Watch this video to see how it works</a>
             </div>
             <div class="content-area__content">
-              <back-to-top bottom="5%" visibleoffset="500" v-if="!hideScrollToTop">
-                <vs-button icon-pack="feather" icon="icon-arrow-up" class="shadow-lg" />
+              <back-to-top
+                bottom="5%"
+                visibleoffset="500"
+                v-if="!hideScrollToTop"
+              >
+                <vs-button
+                  icon-pack="feather"
+                  icon="icon-arrow-up"
+                  class="shadow-lg"
+                />
               </back-to-top>
               <transition :name="routerTransition" mode="out-in">
                 <router-view @changeRouteTitle="changeRouteTitle"></router-view>
@@ -210,72 +233,97 @@ export default {
       // })
     },
     setAnalytics() {
-      return new Promise((res,rej) => {
-        db.collection('analytics').where('group' , '==' ,  JSON.parse(localStorage.getItem("userInfo")).group).orderBy('updated_at','desc').orderBy('visible','desc').onSnapshot(q => {
-          var analytics = []
-          q.forEach(doc => {
-            analytics.push(Object.assign({}, doc.data(), {id: doc.id}))
+      return new Promise((res, rej) => {
+        db.collection("analytics")
+          .where(
+            "group",
+            "==",
+            JSON.parse(localStorage.getItem("userInfo")).group
+          )
+          .orderBy("updated_at", "desc")
+          .orderBy("visible", "desc")
+          .onSnapshot((q) => {
+            var analytics = [];
+            q.forEach((doc) => {
+              analytics.push(Object.assign({}, doc.data(), { id: doc.id }));
+            });
+            this.$store.commit("app/SET_ANALYTICS", analytics);
+            res("ok");
           });
-          this.$store.commit('app/SET_ANALYTICS', analytics)
-          res('ok')
-        })
-      })
+      });
     },
     setReportSchedule() {
-      return new Promise((res,rej)=> {
-        db.collection('report_schedule').where('group' , '==' ,  JSON.parse(localStorage.getItem("userInfo")).group).onSnapshot(q=> {
-          let schedules = []
-          q.forEach(doc=> {
-            schedules.push(Object.assign({} , doc.data() , {id: doc.id}))
-          })
-          this.$store.commit('app/SET_REPORT_SCHEDULE' , schedules)
-          res('ok')
-        })
-      })
+      return new Promise((res, rej) => {
+        db.collection("report_schedule")
+          .where(
+            "group",
+            "==",
+            JSON.parse(localStorage.getItem("userInfo")).group
+          )
+          .onSnapshot((q) => {
+            let schedules = [];
+            q.forEach((doc) => {
+              schedules.push(Object.assign({}, doc.data(), { id: doc.id }));
+            });
+            this.$store.commit("app/SET_REPORT_SCHEDULE", schedules);
+            res("ok");
+          });
+      });
     },
     setAuth() {
-      return new Promise((resolve,reject) => {
-        db.collection("roles").doc(JSON.parse(localStorage.getItem("userInfo")).group).onSnapshot((q)=> {
-          var subjects = ['records' , 'templates' , 'schedule' , 'food items' , 'report', 'knowledge base' , 'analytics' , 'user and team settings']
-          var auth = {}
-          if(!q.exists) {
-            subjects.map(item=> {
-              auth[item] = {
-                admin: {
-                  view: true,
-                  create: true,
-                  edit: true,
-                  delete: false
-                },
-                supervisor: {
-                  view: true,
-                  create: true,
-                  edit: false,
-                  delete: false
-                },
-                operator: {
-                  view: true,
-                  create: false,
-                  edit: false,
-                  delete: false
-                },
-                auditor: {
-                  view: true,
-                  create: false,
-                  edit: false,
-                  delete: false
-                }
-              }
-            })
-          }else {
-            subjects.map(item=> {
-              auth[item] = q.data()[item]
-            })
-          }
-            this.$store.commit("app/SET_AUTH" , auth)
-          resolve("OK")
-        })
-      })
+      return new Promise((resolve, reject) => {
+        db.collection("roles")
+          .doc(JSON.parse(localStorage.getItem("userInfo")).group)
+          .onSnapshot((q) => {
+            var subjects = [
+              "records",
+              "templates",
+              "schedule",
+              "food items",
+              "report",
+              "knowledge base",
+              "analytics",
+              "user and team settings",
+            ];
+            var auth = {};
+            if (!q.exists) {
+              subjects.map((item) => {
+                auth[item] = {
+                  admin: {
+                    view: true,
+                    create: true,
+                    edit: true,
+                    delete: false,
+                  },
+                  supervisor: {
+                    view: true,
+                    create: true,
+                    edit: false,
+                    delete: false,
+                  },
+                  operator: {
+                    view: true,
+                    create: false,
+                    edit: false,
+                    delete: false,
+                  },
+                  auditor: {
+                    view: true,
+                    create: false,
+                    edit: false,
+                    delete: false,
+                  },
+                };
+              });
+            } else {
+              subjects.map((item) => {
+                auth[item] = q.data()[item];
+              });
+            }
+            this.$store.commit("app/SET_AUTH", auth);
+            resolve("OK");
+          });
+      });
     },
     setCurrentUser() {
       return new Promise((resolve, reject) => {
@@ -292,7 +340,7 @@ export default {
               data.lang !== undefined &&
               !!this.$i18n &&
               !!this.$i18n.locale
-            ){
+            ) {
               this.$i18n.locale = data.lang;
               this.$moment.locale(data.lang);
             }
@@ -357,6 +405,25 @@ export default {
     },
 
     setTemplateLabels() {
+      // db.collection("template_labels")
+      //   .where("group", "==", "global")
+      //   .where("lang", "==", "en-gb")
+      //   .get()
+      //   .then((q) => {
+      //     q.forEach((doc) => {
+      //       if (doc.data().trashed) return;
+      //       // db.collection("template_labels").doc(doc.id).delete();
+      //       var label = Object.assign({}, doc.data(), {
+      //         lang: "it",
+      //         name: doc.data()["name"] + "-LT",
+      //       });
+
+      //       console.log("doc template_labels", label);
+
+      //       db.collection("template_labels").add(label);
+      //     });
+      //   });
+
       return new Promise((resolve, reject) => {
         db.collection("template_labels")
           .where("group", "in", [
@@ -368,6 +435,11 @@ export default {
             q.forEach((doc) => {
               labels.push(Object.assign({}, doc.data(), { id: doc.id }));
             });
+            console.log(
+              'userInfo":  ',
+              JSON.parse(localStorage.getItem("userInfo"))
+            );
+            // console.log("app/setLabel:  ", labels);
             this.$store.dispatch("app/setLabel", labels);
             resolve("OK");
           });
@@ -376,25 +448,25 @@ export default {
     setTemplateTypes() {
       return new Promise((resolve, reject) => {
         db.collection("template_type")
-        .where("group", "in", [
+          .where("group", "in", [
             JSON.parse(localStorage.getItem("userInfo")).group,
             "global",
           ])
-        .onSnapshot((q) => {
-          let types = [];
-          let tempType = [];
-          q.forEach((doc) => {
-            types.push(Object.assign({}, doc.data(), { id: doc.id }));
-            if (doc.data().type in tempType === false)
-              tempType[doc.data().type] = [];
-            tempType[doc.data().type].push(
-              Object.assign({}, doc.data(), { id: doc.id })
-            );
+          .onSnapshot((q) => {
+            let types = [];
+            let tempType = [];
+            q.forEach((doc) => {
+              types.push(Object.assign({}, doc.data(), { id: doc.id }));
+              if (doc.data().type in tempType === false)
+                tempType[doc.data().type] = [];
+              tempType[doc.data().type].push(
+                Object.assign({}, doc.data(), { id: doc.id })
+              );
+            });
+            this.$store.dispatch("app/setTemplateType", types);
+            this.$store.dispatch("app/setTypedTemplateType", tempType);
+            resolve("OK");
           });
-          this.$store.dispatch("app/setTemplateType", types);
-          this.$store.dispatch("app/setTypedTemplateType", tempType);
-          resolve("OK");
-        });
       });
     },
     setTemplates() {
@@ -426,10 +498,37 @@ export default {
                 Object.assign({}, doc.data(), { id: doc.id })
               );
             });
+
             this.$store.dispatch("app/setPublicTemplates", publicTemplates);
             resolve("OK");
           });
       });
+    },
+    getRepeatByTemplateTitle(title) {
+      var repeat = false;
+      var dailyTitles = [
+        "Fridge temperature logs",
+        "Freezer temperature logs",
+        "Opening checks",
+        "Closing checks",
+        "Daily Cleaning schedule",
+        "Dialy internal audit",
+        "Personal Hygiene",
+      ];
+      var weeklyTitles = [
+        "Weekly food safety checklist",
+        "Weekly internal audit",
+      ];
+      var monthlyTitles = ["Monthly internal audit", "Thermometer calibration"];
+      if (dailyTitles.indexOf(title) > -1) {
+        repeat = "Daily";
+      } else if (weeklyTitles.indexOf(title) > -1) {
+        repeat = "Weekly";
+      } else if (monthlyTitles.indexOf(title) > -1) {
+        repeat = "Monthly";
+      }
+
+      return repeat;
     },
     setFoodItems() {
       return new Promise((resolve, reject) => {
@@ -469,18 +568,22 @@ export default {
       });
     },
     setLogs() {
-      var date = new Date()
+      var date = new Date();
       return new Promise((resolve, reject) => {
         db.collection("logs")
           .where(
             "group",
             "==",
             JSON.parse(localStorage.getItem("userInfo")).group
-          ).where('updated_at' , '>' , date)
+          )
+          .where("updated_at", ">", date)
           .onSnapshot((q) => {
             let logs = [];
             q.forEach((doc) => {
-              this.$store.commit("app/UPDATE_LOG" , Object.assign({} , doc.data() , {id: doc.id}))  
+              this.$store.commit(
+                "app/UPDATE_LOG",
+                Object.assign({}, doc.data(), { id: doc.id })
+              );
             });
             resolve("OK");
           });
@@ -547,7 +650,7 @@ export default {
             if (
               doc.data().created_at == undefined ||
               doc.data().created_at == null
-            ){
+            ) {
               return;
             }
 
@@ -572,10 +675,10 @@ export default {
               if (
                 doc.data().created_at == undefined ||
                 doc.data().created_at == null
-              ){
+              ) {
                 return;
               }
-                
+
               suppliers.push(Object.assign({}, doc.data(), { id: doc.id }));
             });
             this.$store.dispatch("app/setSuppliers", suppliers);
@@ -672,7 +775,6 @@ export default {
     BackToTop,
   },
   mounted() {
-
     var user = JSON.parse(localStorage.getItem("userInfo"));
     var role = 4;
     var roles = ["Super admin", "Admin", "Supervisor", "Operator", "Auditor"];
@@ -698,13 +800,13 @@ export default {
     // window.addEventListener('offline',  this.updateStatus('offline'));
   },
   async created() {
-    document.addEventListener('gistChatReady', function () {
+    document.addEventListener("gistChatReady", function () {
       window.gist.chat("hideLauncher");
     });
     // this.deleteTrashedData()
     var user = JSON.parse(localStorage.getItem("userInfo"));
     if (!this.$userflow.isIdentified()) {
-      this.$userflow.identify(user.id)
+      this.$userflow.identify(user.id);
     }
     var location = "";
     if (
@@ -732,12 +834,12 @@ export default {
     } else {
       this.updateNavbarColor(this.navbarColor);
     }
-    
+
     // this.$vs.loading();
-    this.$store.commit('app/SET_LOCATION_LIST' , [])
-    var mDate = new Date().getTime()
+    this.$store.commit("app/SET_LOCATION_LIST", []);
+    var mDate = new Date().getTime();
     // var  mDate1 = new Date().getTime()
-    await this.setReportSchedule()
+    await this.setReportSchedule();
     // mDate1 = new Date().getTime()
     // console.log((mDate1 - mDate) , 'setReportSchedule')
     // mDate = mDate1
@@ -746,7 +848,7 @@ export default {
     // console.log((mDate1 - mDate) , 'setAuth')
     // mDate = mDate1
     await this.setCurrentUser();
-     // mDate1 = new Date().getTime()
+    // mDate1 = new Date().getTime()
     // console.log((mDate1 - mDate) , 'setCurrentUser')
     // mDate = mDate1
     await this.setUser();

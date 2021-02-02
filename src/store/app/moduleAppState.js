@@ -2,12 +2,15 @@ var date = new Date()
 date = new Date(date.getFullYear(), date.getMonth(), date.getDate())
 var from = new Date(date.getTime() - (10 * 24 * 60 * 60 * 1000));
 export default {
-  sensorDatas:[],
-  analytics:[],
+  sensorDatas: [],
+  analytics: [],
   labels: [],
+  labelsFiltered: [],
   templateTypes: [],
+  templateImages: [],
   templates: [],
   publicTemplates: [],
+  publicTemplatesFiltered: [],
   users: [],
   teams: [],
   locations: [],
@@ -74,6 +77,6 @@ export default {
   editAction: false,
   editScore: false,
   ipInfo: {},
-  auth:{},
+  auth: {},
   report_schedule: []
 }

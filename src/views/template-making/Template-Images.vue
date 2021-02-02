@@ -1,43 +1,80 @@
 <template>
-  <vs-dropdown vs-custom-content class="cursor-pointer mr-4">
-    <div class="flex items-center">
-      <img
-        :src="require(`@/assets/images/template_image/${image}`)"
-        style="width:48px;height:48px;"
-      />
-      <span class="karla-bold select-image-text ml-2">{{$t("select image")}}</span>
-    </div>
-    <vs-dropdown-menu class="vx-navbar-dropdown template-images">
-      <span class="karla-bold select-image-text ml-2">{{$t("select image")}}</span>
+  <div>
+    <vs-dropdown vs-custom-content class="cursor-pointer mr-4">
+      <div class="flex items-center">
+        <img
+          :src="applyImage(image)"
+          style="width: 48px; height: 48px; border-radius: 50%"
+        />
+        <span class="karla-bold select-image-text ml-2">{{
+          $t("select image")
+        }}</span>
+      </div>
+      <vs-dropdown-menu class="vx-navbar-dropdown template-images">
+        <span class="karla-bold select-image-text ml-2">{{
+          $t("select image")
+        }}</span>
 
-      <div class="vx-row py-4" style="width:300px;">
-        <div class="vx-col sm:w-1/4 xs:w-1/3 mb-2" v-for="(img,key) in images" :key="key">
-          <div class="images" :class="img==image ? 'active' : ''">
-            <img
-              class="cursor-pointer"
-              :src="require(`@/assets/images/template_image/${img}`)"
-              style="width:48px;height:48px;"
-              @click="selectImage=img"
-            />
+        <div class="vx-row py-4" style="width: 300px">
+          <div
+            class="vx-col sm:w-1/4 xs:w-1/3 mb-2"
+            v-for="(img, key) in images"
+            :key="key"
+          >
+            <div class="images" :class="img == image ? 'active' : ''">
+              <img
+                class="cursor-pointer"
+                :src="require(`@/assets/images/template_image/${img}`)"
+                style="width: 48px; height: 48px"
+                @click="selectImage = img"
+              />
+            </div>
+          </div>
+          <div
+            class="vx-col sm:w-1/4 xs:w-1/3 mb-2"
+            v-for="img in templateImages"
+            :key="img.id"
+          >
+            <div class="images" :class="img.url == image ? 'active' : ''">
+              <img
+                class="cursor-pointer"
+                :src="img.url"
+                style="width: 48px; height: 48px"
+                @click="selectImage = img.url"
+              />
+            </div>
           </div>
         </div>
-      </div>
-    </vs-dropdown-menu>
-  </vs-dropdown>
+        <div class="uploadmore-btn" @click="activeImageUploadPopup = true">
+          <span>Upload More</span>
+        </div>
+      </vs-dropdown-menu>
+    </vs-dropdown>
+
+    <template-image-popup
+      :open="activeImageUploadPopup"
+      :uploading="activeUploading"
+      @close="activeImageUploadPopup = false"
+      @activeUpload="activeUploading = true"
+    />
+  </div>
 </template>
 
 <script>
 import VuePerfectScrollbar from "vue-perfect-scrollbar";
+import TemplateImagePopup from "../template-making/TemplateImagePopup";
 
 export default {
   props: {
     image: {
       type: String,
-      default: "1.svg"
-    }
+      default: "1.svg",
+    },
   },
   data() {
     return {
+      activeImageUploadPopup: false,
+      activeUploading: false,
       images: [
         "1.svg",
         "2.svg",
@@ -51,16 +88,17 @@ export default {
         "10.svg",
         "11.svg",
         "12.svg",
-        "13.svg"
+        "13.svg",
       ],
       settings: {
         maxScrollbarLength: 60,
-        wheelSpeed: 0.6
-      }
+        wheelSpeed: 0.6,
+      },
     };
   },
   components: {
-    VuePerfectScrollbar
+    TemplateImagePopup,
+    VuePerfectScrollbar,
   },
   computed: {
     selectImage: {
@@ -73,7 +111,12 @@ export default {
       set(val) {
         this.$store.dispatch("app/chnTemplateImage", val);
         this.activePrompt = false;
-      }
+      },
+    },
+    templateImages() {
+      let templateImages = this.$store.getters["app/templateImages"];
+      console.log("from getter", templateImages);
+      return templateImages;
     },
     activePrompt: {
       get() {
@@ -81,9 +124,17 @@ export default {
       },
       set() {
         this.$emit("close");
+      },
+    },
+  },
+  methods: {
+    applyImage(image) {
+      if (image.indexOf("firebasestorage") > -1) {
+        return image;
       }
-    }
-  }
+      return require(`@/assets/images/template_image/${image}`);
+    },
+  },
 };
 </script>
 
@@ -116,10 +167,18 @@ export default {
   -webkit-box-shadow: 0px 0px 1px 3px rgba(var(--vs-primary), 1) !important;
   box-shadow: 0px 0px 1px 3px rgba(var(--vs-primary), 1) !important;
 }
-</style>
 
-<style>
 .vs-dropdown-menu.template-images {
   z-index: 54000;
+}
+
+.uploadmore-btn {
+  text-align: center;
+  background-color: #f2f2f2;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.uploadmore-btn > span {
 }
 </style>

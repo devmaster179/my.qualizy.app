@@ -9,18 +9,26 @@
     v-model="isSidebarActiveLocal"
   >
     <div class="mt-6 flex items-center justify-between px-6">
-      <h4>{{$t("filters")}}</h4>
-      <feather-icon icon="XIcon" @click.stop="isSidebarActiveLocal = false" class="cursor-pointer"></feather-icon>
+      <h4>{{ $t("filters") }}</h4>
+      <feather-icon
+        icon="XIcon"
+        @click.stop="isSidebarActiveLocal = false"
+        class="cursor-pointer"
+      ></feather-icon>
     </div>
     <vs-divider class="mb-0"></vs-divider>
     <div class="filter-content p-4 mt-4">
       <div class="status-section">
-        <label class="text-sm color-my-black font-medium">{{$t('status')}}</label>
-        <v-select :options="['Active','Deleted']" v-model="status" />
+        <label class="text-sm color-my-black font-medium">{{
+          $t("status")
+        }}</label>
+        <v-select :options="['Active', 'Deleted']" v-model="status" />
       </div>
       <div class="location-section"></div>
       <div class="tag-section mt-4">
-        <label class="text-sm color-my-black font-medium">{{$t('tags')}}</label>
+        <label class="text-sm color-my-black font-medium">{{
+          $t("tags")
+        }}</label>
         <multiselect
           v-model="tag"
           :placeholder="$t('select location')"
@@ -34,24 +42,30 @@
           <template slot="selection" slot-scope="{ values }">
             <div class="flex items-center">
               <div
-                :class="{'hidden': i>1}"
+                :class="{ hidden: i > 1 }"
                 class="flex items-center selectItem"
-                v-for="(value,i) in values"
+                v-for="(value, i) in values"
                 :key="i"
               >
-                <div class="h-2 w-2 rounded-full mr-1" :style="`background: ${value.color};`"></div>
-                <span class="karla">{{value.name}}</span>
+                <div
+                  class="h-2 w-2 rounded-full mr-1"
+                  :style="`background: ${value.color};`"
+                ></div>
+                <span class="karla">{{ value.name }}</span>
                 <vs-icon
                   class="cursor-pointer ml-2"
                   icon-pack="feather"
                   icon="icon-x"
                   size="10px"
-                  style="padding-top:1px;"
+                  style="padding-top: 1px"
                   @click.native="removeTag(value)"
                 />
               </div>
-              <div class="flex items-center selectItem" v-if="values.length>2">
-                <span class="karla">{{`+ ${values.length-2}`}}</span>
+              <div
+                class="flex items-center selectItem"
+                v-if="values.length > 2"
+              >
+                <span class="karla">{{ `+ ${values.length - 2}` }}</span>
               </div>
             </div>
           </template>

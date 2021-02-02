@@ -1,54 +1,90 @@
 <template>
   <div class="min-h-screen" id="register-page">
-    <div
-      class="vx-row w-full min-h-screen"
-    >
-      <div class="vx-col w-1/3 hidden lg:block pl-6 py-12 course-side" style="height: calc( 100vh ); overflow: auto;">
+    <div class="vx-row w-full min-h-screen">
+      <div
+        class="vx-col w-1/3 hidden lg:block pl-6 py-12 course-side"
+        style="height: calc(100vh); overflow: auto"
+      >
         <div class="logo ml-8 mt-12">
-          <img class="cursor-pointer" :src="require('@/assets/images/logo/logo-text.png')" @click="$router.push('/')" alt="Qualizy" />
+          <img
+            class="cursor-pointer"
+            :src="require('@/assets/images/logo/logo-text.png')"
+            @click="$router.push('/')"
+            alt="Qualizy"
+          />
         </div>
         <div class="side-section mt-12 ml-8 pt-12">
-          <div class="course-item" v-for="(course,index)  in courses" :key="index">
+          <div
+            class="course-item"
+            v-for="(course, index) in courses"
+            :key="index"
+          >
             <div class="course-content flex items-center">
               <div
                 class="rounded-full flex items-center justify-center"
-                :class="{'current-course':currentPage==index , 'up-course': currentPage<index , 'done-course':currentPage>index}"
+                :class="{
+                  'current-course': currentPage == index,
+                  'up-course': currentPage < index,
+                  'done-course': currentPage > index,
+                }"
               >
                 <vs-icon
                   color="white"
-                  v-if="currentPage==index"
+                  v-if="currentPage == index"
                   icon-pack="feather"
                   :icon="course.icon"
                   size="20px"
                 />
                 <vs-icon
                   color="#6c50f0"
-                  v-else-if="currentPage<index"
+                  v-else-if="currentPage < index"
                   icon-pack="feather"
                   :icon="course.icon"
                   size="20px"
                 />
-                <vs-icon color="white" v-else icon-pack="feather" icon="icon-check" size="20px" />
+                <vs-icon
+                  color="white"
+                  v-else
+                  icon-pack="feather"
+                  icon="icon-check"
+                  size="20px"
+                />
               </div>
               <div class="course-title ml-3">
-                <p class="text-sm font-medium course-name">{{course.name | capitalize}}</p>
-                <p class="text-lg font-bold course-content">{{course.title}}</p>
+                <p class="text-sm font-medium course-name">
+                  {{ course.name | capitalize }}
+                </p>
+                <p class="text-lg font-bold course-content">
+                  {{ course.title }}
+                </p>
               </div>
             </div>
-            <div class="course-line" v-if="index<courses.length-1">
-              <div class="course-line-done" :style="calcHeightSucess(index)"></div>
+            <div class="course-line" v-if="index < courses.length - 1">
+              <div
+                class="course-line-done"
+                :style="calcHeightSucess(index)"
+              ></div>
             </div>
           </div>
         </div>
         <div class="flex items-center ml-8 mt-12">
-          <p class="">{{$t("already have an account")}} ?</p>
-          <p class="text-dark underline font-semibold cursor-pointer ml-4" @click="login">{{$t("login")}}</p>
+          <p class="">{{ $t("already have an account") }} ?</p>
+          <p
+            class="text-dark underline font-semibold cursor-pointer ml-4"
+            @click="login"
+          >
+            {{ $t("login") }}
+          </p>
         </div>
       </div>
-      <div class="vx-col lg:w-2/3 w-full bg-white flex justify-center" :class="{'items-center': currentPage<3}" style="height: calc( 100vh ); overflow: auto;">
+      <div
+        class="vx-col lg:w-2/3 w-full bg-white flex justify-center"
+        :class="{ 'items-center': currentPage < 3 }"
+        style="height: calc(100vh); overflow: auto"
+      >
         <!-- <VuePerfectScrollbar class="scroll-area px-4" :settings="settings" ref="pageLists"> -->
         <transition
-          v-for="page in [0,1,2,3]"
+          v-for="page in [0, 1, 2, 3]"
           :key="page"
           name="custom-classes-transition"
           :enter-active-class="enterClass"
@@ -56,12 +92,14 @@
           <template>
             <div
               class="vx-row py-12 course-content"
-              style="max-width:700px;"
-              v-if="currentPage==page && currentPage==0"
+              style="max-width: 700px"
+              v-if="currentPage == page && currentPage == 0"
             >
-              <p class="text-center karla-bold text-2xl color-black w-full">{{$t("create account")}}</p>
+              <p class="text-center karla-bold text-2xl color-black w-full">
+                {{ $t("create account") }}
+              </p>
               <div class="vx-col w-full">
-                <label class="caption" for="user_name">{{$t("name")}}</label>
+                <label class="caption" for="user_name">{{ $t("name") }}</label>
                 <!-- regex:^[0-9]+ -->
                 <vs-input
                   id="user_name"
@@ -72,10 +110,12 @@
                   v-model="userName"
                   name="username"
                 />
-                <span class="text-danger text-sm">{{ errors.first('username') }}</span>
+                <span class="text-danger text-sm">{{
+                  errors.first("username")
+                }}</span>
               </div>
               <div class="vx-col w-full md:mt-base mt-3">
-                <label class="caption" for="email">{{$t("email")}}</label>
+                <label class="caption" for="email">{{ $t("email") }}</label>
                 <vs-input
                   id="email"
                   v-validate="'required|email'"
@@ -86,10 +126,14 @@
                   :placeholder="$t('email')"
                   v-model="userEmail"
                 />
-                <span class="text-danger text-sm">{{ errors.first('email') }}</span>
+                <span class="text-danger text-sm">{{
+                  errors.first("email")
+                }}</span>
               </div>
               <div class="vx-col w-full md:mt-base mt-3">
-                <label class="caption" for="password">{{$t("password")}}</label>
+                <label class="caption" for="password">{{
+                  $t("password")
+                }}</label>
                 <div class="relative">
                   <vs-input
                     id="password"
@@ -106,18 +150,20 @@
                     icon="EyeIcon"
                     svgClasses="h-6 w-6"
                     class="passIcon"
-                    v-if="passwordType=='password'"
-                    @click="passwordType='text'"
+                    v-if="passwordType == 'password'"
+                    @click="passwordType = 'text'"
                   />
                   <feather-icon
                     icon="EyeOffIcon"
                     svgClasses="h-6 w-6"
                     class="passIcon"
                     v-else
-                    @click="passwordType='password'"
+                    @click="passwordType = 'password'"
                   />
                 </div>
-                <span class="text-danger text-sm">{{ errors.first('password') }}</span>
+                <span class="text-danger text-sm">{{
+                  errors.first("password")
+                }}</span>
               </div>
               <!-- <div class="vx-col w-full md:mt-base mt-3 flex items-center">
                 <vs-checkbox
@@ -132,24 +178,29 @@
                   class="w-full karla-bold"
                   :disabled="pageCheck(0)"
                   @click.native="plusPage"
-                >{{$t("next")}}</vs-button>
+                  >{{ $t("next") }}</vs-button
+                >
               </div>
             </div>
             <div
-              v-else-if="currentPage==page && currentPage==1"
-              style="max-width:700px;"
+              v-else-if="currentPage == page && currentPage == 1"
+              style="max-width: 700px"
               class="vx-row py-12 course-content"
             >
               <div class="vx-col w-full">
-                <p
-                  class="text-center karla-bold text-2xl color-black mb-3"
-                >{{$t("company details")}}</p>
-                <p
-                  class="text-sm color-black opacity-50 text-center"
-                >{{$t("Tell us about your company so that we could customize your experience")}}</p>
+                <p class="text-center karla-bold text-2xl color-black mb-3">
+                  {{ $t("company details") }}
+                </p>
+                <p class="text-sm color-black opacity-50 text-center">
+                  {{
+                    $t(
+                      "Tell us about your company so that we could customize your experience"
+                    )
+                  }}
+                </p>
               </div>
               <div class="vx-col w-full mt-4">
-                <p class="caption mb-2">{{$t("company name")}}</p>
+                <p class="caption mb-2">{{ $t("company name") }}</p>
                 <vs-input
                   v-validate="'required|min:3'"
                   data-vv-validate-on="blur"
@@ -158,10 +209,12 @@
                   v-model="company"
                   name="companyname"
                 />
-                <span class="text-danger text-sm">{{ errors.first('companyname') }}</span>
+                <span class="text-danger text-sm">{{
+                  errors.first("companyname")
+                }}</span>
               </div>
               <div class="vx-col w-full mt-4">
-                <p class="caption mb-4">{{$t("industry")}}</p>
+                <p class="caption mb-4">{{ $t("industry") }}</p>
                 <v-select
                   :options="companyTypes"
                   :clearable="false"
@@ -171,7 +224,7 @@
               </div>
 
               <div class="vx-col w-full mt-4">
-                <p class="caption mb-4">{{$t("job title")}}</p>
+                <p class="caption mb-4">{{ $t("job title") }}</p>
                 <v-select
                   :options="industryTypes"
                   :clearable="false"
@@ -181,7 +234,7 @@
               </div>
 
               <div class="vx-col w-full mt-4">
-                <p class="caption mb-2">{{$t("Number of employees")}}</p>
+                <p class="caption mb-2">{{ $t("Number of employees") }}</p>
                 <v-select
                   :clearable="false"
                   :options="employeeList"
@@ -190,36 +243,40 @@
                 ></v-select>
               </div>
 
-              <div class="vx-col w-full mt-12 flex items-center justify-between">
+              <div
+                class="vx-col w-full mt-12 flex items-center justify-between"
+              >
                 <vs-button
                   color="#ebe8fd"
                   class="w-full mr-4 karla-bold"
                   text-color="#6c50f0"
                   @click.native="minusPage"
-                >{{$t("back")}}</vs-button>
+                  >{{ $t("back") }}</vs-button
+                >
                 <vs-button
                   @click.native="plusPage"
                   color="#6c50f0"
                   :disabled="pageCheck(1)"
                   class="w-full karla-bold"
-                >{{$t("next")}}</vs-button>
+                  >{{ $t("next") }}</vs-button
+                >
               </div>
             </div>
             <div
-              v-else-if="currentPage==page && currentPage==2"
+              v-else-if="currentPage == page && currentPage == 2"
               class="vx-row py-12 course-content"
-              style="max-width:700px;"
+              style="max-width: 700px"
             >
               <div class="vx-col w-full">
-                <p
-                  class="text-center karla-bold text-2xl color-black mb-4"
-                >{{$t("Get Qualizy app on the phone")}}</p>
-                <p
-                  class="text-sm color-black opacity-50 text-center"
-                >{{$t("We will send you a link to download Qualizy app")}}</p>
+                <p class="text-center karla-bold text-2xl color-black mb-4">
+                  {{ $t("Get Qualizy app on the phone") }}
+                </p>
+                <p class="text-sm color-black opacity-50 text-center">
+                  {{ $t("We will send you a link to download Qualizy app") }}
+                </p>
               </div>
               <div class="vx-col w-full mt-4">
-                <p class="caption">{{$t("phone number")}}</p>
+                <p class="caption">{{ $t("phone number") }}</p>
                 <vue-tel-input
                   :inputOptions="inputOptions"
                   validCharactersOnly
@@ -228,41 +285,61 @@
                   @input="phoneValidate"
                 ></vue-tel-input>
               </div>
-              <div class="vx-col w-full mt-base flex items-center justify-between">
+              <div
+                class="vx-col w-full mt-base flex items-center justify-between"
+              >
                 <vs-button
                   color="#ebe8fd"
                   class="w-full mr-4 karla-bold"
                   text-color="#6c50f0"
                   @click.native="minusPage"
-                >{{$t("back")}}</vs-button>
+                  >{{ $t("back") }}</vs-button
+                >
                 <vs-button
                   @click.native="plusPage"
                   color="#6c50f0"
                   class="w-full karla-bold"
                   :disabled="!pageCheck(2)"
-                >{{$t("next")}}</vs-button>
+                  >{{ $t("next") }}</vs-button
+                >
               </div>
               <div class="absolute skip-item cursor-pointer">
-                <div class="flex items-center hover:font-bold" @click="currentPage=3">
-                  <span class="text-sm mr-2" style="color: #6C50F0;">{{$t('skip')}}</span>
-                  <vs-icon color="#6C50F0" size="20px" icon-pack="feather" icon="icon-arrow-right"></vs-icon>
+                <div
+                  class="flex items-center hover:font-bold"
+                  @click="currentPage = 3"
+                >
+                  <span class="text-sm mr-2" style="color: #6c50f0">{{
+                    $t("skip")
+                  }}</span>
+                  <vs-icon
+                    color="#6C50F0"
+                    size="20px"
+                    icon-pack="feather"
+                    icon="icon-arrow-right"
+                  ></vs-icon>
                 </div>
               </div>
             </div>
             <div
-              v-else-if="currentPage==page && currentPage==3"
+              v-else-if="currentPage == page && currentPage == 3"
               class="vx-row py-12 course-content mt-4"
-              style="max-width:700px;"
+              style="max-width: 700px"
             >
               <div class="vx-col w-full">
-                <p
-                  class="text-center karla-bold text-2xl color-black mb-4"
-                >{{$t("Grab a time here with an expert for a FREE 30 -minute training call")}}</p>
-                <p
-                  class="text-base color-black opacity-50 text-center"
-                >{{$t("Rather than spending hours trying out our software and reading documentation, We invite you to spend 30 minutes with our experts getting specific answers to your questions and having a true expert help you customise the product to your specific needs & workflow")}}</p>
+                <p class="text-center karla-bold text-2xl color-black mb-4">
+                  {{
+                    $t("Grab a time here with an expert for a FREE set-up call")
+                  }}
+                </p>
+                <p class="text-base color-black opacity-50 text-center">
+                  {{
+                    $t(
+                      "Rather than spending hours trying out our software and reading documentation, We invite you to spend 30 minutes with our experts getting specific answers to your questions and having a true expert help you customise the product to your specific needs & workflow"
+                    )
+                  }}
+                </p>
               </div>
-              <div class="vx-row w-full" style="margin-top:-30px;">
+              <div class="vx-row w-full" style="margin-top: -30px">
                 <vue-calendly :url="calendlyUrl" :height="1000"></vue-calendly>
               </div>
               <div class="vx-col w-full flex items-center justify-between">
@@ -271,17 +348,29 @@
                   class="w-full mr-4 karla-bold"
                   text-color="#6c50f0"
                   @click.native="minusPage"
-                >{{$t("back")}}</vs-button>
+                  >{{ $t("back") }}</vs-button
+                >
                 <vs-button
                   @click.native="registerUser"
                   color="#6c50f0"
                   class="w-full karla-bold"
-                >{{$t("finish")}}</vs-button>
+                  >{{ $t("finish") }}</vs-button
+                >
               </div>
               <div class="absolute skip-item cursor-pointer">
-                <div class="flex items-center hover:font-bold" @click="registerUser">
-                  <span class="text-sm mr-2" style="color: #6C50F0;">{{$t('skip')}}</span>
-                  <vs-icon color="#6C50F0" size="20px" icon-pack="feather" icon="icon-arrow-right"></vs-icon>
+                <div
+                  class="flex items-center hover:font-bold"
+                  @click="registerUser"
+                >
+                  <span class="text-sm mr-2" style="color: #6c50f0">{{
+                    $t("skip")
+                  }}</span>
+                  <vs-icon
+                    color="#6C50F0"
+                    size="20px"
+                    icon-pack="feather"
+                    icon="icon-arrow-right"
+                  ></vs-icon>
                 </div>
               </div>
             </div>
@@ -372,7 +461,7 @@ export default {
         notify: this.$vs.notify,
         closeAnimation: this.$vs.loading.close,
         userflow: this.$userflow,
-        gist: window.gist
+        gist: window.gist,
       };
       // console.log(payload);
       this.$store.dispatch("auth/registerUser", payload);
@@ -442,19 +531,16 @@ export default {
     },
     companyTypes() {
       return [
-        { text: this.$t("Restaurant"), key: "Restaurant" },
-        { text: this.$t("Cafe"), key: "Cafe" },
-        {
-          text: this.$t("Food retail (Butcher, Fishmonger, etc..)"),
-          key: "Food retail (Butcher, Fishmonger, etc..)",
-        },
-        { text: this.$t("Food production"), key: "Food production" },
-        { text: this.$t("Caterer"), key: "Caterer" },
-        {
-          text: this.$t("Collectivity catering"),
-          key: "Collectivity catering",
-        },
-        { text: this.$t("Others"), key: "Others" },
+        { key: 0, text: this.$t("Restaurant") },
+        { key: 1, text: this.$t("Butchery") },
+        { key: 2, text: this.$t("Food production") },
+        { key: 3, text: this.$t("Coffee") },
+        { key: 4, text: this.$t("Hotel") },
+        { key: 5, text: this.$t("Catering") },
+        { key: 6, text: this.$t("Food retail") },
+        { key: 7, text: this.$t("Collectivity") },
+        { key: 8, text: this.$t("Bakery") },
+        { key: 1000, text: this.$t("Other") },
       ];
     },
     courses() {
@@ -483,7 +569,7 @@ export default {
     },
     calendlyUrl() {
       //  `https://calendly.com/qualizy/training-call-with-a-qualizy-expert-2?hide_event_type_details=1&hide_gdpr_banner=1&primary_color=7367f0`
-      if(this.$i18n.locale == 'fr') 
+      if (this.$i18n.locale == "fr")
         return `https://calendly.com/qualizy/mise-en-place-gratuite?email=${this.userEmail}&name=${this.userName}&a1=${this.company}&hide_event_type_details=1&hide_gdpr_banner=1&primary_color=7367f0`;
       return `https://calendly.com/qualizy/training-call-with-a-qualizy-expert-2?email=${this.userEmail}&name=${this.userName}&a1=${this.company}&hide_event_type_details=1&hide_gdpr_banner=1&primary_color=7367f0`;
     },
@@ -502,7 +588,7 @@ export default {
             this.errors.first("password") ||
             this.userName == "" ||
             this.userEmail == "" ||
-            this.userPassword == "" 
+            this.userPassword == ""
             // !this.isTermsConditionAccepted
           );
         } else if (page == 1) {
@@ -515,11 +601,9 @@ export default {
   },
   watch: {
     currentPage(val) {
-      if(val==1) {
-        if(!!!this.industry.value)
-          this.industry = this.industryTypes[0]
-        if(!!!this.companyType.key)
-          this.companyType = this.companyTypes[0]
+      if (val == 1) {
+        if (!!!this.industry.value) this.industry = this.industryTypes[0];
+        if (!!!this.companyType.key) this.companyType = this.companyTypes[0];
       }
     },
   },

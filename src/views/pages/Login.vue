@@ -5,17 +5,22 @@
     id="page-login"
     @keyup.enter="pressEnter"
   >
-    <div class="vx-col sm:w-1/2 md:w-1/2 lg:w-3/4 xl:w-3/5 sm:m-0 m-4" style="max-width:520px;">
+    <div
+      class="vx-col sm:w-1/2 md:w-1/2 lg:w-3/4 xl:w-3/5 sm:m-0 m-4"
+      style="max-width: 520px"
+    >
       <vx-card>
         <div slot="no-body" class="sm:p-8 p-4">
           <div class="vx-row no-gutter justify-center items-center">
             <div class="vx-col w-full d-theme-dark-bg">
               <div class="sm:p-8 p-4">
                 <div class="vx-card__title sm:mb-8">
-                  <h4 class="mb-4 text-2xl text-center karla-bold">{{$t("Log in to Qualizy")}}</h4>
+                  <h4 class="mb-4 text-2xl text-center karla-bold">
+                    {{ $t("Log in to Qualizy") }}
+                  </h4>
                 </div>
                 <div class="mt-12">
-                  <label for="email" class="karla">{{$t('email')}}</label>
+                  <label for="email" class="karla">{{ $t("email") }}</label>
                   <vs-input
                     v-validate="'required|email|min:3'"
                     data-vv-validate-on="blur"
@@ -26,10 +31,14 @@
                     v-model="email"
                     class="w-full mt-1"
                   />
-                  <span class="text-danger text-sm">{{ errors.first('email') }}</span>
+                  <span class="text-danger text-sm">{{
+                    errors.first("email")
+                  }}</span>
                 </div>
                 <div class="mt-6">
-                  <label class="karla" for="password">{{$t('password')}}</label>
+                  <label class="karla" for="password">{{
+                    $t("password")
+                  }}</label>
                   <div class="relative">
                     <vs-input
                       data-vv-validate-on="blur"
@@ -46,25 +55,38 @@
                       icon="EyeIcon"
                       svgClasses="h-6 w-6"
                       class="passIcon"
-                      v-if="passwordType=='password'"
-                      @click="passwordType='text'"
+                      v-if="passwordType == 'password'"
+                      @click="passwordType = 'text'"
                     />
                     <feather-icon
                       icon="EyeOffIcon"
                       svgClasses="h-6 w-6"
                       class="passIcon"
                       v-else
-                      @click="passwordType='password'"
+                      @click="passwordType = 'password'"
                     />
                   </div>
-                  <span class="text-danger text-sm">{{ errors.first('password') }}</span>
+                  <span class="text-danger text-sm">{{
+                    errors.first("password")
+                  }}</span>
                 </div>
-                <div class="flex flex-wrap items-center justify-between sm:my-5 my-4">
+                <div
+                  class="flex flex-wrap items-center justify-between sm:my-5 my-4"
+                >
                   <div class="flex items-center mb-3">
-                    <vs-checkbox id="checkbox_remember_me" v-model="checkbox_remember_me"/>
-                    <label for="checkbox_remember_me">{{$t("remember me")}}</label>
+                    <vs-checkbox
+                      id="checkbox_remember_me"
+                      v-model="checkbox_remember_me"
+                    />
+                    <label for="checkbox_remember_me">{{
+                      $t("remember me")
+                    }}</label>
                   </div>
-                  <router-link to="/pages/forgot-password" class="karla-bold text-dark">{{$t("forgot password")}}?</router-link>
+                  <router-link
+                    to="/pages/forgot-password"
+                    class="karla-bold text-dark"
+                    >{{ $t("forgot password") }}?</router-link
+                  >
                 </div>
 
                 <vs-button
@@ -73,9 +95,12 @@
                   :disabled="!validateForm"
                   @click="login"
                   color="#6c50f0"
-                >{{$t("login")}}</vs-button>
+                  >{{ $t("login") }}</vs-button
+                >
 
-                <p class="karla text-center sm:my-6 my-4">{{$t("Or connect with")}}</p>
+                <p class="karla text-center sm:my-6 my-4">
+                  {{ $t("Or connect with") }}
+                </p>
                 <div class="md:flex items-center justify-between">
                   <vs-button
                     icon-pack="feather"
@@ -84,7 +109,8 @@
                     text-color="#6c50f0"
                     class="karla-bold w-full md:mr-1 mr-0"
                     @click="digit"
-                  >{{$t("Digit code")}}</vs-button>
+                    >{{ $t("Digit code") }}</vs-button
+                  >
                   <vs-button
                     color="#f0edfd"
                     text-color="#6c50f0"
@@ -105,15 +131,20 @@
                         fill="#6c50f0"
                       />
                     </svg>
-                    {{$t("Google account")}}
+                    {{ $t("Google account") }}
                   </vs-button>
                 </div>
                 <div class="flex items-center justify-center mt-6">
-                  <p class="karla-bold mr-2">{{$t("Don't have an account")}}?</p>
+                  <p class="karla-bold mr-2">
+                    {{ $t("Don't have an account") }}?
+                  </p>
                   <p
-                    class="karla-bold underline cursor-pointer" style="color: #6c50f0;"
+                    class="karla-bold underline cursor-pointer"
+                    style="color: #6c50f0"
                     @click="registerUser"
-                  >{{$t("sign up")}}</p>
+                  >
+                    {{ $t("sign up") }}
+                  </p>
                 </div>
               </div>
             </div>
@@ -149,6 +180,7 @@ export default {
   },
 
   created() {
+    console.log("v-1-29-10-22");
   },
 
   methods: {
@@ -167,12 +199,12 @@ export default {
         checkbox_remember_me: this.checkbox_remember_me,
         userDetails: {
           email: email,
-          password: this.password
+          password: this.password,
         },
         notify: this.$vs.notify,
         closeAnimation: this.$vs.loading.close,
         userflow: this.$userflow,
-        gist: window.gist
+        gist: window.gist,
       };
       this.$store.dispatch("auth/loginAttempt", payload);
     },
