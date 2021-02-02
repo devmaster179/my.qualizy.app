@@ -4,10 +4,25 @@ export default {
   }, query) {
     commit('SET_LABEL', query)
   },
+  setLabelFiltered({
+    commit
+  }, query) {
+    commit('SET_LABEL_FILTERED', query)
+  },
   setTemplateType({
     commit
   }, query) {
     commit('SET_TEMPLATE_TYPE', query)
+  },
+  setTemplateImages({
+    commit
+  }, query) {
+    commit('SET_TEMPLATE_IMAGES', query)
+  },
+  addTemplateImage({
+    commit
+  }, query) {
+    commit('ADD_TEMPLATE_IMAGE', query)
   },
   setTemplate({
     commit
@@ -112,6 +127,12 @@ export default {
     commit
   }, query) {
     commit('SET_PUBLIC_TEMPLATES', query)
+  },
+
+  setPublicTemplatesFiltered({
+    commit
+  }, query) {
+    commit('SET_PUBLIC_TEMPLATES_FILTERED', query)
   },
 
   chatFileUploding({

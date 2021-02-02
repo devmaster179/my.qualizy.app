@@ -530,4 +530,14 @@ export default {
     "most_alerts_team": 'Team with biggest number of alerts',
     "alerts_log": 'Alerts log',
     "Watch this video to see how it works": "Watch this video to see how it works",
+    "Restaurant": "Restaurante",  // begin industry tag 
+    "Butchery": "Carnicería",
+    "Food production": "Unidad de producción",
+    "Coffee": "Bar",
+    "Hotel": "Hotel",
+    "Catering": "Abastecedor",
+    "Food retail": "Supermercado",
+    "Collectivity": "Colectividad",
+    "Bakery": "Panadería",
+    "Other": "Otro", // end industry tag
 }
