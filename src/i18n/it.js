@@ -500,6 +500,7 @@ export default {
     "Question Title": "Titre de Question",
     "reprots": "Rapporti",
     "save_as": 'Save as',
+    "save_report": "Save report",
     "report_name": 'Report name',
     "me": 'Me (private)',
     "text": 'Text',

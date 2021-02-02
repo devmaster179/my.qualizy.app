@@ -20,7 +20,7 @@
           <h5 class="mb-0">{{$t("templates") | capitalize}}</h5>
         </div>
         <div class="vx-col pl-base pr-4 pb-4 w-full">
-          <v-select v-model="template" :label="$t('name')" multiple :options="templates" />
+          <v-select v-model="template" :label="'name'" multiple :options="templates" />
         </div>
         <div class="vx-col pl-base pr-4w-full">
           <h5 class="mb-0">{{$t("date") | capitalize}}</h5>

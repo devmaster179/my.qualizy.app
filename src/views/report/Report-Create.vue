@@ -5,7 +5,7 @@
         <span
           class="karla-bold main-title cursor-pointer"
           @click="$router.push('/report')"
-        >{{$t("report") | capitalize}}</span>
+        >{{$t("reports") | capitalize}}</span>
         <span class="karla-bold">&nbsp;> {{$t("New Report")}}</span>
       </div>
       <div class="flex items-center page-action">
@@ -22,7 +22,7 @@
           type="filled"
           @click="activeSave=true"
           :disabled="filter.template === undefined || filter.template.length == 0"
-        >{{$t("save") | capitalize}}</vs-button>
+        >{{$t("save_report") | capitalize}}</vs-button>
       </div>
     </div>
 

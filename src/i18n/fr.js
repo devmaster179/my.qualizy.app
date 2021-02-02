@@ -553,6 +553,7 @@ export default {
     "Saturday": "Samedi",
     "SunDay": "Dimanche",
     "save_as": "Sauvergader sous",
+    "save_report": "Save report",
     "report_name": "Nom du rapport",
     "me": "Seulement moi",
     "text": "Texte",
