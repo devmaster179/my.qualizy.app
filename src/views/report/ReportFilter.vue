@@ -10,12 +10,18 @@
     v-model="isSidebarActiveLocal"
   >
     <div class="mt-6 flex items-center justify-between px-6">
-      <h4>{{$t("select filter") | capitalize}}</h4>
+      <h4>{{ $t("filters") }}</h4>
       <feather-icon icon="XIcon" @click.stop="isSidebarActiveLocal = false" class="cursor-pointer"></feather-icon>
     </div>
     <vs-divider class="mb-0"></vs-divider>
     <VuePerfectScrollbar class="scroll-area--log-filter pt-4 pb-6" :settings="settings">
       <div class="vx-row">
+        <div class="vx-col pl-base pr-4w-full">
+          <h5 class="mb-0">{{$t("templates") | capitalize}}</h5>
+        </div>
+        <div class="vx-col pl-base pr-4 pb-4 w-full">
+          <v-select v-model="template" :label="'name'" multiple :options="templates" />
+        </div>
         <div class="vx-col pl-base pr-4w-full">
           <h5 class="mb-0">{{$t("date") | capitalize}}</h5>
         </div>
@@ -29,9 +35,9 @@
           </div>
           <div class="vx-col pl-base pr-4 pb-4 w-full">
             <datepicker
-              :placeholder="$t('from') | capitalize"
-              v-model="from"
-              :language="languages[$i18n.locale]"
+                    :placeholder="$t('from') | capitalize"
+                    v-model="from"
+                    :language="languages[$i18n.locale]"
             ></datepicker>
           </div>
 
@@ -40,17 +46,23 @@
           </div>
           <div class="vx-col pl-base pr-4 pb-4 w-full">
             <datepicker
-              :placeholder="$t('to') | capitalize"
-              :language="languages[$i18n.locale]"
-              v-model="to"
+                    :placeholder="$t('to') | capitalize"
+                    :language="languages[$i18n.locale]"
+                    v-model="to"
             ></datepicker>
           </div>
         </template>
         <div class="vx-col pl-base pr-4w-full">
-          <h5 class="mb-0">{{$t("templates") | capitalize}}</h5>
+          <h5 class="mb-0">{{$t("labels") | capitalize}}</h5>
         </div>
         <div class="vx-col pl-base pr-4 pb-4 w-full">
-          <v-select v-model="template" label="name" multiple :options="templates" />
+          <v-select :label="$t('name')" multiple :options="labels" v-model="tag" />
+        </div>
+        <div class="vx-col pl-base pr-4w-full">
+          <h5 class="mb-0">{{$t("status") | capitalize}}</h5>
+        </div>
+        <div class="vx-col pl-base pr-4 pb-4 w-full">
+          <v-select :options="state" :label="$t('text')" v-model="status" />
         </div>
         <div class="vx-col pl-base pr-4w-full">
           <h5 class="mb-0">{{$t("users") | capitalize}}</h5>
@@ -63,18 +75,6 @@
         </div>
         <div class="vx-col pl-base pr-4 pb-4 w-full">
           <v-select label="name" multiple :options="teams" v-model="team" />
-        </div>
-        <div class="vx-col pl-base pr-4w-full">
-          <h5 class="mb-0">{{$t("labels") | capitalize}}</h5>
-        </div>
-        <div class="vx-col pl-base pr-4 pb-4 w-full">
-          <v-select label="name" multiple :options="labels" v-model="tag" />
-        </div>
-        <div class="vx-col pl-base pr-4w-full">
-          <h5 class="mb-0">{{$t("status") | capitalize}}</h5>
-        </div>
-        <div class="vx-col pl-base pr-4 pb-4 w-full">
-          <v-select :options="state" label="text" v-model="status" />
         </div>
       </div>
     </VuePerfectScrollbar>

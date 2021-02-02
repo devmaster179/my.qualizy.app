@@ -354,6 +354,10 @@
     >
       <div class="vx-row">
         <div class="vx-col w-full mb-6">
+          <h4 class="font-weight-bold">{{ $t('delivery_schedule') }}</h4>
+          <p class="text-muted">{{ $t('create_schedule') }}</p>
+        </div>
+        <div class="vx-col w-full mb-6">
           <label> {{$t('start date')}} </label>
           <datepicker
             placeholder="Available from"

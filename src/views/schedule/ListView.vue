@@ -197,9 +197,10 @@ export default {
 }
 
 .schedule-table tbody tr td:first-child {
-  padding: 1.5rem 0 1.5rem 2rem;
+  padding: 1.5rem 2rem;
   border-top-left-radius: 0.5rem;
   border-bottom-left-radius: 0.5rem;
+  width: 65%;
 }
 
 .schedule-table tbody tr td:last-child {
