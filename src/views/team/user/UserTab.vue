@@ -550,7 +550,9 @@ export default {
       this.saveUserAndSendMail(index)
         .then((pass) => {
           index++;
-          this.processInvite(index);
+          if (index <= this.tempUsers.length) {
+            the.processInvite(index);
+          }
         })
         .catch((err) => {
           if (err == "empty") {
@@ -575,21 +577,25 @@ export default {
               color: "warning",
             });
           } else {
-            this.$vs.notify({
-              time: 7000,
-              title: "Fail for inviting",
-              text:
-                the.tempUsers[index].email +
-                `
-                            ` +
-                err,
-              iconPack: "feather",
-              icon: "icon-check-circle",
-              color: "danger",
-            });
+            if (the.tempUsers[index] !== undefined) {
+              this.$vs.notify({
+                time: 7000,
+                title: "Fail for inviting",
+                text:
+                  the.tempUsers[index].email +
+                  `
+                              ` +
+                  err,
+                iconPack: "feather",
+                icon: "icon-check-circle",
+                color: "danger",
+              });
+            }
           }
           index++;
-          the.processInvite(index);
+          if (index <= this.tempUsers.length) {
+            the.processInvite(index);
+          }
         });
     },
     invite() {

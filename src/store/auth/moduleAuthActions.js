@@ -190,7 +190,7 @@ export default {
         else {
           reject(new Error("Sorry, we don't recognise this email. \n Please register to login."));
         }
-        if (!user.status)
+        if (user === undefined || !user.status)
           reject(new Error('This email address blocked already. \n Please contact your admin.'));
         else if (user.deleted !== undefined && user.deleted)
           reject(new Error('This email address deleted already. \n Please contact your admin.'));
