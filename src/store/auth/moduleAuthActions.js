@@ -183,17 +183,17 @@ export default {
   }, payload) {
     return new Promise((resolve, reject) => {
       db.collection('users').where('email', '==', payload.email).get().then(async (result) => {
-        var user
+        var user;
         if (!result.empty) {
-          user = Object.assign({}, result.docs[0].data(), { id: result.docs[0].id })
+          user = Object.assign({}, result.docs[0].data(), { id: result.docs[0].id });
         }
         else {
-          reject(new Error('There is no user have this email. \n Please register to login.'))
+          reject(new Error("Sorry, we don't recognise this email. \n Please register to login."));
         }
         if (!user.status)
-          reject(new Error('This email address blocked already. \n Please contact your admin.'))
+          reject(new Error('This email address blocked already. \n Please contact your admin.'));
         else if (user.deleted !== undefined && user.deleted)
-          reject(new Error('This email address deleted already. \n Please contact your admin.'))
+          reject(new Error('This email address deleted already. \n Please contact your admin.'));
         var company = await getCompany({ group: user.group })
         var teams = await getTeams({ group: user.group })
         var locations = await getLocations({ group: user.group })

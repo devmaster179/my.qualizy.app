@@ -448,8 +448,9 @@ export default {
           item.email == "" ||
           item.email === undefined ||
           item.email == JSON.parse(localStorage.getItem("userInfo")).email
-        )
+        ){
           reject("empty");
+        }
         else if (users.find((user) => user.email == item.email)) {
           user = users.find((user) => user.email == item.email);
           if (
@@ -472,8 +473,10 @@ export default {
             resolve("OK");
           }
         } else {
-          var locations = this.$store.getters['app/locationList']
-          if(locations.length == 0) locations = this.$store.getters["app/currentUser"].location;
+          var locations = this.$store.getters['app/locationList'];
+          if(locations.length == 0){
+            locations = this.$store.getters["app/currentUser"].location;
+          }
           db.collection("users")
             .where("email", "==", item.email)
             .get()
