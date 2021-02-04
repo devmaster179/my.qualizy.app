@@ -190,6 +190,7 @@ export default {
         else {
           reject(new Error("Sorry, we don't recognise this email. \n Please register to login."));
         }
+        
         if (user === undefined || !user.status)
           reject(new Error('This email address blocked already. \n Please contact your admin.'));
         else if (user.deleted !== undefined && user.deleted)
@@ -276,8 +277,9 @@ export default {
         const hash = CryptoJS.HmacSHA256(result.docs[0].id, "ex0dlTc4U8KIzX7pw9udCQK5G9ukYhQauuU_7gQK")
         const hash1 = CryptoJS.enc.Hex.stringify(hash)
         var userLocation = ''
-        if (user.location && Array.isArray(user.location))
+        if (user.location && Array.isArray(user.location)){
           userLocation = user.location.join()
+        }
 
         payload.gist.identify(user.id, {
           name: user.name,
@@ -309,43 +311,41 @@ export default {
         payload.gist.track('Log In', {
           email: user.email,
           name: user.name,
-        })
+        });
 
-        if (!payload.userflow.isIdentified()) {
-          payload.userflow.identify(user.id, {
-            name: user.name,
-            email: user.email,
-            "Job Title": user.job_title || "",
-            "Role": roles[role],
-            "Group ID": user.group,
-            "Group Name": company.bussiness,
-            "Team id": user.team.join() || "",
-            "Team Name": team,
-            "Location ID": userLocation,
-            "Location Name": location,
-            phone: phone,
-            role: roles[role],
-            locale_code: user.lang || "en-us",
-            "Company size": company.employee || 5,
-            "Company industry": company.industry || "Business owner",
-            "Number of locations": locations.length || 0,
-            "App creator": !!user.who,
-            // "Job title": company.job || "Job title"
-          })
-        }
+        payload.userflow.identify(user.id, {
+          name: user.name,
+          email: user.email,
+          "Job Title": user.job_title || "",
+          "Role": roles[role],
+          "Group ID": user.group,
+          "Group Name": company.bussiness,
+          "Team id": user.team.join() || "",
+          "Team Name": team,
+          "Location ID": userLocation,
+          "Location Name": location,
+          phone: phone,
+          role: roles[role],
+          locale_code: user.lang || "en-us",
+          "Company size": company.employee || 5,
+          "Company industry": company.industry || "Business owner",
+          "Number of locations": locations.length || 0,
+          "App creator": !!user.who,
+          // "Job title": company.job || "Job title"
+        });
 
         payload.userflow.track("Log In", {
           email: user.email,
-        })
+        });
 
         db.collection('users').doc(user.id).update({
           last_visit: new Date(),
           chatStatus: 'online'
-        })
-        commit('UPDATE_AUTHENTICATED_USER', user)
+        });
+        commit('UPDATE_AUTHENTICATED_USER', user);
         resolve("Success!");
-      })
-    })
+      });
+    });
 
   },
   login({
