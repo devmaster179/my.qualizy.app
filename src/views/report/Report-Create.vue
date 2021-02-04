@@ -238,7 +238,23 @@ export default {
   },
   computed: {
     tags() {
-      return this.$store.getters["app/labels"];
+      const locale = this.$i18n.locale || "en-gb";
+      let labels = this.$store.getters["app/labels"].filter((item) => {
+        if (item.group != "global") {
+          const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+          if (userInfo.group != item.group) {
+            return false; 
+          }
+        }
+        if (!item.lang) {
+          if (locale != "en-gb") return false;
+        } else {
+          if (item.lang != locale) return false;
+        }
+        return true;
+      });
+
+      return labels;
     },
     teams() {
       var cUser = this.$store.getters["app/currentUser"]
