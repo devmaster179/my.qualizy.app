@@ -62,7 +62,7 @@
           <h5 class="mb-0">{{$t("status") | capitalize}}</h5>
         </div>
         <div class="vx-col pl-base pr-4 pb-4 w-full">
-          <v-select :options="state" :label="$t('text')" v-model="status" />
+          <v-select :options="state" :label="'text'" v-model="status" />
         </div>
         <div class="vx-col pl-base pr-4w-full">
           <h5 class="mb-0">{{$t("users") | capitalize}}</h5>
