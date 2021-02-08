@@ -57,7 +57,7 @@ export default {
     "create account": "Create account",
     "company details": "Company details",
     "get link to the app": "Get link to the app",
-    "schedule a training": "Schedule a training",
+    "schedule a free set-up call": "Schedule a free set-up call",
     "already have an account": "Already have an account",
     "first name and last name": "First name and Last name",
     "I accept the terms & condition": "I accept the terms & condition",

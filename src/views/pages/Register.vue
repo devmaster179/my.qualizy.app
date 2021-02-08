@@ -561,7 +561,7 @@ export default {
         },
         {
           name: this.$t("step") + " 4",
-          title: this.$t("schedule a training"),
+          title: this.$t("schedule a free set-up call"),
           icon: "icon-calendar",
         },
       ];
