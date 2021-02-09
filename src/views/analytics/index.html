@@ -34,7 +34,7 @@
                         {{ getFilterName(filter, key) }}
                     </span>
                     <span v-else>
-                        {{ filter | capitalize }}
+                        {{ filter == 'today' ? $t('today') : (filter | capitalize) }}
                     </span>
                 </b-tag>
                 <span class="cursor-pointer" @click="removeFlters">
@@ -142,7 +142,7 @@
                         default-sort-direction="asc"
                         paginated
                 >
-                    <b-table-column field="name" label="Location" sortable v-slot="props">
+                    <b-table-column field="name" :label="$t('location')" sortable v-slot="props">
                         {{ props.row.name }}
                     </b-table-column>
                     <b-table-column field="totalTasks" label="Total tasks" sortable v-slot="props">
@@ -281,22 +281,22 @@
                     default-sort-direction="asc"
                     paginated
                 >
-                    <b-table-column field="location" label="Location" sortable v-slot="props">
+                    <b-table-column field="location" :label="$t('location')" sortable v-slot="props">
                         {{ props.row.location || ' - ' }}
                     </b-table-column>
-                    <b-table-column field="team" label="Team" sortable v-slot="props">
+                    <b-table-column field="team" :label="$t('team')" sortable v-slot="props">
                         {{ props.row.team }}
                     </b-table-column>
-                    <b-table-column field="template" label="Template" sortable v-slot="props">
+                    <b-table-column field="template" :label="$t('template')" sortable v-slot="props">
                         {{ props.row.template }}
                     </b-table-column>
                     <b-table-column field="deadline" label="Deadline" sortable v-slot="props">
                         {{ props.row.deadline }}
                     </b-table-column>
-                    <b-table-column field="overdue" label="Overdue" sortable v-slot="props">
+                    <b-table-column field="overdue" :label="$t('overdue')" sortable v-slot="props">
                         {{ props.row.overdue + ' days' }}
                     </b-table-column>
-                    <b-table-column field="status" label="Status" sortable v-slot="props">
+                    <b-table-column field="status" :label="$t('status')" sortable v-slot="props">
                         {{ props.row.status }}
                     </b-table-column>
                 </b-table>
@@ -434,13 +434,13 @@
                                     sort-icon="chevron-down"
                                     default-sort-direction="asc"
                             >
-                                <b-table-column field="location" label="Location" sortable v-slot="props">
+                                <b-table-column field="location" :label="$t('location')" sortable v-slot="props">
                                     {{ log.location || ' - ' }}
                                 </b-table-column>
-                                <b-table-column field="teams" label="Team" sortable v-slot="props">
+                                <b-table-column field="teams" :label="$t('team')" sortable v-slot="props">
                                     {{ props.row.team ? props.row.team.join(', ') : log.team.join(', ') }}
                                 </b-table-column>
-                                <b-table-column field="template" label="Template" sortable v-slot="props">
+                                <b-table-column field="template" :label="$t('template')" sortable v-slot="props">
                                     {{ log.template }}
                                 </b-table-column>
                                 <b-table-column field="section" label="Section" sortable v-slot="props">
@@ -592,10 +592,10 @@
                     <b-table-column field="title" label="Alert name" sortable v-slot="props">
                         {{ props.row.title }}
                     </b-table-column>
-                    <b-table-column field="location" label="Location" sortable v-slot="props">
+                    <b-table-column field="location" :label="$t('location')" sortable v-slot="props">
                         {{ props.row.location ? props.row.location.name : ' - ' }}
                     </b-table-column>
-                    <b-table-column field="teams" label="Teams" sortable v-slot="props">
+                    <b-table-column field="teams" :label="$t('team')" sortable v-slot="props">
                         {{ props.row.teams.join(', ') || ', ' }}
                     </b-table-column>
                     <b-table-column field="color" label="Type" sortable v-slot="props">
