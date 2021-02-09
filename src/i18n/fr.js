@@ -57,7 +57,7 @@ export default {
     "create account": "Créez votre compte",
     "company details": "Configurez votre enterprise",
     "get link to the app": "Recevez un lien de téléchargement",
-    "schedule a free set-up call": "Réservez un rendez-vous de formation",
+    "schedule a free set-up call": "Réservez un appel de configuration gratuit",
     "already have an account": "Vous avez déjà un compte",
     "first name and last name": "Prénom et nom",
     "I accept the terms & condition": "J'accepte les termes et conditions",
