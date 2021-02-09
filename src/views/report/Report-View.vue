@@ -113,45 +113,95 @@
             </div>
           </div>
         </div>
-        <div class="vx-row w-full" v-if="filteredLogs.length > 0">
-          <table class="w-full mt-base logStatusTable">
-            <thead>
-              <tr>
-                <th
-                  class="py-2 border border-solid d-theme-border-grey-light border-t-0 border-l-0 border-r-0"
-                  width="50%"
-                >{{$t("check list")}}</th>
-                <th
-                  class="py-2 border border-solid d-theme-border-grey-light border-t-0 border-l-0 border-r-0"
-                  width="20%"
-                >{{$t("tasks")}}</th>
-                <th
-                  class="hidden sm:table-cell py-2 border border-solid d-theme-border-grey-light border-t-0 border-l-0 border-r-0"
-                  width="20%"
-                >{{$t("status")}}</th>
-                <th
-                  class="hidden sm:table-cell py-2 border border-solid d-theme-border-grey-light border-t-0 border-l-0 border-r-0"
-                  width="10%"
-                >{{$t("done")}}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr :key="log.id" v-for="log in filteredLogs">
-                <td
-                  class="py-5 pl-3 border border-solid d-theme-border-grey-light border-t-0 border-l-0 border-r-0"
-                >{{ logInfo(log).templateTitle }}</td>
-                <td
-                  class="py-5 border border-solid d-theme-border-grey-light border-t-0 border-l-0 border-r-0"
-                >{{ logInfo(log).tasks }}</td>
-                <td
-                  class="hidden sm:table-cell py-5 border border-solid d-theme-border-grey-light border-t-0 border-l-0 border-r-0"
-                >{{ logInfo(log).status }}</td>
-                <td
-                  class="hidden sm:table-cell py-5 border border-solid d-theme-border-grey-light border-t-0 border-l-0 border-r-0"
-                >{{ logInfo(log).done }}</td>
-              </tr>
-            </tbody>
-          </table>
+        <div id="reports" class="vx-row w-full" v-if="filteredLogs.length > 0" style="margin-top: 40px;">
+          <b-table
+                  :data="filteredLogs"
+                  detailed
+                  :show-detail-icon="false"
+                  class="w-full"
+                  icon-pack="fa"
+                  sort-icon="chevron-down"
+                  default-sort-direction="asc"
+          >
+
+            <b-table-column :label="$t('check list')" v-slot="props">
+              {{ logInfo(props.row).templateTitle }}
+            </b-table-column>
+
+            <b-table-column :label="$t('non compliant')" v-slot="props">
+              {{ logInfo(props.row).failed }}
+            </b-table-column>
+
+            <b-table-column :label="$t('compliance')" v-slot="props">
+              {{ logInfo(props.row).compliance }}
+            </b-table-column>
+
+            <b-table-column v-slot="props" width="10">
+                <b-icon
+                        class="cursor-pointer"
+                        pack="fa"
+                        :icon="props.open ? 'sort-up' : 'sort-down'"
+                        @click.native="props.toggleDetails(props.row);"
+                ></b-icon>
+            </b-table-column>
+
+            <template #detail="props">
+              <article class="media">
+                <div class="media-content">
+                  <div class="content">
+                    <b-table
+                        :data="[props.row]"
+                        detailed
+                        :show-detail-icon="false"
+                        class="w-full"
+                        icon-pack="fa"
+                        sort-icon="chevron-down"
+                        default-sort-direction="asc"
+                    >
+
+                      <b-table-column :visible="logInfo(props.row).show" :label="$t('date_used')" v-slot="props">
+                        {{ logInfo(props.row).dateUsed }}
+                      </b-table-column>
+
+                      <b-table-column :visible="logInfo(props.row).show" :label="$t('locations')" v-slot="props">
+                        {{ props.row.locations ? props.row.locations.join(', ') : '' }}
+                      </b-table-column>
+
+                      <b-table-column :visible="logInfo(props.row).show" :label="$t('teams')" v-slot="props">
+                        {{ props.row.teams ? props.row.teams.join(', ') : '' }}
+                      </b-table-column>
+
+                      <b-table-column :visible="logInfo(props.row).show" :label="$t('tasks')" v-slot="props">
+                        {{ logInfo(props.row).tasks }}
+                      </b-table-column>
+
+                      <b-table-column :visible="logInfo(props.row).show" v-slot="props" width="10">
+                        <b-icon
+                            class="cursor-pointer"
+                            pack="fa"
+                            :icon="props.open ? 'sort-up' : 'sort-down'"
+                            @click.native="props.toggleDetails(props.row);"
+                        ></b-icon>
+                      </b-table-column>
+
+                      <template #detail="props">
+                        <article class="media">
+                          <div class="media-content">
+                            <div class="content">
+                              <vx-card class="mb-base">
+                                <log-item :log="props.row" :order="props.index" />
+                              </vx-card>
+                            </div>
+                          </div>
+                        </article>
+                      </template>
+                    </b-table>
+                  </div>
+                </div>
+              </article>
+            </template>
+          </b-table>
+
         </div>
 
         <div class="flex w-full mt-base" v-else>
@@ -170,15 +220,7 @@
           </div>
         </div>
       </vx-card>
-      <template v-if="filteredLogs.length > 0">
-        <h5
-          class="mt-6 mb-4"
-          style="font-size: 18px;  font-weight: bold;  color: #1e1c26;"
-        >{{$t("more details")}}</h5>
-        <vx-card :key="index" class="mb-base" v-for="(log, index) in filteredLogs">
-          <log-item :log="log" :order="index" />
-        </vx-card>
-      </template>
+
     </div>
     <div class="w-full" id="reprot-print">
       <vx-card id="invoice-container">
@@ -396,6 +438,7 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import SocialSharing from "vue-social-sharing";
 import ReportFilter from "./ReportFilter.vue";
 import LogItem from "./LogItem.vue";
@@ -407,6 +450,14 @@ import XLSX from "xlsx";
 
 import Datepicker from "vuejs-datepicker";
 import * as lang from "vuejs-datepicker/src/locale";
+
+import { Table, Tag, Tabs, Button, Collapse, Icon } from 'buefy';
+Vue.use(Table);
+Vue.use(Tag);
+Vue.use(Tabs);
+Vue.use(Button);
+Vue.use(Collapse);
+Vue.use(Icon);
 
 export default {
   components: {
@@ -523,11 +574,21 @@ export default {
     },
     logInfo() {
       return (log) => {
-        let templateTitle = this.getTemplateInfo(log.templateID).content
-          .templateTitle;
-        var total = 0;
-        var completed = 0;
-        var state, done;
+        let locations = this.$store.getters['app/locationList'];
+        let teams = this.filter.team;
+        let template = this.getTemplateInfo(log.templateID);
+        let templateTitle = template.content.templateTitle;
+        let total = 0;
+        let completed = 0;
+        let failed = 0;
+        let done;
+        let locs = [];
+        let tms = [];
+        let show = true;
+
+        !log.locations && (log.locations = []);
+        !log.teams && (log.teams = []);
+
         log.logs.map((page) => {
           page.questions.map((question) => {
             question.answers.map((answer) => {
@@ -539,6 +600,11 @@ export default {
                   total++;
                   if (answer.loged) completed++;
                 }
+                if (
+                    answer.ref.type.failedAnswer &&
+                    answer.ref.type.failedAnswer == answer.value
+                )
+                  failed++;
               }
             });
           });
@@ -550,12 +616,57 @@ export default {
           status = "---";
           done = "---";
         }
-        return {
+        let obj = {
           templateTitle: templateTitle,
           tasks: `${completed}/${total}`,
+          compliance: `${((total - failed) / total * 100).toFixed(2)}%`,
           status: status,
           done: done,
+          failed: failed,
+          dateUsed: log.updated_at ? new Date(log.updated_at.toDate()).toLocaleString() : '',
+          locations: locs,
+          teams: tms,
+          show: show
         };
+
+        if(locations.length) {
+          template.content.location.forEach(loc => {
+            if(locations.includes(loc)) {
+              locs.push(this.$store.getters["app/getLocationById"](loc).name);
+            }
+          })
+          !locs.length && (show = false);
+        } else {
+          template.content.location.forEach(loc => {
+            db.collection("locations")
+                .doc(loc)
+                .get()
+                .then(snapshot => {
+                  locs.push(snapshot.data().name);
+                  !log.locations.includes(snapshot.data().name) && log.locations.push(snapshot.data().name);
+                })
+          });
+        }
+        if(teams && teams.length) {
+          template.content.teams.forEach(team => {
+            if(teams.includes(team)) {
+              tms.push(this.$store.getters["app/getTeamById"](team).name);
+            }
+          })
+          !tms.length && (show = false);
+        } else {
+          template.content.teams.forEach(team => {
+            db.collection("teams")
+                .doc(team)
+                .get()
+                .then(snapshot => {
+                  tms.push(snapshot.data().name);
+                  !log.teams.includes(snapshot.data().name) && log.teams.push(snapshot.data().name);
+                });
+          })
+
+        }
+        return obj;
       };
     },
     visibles() {
@@ -1420,3 +1531,4 @@ export default {
     overflow-x: hidden;
   }
 </style>
+<style lang="scss" src="../analytics/buefy.scss"></style>

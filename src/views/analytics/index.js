@@ -649,7 +649,7 @@ export default {
                                                     question.team = [];
                                                     data.team = [];
 
-                                                    schedule.assign.forEach(tm => {
+                                                    schedule && schedule.assign.forEach(tm => {
                                                         db.collection("teams")
                                                             .doc(tm)
                                                             .get()

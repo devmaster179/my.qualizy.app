@@ -541,4 +541,5 @@ export default {
     "Collectivity": "Colectividad",
     "Bakery": "Panadería",
     "Other": "Otro", // end industry tag
+    "date_used": 'Date'
 }
