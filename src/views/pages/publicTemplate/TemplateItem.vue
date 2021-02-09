@@ -3,28 +3,36 @@
   <vx-card class="mb-4 grid-view-item overflow-hidden relative">
     <template slot="no-body">
       <!-- ITEM IMAGE -->
-      <div class="item-img-container bg-white flex mt-base items-center justify-center">
-        <img :src="require(`@/assets/images/template_image/${item.content.templateImage}`)" width="130px"/>
+      <div
+        class="item-img-container bg-white flex mt-base items-center justify-center"
+      >
+        <img :src="applyImage(item.content.templateImage)" width="130px" />
       </div>
       <div class="item-details px-4 md:pt-base pt-0">
         <!-- TITLE & DESCRIPTION -->
         <div class="sm:my-2">
-          <h6 class="truncate font-semibold mb-1">{{ item.content.templateTitle | capitalize }}</h6>
-          <p class="item-description truncate text-sm mb-1">{{ item.content.templateComment }}</p>
+          <h6 class="truncate font-semibold mb-1">
+            {{ item.content.templateTitle | capitalize }}
+          </h6>
+          <p class="item-description truncate text-sm mb-1">
+            {{ item.content.templateComment }}
+          </p>
         </div>
-        <div class="mt-2 mb-4" style="min-height:30px;">
+        <div class="mt-2 mb-4" style="min-height: 30px">
           <div
             class="inline-block label-item rounded-lg mr-2 mt-3"
-            v-for="(label,index) in item.content.templateLabel"
+            v-for="(label, index) in item.content.templateLabel"
             :key="index"
-            :class="{'hidden': !labelInfo(label).color}"
+            :class="{ hidden: !labelInfo(label).color }"
           >
             <template v-if="labelInfo(label).color">
               <div
                 class="w-2 h-2 rounded-full mr-2 inline-block"
                 :style="`background:${labelInfo(label).color}`"
               ></div>
-              <span class="karla text-sm">{{labelInfo(label).name | capitalize}}</span>
+              <span class="karla text-sm">{{
+                labelInfo(label).name | capitalize
+              }}</span>
             </template>
           </div>
         </div>
@@ -55,6 +63,14 @@ export default {
             color: "",
           };
       };
+    },
+  },
+  methods: {
+    applyImage(image) {
+      if (image.indexOf("firebasestorage") > -1) {
+        return image;
+      }
+      return require(`@/assets/images/template_image/${image}`);
     },
   },
 };

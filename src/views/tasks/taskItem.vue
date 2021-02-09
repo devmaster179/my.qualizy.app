@@ -34,19 +34,17 @@
         <div class="flex items-center mb-5">
           <img
             :src="
-              require(`../../assets/images/template_image/${
-                templateInfo(task.templateID).content.templateImage
-              }`)
+              applyImage(templateInfo(task.templateID).content.templateImage)
             "
             class="mr-4"
             :alt="templateInfo(task.templateID).content.templateTitle"
             width="48px"
             height="48px"
           />
-          <div style="width: calc(100% - 4rem);">
-            <p
-              class="karla-bold templateTitle"
-            >{{templateInfo(task.templateID).content.templateTitle}}</p>
+          <div style="width: calc(100% - 4rem)">
+            <p class="karla-bold templateTitle">
+              {{ templateInfo(task.templateID).content.templateTitle }}
+            </p>
             <template v-if="task.schedule">
               <vs-icon
                 size="12px"
@@ -203,6 +201,12 @@ export default {
     };
   },
   methods: {
+    applyImage(image) {
+      if (image.indexOf("firebasestorage") > -1) {
+        return image;
+      }
+      return require(`@/assets/images/template_image/${image}`);
+    },
     deleteLog() {
       if (!this.auth("delete")) {
         this.roleError("delete");
