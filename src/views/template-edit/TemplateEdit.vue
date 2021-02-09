@@ -51,7 +51,7 @@
                 <div class="template-name-section flex items-start w-full">
                   <img
                     :src="applyImage(template.content.templateImage)"
-                    style="width: 48px; height: 48px; border-radius: 50%"
+                    style="width: 48px; border-radius: 50%"
                   />
                   <div class="ml-2 w-full">
                     <vs-input
