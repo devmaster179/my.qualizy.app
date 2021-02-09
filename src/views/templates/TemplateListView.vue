@@ -6,7 +6,6 @@
           :src="applyImage(template.content.templateImage)"
           class="rouned-full mr-2"
           width="50"
-          height="50"
           style="border-radius: 50%"
         />
         <div>

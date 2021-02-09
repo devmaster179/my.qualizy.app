@@ -124,7 +124,7 @@ export default {
 <style scoped>
 img.preview {
   width: 48px;
-  height: 48px;
+  /* height: 48px; */
   border-radius: 50%;
 }
 

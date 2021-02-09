@@ -2,10 +2,7 @@
   <div>
     <vs-dropdown vs-custom-content class="cursor-pointer mr-4">
       <div class="flex items-center">
-        <img
-          :src="applyImage(image)"
-          style="width: 48px; height: 48px; border-radius: 50%"
-        />
+        <img :src="applyImage(image)" style="width: 48px; border-radius: 50%" />
         <span class="karla-bold select-image-text ml-2">{{
           $t("select image")
         }}</span>
@@ -35,11 +32,15 @@
             v-for="img in templateImages"
             :key="img.id"
           >
-            <div class="images" :class="img.url == image ? 'active' : ''">
+            <div
+              class="images"
+              style="width: 48px; height: 48px !important"
+              :class="img.url == image ? 'active' : ''"
+            >
               <img
-                class="cursor-pointer"
+                class="cursor-pointer w-full h-full"
                 :src="img.url"
-                style="width: 48px; height: 48px"
+                style="object-fit: contain"
                 @click="selectImage = img.url"
               />
             </div>
