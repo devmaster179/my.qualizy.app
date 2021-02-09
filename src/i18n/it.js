@@ -510,6 +510,7 @@ export default {
     "Bakery": "Panificio",
     "Other": "Altro", // end industry tag
     "save_as": 'Save as',
+    "save_report": "Save report",
     "report_name": 'Report name',
     "me": 'Me (private)',
     "text": 'Text',
@@ -539,4 +540,5 @@ export default {
     "most_alerts_loc": 'Location with biggest number of alerts',
     "most_alerts_team": 'Team with biggest number of alerts',
     "alerts_log": 'Alerts log',
+    "date_used": 'Date'
 }

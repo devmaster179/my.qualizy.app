@@ -500,6 +500,7 @@ export default {
     "Saturday": "Sábado",
     "SunDay": "Domingo",
     "save_as": 'Save as',
+    "save_report": "Save report",
     "report_name": 'Report name',
     "me": 'Me (private)',
     "text": 'Text',
@@ -540,4 +541,5 @@ export default {
     "Collectivity": "Colectividad",
     "Bakery": "Panadería",
     "Other": "Otro", // end industry tag
+    "date_used": 'Date'
 }

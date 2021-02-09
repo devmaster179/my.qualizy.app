@@ -116,7 +116,6 @@ export default {
     },
     templateImages() {
       let templateImages = this.$store.getters["app/templateImages"];
-      console.log("from getter", templateImages);
       return templateImages;
     },
     activePrompt: {

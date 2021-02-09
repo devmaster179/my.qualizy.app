@@ -183,17 +183,18 @@ export default {
   }, payload) {
     return new Promise((resolve, reject) => {
       db.collection('users').where('email', '==', payload.email).get().then(async (result) => {
-        var user
+        var user;
         if (!result.empty) {
-          user = Object.assign({}, result.docs[0].data(), { id: result.docs[0].id })
+          user = Object.assign({}, result.docs[0].data(), { id: result.docs[0].id });
         }
         else {
-          reject(new Error('There is no user have this email. \n Please register to login.'))
+          reject(new Error("Sorry, we don't recognise this email. \n Please register to login."));
         }
-        if (!user.status)
-          reject(new Error('This email address blocked already. \n Please contact your admin.'))
+        
+        if (user === undefined || !user.status)
+          reject(new Error('This email address blocked already. \n Please contact your admin.'));
         else if (user.deleted !== undefined && user.deleted)
-          reject(new Error('This email address deleted already. \n Please contact your admin.'))
+          reject(new Error('This email address deleted already. \n Please contact your admin.'));
         var company = await getCompany({ group: user.group })
         var teams = await getTeams({ group: user.group })
         var locations = await getLocations({ group: user.group })
@@ -276,8 +277,9 @@ export default {
         const hash = CryptoJS.HmacSHA256(result.docs[0].id, "ex0dlTc4U8KIzX7pw9udCQK5G9ukYhQauuU_7gQK")
         const hash1 = CryptoJS.enc.Hex.stringify(hash)
         var userLocation = ''
-        if (user.location && Array.isArray(user.location))
+        if (user.location && Array.isArray(user.location)){
           userLocation = user.location.join()
+        }
 
         payload.gist.identify(user.id, {
           name: user.name,
@@ -309,43 +311,41 @@ export default {
         payload.gist.track('Log In', {
           email: user.email,
           name: user.name,
-        })
+        });
 
-        if (!payload.userflow.isIdentified()) {
-          payload.userflow.identify(user.id, {
-            name: user.name,
-            email: user.email,
-            "Job Title": user.job_title || "",
-            "Role": roles[role],
-            "Group ID": user.group,
-            "Group Name": company.bussiness,
-            "Team id": user.team.join() || "",
-            "Team Name": team,
-            "Location ID": userLocation,
-            "Location Name": location,
-            phone: phone,
-            role: roles[role],
-            locale_code: user.lang || "en-us",
-            "Company size": company.employee || 5,
-            "Company industry": company.industry || "Business owner",
-            "Number of locations": locations.length || 0,
-            "App creator": !!user.who,
-            // "Job title": company.job || "Job title"
-          })
-        }
+        payload.userflow.identify(user.id, {
+          name: user.name,
+          email: user.email,
+          "Job Title": user.job_title || "",
+          "Role": roles[role],
+          "Group ID": user.group,
+          "Group Name": company.bussiness,
+          "Team id": user.team.join() || "",
+          "Team Name": team,
+          "Location ID": userLocation,
+          "Location Name": location,
+          phone: phone,
+          role: roles[role],
+          locale_code: user.lang || "en-us",
+          "Company size": company.employee || 5,
+          "Company industry": company.industry || "Business owner",
+          "Number of locations": locations.length || 0,
+          "App creator": !!user.who,
+          // "Job title": company.job || "Job title"
+        });
 
         payload.userflow.track("Log In", {
           email: user.email,
-        })
+        });
 
         db.collection('users').doc(user.id).update({
           last_visit: new Date(),
           chatStatus: 'online'
-        })
-        commit('UPDATE_AUTHENTICATED_USER', user)
+        });
+        commit('UPDATE_AUTHENTICATED_USER', user);
         resolve("Success!");
-      })
-    })
+      });
+    });
 
   },
   login({
@@ -520,7 +520,6 @@ export default {
       } else if (monthlyTitles.indexOf(title.toLowerCase()) > -1) {
         repeat = "Monthly";
       }
-      console.log('repeat compare title', title)
       return repeat;
     }
     // create user using firebase
@@ -667,10 +666,6 @@ export default {
               updated_at: createdDate
             })
 
-            console.log('payload: ', payload)
-            console.log('payload.userDetails.locationInfo: ', payload.userDetails.locationInfo)
-            console.log('userIndustry: ', userIndustry)
-
             let tags = [];
             db.collection("template_labels") // get tag ids by industry name == tag name && group == global
               .where("group", "in", [
@@ -682,7 +677,6 @@ export default {
                 q.forEach((doc) => {
                   tags.push(doc.id);
                 });
-                console.log("getTemplateLabels", tags);
 
                 db.collection("templates") // get templates that has tag(same name with user industry)
                   .where("group", "==", "global")
@@ -700,8 +694,6 @@ export default {
                       )
                     );
 
-                    console.log("result.user", result.user);
-                    console.log("tag filtered templates", templates);
                     let tempBatch = db.batch()
                     let newTemps = []
                     templates.map((t) => {
@@ -717,7 +709,6 @@ export default {
                           group: result.user.uid,
                         })
                       temp.content.location = [res.id]
-                      console.log('each before save', temp)
                       var docRef = db.collection("templates").doc(); //automatically generate unique id
                       tempBatch.set(docRef, temp);
 
@@ -729,7 +720,6 @@ export default {
                     let repoBatch = db.batch()
 
                     newTemps.map(nt => {
-                      console.log('newTemps', nt)
                       let temp = nt.temp
                       // BEGIN activating schedules
                       if (temp.content.templateSD == "schedule this template") {
@@ -788,7 +778,6 @@ export default {
                           updated_at: new Date(),
                           active: true,
                         }
-                        console.log('schedule created', newSchedule, temp)
                         var scdRef = db.collection("schedules").doc(); //automatically generate unique id
                         scheduBatch.set(scdRef, newSchedule);
                       }
@@ -816,7 +805,6 @@ export default {
                         created_by: result.user.uid,
                         group: result.user.uid,
                       }
-                      console.log('report created', newReport)
                       var repoRef = db.collection("reports").doc(); //automatically generate unique id
                       repoBatch.set(repoRef, newReport);
                       // END activating reports
@@ -860,7 +848,6 @@ export default {
                         updated_at: new Date(),
                       });
 
-                      console.log('knowledge created', newKng)
                       var articleRef = db.collection("knowledge").doc(); //automatically generate unique id
                       kngAtcBatch.set(articleRef, newKng);
 

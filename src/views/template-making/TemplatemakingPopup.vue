@@ -320,7 +320,12 @@ export default {
     globalTags() {
       const locale = this.$i18n.locale || "en-gb";
       let labels = this.$store.getters["app/labels"].filter((item) => {
-        if (item.group != "global") return false;
+        if (item.group != "global") {
+          const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+          if (userInfo.group != item.group) {
+            return false; 
+          }
+        }
         if (!item.lang) {
           if (locale != "en-gb") return false;
         } else {
@@ -329,7 +334,6 @@ export default {
         return true;
       });
 
-      console.log("globalTags", labels);
       return labels;
     },
     teams() {
@@ -553,7 +557,6 @@ export default {
           q.forEach((doc) => {
             templateImages.push(Object.assign({}, doc.data(), { id: doc.id }));
           });
-          console.log("templateImages: ", templateImages);
           this.$store.dispatch("app/setTemplateImages", templateImages);
         });
     },

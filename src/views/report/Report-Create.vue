@@ -5,7 +5,7 @@
         <span
           class="karla-bold main-title cursor-pointer"
           @click="$router.push('/report')"
-        >{{$t("report") | capitalize}}</span>
+        >{{$t("reports") | capitalize}}</span>
         <span class="karla-bold">&nbsp;> {{$t("New Report")}}</span>
       </div>
       <div class="flex items-center page-action">
@@ -22,7 +22,7 @@
           type="filled"
           @click="activeSave=true"
           :disabled="filter.template === undefined || filter.template.length == 0"
-        >{{$t("save") | capitalize}}</vs-button>
+        >{{$t("save_report") | capitalize}}</vs-button>
       </div>
     </div>
 
@@ -238,7 +238,23 @@ export default {
   },
   computed: {
     tags() {
-      return this.$store.getters["app/labels"];
+      const locale = this.$i18n.locale || "en-gb";
+      let labels = this.$store.getters["app/labels"].filter((item) => {
+        if (item.group != "global") {
+          const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+          if (userInfo.group != item.group) {
+            return false; 
+          }
+        }
+        if (!item.lang) {
+          if (locale != "en-gb") return false;
+        } else {
+          if (item.lang != locale) return false;
+        }
+        return true;
+      });
+
+      return labels;
     },
     teams() {
       var cUser = this.$store.getters["app/currentUser"]
