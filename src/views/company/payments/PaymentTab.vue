@@ -1,19 +1,38 @@
 <template>
   <div class="vx-row items-grid-view match-height">
-    <div class="vx-col md:w-7/12 w-full mt-4 block">
+    <div class="vx-col md:w-7/12 w-full mt-4 flex-wrap">
       <vx-card>
         <div class="card-header p-6" slot="no-body">
           <div class="flex justify-between items-center pb-3">
             <h4 class="font-semibold">{{ $t("Billing Details") }}</h4>
-            <vs-button @click="billingDetailPopup = true">{{
-              $t("Add billing details")
-            }}</vs-button>
+            <vs-button
+              :disabled="loadingAddBillingDetail"
+              @click="addBillingDetail"
+              v-if="!subscribed"
+              >{{
+                loadingAddBillingDetail
+                  ? $t("Loading...")
+                  : $t("Add billing details")
+              }}</vs-button
+            >
+
+            <vs-button
+              :disabled="loadingManageBillingDetails"
+              @click="manageBillingDetails"
+              v-if="subscribed"
+              >{{
+                loadingManageBillingDetails
+                  ? $t("Loading...")
+                  : $t("Manage billing details")
+              }}</vs-button
+            >
           </div>
           <vs-alert
             :active="true"
             color="#8E4D00"
             icon="warning"
             class="ek-header-alert"
+            v-if="!subscribed && numberOfLogs > 311"
           >
             <span>
               {{
@@ -23,6 +42,14 @@
               }}
             </span>
           </vs-alert>
+
+          <div id="my-subscription" v-if="subscribed">
+            <p>
+              Your monthly payment depends on the number of logs you make during
+              a month. Next payment will be billed on
+              {{ nextBillingDate | moment("DD/MM/YYYY") }}.
+            </p>
+          </div>
         </div>
 
         <div class="">
@@ -31,7 +58,7 @@
           </p>
           <div>
             <div class="logs-track-bar mt-20 mb-10">
-              <div class="main-bar">
+              <div class="main-bar" ref="mainBar">
                 <div class="hight-bars">
                   <div>
                     <div class="log-count absolute left-0">0</div>
@@ -53,10 +80,10 @@
                   </div>
                 </div>
               </div>
-              <div class="scroll-bar">
+              <div class="scroll-bar" :style="{ width: scrollNumberOfLogs }">
                 <div class="hight-bar">
                   <span class="tooltiptext"
-                    ><span> 287 {{ $t("logs") }}</span></span
+                    ><span> {{ numberOfLogs }} {{ $t("logs") }}</span></span
                   >
                 </div>
               </div>
@@ -65,7 +92,7 @@
           <p class="current-log-text pt-5 pb-5">
             {{
               $t("You need to log another") +
-              156 +
+              numberOfLogsRemained +
               $t("logs to reach a cheaper pricing plan.")
             }}
             <vs-tooltip
@@ -147,23 +174,49 @@
             description-body="Count"
           >
             <template slot="thead">
-              <vs-th sort-key="email"> Email </vs-th>
-              <vs-th sort-key="username"> Name </vs-th>
-              <vs-th sort-key="id"> Nro </vs-th>
+              <vs-th sort-key="created"> Date </vs-th>
+              <vs-th sort-key="total"> Amount </vs-th>
+              <vs-th sort-key="status"> Status </vs-th>
+              <vs-th> </vs-th>
             </template>
 
             <template slot-scope="{ data }">
               <vs-tr :key="indextr" v-for="(tr, indextr) in data">
-                <vs-td :data="data[indextr].email">
-                  {{ data[indextr].email }}
+                <vs-td :data="data[indextr].created">
+                  {{ data[indextr].created | moment("DD/MM/YYYY") }}
                 </vs-td>
 
-                <vs-td :data="data[indextr].username">
-                  {{ data[indextr].username }}
+                <vs-td :data="data[indextr].total">
+                  $ {{ data[indextr].total }}
                 </vs-td>
 
-                <vs-td :data="data[indextr].id">
-                  {{ data[indextr].id }}
+                <vs-td :data="data[indextr].status">
+                  <span
+                    v-bind:class="{
+                      'text-gray-400': data[indextr].status == 'draft',
+                      'text-yellow-300': data[indextr].status == 'pending',
+                      'text-yellow-700': data[indextr].status == 'failed',
+                      aaa: data[indextr].status == 'paid',
+                    }"
+                  >
+                    {{ data[indextr].status | capitalize }}
+                  </span>
+                </vs-td>
+
+                <vs-td>
+                  <a
+                    :href="
+                      data[indextr].invoice_pdf ? data[indextr].invoice_pdf : ''
+                    "
+                  >
+                    <img
+                      class="w-2/3 h-full"
+                      :src="
+                        require(`@/assets/images/pages/company/invoice-download.svg`)
+                      "
+                      alt="invoice-download"
+                    />
+                  </a>
                 </vs-td>
               </vs-tr>
             </template>
@@ -233,12 +286,12 @@
                   <span> {{ $t("employees") }}</span>
                 </div>
                 <div class="value-slider">
-                  <vs-slider v-model="employees" />
+                  <vs-slider v-model="employees" :max="1000" />
                   <div class="hight-bar"></div>
                   <div class="marks flex justify-between">
                     <div>0</div>
                     <div style="position: relative; left: 5px">500</div>
-                    <div>100</div>
+                    <div>1000</div>
                   </div>
                 </div>
               </div>
@@ -310,16 +363,43 @@
 <script>
 import BillingDetailPopup from "./BillingDetailPopup";
 import VxCard from "../../../components/vx-card/VxCard.vue";
+import { db } from "@/firebase/firebaseConfig.js";
+import firebase from "firebase/app";
+import $ from "jquery";
+
+import { loadStripe } from "@stripe/stripe-js";
+let tempDate = new Date();
+tempDate.setFullYear(2000);
+console.log("tempDate", tempDate, tempDate.getFullYear());
+
 export default {
   components: {
     BillingDetailPopup,
   },
   data() {
     return {
+      functionLocation: "us-central1",
+      publishableKey: "pk_test_6dCN5HWGN4mXJVOHuF6NDjbq",
+      stripePrice: "price_1IGqz0KotMxlCKnOhC34kaqB",
+      sessionId: "",
+      customerStripeId: "false",
+      mySubscription: "",
+      subscribed: false,
+      currBillingDate: tempDate,
+      nextBillingDate: new Date(),
+      loadingAddBillingDetail: false,
+      loadingManageBillingDetails: false,
       billingDetailPopup: false,
+      numberOfLogs: 0,
+      mainBarWidth: 0,
+      numberOfLogsRemained: 469,
       dollarPerHour: 30,
       employees: 34,
       units: 60,
+      // cloud_functions_url:
+      //   "http://localhost:5001/the-haccp-app-249610/us-central1",
+      cloud_functions_url:
+        "https://us-central1-the-haccp-app-249610.cloudfunctions.net/",
       logTrackInfos: [
         {
           width: 7,
@@ -357,93 +437,274 @@ export default {
           dolars: 0.0014,
         },
       ],
-      billings: [
-        {
-          id: 1,
-          name: "Leanne Graham",
-          username: "Bret",
-          email: "Sincere@april.biz",
-          website: "hildegard.org",
-        },
-        {
-          id: 2,
-          name: "Ervin Howell",
-          username: "Antonette",
-          email: "Shanna@melissa.tv",
-          website: "anastasia.net",
-        },
-        {
-          id: 3,
-          name: "Clementine Bauch",
-          username: "Samantha",
-          email: "Nathan@yesenia.net",
-          website: "ramiro.info",
-        },
-        {
-          id: 4,
-          name: "Patricia Lebsack",
-          username: "Karianne",
-          email: "Julianne.OConner@kory.org",
-          website: "kale.biz",
-        },
-        {
-          id: 5,
-          name: "Chelsey Dietrich",
-          username: "Kamren",
-          email: "Lucio_Hettinger@annie.ca",
-          website: "demarco.info",
-        },
-        {
-          id: 6,
-          name: "Mrs. Dennis Schulist",
-          username: "Leopoldo_Corkery",
-          email: "Karley_Dach@jasper.info",
-          website: "ola.org",
-        },
-        {
-          id: 7,
-          name: "Kurtis Weissnat",
-          username: "Elwyn.Skiles",
-          email: "Telly.Hoeger@billy.biz",
-          website: "elvis.io",
-        },
-        {
-          id: 8,
-          name: "Nicholas Runolfsdottir V",
-          username: "Maxime_Nienow",
-          email: "Sherwood@rosamond.me",
-          website: "jacynthe.com",
-        },
-        {
-          id: 9,
-          name: "Glenna Reichert",
-          username: "Delphine",
-          email: "Chaim_McDermott@dana.io",
-          website: "conrad.com",
-        },
-        {
-          id: 10,
-          name: "Clementina DuBuque",
-          username: "Moriah.Stanton",
-          email: "Rey.Padberg@karina.biz",
-          website: "ambrose.net",
-        },
-        {
-          id: 10,
-          name: "Clementina DuBuque",
-          username: "Moriah.Stanton",
-          email: "Rey.Padberg@karina.biz",
-          website: "ambrose.net",
-        },
-        {
-          id: 10,
-          name: "Clementina DuBuque",
-          username: "Moriah.Stanton",
-          email: "Rey.Padberg@karina.biz",
-          website: "ambrose.net",
-        },
-      ],
+      billings: [],
     };
+  },
+  async mounted() {
+    // GET status of subscription and next billing date
+    db.collection("customers")
+      .doc(JSON.parse(localStorage.getItem("userInfo")).id)
+      .collection("subscriptions")
+      .where("status", "in", ["trialing", "active"])
+      .onSnapshot(async (snapshot) => {
+        if (snapshot.empty) {
+          // Show products
+          this.subscribed = false;
+          return;
+        }
+        snapshot.forEach((doc) => {
+          console.log(
+            "subscriptions",
+            Object.assign({}, doc.data(), { id: doc.id })
+          );
+          this.currBillingDate = doc.data().current_period_start.toDate();
+          this.nextBillingDate = doc.data().current_period_end.toDate();
+        });
+        console.log("sub", snapshot.length, snapshot);
+        // In this implementation we only expect one Subscription to exist
+        this.subscribed = true;
+        const subscription = snapshot.docs[0].data();
+        const priceData = (await subscription.price.get()).data();
+
+        console.log("priceData", priceData);
+      });
+
+    // GET logs
+    let logs = [];
+    db.collection("log_usages")
+      .where(
+        "created_by",
+        "==",
+        JSON.parse(localStorage.getItem("userInfo")).id
+      )
+      .get()
+      .then((q) => {
+        console.log("this.currBillingDate ", this.currBillingDate);
+        if (q.size <= 1) {
+          db.collection("log_usages")
+            .where(
+              "created_by",
+              "==",
+              JSON.parse(localStorage.getItem("userInfo")).id
+            )
+            .where("created_at", ">=", tempDate)
+            .get()
+            .then((qq) => {
+              this.numberOfLogs = qq.size;
+            });
+          console.log("in usgae", tempDate);
+        } else {
+          db.collection("log_usages")
+            .where(
+              "created_by",
+              "==",
+              JSON.parse(localStorage.getItem("userInfo")).id
+            )
+            .where("created_at", ">=", this.currBillingDate)
+            .get()
+            .then((qq) => {
+              this.numberOfLogs = qq.size;
+            });
+          console.log("in usgae", this.currBillingDate);
+        }
+      });
+
+    // GET customer stripe ID
+    db.collection("customers")
+      .doc(JSON.parse(localStorage.getItem("userInfo")).id)
+      .get()
+      .then((doc) => {
+        if (doc.exists) {
+          this.customerStripeId = doc.data().stripeId;
+          console.log("customer ", this.customerStripeId, doc);
+          this.getInvoices();
+        } else {
+          this.customerStripeId = "invalid";
+          this.billings = [];
+        }
+      });
+
+    // SET mainBar width (log track bar)
+    this.mainBarWidth = $(".logs-track-bar .main-bar").width();
+    console.log("this.$refs.mainBar, ", this.mainBarWidth);
+  },
+  computed: {
+    scrollNumberOfLogs() {
+      let plans = [];
+      let scroll = 0;
+      let commingPlan = 312;
+      let alreadyWidth = 0;
+      let stepPercent = 7;
+      let currentPlanIndex = 0;
+
+      if (this.numberOfLogs < 312) {
+      } else if (this.numberOfLogs < 780) {
+        currentPlanIndex = 1;
+      } else if (this.numberOfLogs < 1300) {
+        currentPlanIndex = 2;
+      } else if (this.numberOfLogs < 2080) {
+        currentPlanIndex = 3;
+      } else if (this.numberOfLogs < 3120) {
+        currentPlanIndex = 4;
+      } else if (this.numberOfLogs < 26000) {
+        currentPlanIndex = 5;
+      } else if (this.numberOfLogs < 260000) {
+        currentPlanIndex = 6;
+      } else if (this.numberOfLogs == 260000) {
+        currentPlanIndex = 6;
+      } else {
+        return this.mainBarWidth;
+      }
+
+      let currentPlan = this.logTrackInfos[currentPlanIndex].logs;
+      if (currentPlan == "26k") {
+        currentPlan = 26000;
+      } else if (currentPlan == "260k") {
+        currentPlan = 260000;
+      }
+
+      let beforePlan = 0;
+      if (currentPlanIndex != 0) {
+        beforePlan = this.logTrackInfos[currentPlanIndex - 1].logs;
+        if (beforePlan == "26k") {
+          beforePlan = 26000;
+        } else if (beforePlan == "260k") {
+          beforePlan = 260000;
+        }
+      }
+
+      this.numberOfLogsRemained = currentPlan - this.numberOfLogs;
+
+      for (let i = 0; i < currentPlanIndex; i++) {
+        alreadyWidth += parseInt(this.logTrackInfos[i].width);
+      }
+
+      let percentOfcurrentLogs =
+        ((this.numberOfLogs - beforePlan) / (currentPlan - beforePlan)) * 100;
+      let partWidth =
+        (this.mainBarWidth / 100) * this.logTrackInfos[currentPlanIndex].width;
+      scroll =
+        eval((partWidth / 100) * percentOfcurrentLogs) +
+        eval(
+          (this.mainBarWidth / 100) * (alreadyWidth + currentPlanIndex / 3.5)
+        );
+
+      // console.log("currentPlan ", currentPlan);
+      // console.log("beforePlan ", beforePlan);
+      // console.log("diffBySteps ", currentPlan - beforePlan);
+      // console.log("percentOfcurrentLogs ", percentOfcurrentLogs);
+      // console.log("partWidth ", partWidth);
+      // console.log("this.numberOfLogs ", this.numberOfLogs);
+      // console.log("this.mainBarWidth ", this.mainBarWidth);
+      // console.log(
+      //   "alreadyWidth ",
+      //   alreadyWidth,
+      //   eval((this.mainBarWidth / 100) * alreadyWidth)
+      // );
+      // console.log(
+      //   "[currentPlanIndex].width ",
+      //   this.logTrackInfos[currentPlanIndex].width,
+      //   eval((partWidth / 100) * percentOfcurrentLogs)
+      // );
+      // console.log("scroll ", scroll);
+
+      return scroll + "px";
+    },
+  },
+  methods: {
+    async addBillingDetail() {
+      const stripe = await loadStripe(this.publishableKey);
+      this.loadingAddBillingDetail = true;
+
+      let customer_url = `${this.cloud_functions_url}/setupBillingDetail`;
+      this.$http
+        .get(customer_url, {
+          params: {
+            uid: JSON.parse(localStorage.getItem("userInfo")).id,
+            email: JSON.parse(localStorage.getItem("userInfo")).email,
+            success_url: window.location.href,
+            cancel_url: window.location.href,
+          },
+        })
+        .then((res) => {
+          console.log("customer res", res.data.result);
+          stripe.redirectToCheckout({
+            sessionId: res.data.result.session.id,
+          });
+        });
+
+      return;
+      const docRef = await db
+        .collection("customers")
+        .doc(JSON.parse(localStorage.getItem("userInfo")).id)
+        .collection("checkout_sessions")
+        .add({
+          mode: "setup",
+          created_at: new Date(),
+          success_url: window.location.href,
+          cancel_url: window.location.href,
+          // price: this.stripePrice,
+          line_items: [{ price: this.stripePrice }],
+          unit_amount: 0,
+        });
+
+      // Wait for the CheckoutSession to get attached by the extension
+      docRef.onSnapshot(async (snap) => {
+        const { error, sessionId } = snap.data();
+        if (error) {
+          console.log(`An error occured:`, error.message);
+          this.$vs.notify({
+            time: 8000,
+            title: "An error occured",
+            text: error.message,
+            iconPack: "feather",
+            icon: "icon-alert-circle",
+            color: "warning",
+          });
+          this.loadingAddBillingDetail = false;
+        }
+        if (sessionId) {
+          this.sessionId = sessionId;
+          const stripe = await loadStripe(this.publishableKey);
+          stripe.redirectToCheckout({ sessionId });
+          // this.loadingAddBillingDetail = false;
+        }
+      });
+    },
+
+    async manageBillingDetails() {
+      // Call billing portal function
+      this.loadingManageBillingDetails = true;
+      const functionRef = firebase
+        .app()
+        .functions(this.functionLocation)
+        .httpsCallable("ext-firestore-stripe-subscriptions-createPortalLink");
+      const { data } = await functionRef({ returnUrl: window.location.href });
+      window.location.assign(data.url);
+      // this.loadingManageBillingDetails = false;
+    },
+
+    async getCustomClaimRole() {
+      await firebase.auth().currentUser.getIdToken(true);
+      const decodedToken = await firebase.auth().currentUser.getIdTokenResult();
+      return decodedToken.claims.stripeRole;
+    },
+
+    async getInvoices() {
+      let invoice_url = `${this.cloud_functions_url}/getInvoicesByCus`;
+      this.$http
+        .get(invoice_url, {
+          params: {
+            customerStripeId: this.customerStripeId,
+            startingAfter: null,
+            limit: 10,
+          },
+        })
+        .then((res) => {
+          console.log("in res", res.data.result);
+          this.billings = res.data.result;
+        });
+    },
   },
 };
 </script>
@@ -517,7 +778,8 @@ export default {
   }
 
   .scroll-bar {
-    width: 39px;
+    // width: 39px;
+    transition: 0.3s;
     height: 24px;
     background: linear-gradient(90deg, #3b4dee 0%, #6c50f0 100%);
     border-radius: 2px;
@@ -686,5 +948,20 @@ export default {
       }
     }
   }
+}
+.text-yellow-400 {
+  color: rgba(251, 191, 36, 1);
+}
+.text-yellow-300 {
+  color: rgba(252, 211, 77, 1);
+}
+.text-yellow-700 {
+  color: rgba(180, 83, 9, 1);
+}
+.text-gray-400 {
+  color: rgba(156, 163, 175, 1);
+}
+.font-bold {
+  font-weight: bold;
 }
 </style>

@@ -3,41 +3,42 @@
     <template v-if="!auth('user and team settings', 'view')">
       <no-auth />
     </template>
-    <div class="page-header flex items-center justify-between">
-      <div class="sm:flex">
-        <p class="page-title karla-bold text-2xl color-my-black m-2 ml-4">
-          {{ $t("company profile") | capitalize }}
-        </p>
-        <div class="switch-tab flex items-center sm:ml-12 mt-2 sm:mt-0">
-          <div
-            class="text-center py-3 px-6 karla"
-            :class="{ active: tab == 'payments' }"
-            @click="tab = 'payments'"
-          >
-            {{ $t("payments") | capitalize }}
-          </div>
-          <div
-            class="text-center py-3 px-6 karla"
-            :class="{ active: tab == 'locations' }"
-            @click="tab = 'locations'"
-          >
-            {{ $t("locations") | capitalize }}
+    <div v-else>
+      <div class="page-header flex items-center justify-between">
+        <div class="sm:flex">
+          <p class="page-title karla-bold text-2xl color-my-black m-2 ml-4">
+            {{ $t("company profile") | capitalize }}
+          </p>
+          <div class="switch-tab flex items-center sm:ml-12 mt-2 sm:mt-0">
+            <div
+              class="text-center py-3 px-6 karla"
+              :class="{ active: tab == 'payments' }"
+              @click="tab = 'payments'"
+            >
+              {{ $t("payments") | capitalize }}
+            </div>
+            <div
+              class="text-center py-3 px-6 karla"
+              :class="{ active: tab == 'locations' }"
+              @click="tab = 'locations'"
+            >
+              {{ $t("locations") | capitalize }}
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="video-launcher ml-4">
-      <a href="#" @click="howtoTemplate">{{
-        $t("Watch this video to see how it works")
-      }}</a>
-    </div>
+      <div class="video-launcher ml-4">
+        <a href="#" @click="howtoTemplate">{{
+          $t("Watch this video to see how it works")
+        }}</a>
+      </div>
 
-    <div class="page-content">
-      <payment-tab v-if="tab == 'payments'" />
-      <location-tab v-else-if="tab == 'locations'" />
+      <div class="page-content">
+        <payment-tab v-if="tab == 'payments'" />
+        <location-tab v-else-if="tab == 'locations'" />
+      </div>
     </div>
   </div>
-  <!-- <location-tab /> -->
 </template>
 
 <script>

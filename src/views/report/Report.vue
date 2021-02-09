@@ -437,7 +437,7 @@ export default {
             }
           }
         });
-        console.log("tags", tags);
+        // console.log("tags", tags);
         return tags;
       };
     },
