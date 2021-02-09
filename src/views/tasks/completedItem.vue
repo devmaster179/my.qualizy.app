@@ -1,62 +1,89 @@
 <template>
   <vx-card class="w-full mb-4 cursor-pointer task-card">
-    <div slot="no-body" >
+    <div slot="no-body">
       <!-- <div v-if="task.time">
         {{task.time.toDate()}}
       </div> -->
       <div
-        v-if="task.time!==undefined && calcOverTime<0"
+        v-if="task.time !== undefined && calcOverTime < 0"
         class="flex items-center mb-2 p-2 rounded-lg justify-center"
-        style="background: rgba(var(--vs-danger) , .2); border-bottom-left-radius: 0!important; border-bottom-right-radius: 0!important;"
+        style="
+          background: rgba(var(--vs-danger), 0.2);
+          border-bottom-left-radius: 0 !important;
+          border-bottom-right-radius: 0 !important;
+        "
       >
-        <vs-icon icon-pack="feather" icon="icon-clock" color="rgba(var(--vs-danger) , .8)"></vs-icon>
+        <vs-icon
+          icon-pack="feather"
+          icon="icon-clock"
+          color="rgba(var(--vs-danger) , .8)"
+        ></vs-icon>
         <span
-          class="dueText text-red karla-bold ml-2 "
-          style="font-size:12px;"
-        >{{$t('overdue')}}</span>
+          class="dueText text-red karla-bold ml-2"
+          style="font-size: 12px"
+          >{{ $t("overdue") }}</span
+        >
         <span
           class="karla-bold ml-2 dueText text-red"
-          style="font-size:12px;"
-        >{{calcOverTime | duration('humanize' , true) | capitalize}}</span>
+          style="font-size: 12px"
+          >{{ calcOverTime | duration("humanize", true) | capitalize }}</span
+        >
       </div>
       <div class="py-8 px-5">
         <div class="flex items-center mb-5">
           <img
-            :src="require(`../../assets/images/template_image/${templateInfo(task.templateID).content.templateImage}`)"
+            :src="
+              applyImage(templateInfo(task.templateID).content.templateImage)
+            "
             class="mr-4"
             :alt="templateInfo(task.templateID).content.templateTitle"
-            width="48px" height="48px"
+            width="48px"
+            height="48px"
           />
           <div>
-            <p
-              class="karla-bold templateTitle"
-            >{{templateInfo(task.templateID).content.templateTitle}}</p>
+            <p class="karla-bold templateTitle">
+              {{ templateInfo(task.templateID).content.templateTitle }}
+            </p>
             <template v-if="task.schedule">
-              <vs-icon size="12px" icon-pack="feather" icon="icon-map-pin"></vs-icon>
-              <span class="karla locationText pl-1">{{scheduleLocation(task.schedule)}}</span>
+              <vs-icon
+                size="12px"
+                icon-pack="feather"
+                icon="icon-map-pin"
+              ></vs-icon>
+              <span class="karla locationText pl-1">{{
+                scheduleLocation(task.schedule)
+              }}</span>
             </template>
           </div>
         </div>
         <div class="flex justify-between">
           <p class="karla-bold dueText">
-            <label class="text-success">{{$t('completed')}}</label>
-            <span
-              class="pl-2"
-            >{{calcTime(task.updated_at) | duration('humanize' , true) | capitalize}}</span>
+            <label class="text-success">{{ $t("completed") }}</label>
+            <span class="pl-2">{{
+              calcTime(task.updated_at)
+                | duration("humanize", true)
+                | capitalize
+            }}</span>
           </p>
-          <p v-if="task.logs !==undefined && pinned"></p>
-          <p class="karla-bold text-success">{{calcComplete.text}}</p>
+          <p v-if="task.logs !== undefined && pinned"></p>
+          <p class="karla-bold text-success">{{ calcComplete.text }}</p>
         </div>
         <vs-progress
           :percent="calcComplete.percent"
           color="success"
-          v-if="!pinned || task.logs!==undefined"
+          v-if="!pinned || task.logs !== undefined"
         ></vs-progress>
         <div
-          v-for="(label, index) in templateInfo(task.templateID).content.templateLabel"
+          v-for="(label, index) in templateInfo(task.templateID).content
+            .templateLabel"
           :key="index"
           class="p-2 rounded-lg ml-1 templateLabelBadge inline-block mt-2"
-          :class="[{'hidden': labelInfo(label) == undefined || (index !=1 && !labelColapes)}]"
+          :class="[
+            {
+              hidden:
+                labelInfo(label) == undefined || (index != 1 && !labelColapes),
+            },
+          ]"
         >
           <template v-if="labelInfo(label) != undefined">
             <div class="flex items-center">
@@ -64,30 +91,43 @@
                 class="h-2 w-2 rounded-full mr-2"
                 :style="'background-color:' + labelInfo(label).color"
               ></div>
-              <p class="karla">{{labelInfo(label).name | truncate(20)}}</p>
+              <p class="karla">{{ labelInfo(label).name | truncate(20) }}</p>
             </div>
           </template>
         </div>
         <div
-          v-if="templateInfo(task.templateID).content.templateLabel.length>1 && !labelColapes"
+          v-if="
+            templateInfo(task.templateID).content.templateLabel.length > 1 &&
+            !labelColapes
+          "
           class="p-2 rounded-lg ml-1 templateLabelBadge inline-block mt-2"
         >
-          <span
-            class="karla-bold"
-          >+ {{templateInfo(task.templateID).content.templateLabel.length-1}}</span>
+          <span class="karla-bold"
+            >+
+            {{
+              templateInfo(task.templateID).content.templateLabel.length - 1
+            }}</span
+          >
         </div>
         <div
-          v-if="templateInfo(task.templateID).content.templateLabel.length>1"
+          v-if="templateInfo(task.templateID).content.templateLabel.length > 1"
           class="p-2 rounded-lg ml-1 templateLabelBadge text-right inline-block mt-2 ml-2"
           @click.stop="labelColapes = !labelColapes"
         >
-          <vs-icon icon="arrow_drop_down" :class="{'rotate180':labelColapes}" class="times2" />
+          <vs-icon
+            icon="arrow_drop_down"
+            :class="{ rotate180: labelColapes }"
+            class="times2"
+          />
         </div>
         <div class="flex items-center justify-between">
           <!-- <vs-icon  @click.stop="deleteLog"  class="mt-1 hover:text-danger" size="18px"  icon-pack="feather" icon="icon-trash-2"/> -->
-          <div class="flex items-center justify-end mt-1 text-warning" v-if="monitor">
-            <span class="karla mr-1 ">{{$t('monitoring')}}</span>
-            <vs-icon icon-pack="feather" icon="icon-eye" class="mt-1"/>
+          <div
+            class="flex items-center justify-end mt-1 text-warning"
+            v-if="monitor"
+          >
+            <span class="karla mr-1">{{ $t("monitoring") }}</span>
+            <vs-icon icon-pack="feather" icon="icon-eye" class="mt-1" />
           </div>
         </div>
       </div>
@@ -102,24 +142,30 @@ export default {
   props: {
     pinned: {
       type: Boolean,
-      default: false
+      default: false,
     },
     task: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
       labelColapes: false,
-      now: new Date()
+      now: new Date(),
     };
   },
   methods: {
+    applyImage(image) {
+      if (image.indexOf("firebasestorage") > -1) {
+        return image;
+      }
+      return require(`@/assets/images/template_image/${image}`);
+    },
     deleteLog() {
-      if(!this.auth('delete')) {
-        this.roleError('delete')
-        return false
+      if (!this.auth("delete")) {
+        this.roleError("delete");
+        return false;
       }
       this.$vs.dialog({
         type: "confirm",
@@ -132,41 +178,43 @@ export default {
       });
     },
     deleteLog1() {
-      db.collection("logs").doc(this.task.id).delete()
-      this.$store.commit('app/DELETE_LOG' , this.task.id)
+      db.collection("logs").doc(this.task.id).delete();
+      this.$store.commit("app/DELETE_LOG", this.task.id);
     },
   },
   computed: {
     auth() {
-      return action => {
-        let authList = this.$store.getters['app/auth']
+      return (action) => {
+        let authList = this.$store.getters["app/auth"];
         var cUser = this.$store.getters["app/currentUser"];
-        if(cUser == undefined || cUser.role == undefined) return false
-        else if(cUser.role.key == 0) 
-          return true
-        else if(authList.records[cUser.role.name.toLowerCase()][action])
-          return true
-        else 
-          return false
-      }
+        if (cUser == undefined || cUser.role == undefined) return false;
+        else if (cUser.role.key == 0) return true;
+        else if (authList.records[cUser.role.name.toLowerCase()][action])
+          return true;
+        else return false;
+      };
     },
     monitor() {
-      if(this.task.schedule == undefined) return false
-      let schedule = this.$store.getters['app/getScheduleById'](this.task.schedule)
+      if (this.task.schedule == undefined) return false;
+      let schedule = this.$store.getters["app/getScheduleById"](
+        this.task.schedule
+      );
       var cUser = this.$store.getters["app/currentUser"];
-      var cTeam = cUser.team || []
-      if(!Array.isArray(cTeam)) cTeam = []
-      return !cTeam.some(ct=>schedule.assign.includes(ct))
+      var cTeam = cUser.team || [];
+      if (!Array.isArray(cTeam)) cTeam = [];
+      return !cTeam.some((ct) => schedule.assign.includes(ct));
     },
     scheduleLocation() {
-      return id => {
-        if(!id) return this.$t('no location')
-        let schedule = this.$store.getters['app/getScheduleById'](id)
-        if(!schedule || !schedule.location) return this.$t('no location')
-        var location = this.$store.getters['app/getLocationById'](schedule.location[0])
-        if(!location)  return this.$t('no location')
-        return location.name
-      }
+      return (id) => {
+        if (!id) return this.$t("no location");
+        let schedule = this.$store.getters["app/getScheduleById"](id);
+        if (!schedule || !schedule.location) return this.$t("no location");
+        var location = this.$store.getters["app/getLocationById"](
+          schedule.location[0]
+        );
+        if (!location) return this.$t("no location");
+        return location.name;
+      };
     },
     calcOverTime() {
       var dueTime, logTime;
@@ -183,17 +231,17 @@ export default {
         complated = 0;
       if (this.task.logs === undefined) {
         let template = this.templateInfo(this.task.templateID);
-        template.content.pages.map(page => {
-          page.questions.map(question => {
-            question.answers.map(answer => {
+        template.content.pages.map((page) => {
+          page.questions.map((question) => {
+            question.answers.map((answer) => {
               if (answer.mandatory) total++;
             });
           });
         });
       } else {
-        this.task.logs.map(page => {
-          page.questions.map(question => {
-            question.answers.map(answer => {
+        this.task.logs.map((page) => {
+          page.questions.map((question) => {
+            question.answers.map((answer) => {
               if (answer.ref.mandatory) {
                 total++;
                 if (answer.loged) complated++;
@@ -204,11 +252,11 @@ export default {
       }
       return {
         percent: total == 0 ? 0 : Math.round((complated * 100) / total),
-        text: `${complated}/${total}`
+        text: `${complated}/${total}`,
       };
     },
     templateLocation() {
-      return id => {
+      return (id) => {
         let template = this.templateInfo(id);
         if (
           template.content.location === undefined ||
@@ -225,7 +273,7 @@ export default {
       };
     },
     calcTime() {
-      return time => {
+      return (time) => {
         if (time.nanoseconds !== undefined)
           return time.toDate().getTime() - this.now.getTime();
 
@@ -233,21 +281,21 @@ export default {
       };
     },
     templateInfo() {
-      return id => {
+      return (id) => {
         return this.$store.getters["app/getTemplateById"](id);
       };
     },
     labelInfo() {
-      return id => {
+      return (id) => {
         return this.$store.getters["app/getLabelById"](id);
       };
-    }
+    },
   },
   created() {
     setInterval(() => {
       this.now = new Date();
     }, 1000);
-  }
+  },
 };
 </script>
 

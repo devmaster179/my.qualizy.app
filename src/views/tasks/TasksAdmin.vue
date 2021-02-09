@@ -681,6 +681,7 @@ export default {
         var validSchedules = [];
         for (let i = dayFrom; i <= dayTo; i++) {
           schedules.map((schedule) => {
+
             if (
               schedule.dueTimes != undefined &&
               Array.isArray(schedule.dueTimes)
