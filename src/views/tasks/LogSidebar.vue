@@ -50,7 +50,7 @@
                   class="rounded-full"
                 />
               </div>
-              <p class="karla-bold template-title ml-2 truncate">
+              <p class="karla-bold template-title ml-2">
                 {{ templateInfo.content.templateTitle | capitalize }}
               </p>
               <p class="karla-bold template-title">{{ calcComplateStatus }}</p>
