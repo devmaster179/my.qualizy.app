@@ -15,7 +15,7 @@
                   <div>
                     <vs-avatar
                       class="sender__avatar--single flex-shrink-0 mr-3 border-2 border-solid border-white"
-                      :src="require(`@/assets/images/template_image/${getTemplateInfo(logTR.data).content.templateImage}`)"
+                      :src="applyImage(getTemplateInfo(logTR.data).content.templateImage)"
                       size="65px"
                     ></vs-avatar>
                   </div>
@@ -319,6 +319,14 @@ export default {
       };
     },
   },
+  methods: {
+    applyImage(image) {
+      if (image.indexOf("firebasestorage") > -1) {
+        return image;
+      }
+      return require(`@/assets/images/template_image/${image}`);
+    },
+  }
 };
 </script>
 

@@ -12,30 +12,42 @@
   >
     <div class="mt-6 flex items-center justify-between px-6">
       <h4 class="karla">Template Details</h4>
-      <feather-icon icon="XIcon" @click.stop="isSidebarActiveLocal = false" class="cursor-pointer"></feather-icon>
+      <feather-icon
+        icon="XIcon"
+        @click.stop="isSidebarActiveLocal = false"
+        class="cursor-pointer"
+      ></feather-icon>
     </div>
     <vs-divider class="mb-0"></vs-divider>
-    <VuePerfectScrollbar class="scroll-area--data-list-add-new pt-4 pb-6" :settings="settings">
+    <VuePerfectScrollbar
+      class="scroll-area--data-list-add-new pt-4 pb-6"
+      :settings="settings"
+    >
       <div class="p-4">
         <div class="flex items-center">
           <vs-avatar
             size="50px"
-            :src="require(`@/assets/images/template_image/${template.content.templateImage}`)"
+            :src="applyImage(template.content.templateImage)"
           />
-          <h5 class="truncate karla">{{template.content.templateTitle}}</h5>
+          <h5 class="truncate karla">{{ template.content.templateTitle }}</h5>
         </div>
         <vx-card
           :title="page.title"
           title-color="success"
           class="mt-4 karla"
-          v-for="(page , pIndex) in template.content.pages"
-          :key="'page_'+pIndex"
+          v-for="(page, pIndex) in template.content.pages"
+          :key="'page_' + pIndex"
         >
-          <div v-for="(question,qIndex) in page.questions" :key="'question_' + qIndex">
+          <div
+            v-for="(question, qIndex) in page.questions"
+            :key="'question_' + qIndex"
+          >
             <h6
               class="text-lg text-primary karla"
-              :class="{'mt-base': qIndex > 0}"
-            >{{question.title}}</h6>
+              :class="{ 'mt-base': qIndex > 0 }"
+            >
+              {{ question.title }}
+            </h6>
             <table class="w-full mb-8 mt-2 table table-bordered">
               <thead>
                 <tr class="karla">
@@ -47,30 +59,36 @@
               <tbody>
                 <tr
                   class="karla"
-                  v-for="(answer,aIndex) in question.answers"
+                  v-for="(answer, aIndex) in question.answers"
                   :key="'answer_' + aIndex"
                 >
-                  <td>{{answer.title}}</td>
+                  <td>{{ answer.title }}</td>
                   <td>
-                    <template v-if="answerType(answer.type.id)!=undefined">
+                    <template v-if="answerType(answer.type.id) != undefined">
                       <p
-                        v-if="answerType(answer.type.id).type!='closed answers'"
+                        v-if="
+                          answerType(answer.type.id).type != 'closed answers'
+                        "
                         class="flex items-center"
                       >
                         <template-type-icon
                           :item="answer.type.id"
                           v-if="answer.type.id !== undefined"
                         />
-                        <span
-                          class="ml-2"
-                        >{{answerType(answer.type.id).content | capitalize | truncate(15)}}</span>
+                        <span class="ml-2">{{
+                          answerType(answer.type.id).content
+                            | capitalize
+                            | truncate(15)
+                        }}</span>
                       </p>
                       <span v-else>
                         <vs-chip
-                          v-for="(chip,chip_key) in answerType(answer.type.id).content"
+                          v-for="(chip, chip_key) in answerType(answer.type.id)
+                            .content"
                           :key="chip_key"
                           :color="chip.color"
-                        >{{chip.name | capitalize}}</vs-chip>
+                          >{{ chip.name | capitalize }}</vs-chip
+                        >
                       </span>
                     </template>
                     <template v-else>
@@ -81,7 +99,8 @@
                     <span
                       class="text-sm text-danger"
                       v-if="answer.type.failedAnswer"
-                    >{{answer.type.failedAnswer}}</span>
+                      >{{ answer.type.failedAnswer }}</span
+                    >
                     <span v-else>---</span>
                   </td>
                 </tr>
@@ -94,10 +113,15 @@
     <div
       class="flex flex-wrap items-center justify-center p-6"
       slot="footer"
-      style="backgroud:aliceblue;"
+      style="backgroud: aliceblue"
     >
       <vs-button class="mr-6" @click="useTemplate">Use template</vs-button>
-      <vs-button type="border" color="danger" @click="isSidebarActiveLocal = false">Cancel</vs-button>
+      <vs-button
+        type="border"
+        color="danger"
+        @click="isSidebarActiveLocal = false"
+        >Cancel</vs-button
+      >
     </div>
   </vs-sidebar>
 </template>
@@ -128,6 +152,12 @@ export default {
     };
   },
   methods: {
+    applyImage(image) {
+      if (image.indexOf("firebasestorage") > -1) {
+        return image;
+      }
+      return require(`@/assets/images/template_image/${image}`);
+    },
     useTemplate() {
       this.$emit("closeSidebar");
       var pages = [];
@@ -167,7 +197,7 @@ export default {
       });
       let tempTemplate = {
         content: {
-          teams: this.template.content.teams || [] ,
+          teams: this.template.content.teams || [],
           location: this.template.content.location,
           templateTitle: this.template.content.templateTitle,
           templateComment: this.template.content.templateComment,

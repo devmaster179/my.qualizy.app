@@ -448,8 +448,9 @@ export default {
           item.email == "" ||
           item.email === undefined ||
           item.email == JSON.parse(localStorage.getItem("userInfo")).email
-        )
+        ){
           reject("empty");
+        }
         else if (users.find((user) => user.email == item.email)) {
           user = users.find((user) => user.email == item.email);
           if (
@@ -472,8 +473,10 @@ export default {
             resolve("OK");
           }
         } else {
-          var locations = this.$store.getters['app/locationList']
-          if(locations.length == 0) locations = this.$store.getters["app/currentUser"].location;
+          var locations = this.$store.getters['app/locationList'];
+          if(locations.length == 0){
+            locations = this.$store.getters["app/currentUser"].location;
+          }
           db.collection("users")
             .where("email", "==", item.email)
             .get()
@@ -547,7 +550,9 @@ export default {
       this.saveUserAndSendMail(index)
         .then((pass) => {
           index++;
-          this.processInvite(index);
+          if (index <= this.tempUsers.length) {
+            the.processInvite(index);
+          }
         })
         .catch((err) => {
           if (err == "empty") {
@@ -572,21 +577,25 @@ export default {
               color: "warning",
             });
           } else {
-            this.$vs.notify({
-              time: 7000,
-              title: "Fail for inviting",
-              text:
-                the.tempUsers[index].email +
-                `
-                            ` +
-                err,
-              iconPack: "feather",
-              icon: "icon-check-circle",
-              color: "danger",
-            });
+            if (the.tempUsers[index] !== undefined) {
+              this.$vs.notify({
+                time: 7000,
+                title: "Fail for inviting",
+                text:
+                  the.tempUsers[index].email +
+                  `
+                              ` +
+                  err,
+                iconPack: "feather",
+                icon: "icon-check-circle",
+                color: "danger",
+              });
+            }
           }
           index++;
-          the.processInvite(index);
+          if (index <= this.tempUsers.length) {
+            the.processInvite(index);
+          }
         });
     },
     invite() {

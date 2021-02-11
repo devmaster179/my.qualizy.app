@@ -34,19 +34,17 @@
         <div class="flex items-center mb-5">
           <img
             :src="
-              require(`../../assets/images/template_image/${
-                templateInfo(task.templateID).content.templateImage
-              }`)
+              applyImage(templateInfo(task.templateID).content.templateImage)
             "
             class="mr-4"
             :alt="templateInfo(task.templateID).content.templateTitle"
             width="48px"
             height="48px"
           />
-          <div style="width: calc(100% - 4rem);">
-            <p
-              class="karla-bold templateTitle"
-            >{{templateInfo(task.templateID).content.templateTitle}}</p>
+          <div style="width: calc(100% - 4rem)">
+            <p class="karla-bold templateTitle">
+              {{ templateInfo(task.templateID).content.templateTitle }}
+            </p>
             <template v-if="task.schedule">
               <vs-icon
                 size="12px"
@@ -203,6 +201,12 @@ export default {
     };
   },
   methods: {
+    applyImage(image) {
+      if (image.indexOf("firebasestorage") > -1) {
+        return image;
+      }
+      return require(`@/assets/images/template_image/${image}`);
+    },
     deleteLog() {
       if (!this.auth("delete")) {
         this.roleError("delete");
@@ -345,7 +349,6 @@ export default {
     templateInfo() {
       return (id) => {
         let labels = this.$store.getters["app/getTemplateById"](id);
-        // console.log("labels: ", labels);
         return labels;
       };
     },
@@ -365,14 +368,12 @@ export default {
           filtered.push(label);
           return true;
         });
-        // console.log("labels: ", labels, filtered);
         return filtered;
       };
     },
     labelInfo() {
       return (id) => {
         let label = this.$store.getters["app/getLabelById"](id);
-        // console.log("label: ", label);
         return label;
       };
     },

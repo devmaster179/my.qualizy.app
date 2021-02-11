@@ -117,12 +117,28 @@ export default {
   },
   computed: {
     labels() {
-      let labels = this.$store.getters["app/labels"];
-      let _labels = [];
-      labels.map(label => {
-        _labels.push({ id: label.id, name: label.name });
+      const locale = this.$i18n.locale || "en-gb";
+      let labels = this.$store.getters["app/labels"].filter((item) => {
+        if (item.group != "global") {
+          const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+          if (userInfo.group != item.group) {
+            return false; 
+          }
+        }
+        if (!item.lang) {
+          if (locale != "en-gb") return false;
+        } else {
+          if (item.lang != locale) return false;
+        }
+        return true;
       });
-      return _labels;
+
+      let __labels = [];
+      labels.map((label) => {
+        __labels.push({ id: label.id, name: label.name });
+      });
+
+      return __labels;
     },
     templates() {
       let templates = this.$store.getters["app/template"];

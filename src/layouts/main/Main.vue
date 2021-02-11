@@ -435,11 +435,6 @@ export default {
             q.forEach((doc) => {
               labels.push(Object.assign({}, doc.data(), { id: doc.id }));
             });
-            console.log(
-              'userInfo":  ',
-              JSON.parse(localStorage.getItem("userInfo"))
-            );
-            // console.log("app/setLabel:  ", labels);
             this.$store.dispatch("app/setLabel", labels);
             resolve("OK");
           });

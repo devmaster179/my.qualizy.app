@@ -150,10 +150,8 @@ export default {
               (snapshot) => {
                 var progress =
                   (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                console.log("Upload is " + progress + "% done");
               },
               (error) => {
-                console.log(error);
               },
               () => {
                 docUpload.snapshot.ref.getDownloadURL().then((downloadURL) => {

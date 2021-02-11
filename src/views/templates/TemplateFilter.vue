@@ -34,7 +34,7 @@
           :placeholder="$t('select location')"
           label="name"
           track-by="id"
-          :options="tags"
+          :options="globalTags"
           :option-height="50"
           :show-labels="false"
           :multiple="true"
@@ -117,6 +117,25 @@ export default {
         });
         this.$emit("filter", { tags: ids });
       },
+    },
+    globalTags() {
+      const locale = this.$i18n.locale || "en-gb";
+      let labels = this.$store.getters["app/labels"].filter((item) => {
+        if (item.group != "global") {
+          const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+          if (userInfo.group != item.group) {
+            return false; 
+          }
+        }
+        if (!item.lang) {
+          if (locale != "en-gb") return false;
+        } else {
+          if (item.lang != locale) return false;
+        }
+        return true;
+      });
+
+      return labels;
     },
     tags() {
       return this.$store.getters["app/labels"];

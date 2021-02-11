@@ -557,7 +557,6 @@ export default {
           q.forEach((doc) => {
             templateImages.push(Object.assign({}, doc.data(), { id: doc.id }));
           });
-          console.log("templateImages: ", templateImages);
           this.$store.dispatch("app/setTemplateImages", templateImages);
         });
     },

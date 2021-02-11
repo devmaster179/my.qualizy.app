@@ -20,7 +20,7 @@
           <h5 class="mb-0">{{$t("templates") | capitalize}}</h5>
         </div>
         <div class="vx-col pl-base pr-4 pb-4 w-full">
-          <v-select v-model="template" :label="$t('name')" multiple :options="templates" />
+          <v-select v-model="template" :label="'name'" multiple :options="templates" />
         </div>
         <div class="vx-col pl-base pr-4w-full">
           <h5 class="mb-0">{{$t("date") | capitalize}}</h5>
@@ -56,13 +56,13 @@
           <h5 class="mb-0">{{$t("labels") | capitalize}}</h5>
         </div>
         <div class="vx-col pl-base pr-4 pb-4 w-full">
-          <v-select :label="$t('name')" multiple :options="labels" v-model="tag" />
+          <v-select :label="'name'" multiple :options="labels" v-model="tag" />
         </div>
         <div class="vx-col pl-base pr-4w-full">
           <h5 class="mb-0">{{$t("status") | capitalize}}</h5>
         </div>
         <div class="vx-col pl-base pr-4 pb-4 w-full">
-          <v-select :options="state" :label="$t('text')" v-model="status" />
+          <v-select :options="state" :label="'text'" v-model="status" />
         </div>
         <div class="vx-col pl-base pr-4w-full">
           <h5 class="mb-0">{{$t("users") | capitalize}}</h5>
@@ -290,11 +290,27 @@ export default {
       ];
     },
     labels() {
-      let labels = this.$store.getters["app/labels"];
+      const locale = this.$i18n.locale || "en-gb";
+      let labels = this.$store.getters["app/labels"].filter((item) => {
+        if (item.group != "global") {
+          const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+          if (userInfo.group != item.group) {
+            return false; 
+          }
+        }
+        if (!item.lang) {
+          if (locale != "en-gb") return false;
+        } else {
+          if (item.lang != locale) return false;
+        }
+        return true;
+      });
+
       let __labels = [];
       labels.map((label) => {
         __labels.push({ id: label.id, name: label.name });
       });
+
       return __labels;
     },
     templates() {

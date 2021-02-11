@@ -180,7 +180,6 @@ export default {
   },
 
   created() {
-    console.log("v-1-29-10-22");
   },
 
   methods: {
