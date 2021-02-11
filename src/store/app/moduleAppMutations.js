@@ -253,7 +253,6 @@ export default {
     state.tempClosedAnswer = state.tempClosedAnswer.filter((item, index) => index != query)
   },
   CHN_TEMP_TEMPLATE(state, query) {
-    console.log('CHN_TEMP_TEMPLATE1:', query);
     if (query.target == "answer") {
       if (query.key == "instruction")
         state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].type = { id: state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].type.id, instruction: query.val }

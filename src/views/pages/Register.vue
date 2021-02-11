@@ -463,7 +463,6 @@ export default {
         userflow: this.$userflow,
         gist: window.gist,
       };
-      // console.log(payload);
       this.$store.dispatch("auth/registerUser", payload);
     },
     phoneValidate(formattedNumber, { number, isValid, country }) {
@@ -562,7 +561,7 @@ export default {
         },
         {
           name: this.$t("step") + " 4",
-          title: this.$t("schedule a training"),
+          title: this.$t("schedule a free set-up call"),
           icon: "icon-calendar",
         },
       ];

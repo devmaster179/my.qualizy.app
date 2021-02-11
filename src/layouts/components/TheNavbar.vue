@@ -462,7 +462,6 @@ export default {
         });
     },
     updateLocale(locale) {
-      console.log("locale change", locale);
       var language = "en-us";
       if (locale == "gb") {
         language = "en-gb";
@@ -471,7 +470,6 @@ export default {
       } else {
         language = locale;
       }
-      console.log("locale", locale, language);
 
       let dbLabelIds = [];
       db.collection("template_labels")
@@ -483,7 +481,6 @@ export default {
             if (doc.data().trashed) return;
             dbLabelIds.push(doc.id);
           });
-          console.log("dbLabelIds: ", dbLabelIds);
 
           this.$store.dispatch("app/setLabelFiltered", dbLabelIds);
         });

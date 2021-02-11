@@ -102,7 +102,7 @@
                     :rating="answer.value"
                   ></star-rating>
                   <span
-                    v-else-if="getType(answer.ref.type.id).content == 'automatic user stamp'"
+                    v-else-if="getType(answer.ref.type.id).content == 'automatic user stamp' && getUserInfo(answer.value) != undefined"
                   >{{getUserInfo(answer.value).name | capitalize}}</span>
                   <div
                     v-else-if="getType(answer.ref.type.id).content=='short answer' || getType(answer.ref.type.id).content=='paragraph'"
