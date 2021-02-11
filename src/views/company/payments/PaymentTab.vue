@@ -187,7 +187,7 @@
                 </vs-td>
 
                 <vs-td :data="data[indextr].total">
-                  $ {{ data[indextr].total }}
+                  $ {{ (data[indextr].total / 100).toFixed(2) }}
                 </vs-td>
 
                 <vs-td :data="data[indextr].status">
