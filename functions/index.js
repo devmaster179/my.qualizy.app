@@ -25,7 +25,11 @@ exports.getInvoicesByCus = functions.https.onRequest(async (req, res) => {
       limit: limit,
     });
 
-    res.json({ result: invoices.data });
+    const upcomingInvoice = await stripe.invoices.retrieveUpcoming({
+      customer: customerStripeId,
+    });
+
+    res.json({ invoices: invoices.data, upcomingInvoice });
   });
 });
 

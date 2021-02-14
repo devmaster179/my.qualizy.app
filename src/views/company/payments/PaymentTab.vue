@@ -1,5 +1,8 @@
 <template>
-  <div class="vx-row items-grid-view match-height">
+  <div
+    class="vx-row items-grid-view match-height"
+    v-bind:class="{ hidden: !allLoaded }"
+  >
     <div class="vx-col md:w-7/12 w-full mt-4 flex-wrap">
       <vx-card>
         <div class="card-header p-6" slot="no-body">
@@ -68,14 +71,26 @@
                     </div>
                   </div>
                   <div
-                    v-for="item in logTrackInfos"
+                    v-for="(item, index) in logTrackInfos"
                     :key="item.dolars"
                     :style="'margin-left:' + item.width + '%'"
                   >
-                    <div class="log-count absolute">{{ item.logs }}</div>
-                    <div class="hight-bar"></div>
-                    <div class="dollar-rate absolute">
-                      {{ "$" + item.dolars }}
+                    <div v-if="index != 6">
+                      <div class="log-count absolute">{{ item.logs }}</div>
+                      <div class="hight-bar"></div>
+                      <div class="dollar-rate absolute">
+                        {{ "$" + item.dolars }}
+                      </div>
+                    </div>
+
+                    <div v-else>
+                      <div class="log-count absolute" style="left: -10px">
+                        {{ item.logs }}
+                      </div>
+                      <div class="hight-bar"></div>
+                      <div class="dollar-rate absolute" style="left: -20px">
+                        {{ "$" + item.dolars }}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -89,7 +104,10 @@
               </div>
             </div>
           </div>
-          <p class="current-log-text pt-5 pb-5">
+          <p
+            class="current-log-text pt-5"
+            v-bind:class="{ hidden: isFreePlan }"
+          >
             {{
               $t("You need to log another") +
               numberOfLogsRemained +
@@ -107,14 +125,14 @@
               ></vs-icon>
             </vs-tooltip>
           </p>
-          <p class="text-2xl mb-5 mt-1">
+          <p class="text-2xl pb-5 pt-5 mt-1" style="font-size: 20px">
             {{ $t("Accrued amount to be paid this month:") }}
-            <span class="font-semibold">$16.78</span>
+            <span class="font-semibold">$ {{ nextPaymentPrice }}</span>
           </p>
         </div>
       </vx-card>
 
-      <vx-card class="mt-6">
+      <vx-card class="mt-6 hidden">
         <div class="" slot="no-body">
           <div class="p-6 inline-block w-10/12">
             <h4 class="font-semibold mt-2">
@@ -239,7 +257,7 @@
       </vx-card>
     </div>
 
-    <div class="vx-col md:w-12/12 w-full mt-4 mb-20 block">
+    <div class="vx-col md:w-12/12 w-full mt-4 mb-20 block hidden">
       <vx-card>
         <h4 class="font-semibold mt-2 mb-6">
           {{
@@ -378,6 +396,7 @@ export default {
   },
   data() {
     return {
+      allLoaded: false,
       functionLocation: "us-central1",
       publishableKey: "pk_test_6dCN5HWGN4mXJVOHuF6NDjbq",
       stripePrice: "price_1IGqz0KotMxlCKnOhC34kaqB",
@@ -385,6 +404,7 @@ export default {
       customerStripeId: "false",
       mySubscription: "",
       subscribed: false,
+      isFreePlan: false,
       currBillingDate: tempDate,
       nextBillingDate: new Date(),
       loadingAddBillingDetail: false,
@@ -396,51 +416,54 @@ export default {
       dollarPerHour: 30,
       employees: 34,
       units: 60,
-      // cloud_functions_url:
-      //   "http://localhost:5001/the-haccp-app-249610/us-central1",
       cloud_functions_url:
-        "https://us-central1-the-haccp-app-249610.cloudfunctions.net/",
+        "http://localhost:5001/the-haccp-app-249610/us-central1",
+      // cloud_functions_url:
+      //   "https://us-central1-the-haccp-app-249610.cloudfunctions.net/",
       logTrackInfos: [
         {
           width: 7,
           logs: 312,
-          dolars: 0.0027,
+          dolars: 0.027,
         },
         {
           width: 9,
           logs: 780,
-          dolars: 0.0024,
+          dolars: 0.024,
         },
         {
           width: 9,
           logs: 1300,
-          dolars: 0.0023,
+          dolars: 0.023,
         },
         {
           width: 10,
           logs: 2080,
-          dolars: 0.0022,
+          dolars: 0.022,
         },
         {
           width: 12,
           logs: 3120,
-          dolars: 0.0019,
+          dolars: 0.019,
         },
         {
           width: 15,
           logs: "26k",
-          dolars: 0.0016,
+          dolars: 0.016,
         },
         {
           width: 32,
           logs: "260k",
-          dolars: 0.0014,
+          dolars: 0.014,
         },
       ],
       billings: [],
+      upcomingInvoice: {},
+      nextPaymentPrice: 0,
     };
   },
   async mounted() {
+    this.$vs.loading();
     // GET status of subscription and next billing date
     db.collection("customers")
       .doc(JSON.parse(localStorage.getItem("userInfo")).id)
@@ -504,6 +527,7 @@ export default {
             .get()
             .then((qq) => {
               this.numberOfLogs = qq.size;
+              this.isFreePlan = this.numberOfLogs < 312;
             });
           console.log("in usgae", this.currBillingDate);
         }
@@ -701,8 +725,16 @@ export default {
           },
         })
         .then((res) => {
-          console.log("in res", res.data.result);
-          this.billings = res.data.result;
+          console.log("in res", res.data.invoices);
+          this.billings = res.data.invoices;
+          this.upcomingInvoice = res.data.upcomingInvoice;
+          this.nextPaymentPrice =
+            (this.upcomingInvoice.amount_due -
+              this.upcomingInvoice.amount_paid) /
+            100;
+          console.log("upcomingInvoice", res.data.upcomingInvoice);
+          this.allLoaded = true;
+          this.$vs.loading.close();
         });
     },
   },
