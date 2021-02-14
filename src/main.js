@@ -24,6 +24,12 @@ import axios from 'axios'
 Vue.prototype.$http = axios
 // Vue.prototype.$gist = gist
 
+// SET firebase functions URL
+Vue.prototype.$firebaseFunctionUrl = "http://localhost:5001/the-haccp-app-249610/us-central1"
+
+// SET stripe global values
+Vue.prototype.$stripePublishableKey = "pk_test_6dCN5HWGN4mXJVOHuF6NDjbq";
+
 // Firebase-kk
 import '@/firebase/firebaseInit'
 // import '@/firebase/analytics'

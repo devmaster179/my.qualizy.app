@@ -352,5 +352,13 @@ export default {
 
   tempClosedAnswer: state => {
     return state.tempClosedAnswer
-  }
+  },
+
+  getSubscription: state => {
+    return state.subscription
+  },
+
+  getCurrentPricePlan: state => {
+    return state.currentPricePlan
+  },
 }

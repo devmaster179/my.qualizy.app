@@ -730,6 +730,8 @@ export default {
                         group: result.user.uid,
                       })
                     temp.content.location = [res.id]
+                    temp.content.teams = teamIDs
+
                     console.log('each before save', temp)
                     var docRef = db.collection("templates").doc(); //automatically generate unique id
                     tempBatch.set(docRef, temp);

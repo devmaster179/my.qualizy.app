@@ -4,10 +4,19 @@
     v-bind:class="{ hidden: !allLoaded }"
   >
     <div class="vx-col md:w-7/12 w-full mt-4 flex-wrap">
+      <!-- <vs-button
+        :disabled="loadingAddBillingDetail"
+        @click="addBillingDetail"
+        >{{
+          loadingAddBillingDetail ? $t("Loading...") : $t("Add billing details")
+        }}</vs-button
+      > -->
       <vx-card>
         <div class="card-header p-6" slot="no-body">
           <div class="flex justify-between items-center pb-3">
-            <h4 class="font-semibold">{{ $t("Billing Details") }}</h4>
+            <h4 class="font-semibold">
+              {{ $t("Billing Details") }}
+            </h4>
             <vs-button
               :disabled="loadingAddBillingDetail"
               @click="addBillingDetail"
@@ -35,7 +44,7 @@
             color="#8E4D00"
             icon="warning"
             class="ek-header-alert"
-            v-if="!subscribed && numberOfLogs > 311"
+            v-if="!subscribed && numberOfLogs >= 311"
           >
             <span>
               {{
@@ -46,7 +55,7 @@
             </span>
           </vs-alert>
 
-          <div id="my-subscription" v-if="subscribed">
+          <div id="my-subscription" v-if="subscribed && !isFreePlan">
             <p>
               Your monthly payment depends on the number of logs you make during
               a month. Next payment will be billed on
@@ -127,7 +136,9 @@
           </p>
           <p class="text-2xl pb-5 pt-5 mt-1" style="font-size: 20px">
             {{ $t("Accrued amount to be paid this month:") }}
-            <span class="font-semibold">$ {{ nextPaymentPrice }}</span>
+            <span class="font-semibold" style="font-size: 25px"
+              >${{ nextPaymentPrice }}</span
+            >
           </p>
         </div>
       </vx-card>
@@ -396,21 +407,20 @@ export default {
   },
   data() {
     return {
+      // subscribed: false,
+      // isFreePlan: false,
+      // currBillingDate: tempDate,
+      // nextBillingDate: new Date(),
+      // numberOfLogs: 0,
       allLoaded: false,
       functionLocation: "us-central1",
-      publishableKey: "pk_test_6dCN5HWGN4mXJVOHuF6NDjbq",
       stripePrice: "price_1IGqz0KotMxlCKnOhC34kaqB",
       sessionId: "",
       customerStripeId: "false",
       mySubscription: "",
-      subscribed: false,
-      isFreePlan: false,
-      currBillingDate: tempDate,
-      nextBillingDate: new Date(),
       loadingAddBillingDetail: false,
       loadingManageBillingDetails: false,
       billingDetailPopup: false,
-      numberOfLogs: 0,
       mainBarWidth: 0,
       numberOfLogsRemained: 469,
       dollarPerHour: 30,
@@ -462,97 +472,27 @@ export default {
       nextPaymentPrice: 0,
     };
   },
-  async mounted() {
-    this.$vs.loading();
-    // GET status of subscription and next billing date
-    db.collection("customers")
-      .doc(JSON.parse(localStorage.getItem("userInfo")).id)
-      .collection("subscriptions")
-      .where("status", "in", ["trialing", "active"])
-      .onSnapshot(async (snapshot) => {
-        if (snapshot.empty) {
-          // Show products
-          this.subscribed = false;
-          return;
-        }
-        snapshot.forEach((doc) => {
-          console.log(
-            "subscriptions",
-            Object.assign({}, doc.data(), { id: doc.id })
-          );
-          this.currBillingDate = doc.data().current_period_start.toDate();
-          this.nextBillingDate = doc.data().current_period_end.toDate();
-        });
-        console.log("sub", snapshot.length, snapshot);
-        // In this implementation we only expect one Subscription to exist
-        this.subscribed = true;
-        const subscription = snapshot.docs[0].data();
-        const priceData = (await subscription.price.get()).data();
-
-        console.log("priceData", priceData);
-      });
-
-    // GET logs
-    let logs = [];
-    db.collection("log_usages")
-      .where(
-        "created_by",
-        "==",
-        JSON.parse(localStorage.getItem("userInfo")).id
-      )
-      .get()
-      .then((q) => {
-        console.log("this.currBillingDate ", this.currBillingDate);
-        if (q.size <= 1) {
-          db.collection("log_usages")
-            .where(
-              "created_by",
-              "==",
-              JSON.parse(localStorage.getItem("userInfo")).id
-            )
-            .where("created_at", ">=", tempDate)
-            .get()
-            .then((qq) => {
-              this.numberOfLogs = qq.size;
-            });
-          console.log("in usgae", tempDate);
-        } else {
-          db.collection("log_usages")
-            .where(
-              "created_by",
-              "==",
-              JSON.parse(localStorage.getItem("userInfo")).id
-            )
-            .where("created_at", ">=", this.currBillingDate)
-            .get()
-            .then((qq) => {
-              this.numberOfLogs = qq.size;
-              this.isFreePlan = this.numberOfLogs < 312;
-            });
-          console.log("in usgae", this.currBillingDate);
-        }
-      });
-
-    // GET customer stripe ID
-    db.collection("customers")
-      .doc(JSON.parse(localStorage.getItem("userInfo")).id)
-      .get()
-      .then((doc) => {
-        if (doc.exists) {
-          this.customerStripeId = doc.data().stripeId;
-          console.log("customer ", this.customerStripeId, doc);
-          this.getInvoices();
-        } else {
-          this.customerStripeId = "invalid";
-          this.billings = [];
-        }
-      });
-
-    // SET mainBar width (log track bar)
-    this.mainBarWidth = $(".logs-track-bar .main-bar").width();
-    console.log("this.$refs.mainBar, ", this.mainBarWidth);
-  },
   computed: {
+    subscribed() {
+      let subscription = this.$store.getters["app/getSubscription"];
+      return subscription.subscribed;
+    },
+    currBillingDate() {
+      let subscription = this.$store.getters["app/getSubscription"];
+      return subscription.currBillingDate;
+    },
+    nextBillingDate() {
+      let subscription = this.$store.getters["app/getSubscription"];
+      return subscription.nextBillingDate;
+    },
+    numberOfLogs() {
+      let currentPricePlan = this.$store.getters["app/getCurrentPricePlan"];
+      return currentPricePlan.numberOfLogs;
+    },
+    isFreePlan() {
+      let currentPricePlan = this.$store.getters["app/getCurrentPricePlan"];
+      return currentPricePlan.isFreePlan;
+    },
     scrollNumberOfLogs() {
       let plans = [];
       let scroll = 0;
@@ -635,12 +575,42 @@ export default {
       return scroll + "px";
     },
   },
+  async mounted() {
+    this.$vs.loading();
+
+    // GET customer stripe ID and GET Invoices
+    db.collection("customers")
+      .doc(JSON.parse(localStorage.getItem("userInfo")).id)
+      .get()
+      .then((doc) => {
+        if (doc.exists) {
+          this.customerStripeId = doc.data().stripeId;
+          console.log("customer ", this.customerStripeId, doc);
+          this.getInvoices();
+        } else {
+          this.customerStripeId = "invalid";
+          this.billings = [];
+          this.allLoaded = true;
+          this.$vs.loading.close();
+        }
+      });
+
+    // SET mainBar width (log track bar)
+    this.mainBarWidth = $(".logs-track-bar .main-bar").width();
+    console.log("this.$refs.mainBar, ", this.mainBarWidth);
+  },
   methods: {
     async addBillingDetail() {
-      const stripe = await loadStripe(this.publishableKey);
+      const stripe = await loadStripe(this.$stripePublishableKey);
       this.loadingAddBillingDetail = true;
 
-      let customer_url = `${this.cloud_functions_url}/setupBillingDetail`;
+      // stripe.redirectToCheckout({
+      //   sessionId:
+      //     "cs_test_c1DlmTPo5S61HnpS8wQYgvikwWevWdmdhM0BGx0suJXSmZpuF6BR39hx9P",
+      // });
+      // return;
+
+      let customer_url = `${this.$firebaseFunctionUrl}/setupBillingDetail`;
       this.$http
         .get(customer_url, {
           params: {
@@ -648,6 +618,7 @@ export default {
             email: JSON.parse(localStorage.getItem("userInfo")).email,
             success_url: window.location.href,
             cancel_url: window.location.href,
+            currentUsageOfLogs: this.numberOfLogs,
           },
         })
         .then((res) => {
@@ -656,44 +627,6 @@ export default {
             sessionId: res.data.result.session.id,
           });
         });
-
-      return;
-      const docRef = await db
-        .collection("customers")
-        .doc(JSON.parse(localStorage.getItem("userInfo")).id)
-        .collection("checkout_sessions")
-        .add({
-          mode: "setup",
-          created_at: new Date(),
-          success_url: window.location.href,
-          cancel_url: window.location.href,
-          // price: this.stripePrice,
-          line_items: [{ price: this.stripePrice }],
-          unit_amount: 0,
-        });
-
-      // Wait for the CheckoutSession to get attached by the extension
-      docRef.onSnapshot(async (snap) => {
-        const { error, sessionId } = snap.data();
-        if (error) {
-          console.log(`An error occured:`, error.message);
-          this.$vs.notify({
-            time: 8000,
-            title: "An error occured",
-            text: error.message,
-            iconPack: "feather",
-            icon: "icon-alert-circle",
-            color: "warning",
-          });
-          this.loadingAddBillingDetail = false;
-        }
-        if (sessionId) {
-          this.sessionId = sessionId;
-          const stripe = await loadStripe(this.publishableKey);
-          stripe.redirectToCheckout({ sessionId });
-          // this.loadingAddBillingDetail = false;
-        }
-      });
     },
 
     async manageBillingDetails() {
@@ -715,7 +648,7 @@ export default {
     },
 
     async getInvoices() {
-      let invoice_url = `${this.cloud_functions_url}/getInvoicesByCus`;
+      let invoice_url = `${this.$firebaseFunctionUrl}/getInvoicesByCus`;
       this.$http
         .get(invoice_url, {
           params: {
@@ -725,13 +658,15 @@ export default {
           },
         })
         .then((res) => {
-          console.log("in res", res.data.invoices);
+          console.log("invoices", res.data.invoices);
           this.billings = res.data.invoices;
           this.upcomingInvoice = res.data.upcomingInvoice;
-          this.nextPaymentPrice =
-            (this.upcomingInvoice.amount_due -
-              this.upcomingInvoice.amount_paid) /
-            100;
+          if (this.upcomingInvoice) {
+            this.nextPaymentPrice =
+              (this.upcomingInvoice.amount_due -
+                this.upcomingInvoice.amount_paid) /
+              100;
+          }
           console.log("upcomingInvoice", res.data.upcomingInvoice);
           this.allLoaded = true;
           this.$vs.loading.close();

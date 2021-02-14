@@ -25,9 +25,14 @@ exports.getInvoicesByCus = functions.https.onRequest(async (req, res) => {
       limit: limit,
     });
 
-    const upcomingInvoice = await stripe.invoices.retrieveUpcoming({
-      customer: customerStripeId,
-    });
+    let upcomingInvoice;
+    if (invoices.data.length != 0) {
+      upcomingInvoice = await stripe.invoices.retrieveUpcoming({
+        customer: customerStripeId,
+      });
+    } else {
+      upcomingInvoice = false
+    }
 
     res.json({ invoices: invoices.data, upcomingInvoice });
   });
@@ -41,6 +46,7 @@ exports.setupBillingDetail = functions.https.onRequest(async (req, res) => {
       const success_url = req.query.success_url;
       const cancel_url = req.query.cancel_url;
       const price = req.query.price;
+      const currentUsageOfLogs = req.query.currentUsageOfLogs;
 
       const customerData = {
         metadata: {
@@ -63,13 +69,16 @@ exports.setupBillingDetail = functions.https.onRequest(async (req, res) => {
         .firestore()
         .collection('customers').doc(uid).set(customerRecord);
 
-      // create sessopm
+      // create session
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         mode: 'setup',
         customer: customer.id,
         success_url,
         cancel_url,
+        metadata: {
+          initialUsageOfLogs: currentUsageOfLogs,
+        }
       });
 
       admin
@@ -130,10 +139,27 @@ exports.handleStripeWebhookEvents = functions.https.onRequest(
                     { price },
                   ],
                 });
+
+
+                // Add initial logs as usage
+                const subscriptionItems = await stripe.subscriptionItems.list({
+                  subscription: subscription.id,
+                });
+
                 admin
                   .firestore()
                   .collection("sub_check")
-                  .add({ created_at: new Date(), checkoutSession: checkoutSession });
+                  .add({ created_at: new Date(), checkoutSession: checkoutSession, subscription, subscriptionItems });
+
+                if (subscriptionItems.data.length < 1) {
+                  res.json({ result: 'error' });
+                } else {
+                  const usageRecord = await stripe.subscriptionItems.createUsageRecord(
+                    subscriptionItems.data[0].id,
+                    { quantity: checkoutSession.metadata.initialUsageOfLogs, timestamp: new Date() }
+                  );
+                  res.json({ result: usageRecord });
+                }
               }
               break;
             default:
@@ -152,22 +178,6 @@ exports.handleStripeWebhookEvents = functions.https.onRequest(
     });
   });
 
-
-// exports.addUsageToSubscription = functions.firestore.document('/log_usages/{documentId}')
-//   .onCreate((snap, context) => {
-//     // Grab the current value of what was written to Firestore.
-//     const usage = snap.data();
-
-//     // Access the parameter `{documentId}` with `context.params`
-//     functions.logger.log('Adding usage', context.params.documentId);
-
-//     const usageRecord = await stripe.subscriptionItems.createUsageRecord(
-//       subscriptionItem,
-//       { quantity: 100, timestamp: new Date() }
-//     );
-
-//     return snap.ref.set({ addedToStripe: true }, { merge: true });
-//   });
 
 exports.addUsageToSubscription = functions.https.onRequest(async (req, res) => {
   return cors(req, res, async () => {

@@ -391,7 +391,7 @@ export default {
         (a, b) =>
           b.updated_at.toDate().getTime() - a.updated_at.toDate().getTime()
       );
-
+      console.log("userTeam", userTeam);
       var unshceduledTemplate = [];
       templates.map((template) => {
         if (template.trashed) return;
@@ -406,6 +406,7 @@ export default {
           )
             return;
         }
+        console.log("template teams", template.content.teams);
         if (
           template.content.teams !== undefined &&
           Array.isArray(template.content.teams) &&

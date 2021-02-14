@@ -888,10 +888,10 @@ export default {
   },
   data() {
     return {
-      // cloud_functions_url:
-      //   "http://localhost:5001/the-haccp-app-249610/us-central1",
       cloud_functions_url:
-        "https://us-central1-the-haccp-app-249610.cloudfunctions.net/",
+        "http://localhost:5001/the-haccp-app-249610/us-central1",
+      // cloud_functions_url:
+      //   "https://us-central1-the-haccp-app-249610.cloudfunctions.net/",
       subscribed: false,
       subscriptionId: false,
       signatureTop: -1,
@@ -1467,7 +1467,7 @@ export default {
           })
           .then((res) => {
             console.log("usage added");
-            let usage_url = `${this.cloud_functions_url}/addUsageToSubscription`;
+            let usage_url = `${this.$firebaseFunctionUrl}/addUsageToSubscription`;
             this.$http
               .get(usage_url, {
                 params: {
@@ -1621,7 +1621,7 @@ export default {
           })
           .then((res) => {
             console.log("usage added");
-            let usage_url = `${this.cloud_functions_url}/addUsageToSubscription`;
+            let usage_url = `${this.$firebaseFunctionUrl}/addUsageToSubscription`;
             this.$http
               .get(usage_url, {
                 params: {

@@ -400,6 +400,12 @@ export default {
   },
   SET_EDIT_SCORE(state, query) {
     state.editScore = query
-  }
+  },
+  SET_SUBSCRIPTION(state, query) {
+    state.subscription = { ...state.subscription, ...query }
+  },
+  SET_CURRENT_PRICE_PLAN(state, query) {
+    state.currentPricePlan = { ...state.currentPricePlan, ...query }
+  },
 
 }
