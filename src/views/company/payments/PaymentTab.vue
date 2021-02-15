@@ -171,7 +171,7 @@
           </div>
           <div class="inline-block w-2/12 star-man-wrapper">
             <img
-              class="w-full h-full"
+              class="w-full h-full pb-24"
               :src="
                 require(`@/assets/images/pages/company/main-with-stars.png`)
               "
