@@ -558,14 +558,14 @@
                                 | moment("dddd, MMMM Do YYYY - H:mm:ss")
                           }}</span
                         >
-                        <vs-button
+                        <!-- <vs-button
                           class="px-1 sm:px-4 text-right align-end"
                           color="primary"
                           v-if="aIndex === question.answers.length-1"
                           type="filled"
                           @click="duplicateSection(pIndex, qIndex, aIndex)"
                           >{{ $t("duplicate") | capitalize }}</vs-button
-                        >
+                        > -->
                       </div>
                     </template>
                     <template
@@ -801,6 +801,23 @@
                     </template>
                   </div>
                 </div>
+                <div
+                  class="mt-5">
+                  <div class="vx-row answer-content">
+                    <template>
+                      <div class="pl-4 w-full flex items-center justify-between">
+                        <span></span>
+                        <vs-button
+                          class="px-1 sm:px-4 text-right align-end"
+                          color="primary"
+                          type="filled"
+                          @click="duplicateSection(pIndex, qIndex)"
+                          >{{ $t("duplicate") | capitalize }}</vs-button
+                        >
+                      </div>
+                    </template>
+                  </div>
+                </div>
               </div>
             </vx-card>
           </div>
@@ -972,9 +989,7 @@ export default {
   computed: {
     templateAction() {
       return (p, q, a) => {
-        if(this.templateInfo.content.pages[p].questions[q] === undefined){
-          q=0;
-        }
+        return false;
         return this.templateInfo.content.pages[p].questions[q].answers[a]
           .action;
       };
@@ -1209,10 +1224,10 @@ export default {
     },
   },
   methods: {
-    duplicateSection(pIndex, qIndex, aIndex) {
+    duplicateSection(pIndex, qIndex) {
       let questions = this.pages[pIndex].questions;
       let question = JSON.parse(JSON.stringify(this.pages[pIndex].questions[qIndex]));
-      question.answers[aIndex].value = new Date();
+      // question.answers[aIndex].value = new Date();
 
       questions.splice(qIndex+1, 0, question);
       questions.join();
