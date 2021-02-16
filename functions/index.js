@@ -96,89 +96,6 @@ exports.setupBillingDetail = functions.https.onRequest(async (req, res) => {
   });
 });
 
-exports.handleStripeWebhookEvents = functions.https.onRequest(
-  async (req, resp) => {
-    return cors(req, resp, async () => {
-      const relevantEvents = new Set([
-        'product.created',
-        'product.updated',
-        'product.deleted',
-        'price.created',
-        'price.updated',
-        'price.deleted',
-        'checkout.session.completed',
-        'customer.subscription.created',
-        'customer.subscription.updated',
-        'customer.subscription.deleted',
-        'tax_rate.created',
-        'tax_rate.updated',
-      ]);
-      let event;
-
-      try {
-        event = stripe.webhooks.constructEvent(
-          req.rawBody,
-          req.headers['stripe-signature'],
-          'whsec_YenyYyr9dgJY582PY4n3W2aG7kL8Aap8'
-        );
-      } catch (error) {
-        resp.status(401).send('Webhook Error: Invalid Secret');
-        return;
-      }
-
-      if (relevantEvents.has(event.type)) {
-        try {
-          switch (event.type) {
-            case 'checkout.session.completed':
-              const checkoutSession = event.data.object;
-              if (checkoutSession.mode === 'setup') {
-                console.log('checkout.session.completed', checkoutSession)
-                const subscription = await stripe.subscriptions.create({
-                  customer: checkoutSession.customer,
-                  items: [
-                    { price },
-                  ],
-                });
-
-
-                // Add initial logs as usage
-                const subscriptionItems = await stripe.subscriptionItems.list({
-                  subscription: subscription.id,
-                });
-
-                admin
-                  .firestore()
-                  .collection("sub_check")
-                  .add({ created_at: new Date(), checkoutSession: checkoutSession, subscription, subscriptionItems });
-
-                if (subscriptionItems.data.length < 1) {
-                  res.json({ result: 'error' });
-                } else {
-                  const usageRecord = await stripe.subscriptionItems.createUsageRecord(
-                    subscriptionItems.data[0].id,
-                    { quantity: checkoutSession.metadata.initialUsageOfLogs, timestamp: new Date() }
-                  );
-                  res.json({ result: usageRecord });
-                }
-              }
-              break;
-            default:
-              return new Error('Unhandled relevant event!')
-          }
-        } catch (error) {
-          resp.json({
-            error: 'Webhook handler failed. View function logs in Firebase.',
-          });
-          return;
-        }
-      }
-
-      // Return a response to Stripe to acknowledge receipt of the event.
-      resp.json({ received: true });
-    });
-  });
-
-
 exports.addUsageToSubscription = functions.https.onRequest(async (req, res) => {
   return cors(req, res, async () => {
     const usageCount = req.query.usageCount;
@@ -195,5 +112,86 @@ exports.addUsageToSubscription = functions.https.onRequest(async (req, res) => {
       );
       res.json({ result: usageRecord });
     }
+  });
+});
+
+exports.handleStripeWebhookEvents = functions.https.onRequest(async (req, resp) => {
+  return cors(req, resp, async () => {
+    const relevantEvents = new Set([
+      'product.created',
+      'product.updated',
+      'product.deleted',
+      'price.created',
+      'price.updated',
+      'price.deleted',
+      'checkout.session.completed',
+      'customer.subscription.created',
+      'customer.subscription.updated',
+      'customer.subscription.deleted',
+      'tax_rate.created',
+      'tax_rate.updated',
+    ]);
+    let event;
+
+    try {
+      event = stripe.webhooks.constructEvent(
+        req.rawBody,
+        req.headers['stripe-signature'],
+        'whsec_YenyYyr9dgJY582PY4n3W2aG7kL8Aap8'
+      );
+    } catch (error) {
+      resp.status(401).send('Webhook Error: Invalid Secret');
+      return;
+    }
+
+    if (relevantEvents.has(event.type)) {
+      try {
+        switch (event.type) {
+          case 'checkout.session.completed':
+            const checkoutSession = event.data.object;
+            if (checkoutSession.mode === 'setup') {
+              console.log('checkout.session.completed', checkoutSession)
+              const subscription = await stripe.subscriptions.create({
+                customer: checkoutSession.customer,
+                items: [
+                  { price },
+                ],
+              });
+
+
+              // Add initial logs as usage
+              const subscriptionItems = await stripe.subscriptionItems.list({
+                subscription: subscription.id,
+              });
+
+              admin
+                .firestore()
+                .collection("sub_check")
+                .add({ created_at: new Date(), checkoutSession: checkoutSession, subscription, subscriptionItems });
+
+              if (subscriptionItems.data.length < 1) {
+                res.json({ result: 'error' });
+              } else {
+                const usageRecord = await stripe.subscriptionItems.createUsageRecord(
+                  subscriptionItems.data[0].id,
+                  { quantity: checkoutSession.metadata.initialUsageOfLogs, timestamp: new Date() }
+                );
+                res.json({ result: usageRecord });
+              }
+            }
+            break;
+          default:
+            return new Error('Unhandled relevant event!')
+        }
+      } catch (error) {
+        resp.json({
+          error: 'Webhook handler failed. View function logs in Firebase.',
+        });
+        return;
+      }
+    }
+
+    // Return a response to Stripe to acknowledge receipt of the event.
+    resp.json({ received: true });
   });
 });

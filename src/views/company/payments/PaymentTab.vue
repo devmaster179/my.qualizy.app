@@ -171,7 +171,7 @@
           </div>
           <div class="inline-block w-2/12 star-man-wrapper">
             <img
-              class="w-full h-full pb-24"
+              class="w-full h-full"
               :src="
                 require(`@/assets/images/pages/company/main-with-stars.png`)
               "
@@ -259,7 +259,7 @@
               {{ $t("You have no billing history yet") }}
             </p>
             <img
-              class="w-2/3 h-full"
+              class="w-2/3 h-full pb-24"
               :src="require(`@/assets/images/pages/company/no-billings.svg`)"
               alt="no-billings"
             />

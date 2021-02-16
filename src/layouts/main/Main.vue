@@ -173,9 +173,23 @@ export default {
     };
   },
   watch: {
-    $route() {
+    $route(to, from) {
       this.routeTitle = this.$route.meta.pageTitle;
       var cUser = this.$store.getters["app/currentUser"];
+      this.activeProPricePlanPopup = false;
+      console.log(
+        "modal",
+        this.$store.getters["app/getCurrentPricePlan"].isFreePlan,
+        this.$store.getters["app/getSubscription"].subscribed,
+        to.name
+      );
+      if (this.$store.getters["app/getCurrentPricePlan"].isFreePlan == false) {
+        let subscription = this.$store.getters["app/getSubscription"];
+        if (subscription.subscribed == false && to.name != "company") {
+          this.activeProPricePlanPopup = true;
+          console.log("ruu");
+        }
+      }
     },
     isThemeDark(val) {
       if (this.navbarColor == "#fff" && val) {
@@ -188,7 +202,7 @@ export default {
   computed: {
     subscribedForModal() {
       let subscription = this.$store.getters["app/getSubscription"];
-
+      console.log("subscribedForModal in computed", subscription);
       if (this.$route.name == "company") {
         this.activeProPricePlanPopup = false;
       }
@@ -804,6 +818,7 @@ export default {
             return;
           }
 
+          let subID = false;
           // In this implementation we only expect one Subscription to exist
           snapshot.forEach((doc) => {
             console.log(
@@ -812,14 +827,15 @@ export default {
             );
             this.currBillingDate = doc.data().current_period_start.toDate();
             this.nextBillingDate = doc.data().current_period_end.toDate();
+            subID = doc.id;
           });
 
           this.$store.dispatch("app/setSubscription", {
             subscribed: true,
+            subscriptionId: subID,
             currBillingDate: this.currBillingDate,
             nextBillingDate: this.nextBillingDate,
           });
-          this.checkFreePlan();
         });
     },
     checkFreePlan() {
@@ -829,8 +845,7 @@ export default {
           "==",
           JSON.parse(localStorage.getItem("userInfo")).id
         )
-        .get()
-        .then((q) => {
+        .onSnapshot((q) => {
           if (q.size <= 311) {
             db.collection("log_usages")
               .where(
@@ -839,12 +854,25 @@ export default {
                 JSON.parse(localStorage.getItem("userInfo")).id
               )
               .where("created_at", ">=", tempDate)
-              .get()
-              .then((qq) => {
+              .onSnapshot((qq) => {
                 this.$store.dispatch("app/setCurrentPricePlan", {
                   numberOfLogs: qq.size,
-                  isFreePlan: this.numberOfLogs < 312,
+                  isFreePlan: this.numberOfLogs > 312, //<
                 });
+                console.log(
+                  "modal: below 1",
+                  this.numberOfLogs > 312,
+                  this.$store.getters["app/getSubscription"].subscribed
+                );
+                if (this.numberOfLogs > 312 == false) {
+                  let subscription = this.$store.getters["app/getSubscription"];
+                  if (
+                    subscription.subscribed == false &&
+                    this.$route.name != "company"
+                  ) {
+                    this.activeProPricePlanPopup = true;
+                  }
+                }
               });
             console.log("in usage tempDate", tempDate);
           } else {
@@ -855,30 +883,27 @@ export default {
                 JSON.parse(localStorage.getItem("userInfo")).id
               )
               .where("created_at", ">=", this.currBillingDate)
-              .get()
-              .then((qq) => {
+              .onSnapshot((qq) => {
                 this.$store.dispatch("app/setCurrentPricePlan", {
                   numberOfLogs: qq.size,
-                  isFreePlan: this.numberOfLogs < 312,
+                  isFreePlan: this.numberOfLogs < 312, //<
                 });
+                console.log(
+                  "modal: below 2",
+                  this.numberOfLogs < 312,
+                  this.$store.getters["app/getSubscription"].subscribed
+                );
+                if (this.numberOfLogs < 312 == false) {
+                  let subscription = this.$store.getters["app/getSubscription"];
+                  if (
+                    subscription.subscribed == false &&
+                    this.$route.name != "company"
+                  ) {
+                    this.activeProPricePlanPopup = true;
+                  }
+                }
               });
             console.log("in usage currBillingDate", this.currBillingDate);
-          }
-          console.log(
-            "modal",
-            !this.$store.getters["app/getCurrentPricePlan"].isFreePlan,
-            this.$store.getters["app/getSubscription"].subscribed
-          );
-          if (
-            this.$store.getters["app/getCurrentPricePlan"].isFreePlan == false
-          ) {
-            let subscription = this.$store.getters["app/getSubscription"];
-            if (
-              subscription.subscribed == false &&
-              this.$route.name != "company"
-            ) {
-              this.activeProPricePlanPopup = true;
-            }
           }
         });
     },
@@ -954,6 +979,8 @@ export default {
     }
 
     await this.checkSubscribed();
+    await this.checkFreePlan();
+
     // this.$vs.loading();
     this.$store.commit("app/SET_LOCATION_LIST", []);
     var mDate = new Date().getTime();

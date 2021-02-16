@@ -11,8 +11,8 @@
     >
       <div>
         <p style="font-size: 15px">
-          <b>Congratulations,</b> it looks like you are ready to through away
-          your old folders. You have reached the limit of the free plan, please
+          <b>Congratulations,</b> it looks like you are ready to throw away your
+          old folders. You have reached the limit of the free plan, please
           update your credit card details to continue working in paperless
           environment
         </p>

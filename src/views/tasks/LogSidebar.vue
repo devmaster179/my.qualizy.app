@@ -892,8 +892,8 @@ export default {
         "http://localhost:5001/the-haccp-app-249610/us-central1",
       // cloud_functions_url:
       //   "https://us-central1-the-haccp-app-249610.cloudfunctions.net/",
-      subscribed: false,
-      subscriptionId: false,
+      // subscribed: false,
+      // subscriptionId: false,
       signatureTop: -1,
       scrollUpdate: false,
       userList: [],
@@ -969,6 +969,14 @@ export default {
     },
   },
   computed: {
+    subscribed() {
+      let subscription = this.$store.getters["app/getSubscription"];
+      return subscription.subscribed;
+    },
+    subscriptionId() {
+      let subscription = this.$store.getters["app/getSubscription"];
+      return subscription.subscriptionId;
+    },
     templateAction() {
       return (p, q, a) => {
         return this.templateInfo.content.pages[p].questions[q].answers[a]
@@ -1205,25 +1213,28 @@ export default {
     },
   },
   mounted() {
-    db.collection("customers")
-      .doc(JSON.parse(localStorage.getItem("userInfo")).id)
-      .collection("subscriptions")
-      .where("status", "in", ["trialing", "active"])
-      .onSnapshot(async (snapshot) => {
-        if (snapshot.empty) {
-          // Show products
-          this.subscribed = false;
-          return;
-        }
-        snapshot.forEach((doc) => {
-          console.log(
-            "subscriptions",
-            Object.assign({}, doc.data(), { id: doc.id })
-          );
-          this.subscriptionId = doc.id;
-        });
-        this.subscribed = true;
-      });
+    // db.collection("customers")
+    //   .doc(JSON.parse(localStorage.getItem("userInfo")).id)
+    //   .collection("subscriptions")
+    //   .where("status", "in", ["trialing", "active"])
+    //   .onSnapshot(async (snapshot) => {
+    //     if (snapshot.empty) {
+    //       // Show products
+    //       this.subscribed = false;
+    //       console.log("this.subscribed 1", this.subscribed);
+    //       return;
+    //     }
+    //     snapshot.forEach((doc) => {
+    //       console.log(
+    //         "subscriptions",
+    //         Object.assign({}, doc.data(), { id: doc.id })
+    //       );
+    //       this.subscriptionId = doc.id;
+    //     });
+    //     this.subscribed = true;
+    //     console.log("this.subscribed 2", this.subscribed);
+    //   });
+    // console.log("this.subscribed", this.subscribed);
   },
   methods: {
     scrollHandle(evt) {
@@ -1467,17 +1478,20 @@ export default {
           })
           .then((res) => {
             console.log("usage added");
-            let usage_url = `${this.$firebaseFunctionUrl}/addUsageToSubscription`;
-            this.$http
-              .get(usage_url, {
-                params: {
-                  subscription: this.subscriptionId,
-                  usageCount: 1,
-                },
-              })
-              .then((res) => {
-                console.log("usage res: ", res);
-              });
+            if (this.subscribed) {
+              console.log("usage added to subscription");
+              let usage_url = `${this.$firebaseFunctionUrl}/addUsageToSubscription`;
+              this.$http
+                .get(usage_url, {
+                  params: {
+                    subscription: this.subscriptionId,
+                    usageCount: 1,
+                  },
+                })
+                .then((res) => {
+                  console.log("usage res: ", res);
+                });
+            }
           });
       }
 
@@ -1621,17 +1635,20 @@ export default {
           })
           .then((res) => {
             console.log("usage added");
-            let usage_url = `${this.$firebaseFunctionUrl}/addUsageToSubscription`;
-            this.$http
-              .get(usage_url, {
-                params: {
-                  subscription: this.subscriptionId,
-                  usageCount: 1,
-                },
-              })
-              .then((res) => {
-                console.log("usage res: ", res);
-              });
+            if (this.subscribed) {
+              console.log("usage added to subscripiton");
+              let usage_url = `${this.$firebaseFunctionUrl}/addUsageToSubscription`;
+              this.$http
+                .get(usage_url, {
+                  params: {
+                    subscription: this.subscriptionId,
+                    usageCount: 1,
+                  },
+                })
+                .then((res) => {
+                  console.log("usage res: ", res);
+                });
+            }
           });
       }
 

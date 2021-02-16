@@ -26,6 +26,7 @@ Vue.prototype.$http = axios
 
 // SET firebase functions URL
 Vue.prototype.$firebaseFunctionUrl = "http://localhost:5001/the-haccp-app-249610/us-central1"
+// Vue.prototype.$firebaseFunctionUrl = "https://us-central1-the-haccp-app-249610.cloudfunctions.net"
 
 // SET stripe global values
 Vue.prototype.$stripePublishableKey = "pk_test_6dCN5HWGN4mXJVOHuF6NDjbq";

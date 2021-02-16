@@ -86,6 +86,7 @@ export default {
   report_schedule: [],
   subscription: {
     subscribed: false,
+    subscriptionId: false,
     currBillingDate: tempDate,
     nextBillingDate: new Date(),
   },
