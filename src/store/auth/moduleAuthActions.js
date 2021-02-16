@@ -183,17 +183,18 @@ export default {
   }, payload) {
     return new Promise((resolve, reject) => {
       db.collection('users').where('email', '==', payload.email).get().then(async (result) => {
-        var user
+        var user;
         if (!result.empty) {
-          user = Object.assign({}, result.docs[0].data(), { id: result.docs[0].id })
+          user = Object.assign({}, result.docs[0].data(), { id: result.docs[0].id });
         }
         else {
-          reject(new Error('There is no user have this email. \n Please register to login.'))
+          reject(new Error("Sorry, we don't recognise this email. \n Please register to login."));
         }
-        if (!user.status)
-          reject(new Error('This email address blocked already. \n Please contact your admin.'))
+        
+        if (user === undefined || !user.status)
+          reject(new Error('This email address blocked already. \n Please contact your admin.'));
         else if (user.deleted !== undefined && user.deleted)
-          reject(new Error('This email address deleted already. \n Please contact your admin.'))
+          reject(new Error('This email address deleted already. \n Please contact your admin.'));
         var company = await getCompany({ group: user.group })
         var teams = await getTeams({ group: user.group })
         var locations = await getLocations({ group: user.group })
@@ -276,8 +277,9 @@ export default {
         const hash = CryptoJS.HmacSHA256(result.docs[0].id, "ex0dlTc4U8KIzX7pw9udCQK5G9ukYhQauuU_7gQK")
         const hash1 = CryptoJS.enc.Hex.stringify(hash)
         var userLocation = ''
-        if (user.location && Array.isArray(user.location))
+        if (user.location && Array.isArray(user.location)){
           userLocation = user.location.join()
+        }
 
         payload.gist.identify(user.id, {
           name: user.name,
@@ -309,43 +311,41 @@ export default {
         payload.gist.track('Log In', {
           email: user.email,
           name: user.name,
-        })
+        });
 
-        if (!payload.userflow.isIdentified()) {
-          payload.userflow.identify(user.id, {
-            name: user.name,
-            email: user.email,
-            "Job Title": user.job_title || "",
-            "Role": roles[role],
-            "Group ID": user.group,
-            "Group Name": company.bussiness,
-            "Team id": user.team.join() || "",
-            "Team Name": team,
-            "Location ID": userLocation,
-            "Location Name": location,
-            phone: phone,
-            role: roles[role],
-            locale_code: user.lang || "en-us",
-            "Company size": company.employee || 5,
-            "Company industry": company.industry || "Business owner",
-            "Number of locations": locations.length || 0,
-            "App creator": !!user.who,
-            // "Job title": company.job || "Job title"
-          })
-        }
+        payload.userflow.identify(user.id, {
+          name: user.name,
+          email: user.email,
+          "Job Title": user.job_title || "",
+          "Role": roles[role],
+          "Group ID": user.group,
+          "Group Name": company.bussiness,
+          "Team id": user.team.join() || "",
+          "Team Name": team,
+          "Location ID": userLocation,
+          "Location Name": location,
+          phone: phone,
+          role: roles[role],
+          locale_code: user.lang || "en-us",
+          "Company size": company.employee || 5,
+          "Company industry": company.industry || "Business owner",
+          "Number of locations": locations.length || 0,
+          "App creator": !!user.who,
+          // "Job title": company.job || "Job title"
+        });
 
         payload.userflow.track("Log In", {
           email: user.email,
-        })
+        });
 
         db.collection('users').doc(user.id).update({
           last_visit: new Date(),
           chatStatus: 'online'
-        })
-        commit('UPDATE_AUTHENTICATED_USER', user)
+        });
+        commit('UPDATE_AUTHENTICATED_USER', user);
         resolve("Success!");
-      })
-    })
+      });
+    });
 
   },
   login({
@@ -520,7 +520,6 @@ export default {
       } else if (monthlyTitles.indexOf(title.toLowerCase()) > -1) {
         repeat = "Monthly";
       }
-      console.log('repeat compare title', title)
       return repeat;
     }
     // create user using firebase
@@ -570,11 +569,7 @@ export default {
           area: payload.userDetails.locationInfo.city,
           name: company
         }).then(res => {
-          let teamBatch = db.batch()
-          let teamIDs = [];
-
-          let teamRef1 = db.collection("teams").doc(); //automatically generate unique id
-          teamBatch.set(teamRef1, {
+          db.collection('teams').add({
             active: true,
             group: group,
             name: "Front of the house",
@@ -582,11 +577,8 @@ export default {
             updated_at: createdDate,
             created_by: 'app-creator',
             location: [res.id],
-          });
-          teamIDs.push(teamRef1.id)
-
-          let teamRef2 = db.collection("teams").doc(); //automatically generate unique id
-          teamBatch.set(teamRef2, {
+          })
+          db.collection('teams').add({
             active: true,
             group: group,
             name: "Back of the house",
@@ -594,305 +586,285 @@ export default {
             updated_at: createdDate,
             created_by: 'app-creator',
             location: [res.id],
-          });
-          teamIDs.push(teamRef2.id)
+          })
 
-          let teamRef3 = db.collection("teams").doc(); //automatically generate unique id
-          teamBatch.set(teamRef3, {
+          db.collection('teams').add({
             active: true,
             group: group,
-            name: "Management Team",
+            name: payload.userDetails.username + ' - Team',
             created_at: createdDate,
             updated_at: createdDate,
             created_by: 'app-creator',
             location: [res.id],
-          });
-          teamIDs.push(teamRef3.id)
+          }).then(res1 => {
+            let country_code = payload.userDetails.locationInfo.country_code ? payload.userDetails.locationInfo.country_code : ''
 
-          teamBatch.commit();
+            var language = "en-gb"
+            if (country_code.toLowerCase() == "us") {
+              language = "en-us"
+            }
+            else if (country_code.toLowerCase() == "fr" || country_code.toLowerCase() == "es" || country_code.toLowerCase() == "it") {
+              language = country_code.toLowerCase()
+            }
+            db.collection('users').doc(group).set({
+              name: payload.userDetails.username,
+              email: payload.userDetails.email,
+              phone: payload.userDetails.phone,
+              status: true,
+              who: 'app-creator',
+              role: {
+                key: 0,
+                name: 'super admin'
+              },
+              location: [res.id],
+              lang: language,
+              password: Base64.encode(payload.userDetails.password),
+              team: [res1.id],
+              created_at: createdDate,
+              updated_at: createdDate,
+              group: group
+            })
+            payload.userflow.identify(group, {
+              name: payload.userDetails.username,
+              email: payload.userDetails.email,
+              "Job Title": "",
+              "Role": "Super admin",
+              "Group ID": group,
+              "Group Name": company,
+              "Team id": res1.id,
+              "Team Name": payload.userDetails.username + ' - Team',
+              "Location ID": res.id,
+              "Location Name": company,
+              phone: payload.userDetails.phone,
+              role: 0,
+              locale_code: language,
+              created_at: createdDate.toISOString()
+            })
 
-          let country_code = payload.userDetails.locationInfo.country_code ? payload.userDetails.locationInfo.country_code : ''
-
-          var language = "en-gb"
-          if (country_code.toLowerCase() == "us") {
-            language = "en-us"
-          }
-          else if (country_code.toLowerCase() == "fr" || country_code.toLowerCase() == "es" || country_code.toLowerCase() == "it") {
-            language = country_code.toLowerCase()
-          }
-          db.collection('users').doc(group).set({
-            name: payload.userDetails.username,
-            email: payload.userDetails.email,
-            phone: payload.userDetails.phone,
-            status: true,
-            who: 'app-creator',
-            role: {
-              key: 0,
-              name: 'super admin'
-            },
-            location: [res.id],
-            lang: language,
-            password: Base64.encode(payload.userDetails.password),
-            team: teamIDs,
-            created_at: createdDate,
-            updated_at: createdDate,
-            group: group
-          })
-          payload.userflow.identify(group, {
-            name: payload.userDetails.username,
-            email: payload.userDetails.email,
-            "Job Title": "",
-            "Role": "Super admin",
-            "Group ID": group,
-            "Group Name": company,
-            "Team id": teamRef3.id,
-            "Team Name": payload.userDetails.username + ' - Team',
-            "Location ID": res.id,
-            "Location Name": company,
-            phone: payload.userDetails.phone,
-            role: 0,
-            locale_code: language,
-            created_at: createdDate.toISOString()
-          })
-
-          dispatch('login', newPayload) //kkkkkkkk
+            dispatch('login', newPayload) //kkkkkkkk
 
 
-          // BEGIN activating templates/schedules/reports/knowledge_bases
-          let userIndustry = parseInt(payload.userDetails.industry)
+            // BEGIN activating templates/schedules/reports/knowledge_bases
+            let userIndustry = parseInt(payload.userDetails.industry)
 
-          if (userIndustry == 1000) {
-            userIndustry = "Other"
-          } else {
-            userIndustry = industryConfig[userIndustry][language]
-          }
+            if (userIndustry == 1000) {
+              userIndustry = "Other"
+            } else {
+              userIndustry = industryConfig[userIndustry][language]
+            }
 
-          db.collection('companies').doc(group).set({
-            logo: '',
-            bussiness: company,
-            address: 'Address',
-            phone: payload.userDetails.phone,
-            employee: payload.userDetails.employee,
-            industry: userIndustry,
-            job: payload.userDetails.job,
-            trial: true,
-            created_at: createdDate,
-            updated_at: createdDate
-          })
+            db.collection('companies').doc(group).set({
+              logo: '',
+              bussiness: company,
+              address: 'Address',
+              phone: payload.userDetails.phone,
+              employee: payload.userDetails.employee,
+              industry: userIndustry,
+              job: payload.userDetails.job,
+              trial: true,
+              created_at: createdDate,
+              updated_at: createdDate
+            })
 
-          console.log('payload: ', payload)
-          console.log('payload.userDetails.locationInfo: ', payload.userDetails.locationInfo)
-          console.log('userIndustry: ', userIndustry)
-
-          let tags = [];
-          db.collection("template_labels") // get tag ids by industry name == tag name && group == global
-            .where("group", "in", [
-              "global",
-            ])
-            .where("name", "==", userIndustry)
-            .where("lang", "==", language)
-            .get().then((q) => {
-              q.forEach((doc) => {
-                tags.push(doc.id);
-              });
-              console.log("getTemplateLabels", tags);
-
-              db.collection("templates") // get templates that has tag(same name with user industry)
-                .where("group", "==", "global")
-                .get().then((q) => {
-                  let publicTemplates = [];
-                  q.forEach((doc) => {
-                    publicTemplates.push(
-                      Object.assign({}, doc.data(), { id: doc.id })
-                    );
-                  });
-
-                  let templates = publicTemplates.filter((template) => // filter template by tag
-                    template.content.templateLabel.some((labels) =>
-                      tags.includes(labels)
-                    )
-                  );
-
-                  console.log("result.user", result.user);
-                  console.log("tag filtered templates", templates);
-                  let tempBatch = db.batch()
-                  let newTemps = []
-                  templates.map((t) => {
-                    var updated_at = new Date();
-                    let temp = Object.assign({}, t,
-                      {
-                        starred: false,
-                        trashed: false,
-                        created_by: result.user.uid,
-                        updated_by: result.user.uid,
-                        created_at: updated_at,
-                        updated_at: updated_at,
-                        group: result.user.uid,
-                      })
-                    temp.content.location = [res.id]
-                    temp.content.teams = teamIDs
-
-                    console.log('each before save', temp)
-                    var docRef = db.collection("templates").doc(); //automatically generate unique id
-                    tempBatch.set(docRef, temp);
-
-                    newTemps.push({ id: docRef.id, temp: temp })
-                  })
-                  tempBatch.commit();
-
-                  let scheduBatch = db.batch()
-                  let repoBatch = db.batch()
-
-                  newTemps.map(nt => {
-                    console.log('newTemps', nt)
-                    let temp = nt.temp
-                    // BEGIN activating schedules
-                    if (temp.content.templateSD == "schedule this template") {
-                      var assignDates = [];
-                      var from = new Date();
-                      var beforeItem = "";
-                      var aTimes = [{ value: "08:00" }];
-                      aTimes.map((item) => {
-                        if (item.value == beforeItem) return;
-                        beforeItem = item.value;
-                        assignDates.push(
-                          new Date(
-                            from.getFullYear(),
-                            from.getMonth(),
-                            from.getDate(),
-                            item.value.split(":")[0],
-                            item.value.split(":")[1]
-                          )
-                        );
-                      });
-
-                      var teams = teamIDs;
-                      var mUser = teamIDs;
-                      var repeat = getRepeatByTemplateTitle(
-                        temp.content.templateTitle
-                      );
-                      var title = repeat
-                        ? temp.content.templateTitle + "-" + repeat
-                        : temp.content.templateTitle;
-                      let Ydays = ["Sunday", 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-                      let selectedDays = [];
-                      if (temp.selectedDays) {
-                        temp.selectedDays.map(day => {
-                          selectedDays.push({
-                            key: Ydays[day],
-                            value: day
-                          })
-                        })
-                      }
-                      let _repeat = temp._repeat ? temp._repeat : (repeat ? repeat : "No Repeat")
-                      let dueTimes = temp.dueTimes ? temp.dueTimes : assignDates;
-                      let newSchedule = {
-                        location: [res.id],
-                        title: title,
-                        template: nt.id,
-                        assign: teams,
-                        monitor: mUser,
-                        _repeat: _repeat,
-                        dueTimes: dueTimes,
-                        selectedDays: selectedDays,
-                        // interval: this.interval,
-                        group: result.user.uid,
-                        created_by: result.user.uid,
-                        created_at: new Date(),
-                        updated_by: result.user.uid,
-                        updated_at: new Date(),
-                        active: true,
-                      }
-                      console.log('schedule created', newSchedule, temp)
-                      var scdRef = db.collection("schedules").doc(); //automatically generate unique id
-                      scheduBatch.set(scdRef, newSchedule);
-                    }
-                    // END activating schedules
-
-                    // BEGIN activating reports
-                    let reportTitle = temp.content.templateTitle + " - This week"
-                    let newReport = {
-                      title: reportTitle,
-                      description: '',
-                      visible: 'Public',
-                      teams: [],
-                      tags: temp.content.templateLabel,
-                      filter: {
-                        date: "thisW",
-                        template: [nt.id],
-                        team: [],
-                        label: [],
-                        user: [],
-                        status: ''
-                      },
-                      location: [res.id],
-                      created_at: new Date(),
-                      updated_at: new Date(),
-                      created_by: result.user.uid,
-                      group: result.user.uid,
-                    }
-                    console.log('report created', newReport)
-                    var repoRef = db.collection("reports").doc(); //automatically generate unique id
-                    repoBatch.set(repoRef, newReport);
-                    // END activating reports
-                  })
-
-                  scheduBatch.commit();
-                  repoBatch.commit();
+            let tags = [];
+            db.collection("template_labels") // get tag ids by industry name == tag name && group == global
+              .where("group", "in", [
+                "global",
+              ])
+              .where("name", "==", userIndustry)
+              .where("lang", "==", language)
+              .get().then((q) => {
+                q.forEach((doc) => {
+                  tags.push(doc.id);
                 });
 
-              // BEGIN activating knowledge_bases
-              let newKng = {
-                name: userIndustry,
-                type: "category",
-                image: "",
-                comment: '',
-                locations: [res.id],
-                group: result.user.uid,
-                updated_by: result.user.uid,
-                updated_at: new Date(),
-              }
-              let kngCatBatch = db.batch()
-              var kngDocRef = db.collection("knowledge").doc(); //automatically generate unique id
-              kngCatBatch.set(kngDocRef, newKng);
-              kngCatBatch.commit();
-
-              db.collection("knowledge")
-                .where("type", "==", "article")
-                .where("group", "==", "global")
-                .where("tags", "array-contains-any", tags)
-                .get()
-                .then((q) => {
-                  let kngAtcBatch = db.batch()
-
-                  q.forEach((doc) => {
-                    if (doc.data().trashed) return;
-
-                    let newKng = Object.assign({}, doc.data(), {
-                      category: kngDocRef.id,
-                      group: result.user.uid,
-                      updated_by: result.user.uid,
-                      updated_at: new Date(),
+                db.collection("templates") // get templates that has tag(same name with user industry)
+                  .where("group", "==", "global")
+                  .get().then((q) => {
+                    let publicTemplates = [];
+                    q.forEach((doc) => {
+                      publicTemplates.push(
+                        Object.assign({}, doc.data(), { id: doc.id })
+                      );
                     });
 
-                    console.log('knowledge created', newKng)
-                    var articleRef = db.collection("knowledge").doc(); //automatically generate unique id
-                    kngAtcBatch.set(articleRef, newKng);
+                    let templates = publicTemplates.filter((template) => // filter template by tag
+                      template.content.templateLabel.some((labels) =>
+                        tags.includes(labels)
+                      )
+                    );
 
-                    // db.collection("knowledge").add(newKng);
+                    let tempBatch = db.batch()
+                    let newTemps = []
+                    templates.map((t) => {
+                      var updated_at = new Date();
+                      let temp = Object.assign({}, t,
+                        {
+                          starred: false,
+                          trashed: false,
+                          created_by: result.user.uid,
+                          updated_by: result.user.uid,
+                          created_at: updated_at,
+                          updated_at: updated_at,
+                          group: result.user.uid,
+                        })
+                      temp.content.location = [res.id]
+                      var docRef = db.collection("templates").doc(); //automatically generate unique id
+                      tempBatch.set(docRef, temp);
+
+                      newTemps.push({ id: docRef.id, temp: temp })
+                    })
+                    tempBatch.commit();
+
+                    let scheduBatch = db.batch()
+                    let repoBatch = db.batch()
+
+                    newTemps.map(nt => {
+                      let temp = nt.temp
+                      // BEGIN activating schedules
+                      if (temp.content.templateSD == "schedule this template") {
+                        var assignDates = [];
+                        var from = new Date();
+                        var beforeItem = "";
+                        var aTimes = [{ value: "08:00" }];
+                        aTimes.map((item) => {
+                          if (item.value == beforeItem) return;
+                          beforeItem = item.value;
+                          assignDates.push(
+                            new Date(
+                              from.getFullYear(),
+                              from.getMonth(),
+                              from.getDate(),
+                              item.value.split(":")[0],
+                              item.value.split(":")[1]
+                            )
+                          );
+                        });
+
+                        var teams = [res1.id];
+                        var mUser = [res1.id];
+                        var repeat = getRepeatByTemplateTitle(
+                          temp.content.templateTitle
+                        );
+                        var title = repeat
+                          ? temp.content.templateTitle + "-" + repeat
+                          : temp.content.templateTitle;
+                        let Ydays = ["Sunday", 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+                        let selectedDays = [];
+                        if (temp.selectedDays) {
+                          temp.selectedDays.map(day => {
+                            selectedDays.push({
+                              key: Ydays[day],
+                              value: day
+                            })
+                          })
+                        }
+                        let _repeat = temp._repeat ? temp._repeat : (repeat ? repeat : "No Repeat")
+                        let dueTimes = temp.dueTimes ? temp.dueTimes : assignDates;
+                        let newSchedule = {
+                          location: [res.id],
+                          title: title,
+                          template: nt.id,
+                          assign: teams,
+                          monitor: mUser,
+                          _repeat: _repeat,
+                          dueTimes: dueTimes,
+                          selectedDays: selectedDays,
+                          // interval: this.interval,
+                          group: result.user.uid,
+                          created_by: result.user.uid,
+                          created_at: new Date(),
+                          updated_by: result.user.uid,
+                          updated_at: new Date(),
+                          active: true,
+                        }
+                        var scdRef = db.collection("schedules").doc(); //automatically generate unique id
+                        scheduBatch.set(scdRef, newSchedule);
+                      }
+                      // END activating schedules
+
+                      // BEGIN activating reports
+                      let reportTitle = temp.content.templateTitle + " - " + this.$t('Weekly')
+                      let newReport = {
+                        title: reportTitle,
+                        description: '',
+                        visible: 'Public',
+                        teams: [],
+                        tags: temp.content.templateLabel,
+                        filter: {
+                          date: "thisW",
+                          template: [nt.id],
+                          team: [],
+                          label: [],
+                          user: [],
+                          status: ''
+                        },
+                        location: [res.id],
+                        created_at: new Date(),
+                        updated_at: new Date(),
+                        created_by: result.user.uid,
+                        group: result.user.uid,
+                      }
+                      var repoRef = db.collection("reports").doc(); //automatically generate unique id
+                      repoBatch.set(repoRef, newReport);
+                      // END activating reports
+                    })
+
+                    scheduBatch.commit();
+                    repoBatch.commit();
                   });
 
-                  kngAtcBatch.commit()
-                })
-                .catch(function (error) {
-                  console.error("Error adding knowledgebase article: ", error);
-                });
+                // BEGIN activating knowledge_bases
+                let newKng = {
+                  name: userIndustry,
+                  type: "category",
+                  image: "",
+                  comment: '',
+                  locations: [res.id],
+                  group: result.user.uid,
+                  updated_by: result.user.uid,
+                  updated_at: new Date(),
+                }
+                let kngCatBatch = db.batch()
+                var kngDocRef = db.collection("knowledge").doc(); //automatically generate unique id
+                kngCatBatch.set(kngDocRef, newKng);
+                kngCatBatch.commit();
 
-            });
-          // END activating knowledge_bases
+                db.collection("knowledge")
+                  .where("type", "==", "article")
+                  .where("group", "==", "global")
+                  .where("tags", "array-contains-any", tags)
+                  .get()
+                  .then((q) => {
+                    let kngAtcBatch = db.batch()
 
-          // END activating templates/schedules/reports/knowledge_bases
+                    q.forEach((doc) => {
+                      if (doc.data().trashed) return;
 
+                      let newKng = Object.assign({}, doc.data(), {
+                        category: kngDocRef.id,
+                        group: result.user.uid,
+                        updated_by: result.user.uid,
+                        updated_at: new Date(),
+                      });
+
+                      var articleRef = db.collection("knowledge").doc(); //automatically generate unique id
+                      kngAtcBatch.set(articleRef, newKng);
+
+                      // db.collection("knowledge").add(newKng);
+                    });
+
+                    kngAtcBatch.commit()
+                  })
+                  .catch(function (error) {
+                    console.error("Error adding knowledgebase article: ", error);
+                  });
+
+              });
+            // END activating knowledge_bases
+
+            // END activating templates/schedules/reports/knowledge_bases
+          })
         })
 
 

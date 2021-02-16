@@ -147,7 +147,7 @@
                   </template>
                   <div
                     v-else-if="getType(answer.ref.type.id).content=='instruction'"
-                    style="font-size: 12px;color: #86848a;  font-weight: normal; white-space: pre-wrap; word-break: word-break;"
+                    style="font-size: 12px;color: #86848a;  font-weight: normal; white-space: pre-wrap; word-break: break-word;"
                   >{{answer.ref.type.instruction}}</div>
                   <template v-else-if="getType(answer.ref.type.id).content=='temperature'">
                     <span
