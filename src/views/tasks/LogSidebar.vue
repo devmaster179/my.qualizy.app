@@ -1226,6 +1226,15 @@ export default {
           initial: false,
           logs: this.pages,
         });
+
+      this.$vs.notify({
+        title: "Success",
+        time: 7000,
+        text: "You've duplicated it uccessfully",
+        iconPack: "feather",
+        icon: "icon-check-circle",
+        color: "success",
+      });
     },
     applyImage(image) {
       if (image.indexOf("firebasestorage") > -1) {
