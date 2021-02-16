@@ -5,7 +5,7 @@
             <p class="karla text-lg mb-1 ml-2" style="color:#1e1c26;">({{dateFilterDisp}})</p>
         </div>
         <div class="flex items-center justify-end">
-            <v-select v-if="analytics.length" v-model="analytic" :options="analytics" label="name" class="mr-2" style="min-width: 200px; background:white;"/>
+            <v-select v-if="analytics.length" @input="applyFilters" v-model="analytic" :options="analytics" label="name" class="mr-2" style="min-width: 200px; background:white;"/>
             <feather-icon
                     @click="showFilter"
                     class="p-2 shadow-drop w-10 rounded-lg d-theme-dark-bg cursor-pointer mr-2"
@@ -34,7 +34,7 @@
                         {{ getFilterName(filter, key) }}
                     </span>
                     <span v-else>
-                        {{ filter == 'today' ? $t('today') : (filter | capitalize) }}
+                        {{ filter == 'today' ? $t('today') : (filter.charAt(0).toUpperCase() + filter.slice(1)) }}
                     </span>
                 </b-tag>
                 <span class="cursor-pointer" @click="removeFlters">
@@ -112,22 +112,22 @@
                         default-sort-direction="asc"
                         paginated
                 >
-                    <b-table-column field="title" label="Template" sortable v-slot="props">
+                    <b-table-column field="title" :label="$t('template')" sortable v-slot="props">
                         {{ props.row.content.templateTitle }}
                     </b-table-column>
-                    <b-table-column field="templateUsage" label="Template usage (qty.)" sortable v-slot="props">
+                    <b-table-column field="templateUsage" :label="$t('template usage')" sortable v-slot="props">
                         {{ 1 }}
                     </b-table-column>
-                    <b-table-column field="tasksType" label="Tasks type" sortable v-slot="props">
+                    <b-table-column field="tasksType" :label="$t('tasks_type')" sortable v-slot="props">
                         {{ 'Scheduled' }}
                     </b-table-column>
-                    <b-table-column field="totalTasks" label="Total tasks" sortable v-slot="props">
+                    <b-table-column field="totalTasks" :label="$t('total_tasks')" sortable v-slot="props">
                         {{ props.row.totalTasks }}
                     </b-table-column>
-                    <b-table-column field="failedTasks" label="Failed tasks" sortable v-slot="props">
+                    <b-table-column field="failedTasks" :label="$t('failed_tasks')" sortable v-slot="props">
                         {{ props.row.failedTasks }}
                     </b-table-column>
-                    <b-table-column field="compliance" label="Compliance" sortable v-slot="props">
+                    <b-table-column field="compliance" :label="$t('compliance')" sortable v-slot="props">
                         {{ props.row.compliance}}
                     </b-table-column>
                 </b-table>
@@ -145,13 +145,13 @@
                     <b-table-column field="name" :label="$t('location')" sortable v-slot="props">
                         {{ props.row.name }}
                     </b-table-column>
-                    <b-table-column field="totalTasks" label="Total tasks" sortable v-slot="props">
+                    <b-table-column field="totalTasks" :label="$t('total_tasks')" sortable v-slot="props">
                         {{ props.row.totalTasks }}
                     </b-table-column>
-                    <b-table-column field="tasksType" label="Failed tasks" sortable v-slot="props">
+                    <b-table-column field="tasksType" :label="$t('failed_tasks')" sortable v-slot="props">
                         {{ props.row.failedTasks }}
                     </b-table-column>
-                    <b-table-column field="compliance" label="Compliance" sortable v-slot="props">
+                    <b-table-column field="compliance" :label="$t('compliance')" sortable v-slot="props">
                         {{ ((props.row.totalTasks - props.row.failedTasks) / props.row.totalTasks * 100).toFixed(2) + ' %' }}
                     </b-table-column>
                 </b-table>
@@ -191,7 +191,7 @@
                         </div>
                         <div class="col-8">
                             <small class="text-muted">{{ $t('overdue_tasks') }}</small>
-                            <h3 class="h3">{{ (overdueTasks.length / allTasks * 100) + ' %'}}</h3>
+                            <h3 class="h3">{{ (overdueTasks.length / allTasks * 100).toFixed(2) + '%'}}</h3>
                         </div>
                     </div>
                 </div>
@@ -290,7 +290,7 @@
                     <b-table-column field="template" :label="$t('template')" sortable v-slot="props">
                         {{ props.row.template }}
                     </b-table-column>
-                    <b-table-column field="deadline" label="Deadline" sortable v-slot="props">
+                    <b-table-column field="deadline" label="Date" sortable v-slot="props">
                         {{ props.row.deadline }}
                     </b-table-column>
                     <b-table-column field="overdue" :label="$t('overdue')" sortable v-slot="props">
@@ -425,33 +425,153 @@
                         </div>
                     </div>
                     <div class="card-content" v-for="(lg, j) in log.logs" :key="j">
-                        <div class="content">
+                        <div class="content" v-for="(qn, k) in lg.questions" :key="k">
+                            <p class="font-weight-bold">{{ qn.title }}</p>
                             <b-table
-                                    :data="lg.questions"
-                                    :paginated="lg.questions.length > 5"
+                                    :data="qn.answers"
+                                    :paginated="qn.answers.length > 5"
                                     :per-page="5"
                                     icon-pack="fa"
                                     sort-icon="chevron-down"
                                     default-sort-direction="asc"
                             >
-                                <b-table-column field="location" :label="$t('location')" sortable v-slot="props">
-                                    {{ log.location || ' - ' }}
-                                </b-table-column>
-                                <b-table-column field="teams" :label="$t('team')" sortable v-slot="props">
-                                    {{ props.row.team ? props.row.team.join(', ') : log.team.join(', ') }}
-                                </b-table-column>
-                                <b-table-column field="template" :label="$t('template')" sortable v-slot="props">
-                                    {{ log.template }}
-                                </b-table-column>
-                                <b-table-column field="section" label="Section" sortable v-slot="props">
-                                    {{ props.row.section || ' - ' }}
-                                </b-table-column>
-                                <b-table-column field="title" label="Question" sortable v-slot="props">
-                                    {{ props.row.title }}
-                                </b-table-column>
-                                <b-table-column field="answers.title" label="Answer" sortable v-slot="props">
-                                    {{ !props.row.answers[0].value && props.row.answers[1] ? props.row.answers[1].value : props.row.answers[0].value }}
-                                </b-table-column>
+<!--                                <template scope="props" v-if="getType(props.row.ref.type.id) !== undefined">-->
+                                    <b-table-column field="location" :label="$t('location')" sortable>
+                                        {{ log.location || ' - ' }}
+                                    </b-table-column>
+
+                                    <b-table-column field="teams" :label="$t('team')" sortable v-slot="props">
+                                        {{ qn.team ? qn.team.join(', ') : log.team.join(', ') }}
+                                    </b-table-column>
+
+                                    <b-table-column field="template" :label="$t('template')" sortable v-slot="props">
+                                        {{ log.template }}
+                                    </b-table-column>
+
+                                    <b-table-column field="section" label="Section" sortable v-slot="props">
+                                        {{ qn.section || ' - ' }}
+                                    </b-table-column>
+
+                                    <b-table-column field="title" label="Question" sortable v-slot="props">
+                                        <h5 style="display: inline; font-size: 12px;font-weight: 500;color: #1e1c26;opacity: 0.78;">
+                                            {{ props.row.ref.title }}
+                                            <div v-if="getType(props.row.ref.type.id).content == 'temperature'">
+                                                <span v-if="props.row.ref.type.tempUnit" class="text-success">
+                                                    ({{ props.row.ref.type.tempUnit }})&nbsp;
+                                                </span>
+                                                <span v-else class="text-success">
+                                                    (℃)&nbsp;
+                                                </span>
+                                            </div>
+                                            <span v-if="props.row.ref.mandatory" class="text-danger">*</span>
+                                        </h5>
+                                    </b-table-column>
+
+                                    <b-table-column field="answers.title" label="Answer" sortable v-slot="props">
+                                        <span class="text-danger" v-if="!props.row.loged">---</span>
+                                        <span
+                                                v-else-if="getType(props.row.ref.type.id).content=='automatic date and time stamp' || getType(props.row.ref.type.id).content=='date'"
+                                        >
+                                            {{ convDate(props.row.value) | moment('DD MMMM ,YYYY @ HH[h]mm') }}
+                                        </span>
+                                        <div v-else-if="getType(props.row.ref.type.id).content=='date time'">
+                                            <span v-if="props.row.ref.type.dateType=='Date'">
+                                                {{ props.row.value | moment('DD MMMM ,YYYY') }}
+                                            </span>
+                                            <span v-else-if="props.row.ref.type.dateType=='Time'">
+                                                {{ props.row.value | moment('HH:mm') }}
+                                            </span>
+                                            <span v-else-if="props.row.ref.type.dateType=='Date & Time'">
+                                                {{ props.row.value | moment('DD MMMM ,YYYY @ HH[h]mm') }}
+                                            </span>
+                                        </div>
+                                        <star-rating
+                                                v-else-if="getType(props.row.ref.type.id).content == 'star'"
+                                                :star-size="25"
+                                                :read-only="true"
+                                                :increment="0.1"
+                                                :fixed-points="1"
+                                                :rating="props.row.value"
+                                        ></star-rating>
+                                        <span
+                                                v-else-if="getType(props.row.ref.type.id).content == 'automatic user stamp' && getUserInfo(props.row.value) != undefined"
+                                        >
+                                            {{ getUserInfo(props.row.value).name | capitalize }}
+                                        </span>
+                                        <div
+                                                v-else-if="getType(props.row.ref.type.id).content=='short answer' || getType(props.row.ref.type.id).content=='paragraph'"
+                                                class="text-primary"
+                                                style="font-style: italic; white-space: pre-wrap; word-break: break-word; "
+                                        >
+                                            {{ props.row.value }}
+                                        </div>
+                                        <vs-checkbox
+                                                v-else-if="getType(props.row.ref.type.id).content=='checkbox'"
+                                                disabled="true"
+                                                :value="props.row.value"
+                                        ></vs-checkbox>
+                                        <div v-else-if="getType(props.row.ref.type.id).content=='items'">
+                                            <span v-if="getItemInfo(props.row.value)!=undefined">
+                                                {{ getItemInfo(props.row.value).name }}
+                                            </span>
+                                        </div>
+                                        <div v-else-if="getType(props.row.ref.type.id).content=='users'">
+                                            <span v-if="getUserInfo(props.row.value)!=undefined">
+                                                {{ getUserInfo(props.row.value).name | capitalize }}
+                                            </span>
+                                        </div>
+                                        <div v-else-if="getType(props.row.ref.type.id).content=='teams'">
+                                            <span v-if="getTeamInfo(props.row.value)!=undefined">
+                                                {{ getTeamInfo(props.row.value).name | capitalize }}
+                                            </span>
+                                        </div>
+                                        <div v-else-if="getType(props.row.ref.type.id).type=='attachments'">
+                                            <a
+                                                    :href="image.url"
+                                                    target="_blank"
+                                                    v-for="(image,imgIndex) in props.row.images"
+                                                    :key="'img_'+imgIndex"
+                                                    class="ml-1"
+                                                    style="float: left"
+                                            >
+                                                <img
+                                                        :src="image.url"
+                                                        style="max-width:50px;max-height:50px;"
+                                                        class="rounded-lg"
+                                                />
+                                            </a>
+                                        </div>
+                                        <div
+                                                v-else-if="getType(props.row.ref.type.id).content=='instruction'"
+                                                style="font-size: 12px;color: #86848a;  font-weight: normal; white-space: pre-wrap; word-break: break-word;"
+                                        >
+                                            {{ props.row.ref.type.instruction }}
+                                        </div>
+                                        <div v-else-if="getType(props.row.ref.type.id).content=='temperature'">
+                                            <span
+                                                    :class="calcTemperatureColor(props.row.ref.action , props.row.value)"
+                                                    v-if="props.row.value!==undefined"
+                                            >{{ props.row.value }}</span>
+                                        </div>
+                                        <div v-else-if="getType(props.row.ref.type.id).content=='signature'">
+                                            <img
+                                                    :src="props.row.value.url"
+                                                    v-if="props.row.value.url!==undefined && props.row.value.url!=''"
+                                            />
+                                        </div>
+                                        <div v-else-if="getType(props.row.ref.type.id).type=='closed answers'">
+                                            <span :class="[{'text-danger':props.row.ref.type.failedAnswer == props.row.value }]"
+                                                  v-if="getType(props.row.ref.type.id).group=='global'">
+                                                {{$t(props.row.value)}}</span>
+                                            <span :class="[{'text-danger':props.row.ref.type.failedAnswer == props.row.value }]" v-else>
+                                                {{ props.row.value | capitalize }}
+                                            </span>
+                                        </div>
+                                        <span v-else>
+                                            {{ props.row.value }}
+                                        </span>
+                                    </b-table-column>
+<!--                                </template>-->
                             </b-table>
                         </div>
                     </div>

@@ -541,5 +541,8 @@ export default {
     "Collectivity": "Colectividad",
     "Bakery": "Panadería",
     "Other": "Otro", // end industry tag
-    "date_used": 'Date'
+    "date_used": 'Date',
+    "tasks_type": "Tasks type",
+    "total_tasks": "Total tasks",
+    "failed_tasks": "Failed tasks",
 }
