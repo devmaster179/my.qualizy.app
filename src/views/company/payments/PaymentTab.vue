@@ -14,13 +14,14 @@
       <vx-card>
         <div class="card-header p-6" slot="no-body">
           <div class="flex justify-between items-center pb-3">
-            <h4 class="font-semibold">
+            <h4 class="font-semibold hidden md:block">
               {{ $t("Billing Details") }}
             </h4>
             <vs-button
               :disabled="loadingAddBillingDetail"
               @click="addBillingDetail"
               v-if="!subscribed"
+              class="w-full md:w-auto"
               >{{
                 loadingAddBillingDetail
                   ? $t("Loading...")
@@ -65,10 +66,10 @@
         </div>
 
         <div class="">
-          <p class="current-log-text pb-5">
+          <p class="current-log-text pb-5 hidden md:block">
             {{ $t("Current logs usage per month") }}
           </p>
-          <div>
+          <div class="hidden md:block">
             <div class="logs-track-bar mt-20 mb-10">
               <div class="main-bar" ref="mainBar">
                 <div class="hight-bars">

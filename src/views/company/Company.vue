@@ -9,7 +9,9 @@
           <p class="page-title karla-bold text-2xl color-my-black m-2 ml-4">
             {{ $t("company profile") | capitalize }}
           </p>
-          <div class="switch-tab flex items-center sm:ml-12 mt-2 sm:mt-0">
+          <div
+            class="switch-tab flex items-center sm:ml-12 mt-2 sm:mt-0 mb-2 md:mb-0 md:ml-0 ml-4"
+          >
             <div
               class="text-center py-3 px-6 karla"
               :class="{ active: tab == 'payments' }"

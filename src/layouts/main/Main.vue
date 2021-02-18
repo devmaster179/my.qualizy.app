@@ -857,14 +857,14 @@ export default {
               .onSnapshot((qq) => {
                 this.$store.dispatch("app/setCurrentPricePlan", {
                   numberOfLogs: qq.size,
-                  isFreePlan: this.numberOfLogs > 312, //<
+                  isFreePlan: this.numberOfLogs < 312, //<
                 });
                 console.log(
                   "modal: below 1",
-                  this.numberOfLogs > 312,
+                  this.numberOfLogs < 312,
                   this.$store.getters["app/getSubscription"].subscribed
                 );
-                if (this.numberOfLogs > 312 == false) {
+                if (this.numberOfLogs < 312 == false) {
                   let subscription = this.$store.getters["app/getSubscription"];
                   if (
                     subscription.subscribed == false &&
