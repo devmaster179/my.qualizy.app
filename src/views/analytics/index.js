@@ -1,14 +1,15 @@
+import Vue from 'vue';
 import AnalyFilter from "./AnalyFilter";
 import AnalyticsItem from "./AnalyticsItem"
 import VSelect from "vue-select"
 import VuePerfectScrollbar from 'vue-perfect-scrollbar'
 import { db } from "@/firebase/firebaseConfig.js";
-import Vue from 'vue';
 import { Table, Tag, Tabs, Button, Collapse, Icon } from 'buefy';
 import 'bootstrap';
 import Apexchart from 'vue-apexcharts';
 import $ from 'jquery';
 import TemperatureSection from './TemperatureSection';
+import StarRating from "vue-star-rating";
 
 Vue.use(Table);
 Vue.use(Tag);
@@ -17,6 +18,18 @@ Vue.use(Button);
 Vue.use(Collapse);
 Vue.use(Icon);
 
+Vue.filter('capitalize', function (value) {
+    if (!value) return ''
+    value = value.toString()
+    let arr = value.split(" ")
+    let capitalized_array = []
+    arr.forEach((word) => {
+        let capitalized = word.charAt(0).toUpperCase() + word.slice(1)
+        capitalized_array.push(capitalized)
+    })
+    return capitalized_array.join(" ");
+})
+
 export default {
     components: {
         AnalyFilter,
@@ -24,7 +37,8 @@ export default {
         VSelect,
         VuePerfectScrollbar,
         Apexchart,
-        TemperatureSection
+        TemperatureSection,
+        StarRating
     },
     data() {
         return {
@@ -449,9 +463,9 @@ export default {
             ids.forEach(id => {
                 let obj = this.$store.getters[index](id);
                 if(key == 'template') {
-                    names.push(obj.content.templateTitle);
+                    obj && names.push(obj.content.templateTitle);
                 } else {
-                    names.push(obj.name);
+                    obj && names.push(obj.name);
                 }
             });
             return names.join(', ');
@@ -529,14 +543,19 @@ export default {
                                                 this.$vs.loading.close();
                                             });
 
-                                        task.team = this.$store.getters["app/teams"].length ? this.$store.getters["app/teams"][0].name : '';
+                                        task.team = '';
 
-                                        db.collection("teams")
-                                            .where("location", "array-contains", loc)
+                                        db.collection("templates")
+                                            .doc(data.template)
                                             .get()
-                                            .then(q => {
-                                                q.forEach((doc) => {
-                                                    task.team = doc.data().name;
+                                            .then(snapshot => {
+                                                snapshot.data().content.teams && snapshot.data().content.teams.forEach((team) => {
+                                                    db.collection("teams")
+                                                        .doc(team)
+                                                        .get()
+                                                        .then((snap) => {
+                                                            task.team += task.team == '' ? snap.data().name : ', ' + snap.data().name;
+                                                        });
                                                 });
                                             });
                                     }
@@ -571,11 +590,12 @@ export default {
                                                         })
                                                     }
                                                 }
+                                                if(data1.templateSD != 'bookmarked') {
+                                                    vm.overdueTasks.push(task);
+                                                }
                                             }
                                             this.$vs.loading.close();
                                         });
-
-                                    vm.overdueTasks.push(task);
                                 }
                             }
                         });
@@ -844,6 +864,50 @@ export default {
                 }
                 return false;
             });
+        },
+        calcTemperatureColor() {
+            return (action, e) => {
+                if (action === undefined || action.condition === undefined) return "";
+                if (
+                    (action.condition == "Equal" && e == action.content[0]) ||
+                    (action.condition == "Not Equal" && e != action.content[0]) ||
+                    (action.condition == "Less Than" && e < action.content[0]) ||
+                    (action.condition == "Less Than or Equal" &&
+                        e <= action.content[0]) ||
+                    (action.condition == "Greater Than" && e > action.content[0]) ||
+                    (action.condition == "Greater Than or Equal" &&
+                        e >= action.content[0]) ||
+                    (action.condition == "Between" &&
+                        e >= action.content[0] &&
+                        e <= action.content[1])
+                ) {
+                    return "text-" + action.alertType + " font-bold";
+                }
+            };
+        },
+        getType() {
+            return (id) => {
+                let type = this.$store.getters["app/getTemplateTypeById"](id);
+                return type;
+            };
+        },
+        getUserInfo() {
+            return (id) => {
+                return this.$store.getters["app/getUserById"](id);
+            };
+        },
+        getItemInfo() {
+            return (id) => {
+                return this.$store.getters["app/getItemById"](id);
+            };
+        },
+        getTeamInfo() {
+            return (id) => {
+                return this.$store.getters["app/getTeamById"](id);
+            };
+        },
+        applyFilters(val) {
+            this.chnFilter(val.filters);
         }
     },
     watch: {
@@ -1002,12 +1066,13 @@ export default {
             let arr = [];
             this.overdueTasks.forEach(task => {
                 if(task.team) {
-                    let obj = arr.find(el => el.name == task.team);
+                    let team = task.team.split(', ')[0];
+                    let obj = arr.find(el => el.name == team);
                     if(obj) {
                         obj.count++;
                     } else {
                         arr.push({
-                            name: task.team,
+                            name: team,
                             count: 1
                         });
                     }
@@ -1194,8 +1259,7 @@ export default {
                 else if (item.visible == 2) {
                     if(cUser.id != item.updated_by) return
                 }
-
-                analytics1.push({id: item.id, name: item.name})
+                analytics1.push({id: item.id, name: item.name, filters: item.filters})
             })
             return analytics1
         },

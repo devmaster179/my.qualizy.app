@@ -60,7 +60,7 @@
     <div class="vx-row">
       <vx-card :title="reportTitle">
         <div class="vx-row w-full" v-if="filteredLogs.length > 0">
-          <div class="px-2 vx-col md:w-1/4 sm:w-1/2 w-full">
+          <div class="px-2 vx-col md:w-1/5 sm:w-1/2 w-full">
             <div class="rounded-lg border border-solid d-theme-border-grey-light p-4">
               <div class="text-center">
                 <feather-icon
@@ -73,7 +73,7 @@
               <p class="text-center">{{$t("general score")}}</p>
             </div>
           </div>
-          <div class="px-2 vx-col md:w-1/4 sm:w-1/2 w-full mt-1 sm:mt-0">
+          <div class="px-2 vx-col md:w-1/5 sm:w-1/2 w-full mt-1 sm:mt-0">
             <div class="rounded-lg border border-solid d-theme-border-grey-light p-4">
               <div class="text-center">
                 <feather-icon
@@ -86,7 +86,20 @@
               <p class="text-center">{{$t("tasks")}}</p>
             </div>
           </div>
-          <div class="px-2 vx-col md:w-1/4 sm:w-1/2 w-full md:mt-0 mt-1">
+          <div class="px-2 vx-col md:w-1/5 sm:w-1/2 w-full md:mt-0 mt-1">
+            <div class="rounded-lg border border-solid d-theme-border-grey-light p-4">
+              <div class="text-center">
+                <feather-icon
+                    class="text-danger p-3 inline-flex rounded-full"
+                    icon="SlashIcon"
+                    style="background: rgba(var(--vs-warning),.15)"
+                ></feather-icon>
+              </div>
+              <h2 class="text-center mb-2 mt-4 font-bold">{{ nonCompliantTasksAmount }}</h2>
+              <p class="text-center">{{$t("non compliant")}}</p>
+            </div>
+          </div>
+          <div class="px-2 vx-col md:w-1/5 sm:w-1/2 w-full md:mt-0 mt-1">
             <div class="rounded-lg border border-solid d-theme-border-grey-light p-4">
               <div class="text-center">
                 <feather-icon
@@ -99,7 +112,7 @@
               <p class="text-center">{{$t("check list")}}</p>
             </div>
           </div>
-          <div class="px-2 vx-col md:w-1/4 sm:w-1/2 w-full md:mt-0 mt-1">
+          <div class="px-2 vx-col md:w-1/5 sm:w-1/2 w-full md:mt-0 mt-1">
             <div class="rounded-lg border border-solid d-theme-border-grey-light p-4">
               <div class="text-center">
                 <feather-icon
@@ -115,7 +128,7 @@
         </div>
         <div id="reports" class="vx-row w-full" v-if="filteredLogs.length > 0" style="margin-top: 40px;">
           <b-table
-                  :data="filteredLogs"
+                  :data="filteredRowLogs.length ? filteredRowLogs : filteredLogs"
                   detailed
                   :show-detail-icon="false"
                   class="w-full"
@@ -128,12 +141,22 @@
               {{ logInfo(props.row).templateTitle }}
             </b-table-column>
 
-            <b-table-column :label="$t('non compliant')" v-slot="props">
-              {{ logInfo(props.row).failed }}
+            <b-table-column :label="$t('non compliant')">
+              <template v-slot:header="{ column }">
+                <span @click="filterRows(0)" :style="{color: nonCompliantColor}" class="cursor-pointer">{{ column.label }}</span>
+              </template>
+              <template v-slot="props">
+                {{ logInfo(props.row).failed }}
+              </template>
             </b-table-column>
 
-            <b-table-column :label="$t('compliance')" v-slot="props">
-              {{ logInfo(props.row).compliance }}
+            <b-table-column :label="$t('compliance')">
+              <template v-slot:header="{ column }">
+                <span @click="filterRows(1)" :style="{color: compliantColor}" class="cursor-pointer">{{ column.label }}</span>
+              </template>
+              <template v-slot="props">
+                {{ logInfo(props.row).compliance }}
+              </template>
             </b-table-column>
 
             <b-table-column v-slot="props" width="10">
@@ -493,6 +516,9 @@ export default {
       badge: "",
       team: [],
       tag: [],
+      filteredRowLogs: [],
+      nonCompliantColor: '#363636',
+      compliantColor: '#363636',
     };
   },
   watch: {
@@ -999,6 +1025,11 @@ export default {
     badgeURL() {
       return require("../../assets/images/badge/qualizy-badge-dark.svg");
     },
+    nonCompliantTasksAmount() {
+      let amount = 0;
+      this.filteredLogs.map(el => amount = amount + this.logInfo(el).failed);
+      return amount;
+    }
   },
   methods: {
     setLogs() {
@@ -1291,6 +1322,37 @@ export default {
       this.reportFilterSidebar = false;
       this.filter = filters;
     },
+    filterRows(num) {
+      if(num === 0) { // if selected non compliant tasks
+        if(this.filteredRowLogs.length) {
+          this.compliantColor = '#363636';
+          if(this.logInfo(this.filteredRowLogs[0]).failed > 0) { // if already selected non compliant tasks
+            this.filteredRowLogs = [];
+            this.nonCompliantColor = '#363636';
+          } else { // if selected compliant tasks
+            this.filteredRowLogs = this.filteredLogs.filter(el => this.logInfo(el).failed > 0);
+            this.nonCompliantColor = 'green';
+          }
+        } else {
+          this.filteredRowLogs = this.filteredLogs.filter(el => this.logInfo(el).failed > 0);
+          this.nonCompliantColor = 'green';
+        }
+      } else { // if selected compliant tasks
+        if(this.filteredRowLogs.length) {
+          this.nonCompliantColor = '#363636';
+          if(this.logInfo(this.filteredRowLogs[0]).failed == 0) { // if already selected compliant tasks
+            this.filteredRowLogs = [];
+            this.compliantColor = '#363636';
+          } else { // if selected non compliant tasks
+            this.filteredRowLogs = this.filteredLogs.filter(el => this.logInfo(el).failed == 0);
+            this.compliantColor = 'green';
+          }
+        } else {
+          this.filteredRowLogs = this.filteredLogs.filter(el => this.logInfo(el).failed == 0);
+          this.compliantColor = 'green';
+        }
+      }
+    }
   },
 
   created() {
