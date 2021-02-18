@@ -624,5 +624,8 @@ export default {
     "Add your Billing Detail": "Add your Billing Detail",
     "Loading...": "Loading...",
     "Manage billing details": "Manage billing details",
-    "date_used": 'Date used'
+    "date_used": 'Date used',
+    "tasks_type": "Tasks type",
+    "total_tasks": "Total tasks",
+    "failed_tasks": "Failed tasks",
 }

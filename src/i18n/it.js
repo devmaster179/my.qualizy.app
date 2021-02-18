@@ -540,5 +540,8 @@ export default {
     "most_alerts_loc": 'Location with biggest number of alerts',
     "most_alerts_team": 'Team with biggest number of alerts',
     "alerts_log": 'Alerts log',
-    "date_used": 'Date'
+    "date_used": 'Date',
+    "tasks_type": "Tasks type",
+    "total_tasks": "Total tasks",
+    "failed_tasks": "Failed tasks",
 }

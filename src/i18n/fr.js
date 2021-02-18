@@ -478,7 +478,7 @@ export default {
     "tasks": "Tâches",
     "task completed": "tâche terminée",
     "overdue tasks": "Tâches en retard",
-    "template usage": "utilisation modèles",
+    "template usage": "Utilisation modèles",
     "system settings": "paramètres système",
     "users management": "Gestion utilisateurs",
     "add user": "Ajouter utilisateurs",
@@ -563,7 +563,7 @@ export default {
     "delivery_schedule": "Programmer l'envoi du rapport ",
     "create_schedule": "Créer une fréquence d'envoi des rapports",
     "clean_all": "Effacer les filtres",
-    "failed_non_failed": "Réussi / Echoué",
+    "failed_non_failed": "Echoué / Réussi",
     "least_loc": "Site le moins performant",
     "least_team": "Équipe la moins performante",
     "select_options": "Selectionner les options dans les filtres pour créer le tableau de bord",
@@ -587,5 +587,8 @@ export default {
     "most_alerts_team": "Equipe avec le plus d'alertes",
     "alerts_log": "Alertes",
     "Watch this video to see how it works": "Regardez cette vidéo pour voir comment cela fonctionne",
-    "date_used": 'Date'
+    "date_used": 'Date',
+    "tasks_type": "Type de tâches",
+    "total_tasks": "Total des tâches",
+    "failed_tasks": "Tâches échouées",
 }
