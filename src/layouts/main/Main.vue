@@ -871,7 +871,11 @@ export default {
                     this.$route.name != "company"
                   ) {
                     this.activeProPricePlanPopup = true;
+                  } else {
+                    this.activeProPricePlanPopup = false;
                   }
+                } else {
+                    this.activeProPricePlanPopup = false;
                 }
               });
             console.log("in usage tempDate", tempDate);
@@ -900,7 +904,11 @@ export default {
                     this.$route.name != "company"
                   ) {
                     this.activeProPricePlanPopup = true;
+                  } else {
+                    this.activeProPricePlanPopup = false;
                   }
+                } else {
+                    this.activeProPricePlanPopup = false;
                 }
               });
             console.log("in usage currBillingDate", this.currBillingDate);

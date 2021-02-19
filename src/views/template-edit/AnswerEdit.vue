@@ -168,6 +168,15 @@
               <p class="karla ml-2">{{$t("duplicate")}}</p>
             </div>
           </div>
+          <div class="w-1/6 answer-item border-t-0 border-b-0 border-r-0">
+            <div
+              class="flex items-center ml-2 hover:text-primary cursor-pointer"
+              @click="makeLogicAnswer"
+            >
+              <vs-icon icon="device_hub" />
+              <p class="karla ml-2">{{$t("Make Logic")}}</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -527,6 +536,9 @@ export default {
         val: JSON.stringify(this.answerContent),
       });
     },
+    makeLogicAnswer(){
+
+    }
   },
   watch: {
     drag(val) {

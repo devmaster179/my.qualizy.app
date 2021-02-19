@@ -1,20 +1,36 @@
 <template>
   <div class="question-edit-section">
     <div class="question-title-section flex items-center justify-between">
-      <div class="flex items-center cursor-pointer" @click="activeTitle" v-if="!editTitle">
-        <p class="question-title karla-bold text-sm">{{questionTitle}}</p>
-        <feather-icon icon="Edit2Icon" class="ml-4" style="width:15px; height:15px;" />
+      <div
+        class="flex items-center cursor-pointer"
+        @click="activeTitle"
+        v-if="!editTitle"
+      >
+        <p class="question-title karla-bold text-sm">{{ questionTitle }}</p>
+        <feather-icon
+          icon="Edit2Icon"
+          class="ml-4"
+          style="width: 15px; height: 15px"
+        />
       </div>
       <vs-input
         v-else
         @focus="$event.target.select()"
         v-model="questionTitle"
         ref="questionTitle"
-        @blur="editTitle=false"
+        @blur="editTitle = false"
         class="vs-input-no-shdow-focus w-full edit-question-title"
       />
-      <vs-dropdown vs-custom-content class="cursor-pointer mr-4" vs-trigger-click>
-        <feather-icon icon="MoreVerticalIcon" class="p-2 cursor-pointer" style="height:2.6rem;" />
+      <vs-dropdown
+        vs-custom-content
+        class="cursor-pointer mr-4"
+        vs-trigger-click
+      >
+        <feather-icon
+          icon="MoreVerticalIcon"
+          class="p-2 cursor-pointer"
+          style="height: 2.6rem"
+        />
         <vs-dropdown-menu class="vx-navbar-dropdown">
           <ul style="min-width: 9rem" class="p-0">
             <li
@@ -22,39 +38,42 @@
               @click="addSection"
             >
               <feather-icon icon="PlusIcon" svgClasses="w-4 h-4"></feather-icon>
-              <span class="ml-2 karla">{{$t("add section")}}</span>
+              <span class="ml-2 karla">{{ $t("add section") }}</span>
             </li>
             <li
               class="flex py-1 px-2 my-1 cursor-pointer hover:bg-primary hover:text-white"
               @click="duplicateSection"
             >
               <feather-icon icon="CopyIcon" svgClasses="w-4 h-4"></feather-icon>
-              <span class="ml-2 karla">{{$t("duplicate section")}}</span>
+              <span class="ml-2 karla">{{ $t("duplicate section") }}</span>
             </li>
             <li
               class="flex py-1 px-2 my-1 cursor-pointer hover:bg-primary hover:text-white"
               @click="deleteSection"
-              v-if="template.content.pages[page].questions.length>1"
+              v-if="template.content.pages[page].questions.length > 1"
             >
-              <feather-icon icon="Trash2Icon" svgClasses="w-4 h-4"></feather-icon>
-              <span class="ml-2 karla">{{$t("delete section")}}</span>
+              <feather-icon
+                icon="Trash2Icon"
+                svgClasses="w-4 h-4"
+              ></feather-icon>
+              <span class="ml-2 karla">{{ $t("delete section") }}</span>
             </li>
           </ul>
         </vs-dropdown-menu>
       </vs-dropdown>
     </div>
-    <div class="vx-row" style="background-color: rgba(235, 235, 241, 0.2);">
+    <div class="vx-row" style="background-color: rgba(235, 235, 241, 0.2)">
       <div
         class="vx-col w-3/5 border border-solid border-t-0 border-r-0 border-l-0"
-        style="border-color:rgba(113, 102, 237, 0.16); padding: 15px;"
+        style="border-color: rgba(113, 102, 237, 0.16); padding: 15px"
       >
-        <span class="question-header">{{$t("question")}}</span>
+        <span class="question-header">{{ $t("question") }}</span>
       </div>
       <div
         class="vx-col w-2/5 border border-solid border-t-0 border-r-0"
-        style="border-color:rgba(113, 102, 237, 0.16); padding: 15px;"
+        style="border-color: rgba(113, 102, 237, 0.16); padding: 15px"
       >
-        <span class="question-header">{{$t("type of response")}}</span>
+        <span class="question-header">{{ $t("type of response") }}</span>
       </div>
       <!-- <div
         class="vx-col w-1/6 border border-solid border-t-0 border-r-0"
@@ -72,27 +91,61 @@
     <draggable
       class="list-group"
       tag="ul"
-      @start="dragStart=true"
-      @end="dragStart=false"
+      @start="dragStart = true"
+      @end="dragStart = false"
       v-model="answers"
       v-bind="dragOptions"
       handle=".column-drag-handle"
     >
       <transition-group type="transition" name="flip-list">
-        <li class="list-group-item relative" v-for="(element,index) in answers" :key="index">
+        <li
+          class="list-group-item relative"
+          v-for="(element, index) in answers"
+          :key="index"
+        >
           <img
             :src="require('@/assets/images/dnd/2.svg')"
             class="column-drag-handle absolute"
             height="24px"
             width="24px"
-            style="top:13px;"
+            style="top: 13px"
           />
-          <answer-edit :drag="dragStart" :page="page" :question="question" :answer="index" />
+          <answer-edit
+            :drag="dragStart"
+            :page="page"
+            :question="question"
+            :answer="index"
+          />
+          <div>Hello world</div>
+          <conditional-question />
         </li>
       </transition-group>
     </draggable>
+
+    <draggable
+      v-bind="dragOptions"
+      tag="div"
+      class="item-container"
+      v-model="tempData"
+    >
+      <div class="item-group" :key="index" v-for="(el, index) in tempData">
+        <div class="item">{{ el.title }}</div>
+        <draggable
+          v-bind="dragOptions"
+          tag="div"
+          class="item-sub"
+          v-model="el.items"
+        >
+          <div class="item-group" :key="index" v-for="(el, index) in el.items">
+            <div class="item">{{ el.title }}</div>
+          </div>
+        </draggable>
+      </div>
+    </draggable>
     <div class="vx-row p-2">
-      <p class="karla-bold text-primary cursor-pointer" @click="addQuestion">{{$t("add question")}}</p>
+      <p class="karla-bold text-primary cursor-pointer" @click="addQuestion">
+        {{ $t("add question") }}
+      </p>
     </div>
   </div>
 </template>
@@ -100,23 +153,25 @@
 <script>
 import draggable from "vuedraggable";
 import AnswerEdit from "./AnswerEdit";
+import ConditionalQuestion from './ConditionalLogic/ConditionalQuestion.vue';
 // import { Container, Draggable } from "vue-smooth-dnd";
 export default {
   props: {
     page: {
       type: Number,
-      required: true
+      required: true,
     },
     question: {
       type: Number,
-      required: true
-    }
+      required: true,
+    },
   },
   components: {
     AnswerEdit,
     // Container,
     // Draggable,
-    draggable
+    draggable,
+    ConditionalQuestion,
   },
   data() {
     return {
@@ -124,14 +179,40 @@ export default {
       targetAnswer: {
         page: -1,
         question: -1,
-        answer: -1
+        answer: -1,
       },
       upperDropPlaceholderOptions: {
         className: "drop-preview",
         animationDuration: "150",
-        showOnTop: true
+        showOnTop: true,
       },
-      editTitle: false
+      editTitle: false,
+      tempData: [
+        {
+          title: "hello",
+          items: [
+            { title: "sub title" },
+            { title: "sub title" },
+            { title: "sub title" },
+          ],
+        },
+        {
+          title: "hello",
+          items: [
+            { title: "sub title" },
+            { title: "sub title" },
+            { title: "sub title" },
+          ],
+        },
+        {
+          title: "hello",
+          items: [
+            { title: "sub title" },
+            { title: "sub title" },
+            { title: "sub title" },
+          ],
+        },
+      ],
     };
   },
   methods: {
@@ -141,53 +222,53 @@ export default {
     deleteSection() {
       this.$store.commit("app/CHN_TEMP_TEMPLATE", {
         index: {
-          page: this.page
+          page: this.page,
         },
         target: "answer",
         key: "deleteSection",
-        val: this.question
+        val: this.question,
       });
     },
     duplicateSection() {
       this.$store.commit("app/CHN_TEMP_TEMPLATE", {
         index: {
-          page: this.page
+          page: this.page,
         },
         target: "answer",
         key: "duplicateSection",
         val: JSON.stringify(
           this.template.content.pages[this.page].questions[this.question]
-        )
+        ),
       });
     },
     addSection() {
       this.$store.commit("app/CHN_TEMP_TEMPLATE", {
         index: {
-          page: this.page
+          page: this.page,
         },
         target: "answer",
-        key: "addSection"
+        key: "addSection",
       });
     },
     addQuestion() {
       this.$store.commit("app/CHN_TEMP_TEMPLATE", {
         index: {
           page: this.page,
-          question: this.question
+          question: this.question,
         },
         target: "answer",
-        key: "addQuestion"
+        key: "addQuestion",
       });
     },
     onDrop(e) {
       this.$store.commit("app/CHN_TEMP_TEMPLATE", {
         index: {
           page: this.page,
-          question: this.question
+          question: this.question,
         },
         target: "answer",
         key: "chnAnswerOrder",
-        val: e
+        val: e,
       });
     },
     activeTitle() {
@@ -195,7 +276,7 @@ export default {
       this.$nextTick(() => {
         this.$refs.questionTitle.focusInput();
       });
-    }
+    },
   },
   computed: {
     dragOptions() {
@@ -203,7 +284,7 @@ export default {
         animation: 0,
         group: "description",
         disabled: false,
-        ghostClass: "ghost"
+        ghostClass: "ghost",
       };
     },
     answers: {
@@ -215,13 +296,13 @@ export default {
         this.$store.commit("app/CHN_TEMP_TEMPLATE", {
           index: {
             page: this.page,
-            question: this.question
+            question: this.question,
           },
           target: "answer",
           key: "chnAnswers",
-          val: val
+          val: val,
         });
-      }
+      },
     },
     template() {
       return this.$store.getters["app/getTempTemplate"];
@@ -239,15 +320,15 @@ export default {
         this.$store.commit("app/CHN_TEMP_TEMPLATE", {
           index: {
             page: this.page,
-            question: this.question
+            question: this.question,
           },
           target: "answer",
           key: "chnSectionTitle",
-          val: val
+          val: val,
         });
-      }
-    }
-  }
+      },
+    },
+  },
 };
 </script>
 <style scoped>
@@ -309,5 +390,18 @@ export default {
   font-weight: 600;
   color: #1e1c26;
   transform: unset !important;
+}
+
+.item-container {
+  max-width: 20rem;
+  margin: 0;
+}
+.item {
+  padding: 1rem;
+  border: solid black 1px;
+  background-color: #fefefe;
+}
+.item-sub {
+  margin: 0 0 0 1rem;
 }
 </style>
