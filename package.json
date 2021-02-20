@@ -24,6 +24,7 @@
     "firebase-admin": "^9.4.2",
     "firebase-functions": "^3.13.1",
     "flatpickr": "^4.6.3",
+    "generate-unique-id": "^2.0.1",
     "html2canvas": "^1.0.0-rc.5",
     "idle-vue": "^2.0.5",
     "jquery": "^3.5.1",

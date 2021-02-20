@@ -101,27 +101,19 @@
         <li
           class="list-group-item relative"
           v-for="(element, index) in answers"
-          :key="index"
+          :key="'a' + index"
         >
-          <img
-            :src="require('@/assets/images/dnd/2.svg')"
-            class="column-drag-handle absolute"
-            height="24px"
-            width="24px"
-            style="top: 13px"
-          />
           <answer-edit
             :drag="dragStart"
             :page="page"
             :question="question"
             :answer="index"
           />
-          <div>Hello world</div>
-          <conditional-question />
         </li>
       </transition-group>
     </draggable>
 
+    <!-- <div class="mt-10"></div>
     <draggable
       v-bind="dragOptions"
       tag="div"
@@ -141,7 +133,7 @@
           </div>
         </draggable>
       </div>
-    </draggable>
+    </draggable> -->
     <div class="vx-row p-2">
       <p class="karla-bold text-primary cursor-pointer" @click="addQuestion">
         {{ $t("add question") }}
@@ -153,9 +145,10 @@
 <script>
 import draggable from "vuedraggable";
 import AnswerEdit from "./AnswerEdit";
-import ConditionalQuestion from './ConditionalLogic/ConditionalQuestion.vue';
+import ConditionalQuestion from "./ConditionalLogic/ConditionalQuestion.vue";
 // import { Container, Draggable } from "vue-smooth-dnd";
 export default {
+  name: "QuestionEdit",
   props: {
     page: {
       type: Number,
@@ -214,6 +207,9 @@ export default {
         },
       ],
     };
+  },
+  mounted() {
+    console.log("answers", this.answers);
   },
   methods: {
     shouldAcceptDrop(s, p) {
@@ -289,6 +285,10 @@ export default {
     },
     answers: {
       get() {
+        console.log(
+          "questions",
+          this.template.content.pages[this.page].questions
+        );
         return this.template.content.pages[this.page].questions[this.question]
           .answers;
       },
@@ -332,6 +332,12 @@ export default {
 };
 </script>
 <style scoped>
+.logic-dropdown {
+  background: orange;
+  border-radius: 50%;
+  padding: 5px;
+}
+
 .column-drag-handle {
   cursor: grab;
 }

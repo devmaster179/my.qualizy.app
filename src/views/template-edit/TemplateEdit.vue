@@ -322,6 +322,10 @@ export default {
                 type: answer.type,
                 action: [],
                 mandatory: answer.mandatory,
+                hasCondLogic:
+                  answer.hasCondLogic !== undefined
+                    ? answer.hasCondLogic
+                    : false,
                 score: answer.score,
               });
             }
@@ -428,6 +432,7 @@ export default {
                   type: {},
                   action: {},
                   mandatory: false,
+                  hasCondLogic: false,
                   score: [],
                   loged: "",
                 },

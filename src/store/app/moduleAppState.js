@@ -4,7 +4,6 @@ var from = new Date(date.getTime() - (10 * 24 * 60 * 60 * 1000));
 
 let tempDate = new Date();
 tempDate.setFullYear(2000);
-console.log("tempDate", tempDate, tempDate.getFullYear());
 
 export default {
   sensorDatas: [],

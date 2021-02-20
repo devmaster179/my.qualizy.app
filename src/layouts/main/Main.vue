@@ -148,7 +148,7 @@ import { db } from "@/firebase/firebaseConfig.js";
 
 let tempDate = new Date();
 tempDate.setFullYear(2000);
-console.log("tempDate", tempDate, tempDate.getFullYear());
+// console.log("tempDate", tempDate, tempDate.getFullYear());
 
 export default {
   data() {
@@ -189,6 +189,8 @@ export default {
           this.activeProPricePlanPopup = true;
           console.log("ruu");
         }
+      } else {
+        this.activeProPricePlanPopup = false;
       }
     },
     isThemeDark(val) {
@@ -875,7 +877,7 @@ export default {
                     this.activeProPricePlanPopup = false;
                   }
                 } else {
-                    this.activeProPricePlanPopup = false;
+                  this.activeProPricePlanPopup = false;
                 }
               });
             console.log("in usage tempDate", tempDate);
@@ -908,7 +910,7 @@ export default {
                     this.activeProPricePlanPopup = false;
                   }
                 } else {
-                    this.activeProPricePlanPopup = false;
+                  this.activeProPricePlanPopup = false;
                 }
               });
             console.log("in usage currBillingDate", this.currBillingDate);

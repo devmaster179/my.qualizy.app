@@ -1,192 +1,314 @@
 <template>
-  <div class="answer-edit-section" @click.stop="activeEdit=true" v-click-outside="outside">
+  <div
+    v-if="answerContent.isLogicQuestion != true"
+    v-click-outside="outsideFull"
+    class="answer-wrapper"
+  >
     <div
-      :id="page + '_' + question + '_' + answer"
-      class="vx-row"
-      :class="{'edit':activeEdit ,'cursor-pointer':!activeEdit}"
+      class="answer-edit-section"
+      @click.stop="handleActiveEdit"
+      v-click-outside="outside"
     >
-      <div class="answer-item vx-col w-3/5 border-r-0 border-l-0 p-2 pl-6">
-        <div class="flex">
-          <div style="width:5px;">
-            <p class="pt-3 text-danger text-lg font-medium" v-show="answerContent.mandatory">*</p>
-          </div>
-          <p class="inline-block py-3 pl-2 text-sm" v-if="!activeEdit">{{answerTitle}}</p>
-          <vs-input
-            :placeholder="$t('question name')"
-            v-model="answerTitle"
-            v-else
-            class="w-full vs-input-no-shdow-focus ml-1"
-          />
-        </div>
-      </div>
-
-      <div class="answer-item vx-col w-2/5 border-r-0 p-2">
-        <div class="flex items-center justify-between cursor-pointer" @click.stop="openSelectType">
-          <p
-            class="py-3"
-            v-if="answerContent.type.id===undefined || answerType(answerContent.type.id) === undefined"
-          >{{$t("select type of response")}}</p>
-          <div
-            class="flex items-center pt-2"
-            v-else-if="answerType(answerContent.type.id).type=='closed answers'"
-          >
+      <div
+        :id="page + '_' + question + '_' + answer"
+        class="vx-row"
+        :class="{ edit: activeEdit, 'cursor-pointer': !activeEdit }"
+      >
+        <div class="answer-item vx-col w-3/5 border-r-0 border-l-0 p-2">
+          <div class="flex items-center">
             <div
-              class="closed-answer-item karla-bold mr-2"
-              v-for="(item,index) in answerType(answerContent.type.id).content"
-              :key="index"
-              :style="`background:${hexToRGB(item.color).bColor}; color:${hexToRGB(item.color).color}`"
+              v-if="hasCondLogic == true"
+              class="logic-dropdown"
+              excludeFrom="activeEdit"
+              @click="toggleConditionals = !toggleConditionals"
             >
-              <span
-                v-if="answerType(answerContent.type.id).group=='global'"
-              >{{item.name==''? $t("Unnamed"): $t(item.name)}}</span>
-              <span v-else>{{item.name==''? $t("Unnamed"): item.name | capitalize}}</span>
-            </div>
-          </div>
-          <div class="flex items-center pt-1" v-else>
-            <template-type-icon :item="answerContent.type.id" />
-            <p
-              class="karla-bold ml-2"
-            >{{$t(answerType(answerContent.type.id).content) | capitalize}}</p>
-          </div>
-          <vs-icon icon-pack="feather" icon="icon-chevron-down" />
-        </div>
-        <div
-          class="answer-action mt-2 relative"
-          v-if="activeEdit && answerType(answerContent.type.id)!==undefined"
-        >
-          <template v-if="answerType(answerContent.type.id).content=='instruction'">
-            <vs-textarea
-              class="bg-white"
-              v-model="instruction"
-              :placeholder="$t('write instructions')"
-            />
-          </template>
-          <template v-if="answerType(answerContent.type.id).content=='date time'">
-            <v-select :options="dateTypes" label="title" v-model="dateTime" />
-          </template>
-          <template v-if="answerType(answerContent.type.id).content=='drop down'">
-            <vs-alert active="true" class="mt-2" icon-pack="feather" icon="icon-info">
-              <p class="karla">The value will be separated by comma.</p>
-              <p class="karla-bold">Example: apple,orange</p>
-            </vs-alert>
-            <vs-textarea v-model="dropDown" class="mt-2" />
-          </template>
-          <template v-if="answerType(answerContent.type.id).content=='temperature'">
-            <div class="mt-2">
-              <p class="karla mr-2">{{$t("unit")}}:</p>
-              <v-select class="w-full" :options="tempUnits" v-model="tempUnit" />
-            </div>
-            <div class="mt-2">
-              <p class="karla mr-2">{{$t("mac address")}}:</p>
-              <vs-input
-                icon-no-border
-                class="w-full"
+              <vs-icon
                 icon-pack="feather"
-                icon="icon-bluetooth"
-                :placeholder="$t('mac address')"
-                v-model="macAddress"
+                :icon="
+                  toggleConditionals ? 'icon-chevron-up' : 'icon-chevron-down'
+                "
+                excludeFrom="activeEdit"
               />
             </div>
-          </template>
-          <template v-if="answerType(answerContent.type.id).type=='closed answers'">
-            <p class="karla mt-4">{{$t("failed response")}}:</p>
-            <v-select v-model="failedAnswer" :options="failedAnswerLists(answerContent.type.id)">
-              <template slot="selected-option" slot-scope="option">
-                <span v-if="answerType(answerContent.type.id).group=='global'">{{$t(option.label)}}</span>
-                <span v-else>{{option.label | capitalize}}</span>
-              </template>
-              <template slot="option" slot-scope="option">
-                <span v-if="answerType(answerContent.type.id).group=='global'">{{$t(option.label)}}</span>
-                <span v-else>{{option.label | capitalize}}</span>
-              </template>
-            </v-select>
-          </template>
+
+            <img
+              :src="require('@/assets/images/dnd/2.svg')"
+              class="column-drag-handle relative"
+              height="24px"
+              width="24px"
+            />
+
+            <div style="width: 5px">
+              <p
+                class="pt-3 text-danger text-lg font-medium"
+                v-show="answerContent.mandatory"
+              >
+                *
+              </p>
+            </div>
+            <p class="inline-block py-3 pl-2 text-sm" v-if="!activeEdit">
+              {{ answerTitle }}
+            </p>
+            <vs-input
+              :placeholder="$t('question name')"
+              v-model="answerTitle"
+              v-else
+              class="w-full vs-input-no-shdow-focus ml-1"
+            />
+          </div>
         </div>
-      </div>
-      <div
-        class="vx-col w-full py-3 answer-item border-t-0 border-l-0 border-r-0"
-        v-if="activeEdit"
-      >
-        <div class="flex items-center">
-          <div class="w-1/6 answer-item border-t-0 border-l-0 border-b-0">
-            <vs-checkbox
-              v-model="mandatory"
-              class="karla"
-              style="color:#1e1c26"
-              v-if="hasCanMandatory"
-            >{{$t("required")}}</vs-checkbox>
-          </div>
+
+        <div class="answer-item vx-col w-2/5 border-r-0 p-2">
           <div
-            class="w-1/6 flex items-center justify-between"
-            :class="{'answer-item border-t-0 border-l-0 border-b-0':haveAction(answerContent.type.id)}"
+            class="flex items-center justify-between cursor-pointer"
+            @click.stop="openSelectType"
           >
             <p
-              class="karla-bold ml-2 cursor-pointer"
-              style="color:#6c50f0;"
-              v-if="haveAction(answerContent.type.id)"
-              @click="openAction"
-            >{{$t("notification")}}</p>
-            <p
-              class="karla-bold mr-2"
-              style="color:#6c50f0;"
-              v-if="haveAction(answerContent.type.id) && hadAction"
-            >{{$t("active")}}</p>
+              class="py-3"
+              v-if="
+                answerContent.type.id === undefined ||
+                answerType(answerContent.type.id) === undefined
+              "
+            >
+              {{ $t("select type of response") }}
+            </p>
+            <div
+              class="flex items-center pt-2"
+              v-else-if="
+                answerType(answerContent.type.id).type == 'closed answers'
+              "
+            >
+              <div
+                class="closed-answer-item karla-bold mr-2"
+                v-for="(item, index) in answerType(answerContent.type.id)
+                  .content"
+                :key="index"
+                :style="`background:${hexToRGB(item.color).bColor}; color:${
+                  hexToRGB(item.color).color
+                }`"
+              >
+                <span
+                  v-if="answerType(answerContent.type.id).group == 'global'"
+                  >{{ item.name == "" ? $t("Unnamed") : $t(item.name) }}</span
+                >
+                <span v-else>{{
+                  item.name == "" ? $t("Unnamed") : item.name | capitalize
+                }}</span>
+              </div>
+            </div>
+            <div class="flex items-center pt-1" v-else>
+              <template-type-icon :item="answerContent.type.id" />
+              <p class="karla-bold ml-2">
+                {{ $t(answerType(answerContent.type.id).content) | capitalize }}
+              </p>
+            </div>
+            <vs-icon icon-pack="feather" icon="icon-chevron-down" />
           </div>
           <div
-            class="w-1/6 flex items-center justify-between"
-            :class="{'answer-item border-t-0 border-l-0 border-b-0':haveAction(answerContent.type.id)}"
+            class="answer-action mt-2 relative"
+            v-if="activeEdit && answerType(answerContent.type.id) !== undefined"
           >
-            <p
-              class="karla-bold ml-2 cursor-pointer"
-              style="color:#6c50f0;"
-              @click="openScore"
-              v-if="haveAction(answerContent.type.id)"
-            >{{$t("add score")}}</p>
-            <p
-              class="karla-bold mr-2"
-              style="color:#6c50f0;"
-              v-if="haveAction(answerContent.type.id) && hadScore"
-            >{{$t("active")}}</p>
-          </div>
-          <div class="w-1/6"></div>
-          <div class="w-1/6 answer-item border-t-0 border-b-0">
-            <div
-              class="flex items-center ml-2 hover:text-danger cursor-pointer"
-              v-if="template.content.pages[page].questions[question].answers.length>1"
-              @click="deleteAnswer"
+            <template
+              v-if="answerType(answerContent.type.id).content == 'instruction'"
             >
-              <vs-icon icon-pack="feather" icon="icon-trash-2" />
-              <p class="karla ml-2">{{$t("delete")}}</p>
+              <vs-textarea
+                class="bg-white"
+                v-model="instruction"
+                :placeholder="$t('write instructions')"
+              />
+            </template>
+            <template
+              v-if="answerType(answerContent.type.id).content == 'date time'"
+            >
+              <v-select :options="dateTypes" label="title" v-model="dateTime" />
+            </template>
+            <template
+              v-if="answerType(answerContent.type.id).content == 'drop down'"
+            >
+              <vs-alert
+                active="true"
+                class="mt-2"
+                icon-pack="feather"
+                icon="icon-info"
+              >
+                <p class="karla">The value will be separated by comma.</p>
+                <p class="karla-bold">Example: apple,orange</p>
+              </vs-alert>
+              <vs-textarea v-model="dropDown" class="mt-2" />
+            </template>
+            <template
+              v-if="answerType(answerContent.type.id).content == 'temperature'"
+            >
+              <div class="mt-2">
+                <p class="karla mr-2">{{ $t("unit") }}:</p>
+                <v-select
+                  class="w-full"
+                  :options="tempUnits"
+                  v-model="tempUnit"
+                />
+              </div>
+              <div class="mt-2">
+                <p class="karla mr-2">{{ $t("mac address") }}:</p>
+                <vs-input
+                  icon-no-border
+                  class="w-full"
+                  icon-pack="feather"
+                  icon="icon-bluetooth"
+                  :placeholder="$t('mac address')"
+                  v-model="macAddress"
+                />
+              </div>
+            </template>
+            <template
+              v-if="answerType(answerContent.type.id).type == 'closed answers'"
+            >
+              <p class="karla mt-4">{{ $t("failed response") }}:</p>
+              <v-select
+                v-model="failedAnswer"
+                :options="failedAnswerLists(answerContent.type.id)"
+              >
+                <template slot="selected-option" slot-scope="option">
+                  <span
+                    v-if="answerType(answerContent.type.id).group == 'global'"
+                    >{{ $t(option.label) }}</span
+                  >
+                  <span v-else>{{ option.label | capitalize }}</span>
+                </template>
+                <template slot="option" slot-scope="option">
+                  <span
+                    v-if="answerType(answerContent.type.id).group == 'global'"
+                    >{{ $t(option.label) }}</span
+                  >
+                  <span v-else>{{ option.label | capitalize }}</span>
+                </template>
+              </v-select>
+            </template>
+          </div>
+        </div>
+        <div
+          class="vx-col w-full py-3 answer-item border-t-0 border-l-0 border-r-0"
+          v-if="activeEdit"
+        >
+          <div class="flex items-center">
+            <div class="w-1/6 answer-item border-t-0 border-l-0 border-b-0">
+              <vs-checkbox
+                v-model="mandatory"
+                class="karla"
+                style="color: #1e1c26"
+                v-if="hasCanMandatory"
+                >{{ $t("required") }}</vs-checkbox
+              >
             </div>
-          </div>
-          <div class="w-1/6">
             <div
-              class="flex items-center ml-2 hover:text-primary cursor-pointer"
-              @click="duplicateAnswer"
+              class="w-1/6 flex items-center justify-between"
+              :class="{
+                'answer-item border-t-0 border-l-0 border-b-0': haveAction(
+                  answerContent.type.id
+                ),
+              }"
             >
-              <vs-icon icon-pack="feather" icon="icon-copy" />
-              <p class="karla ml-2">{{$t("duplicate")}}</p>
+              <p
+                class="karla-bold ml-2 cursor-pointer"
+                style="color: #6c50f0"
+                v-if="haveAction(answerContent.type.id)"
+                @click="openAction"
+              >
+                {{ $t("notification") }}
+              </p>
+              <p
+                class="karla-bold mr-2"
+                style="color: #6c50f0"
+                v-if="haveAction(answerContent.type.id) && hadAction"
+              >
+                {{ $t("active") }}
+              </p>
             </div>
-          </div>
-          <div class="w-1/6 answer-item border-t-0 border-b-0 border-r-0">
             <div
-              class="flex items-center ml-2 hover:text-primary cursor-pointer"
-              @click="makeLogicAnswer"
+              class="w-1/6 flex items-center justify-between"
+              :class="{
+                'answer-item border-t-0 border-l-0 border-b-0': haveAction(
+                  answerContent.type.id
+                ),
+              }"
             >
-              <vs-icon icon="device_hub" />
-              <p class="karla ml-2">{{$t("Make Logic")}}</p>
+              <p
+                class="karla-bold ml-2 cursor-pointer"
+                style="color: #6c50f0"
+                @click="openScore"
+                v-if="haveAction(answerContent.type.id)"
+              >
+                {{ $t("add score") }}
+              </p>
+              <p
+                class="karla-bold mr-2"
+                style="color: #6c50f0"
+                v-if="haveAction(answerContent.type.id) && hadScore"
+              >
+                {{ $t("active") }}
+              </p>
+            </div>
+            <div class="w-1/6"></div>
+            <div class="w-1/6 answer-item border-t-0 border-b-0">
+              <div
+                class="flex items-center ml-2 hover:text-danger cursor-pointer"
+                v-if="
+                  template.content.pages[page].questions[question].answers
+                    .length > 1
+                "
+                @click="deleteAnswer"
+              >
+                <vs-icon icon-pack="feather" icon="icon-trash-2" />
+                <p class="karla ml-2">{{ $t("delete") }}</p>
+              </div>
+            </div>
+            <div class="w-1/6">
+              <div
+                class="flex items-center ml-2 hover:text-primary cursor-pointer"
+                @click="duplicateAnswer"
+              >
+                <vs-icon icon-pack="feather" icon="icon-copy" />
+                <p class="karla ml-2">{{ $t("duplicate") }}</p>
+              </div>
+            </div>
+            <div
+              v-if="
+                hasCondLogic != true &&
+                answerType(answerContent.type.id) != undefined &&
+                answerType(answerContent.type.id).type == 'closed answers'
+              "
+              class="w-1/6 answer-item border-t-0 border-b-0 border-r-0"
+            >
+              <div
+                class="flex items-center ml-2 hover:text-primary cursor-pointer"
+                @click="makeLogicAnswer"
+              >
+                <vs-icon icon="device_hub" />
+                <p class="karla ml-2">{{ $t("Make Logic") }}</p>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+    <conditional-question
+      v-if="hasCondLogic == true && toggleConditionals == true"
+      :answerTypes="answerType(answerContent.type.id)"
+      :page="page"
+      :question="question"
+      :parentId="answerId"
+    />
   </div>
 </template>
 
 <script>
 import TemplateTypeIcon from "./TemplateTypeIcon.vue";
 import VSelect from "vue-select";
+import ConditionalQuestion from "./ConditionalLogic/ConditionalQuestion.vue";
+import $ from "jquery";
+const generateUniqueId = require("generate-unique-id");
+
 export default {
+  name: "AnswerEdit",
   props: {
     drag: {
       type: Boolean,
@@ -211,12 +333,14 @@ export default {
   components: {
     TemplateTypeIcon,
     VSelect,
+    ConditionalQuestion,
   },
   data() {
     return {
       activeAction: false,
       tempUnits: ["℃", "℉"],
       activeEdit: false,
+      toggleConditionals: true,
     };
   },
   computed: {
@@ -268,6 +392,45 @@ export default {
         });
       },
     },
+    hasCondLogic: {
+      get() {
+        return this.answerContent.hasCondLogic;
+      },
+      set(val) {
+        console.log("hasCondLogic set", val, {
+          page: this.page,
+          question: this.question,
+          answer: this.answer,
+        });
+        this.$store.commit("app/CHN_TEMP_TEMPLATE", {
+          index: {
+            page: this.page,
+            question: this.question,
+            answer: this.answer,
+          },
+          target: "answer",
+          key: "hasCondLogic",
+          val: val,
+        });
+      },
+    },
+    answerId: {
+      get() {
+        return this.answerContent.id;
+      },
+      set(val) {
+        this.$store.commit("app/CHN_TEMP_TEMPLATE", {
+          index: {
+            page: this.page,
+            question: this.question,
+            answer: this.answer,
+          },
+          target: "answer",
+          key: "answerId",
+          val: val,
+        });
+      },
+    },
     failedAnswerLists() {
       return (id) => {
         var failedAnswersList = [];
@@ -301,7 +464,6 @@ export default {
         });
       },
     },
-
     macAddress: {
       get() {
         let answer = this.answerContent;
@@ -479,7 +641,17 @@ export default {
       };
     },
   },
+  mounted() {
+    // console.log("answerContent:", this.answerContent);
+  },
   methods: {
+    handleActiveEdit() {
+      console.log("event", $(event.target).attr("excludeFrom"));
+      if ($(event.target).attr("excludeFrom") == "activeEdit") {
+        return;
+      }
+      this.activeEdit = true;
+    },
     openScore() {
       this.$store.commit("app/SET_EDIT_ANSWER_INDEXES", {
         page: this.page,
@@ -510,8 +682,20 @@ export default {
         !this.$store.getters["app/editType"] &&
         !this.$store.getters["app/editAction"] &&
         !this.$store.getters["app/editScore"]
-      )
+      ) {
         this.activeEdit = false;
+        // this.toggleConditionals = false;
+      }
+    },
+    outsideFull() {
+      // if (
+      //   !this.$store.getters["app/editType"] &&
+      //   !this.$store.getters["app/editAction"] &&
+      //   !this.$store.getters["app/editScore"]
+      // ) {
+      //   this.activeEdit = false;
+      //   this.toggleConditionals = false;
+      // }
     },
     deleteAnswer() {
       this.$store.commit("app/CHN_TEMP_TEMPLATE", {
@@ -536,9 +720,48 @@ export default {
         val: JSON.stringify(this.answerContent),
       });
     },
-    makeLogicAnswer(){
+    makeLogicAnswer() {
+      this.hasCondLogic = true;
+      this.addLogicQuestion();
+      console.log("makeLogicAnswer", this.hasCondLogic, this.answerContent);
+    },
+    addLogicQuestion() {
+      let answerId = this.answerId;
+      if (this.answerId == undefined) {
+        answerId = generateUniqueId();
+        this.answerId = answerId;
+      }
+      console.log("answerId", answerId);
 
-    }
+      const tabId = this.addConditionTab();
+
+      this.$store.commit("app/CHN_TEMP_TEMPLATE", {
+        index: {
+          page: this.page,
+          question: this.question,
+          answer: this.answer,
+        },
+        parent: answerId,
+        tabId: tabId,
+        target: "answer",
+        key: "addLogicQuestion",
+      });
+    },
+    addConditionTab() {
+      const tabId = generateUniqueId();
+      this.$store.commit("app/CHN_TEMP_TEMPLATE", {
+        target: "conditionTabs",
+        key: "add",
+        val: {
+          id: tabId,
+          title:
+            "= " + this.answerType(this.answerContent.type.id).content[0].name,
+          createdByAnswer: this.answerId,
+        },
+      });
+
+      return tabId;
+    },
   },
   watch: {
     drag(val) {
@@ -550,7 +773,28 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+.logic-dropdown {
+  background: orange;
+  border-radius: 50%;
+  padding: 5px;
+  width: 30px;
+  height: 30px;
+  position: relative;
+  // top: 3px;
+  cursor: pointer;
+
+  i {
+    color: white;
+    font-size: 20px;
+    position: relative;
+
+    &.icon-chevron-down {
+      top: 1px;
+    }
+  }
+}
+
 .answer-item {
   border: 1px solid rgba(113, 102, 237, 0.16);
 }
@@ -560,8 +804,11 @@ export default {
   font-weight: 500;
   color: #1e1c26;
 }
+.answer-wrapper {
+  background: #ebebf1;
+}
 .answer-edit-section .vx-row {
-  background: #f4f3fe30;
+  background: white;
 }
 .answer-edit-section .vx-row.edit {
   background: #f4f3fe;

@@ -254,69 +254,101 @@ export default {
   },
   CHN_TEMP_TEMPLATE(state, query) {
     if (query.target == "answer") {
-      if (query.key == "instruction")
-        state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].type = { id: state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].type.id, instruction: query.val }
-      else if (query.key == "title")
-        state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].title = query.val
+      let allAnswers = state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers
+      let answer = state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer]
+
+      if (query.key == "instruction") {
+        answer.type = { id: answer.type.id, instruction: query.val }
+      }
+      else if (query.key == "title") {
+        answer.title = query.val
+      }
       else if (query.key == "type") {
-        if (state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].type.id === undefined) {
-          state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].type = { id: query.val }
+        if (answer.type.id === undefined) {
+          answer.type = { id: query.val }
         }
         else
-          state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].type.id = query.val
+          answer.type.id = query.val
         if (query.answerType !== undefined) {
 
           if (query.answerType.content == "automatic date and time stamp")
-            state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].loged = new Date()
+            answer.loged = new Date()
 
           else if (query.answerType.content == "automatic user stamp")
-            state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].loged = JSON.parse(localStorage.getItem('userInfo')).id
+            answer.loged = JSON.parse(localStorage.getItem('userInfo')).id
           else if (query.answerType.content == "score")
-            state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].loged = 0
+            answer.loged = 0
           else if (query.answerType.content == "photo" || query.answerType.content == "receipts")
-            state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].loged = []
+            answer.loged = []
 
           else
-            state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].loged = ""
+            answer.loged = ""
         }
         else
-          state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].loged = ""
-        state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].mandatory = false
+          answer.loged = ""
+        answer.mandatory = false
 
       }
       else if (query.key == "date&time") {
-        state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].type = { id: state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].type.id, dateType: query.val }
+        answer.type = { id: answer.type.id, dateType: query.val }
       }
       else if (query.key == "dropdown") {
-        state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].type = { id: state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].type.id, dropdown: query.val }
+        answer.type = { id: answer.type.id, dropdown: query.val }
       }
       else if (query.key == "tempUnit") {
-        state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].type = Object.assign({}, state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].type, { tempUnit: query.val })
+        answer.type = Object.assign({}, answer.type, { tempUnit: query.val })
       }
       else if (query.key == "macAddress") {
-        state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].type = Object.assign({}, state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].type, { macAddress: query.val })
+        answer.type = Object.assign({}, answer.type, { macAddress: query.val })
       }
-
-      else if (query.key == "failedAnswer")
-        state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].type = { id: state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].type.id, failedAnswer: query.val }
-      else if (query.key == "mandatory")
-        state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].mandatory = query.val
-      else if (query.key == 'duplicate')
-        state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers.push(
+      else if (query.key == "failedAnswer") {
+        answer.type = { id: answer.type.id, failedAnswer: query.val }
+      }
+      else if (query.key == "mandatory") {
+        answer.mandatory = query.val
+      }
+      else if (query.key == "hasCondLogic") {
+        answer.hasCondLogic = query.val
+      }
+      else if (query.key == "answerId") {
+        answer.id = query.val
+      }
+      else if (query.key == 'duplicate') {
+        allAnswers.push(
           JSON.parse(query.val)
         )
-      else if (query.key == 'addQuestion')
-        state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers.push({
+      }
+      else if (query.key == 'addQuestion') {
+        allAnswers.push({
           title: "",
           type: {},
           action: {},
           mandatory: false,
+          hasCondLogic: false,
           score: [],
           loged: ""
         })
+      }
+      else if (query.key == 'addLogicQuestion') {
+        allAnswers.push({
+          parent: query.parent,
+          tabId: query.tabId,
+          title: "",
+          type: {},
+          action: {},
+          mandatory: false,
+          hasCondLogic: false,
+          score: [],
+          loged: "",
+          isLogicQuestion: true
+        })
+      }
+      else if (query.key == "chnlogicAnswers") {
+        answer.logicAnswers = query.val
+      }
       else if (query.key == "chnAnswerOrder") {
-        let movedItem = state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers.find((item, index) => index == query.val.removedIndex)
-        let remainItems = state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers.filter((item, index) => index != query.val.removedIndex)
+        let movedItem = allAnswers.find((item, index) => index == query.val.removedIndex)
+        let remainItems = allAnswers.filter((item, index) => index != query.val.removedIndex)
         let reorderedItems = []
         remainItems.forEach((item, index) => {
           if (index === query.val.addedIndex) {
@@ -325,19 +357,22 @@ export default {
           } else
             reorderedItems.push(item)
         });
-        if (query.val.addedIndex == remainItems.length)
+        if (query.val.addedIndex == remainItems.length) {
           reorderedItems.push(movedItem)
-        state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers = reorderedItems
+        }
+        allAnswers = reorderedItems
       }
-      else if (query.key == 'delete')
-        state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers = state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers.filter((item, index) => index !== query.index.answer)
+      else if (query.key == 'delete') {
+        allAnswers = allAnswers.filter((item, index) => index !== query.index.answer)
+      }
       else if (query.key == 'action') {
-        let action = state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].action;
-        if (!Array.isArray(action)) action = [action];
-        state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].action = [...action, query.val]
+        let action = answer.action;
+        if (!Array.isArray(action)) { action = [action]; }
+        answer.action = [...action, query.val]
       }
-      else if (query.key == 'score')
-        state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].score = query.val
+      else if (query.key == 'score') {
+        answer.score = query.val
+      }
       else if (query.key == 'addSection') {
         state.tempTemplate.content.pages[query.index.page].questions.push({
           title: "",
@@ -347,35 +382,57 @@ export default {
               type: {},
               action: {},
               mandatory: false,
+              hasCondLogic: false,
               score: [],
               loged: ""
             }
           ]
         })
       }
-      else if (query.key == "chnSectionTitle")
+      else if (query.key == "chnSectionTitle") {
         state.tempTemplate.content.pages[query.index.page].questions[query.index.question].title = query.val
-      else if (query.key == "duplicateSection")
+      }
+      else if (query.key == "duplicateSection") {
         state.tempTemplate.content.pages[query.index.page].questions.push(JSON.parse(query.val))
-      else if (query.key == "deleteSection")
+      }
+      else if (query.key == "deleteSection") {
         state.tempTemplate.content.pages[query.index.page].questions = state.tempTemplate.content.pages[query.index.page].questions.filter((item, index) => index != query.val)
-      else if (query.key == "chnAnswers")
-        state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers = query.val
+      } else if (query.key == "chnAnswers") {
+        allAnswers = query.val
+      }
     }
     else if (query.target == "page") {
-      if (query.key == "addPage")
+      if (query.key == "addPage") {
         state.tempTemplate.content.pages.push(query.val)
-      else if (query.key == "chnTitle")
+      }
+      else if (query.key == "chnTitle") {
         state.tempTemplate.content.pages[query.index.page].title = query.val
+      }
       else if (query.key == "deletePage") {
         state.tempTemplate.content.pages = state.tempTemplate.content.pages.filter((item, index) => index !== query.val)
       }
     }
-    else if (query.target == "template") {
-      if (query.key == "chnTitle")
+    else if (query.target == "conditionTabs") {
+      let conditionTabs = state.tempTemplate.content.conditionTabs
+      if (!Array.isArray(conditionTabs)) {
+        conditionTabs = []
+      }
+      if (query.key == "add") {
+        conditionTabs.push(query.val)
+      } else if (query.key == "chnTitle") {
+        conditionTabs[query.index.conditionTab].title = query.val
+      }
+      else if (query.key == "delete") {
+        conditionTabs = conditionTabs.filter((item, index) => index !== query.val)
+      }
+
+    } else if (query.target == "template") {
+      if (query.key == "chnTitle") {
         state.tempTemplate.content.templateTitle = query.val
-      else if (query.key == "chnComment")
+      }
+      else if (query.key == "chnComment") {
         state.tempTemplate.content.templateComment = query.val
+      }
     }
   },
   LOG_VALUE(state, query) {

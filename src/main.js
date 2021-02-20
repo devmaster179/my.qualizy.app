@@ -19,6 +19,11 @@ import 'material-icons/iconfont/material-icons.css' //Material Icons
 import 'vuesax/dist/vuesax.css'; // Vuesax
 Vue.use(Vuesax)
 
+// Buety
+// import { Tabs } from "buefy";
+// Vue.use(Tabs);
+// import "./views/analytics/buefy.scss"
+
 // // axios
 import axios from 'axios'
 Vue.prototype.$http = axios

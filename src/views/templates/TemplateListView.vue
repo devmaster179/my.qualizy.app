@@ -423,6 +423,8 @@ export default {
               type: answer.type,
               action: Array.isArray(answer.action) ? answer.action : [],
               mandatory: answer.mandatory,
+              hasCondLogic:
+                answer.hasCondLogic !== undefined ? answer.hasCondLogic : false,
               loged: loged,
               score: answer.score === undefined ? "" : answer.score,
             };
@@ -489,6 +491,8 @@ export default {
               type: answer.type,
               action: answer.action,
               mandatory: answer.mandatory,
+              hasCondLogic:
+                answer.hasCondLogic !== undefined ? answer.hasCondLogic : false,
               score:
                 answer.score === undefined || !Array.isArray(answer.score)
                   ? []

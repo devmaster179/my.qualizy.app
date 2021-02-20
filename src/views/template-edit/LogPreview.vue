@@ -8,31 +8,37 @@
     position-right
   >
     <div class="log-priview-header flex itens-center justify-between">
-      <p class="karla-bold text-sm color-my-black">{{$t("preview")}}</p>
-      <p class="karla-bold text-sm color-my-black">{{calcComplateStatus}}</p>
+      <p class="karla-bold text-sm color-my-black">{{ $t("preview") }}</p>
+      <p class="karla-bold text-sm color-my-black">{{ calcComplateStatus }}</p>
     </div>
     <VuePerfectScrollbar
       class="scroll-area--log-content mt-6 px-3 mb-4"
       :settings="settings"
       ref="pageLists"
     >
-      <vx-card class="cursor-pointer" @click.native="viewPage=!viewPage">
+      <vx-card class="cursor-pointer" @click.native="viewPage = !viewPage">
         <div slot="no-body" class="px-4 py-3">
           <div class="flex justify-between items-center">
             <div>
-              <p
-                class="karla-bold"
-                style="color:#1e1c26"
-              >{{pages[pageNum].title=="" ? $t("Page Title") : pages[pageNum].title | capitalize}}</p>
-              <p
-                class="karla page-infor"
-              >{{$t("page") | capitalize}} {{pageNum+1}} {{$t("of")}} {{pages.length}}</p>
+              <p class="karla-bold" style="color: #1e1c26">
+                {{
+                  pages[pageNum].title == ""
+                    ? $t("Page Title")
+                    : pages[pageNum].title | capitalize
+                }}
+              </p>
+              <p class="karla page-infor">
+                {{ $t("page") | capitalize }} {{ pageNum + 1 }} {{ $t("of") }}
+                {{ pages.length }}
+              </p>
             </div>
             <div class="flex items-center">
-              <p class="karla-bold mr-2" style="color:#1e1c26">{{calcPageCompletd}}</p>
+              <p class="karla-bold mr-2" style="color: #1e1c26">
+                {{ calcPageCompletd }}
+              </p>
               <vs-icon
                 class="font-bold expand-icon"
-                :class="{'on': viewPage , 'off':!viewPage}"
+                :class="{ on: viewPage, off: !viewPage }"
                 icon-pack="feather"
                 icon="icon-chevron-down"
               ></vs-icon>
@@ -43,11 +49,11 @@
       <vx-card class="mt-1 pages-container" v-show="viewPage">
         <div slot="no-body">
           <div
-            v-for="(page,index) in pages"
+            v-for="(page, index) in pages"
             :key="index"
             class="cursor-pointer p-5 page-item"
-            :class="{'active':pageNum==index}"
-            @click="pageNum=index"
+            :class="{ active: pageNum == index }"
+            @click="pageNum = index"
           >
             <div class="flex justify-between items-center">
               <div class="flex items-center">
@@ -57,186 +63,331 @@
                   class="font-bold"
                   color="primary"
                   icon="icon-check"
-                  v-if="index==pageNum"
+                  v-if="index == pageNum"
                 />
                 <p
                   class="karla-bold truncate"
-                  :class="{'ml-4': index==pageNum, 'ml-8': index!=pageNum}"
-                >{{page.title=="" ? $t("Page Title"): page.title | capitalize}}</p>
+                  :class="{
+                    'ml-4': index == pageNum,
+                    'ml-8': index != pageNum,
+                  }"
+                >
+                  {{
+                    page.title == ""
+                      ? $t("Page Title")
+                      : page.title | capitalize
+                  }}
+                </p>
               </div>
-              <p class="karla-bold mr-2" style="color:#1e1c26">{{calcPageCompletd1(index)}}</p>
+              <p class="karla-bold mr-2" style="color: #1e1c26">
+                {{ calcPageCompletd1(index) }}
+              </p>
             </div>
           </div>
         </div>
       </vx-card>
       <transition
-        v-for="(page,pIndex) in pages"
+        v-for="(page, pIndex) in pages"
         :key="pIndex"
         name="custom-classes-transition"
         :enter-active-class="enterClass"
       >
-        <div class="w-full mt-4" v-if="pageNum==pIndex">
-          <vx-card v-for="(question,qIndex) in page.questions" :key="qIndex" class="mb-4">
+        <div class="w-full mt-4" v-if="pageNum == pIndex">
+          <vx-card
+            v-for="(question, qIndex) in page.questions"
+            :key="qIndex"
+            class="mb-4"
+          >
             <div slot="no-body" class="px-5 py-4">
               <div class="vx-row items-center mb-2">
                 <div class="vx-col w-5/6 p-0">
-                  <p
-                    class="karla-bold text-primary"
-                  >{{question.title=="" ? $t("section title"):question.title | capitalize}}</p>
+                  <p class="karla-bold text-primary">
+                    {{
+                      question.title == ""
+                        ? $t("section title")
+                        : question.title | capitalize
+                    }}
+                  </p>
                 </div>
                 <div class="vx-col w-1/6 p-0">
-                  <p
-                    class="karla-bold text-right"
-                    style="color:#1e1c26"
-                  >{{calcQuestionCompletd(pIndex,qIndex)}}</p>
+                  <p class="karla-bold text-right" style="color: #1e1c26">
+                    {{ calcQuestionCompletd(pIndex, qIndex) }}
+                  </p>
                 </div>
               </div>
               <vs-divider position="left" class="m-0 mt-3 mb-2"></vs-divider>
-              <div v-for="(answer,aIndex) in question.answers" :key="aIndex" class="mt-5">
+              <div
+                v-for="(answer, aIndex) in question.answers"
+                :key="aIndex"
+                class="mt-5"
+              >
                 <div class="answer-title karla flex">
-                  {{answer.title=="" ? $t("question name") : answer.title | capitalize}}
-                  <span
-                    v-if="answer.mandatory"
-                    class="text-danger"
-                  >*</span>
+                  {{
+                    answer.title == ""
+                      ? $t("question name")
+                      : answer.title | capitalize
+                  }}
+                  <span v-if="answer.mandatory" class="text-danger">*</span>
                   <span
                     class="text-primary"
-                    v-if="answer.type.id!== undefined && getTemplateType(answer.type.id)!== undefined && getTemplateType(answer.type.id).content=='temperature'"
-                  >({{answer.type.tempUnit===undefined ? "℃" : answer.type.tempUnit}})</span>
+                    v-if="
+                      answer.type.id !== undefined &&
+                      getTemplateType(answer.type.id) !== undefined &&
+                      getTemplateType(answer.type.id).content == 'temperature'
+                    "
+                    >({{
+                      answer.type.tempUnit === undefined
+                        ? "℃"
+                        : answer.type.tempUnit
+                    }})</span
+                  >
                 </div>
                 <div class="answer-content">
                   <template
-                    v-if="answer.type.id !== undefined && getTemplateType(answer.type.id) !== undefined && getTemplateType(answer.type.id).type=='closed answers'"
+                    v-if="
+                      answer.type.id !== undefined &&
+                      getTemplateType(answer.type.id) !== undefined &&
+                      getTemplateType(answer.type.id).type == 'closed answers'
+                    "
                   >
                     <div
-                      v-for="(content,cIndex) in getTemplateType(answer.type.id).content"
-                      :key="'c'+cIndex"
+                      v-for="(content, cIndex) in getTemplateType(
+                        answer.type.id
+                      ).content"
+                      :key="'c' + cIndex"
                     >
                       <div
-                        v-if="pages[pIndex].questions[qIndex].answers[aIndex].loged==content.name"
+                        v-if="
+                          pages[pIndex].questions[qIndex].answers[aIndex]
+                            .loged == content.name
+                        "
                         class="flex items-center justify-center border border-solid rounded-lg py-3 cursor-pointer mt-2"
-                        :style="`background:${hexToRGB(content.color)}; border-color:${hexToRGB(content.color)};`"
+                        :style="`background:${hexToRGB(
+                          content.color
+                        )}; border-color:${hexToRGB(content.color)};`"
                       >
                         <span
                           class="karla text-white"
-                          v-if="getTemplateType(answer.type.id).group=='global'"
-                        >{{$t(content.name)}}</span>
-                        <span class="karla text-white" v-else>{{content.name | capitalize}}</span>
+                          v-if="
+                            getTemplateType(answer.type.id).group == 'global'
+                          "
+                          >{{ $t(content.name) }}</span
+                        >
+                        <span class="karla text-white" v-else>{{
+                          content.name | capitalize
+                        }}</span>
                       </div>
                       <div
                         v-else
                         class="flex items-center justify-center border border-solid rounded-lg py-3 cursor-pointer mt-2"
-                        @click="logValue(content.name,pIndex,qIndex,aIndex)"
+                        @click="logValue(content.name, pIndex, qIndex, aIndex)"
                       >
                         <span
-                          v-if="getTemplateType(answer.type.id).group=='global'"
+                          v-if="
+                            getTemplateType(answer.type.id).group == 'global'
+                          "
                           class="karla"
                           :style="`color:${hexToRGB(content.color)};`"
-                        >{{$t(content.name)}}</span>
+                          >{{ $t(content.name) }}</span
+                        >
                         <span
                           v-else
                           class="karla"
                           :style="`color:${hexToRGB(content.color)};`"
-                        >{{content.name | capitalize}}</span>
+                          >{{ content.name | capitalize }}</span
+                        >
                       </div>
                     </div>
                   </template>
                   <template
-                    v-else-if="answer.type.id !== undefined && getTemplateType(answer.type.id) !== undefined && getTemplateType(answer.type.id).content=='number'"
+                    v-else-if="
+                      answer.type.id !== undefined &&
+                      getTemplateType(answer.type.id) !== undefined &&
+                      getTemplateType(answer.type.id).content == 'number'
+                    "
                   >
                     <div class="w-full flex items-center justify-between">
                       <vs-input
                         type="number"
                         class="w-full mr-2"
-                        :value="pages[pIndex].questions[qIndex].answers[aIndex].loged"
-                        v-on:input="logValue($event,pIndex,qIndex,aIndex)"
+                        :value="
+                          pages[pIndex].questions[qIndex].answers[aIndex].loged
+                        "
+                        v-on:input="logValue($event, pIndex, qIndex, aIndex)"
                       />
                       <div class="flex items-center">
                         <span
-                          @click="logValue(Math.round(pages[pIndex].questions[qIndex].answers[aIndex].loged)+1,pIndex,qIndex,aIndex)"
-                          style="font-size:25px;border:1px solid rgba(0, 0, 0, 0.2);width:48px; height:48px;"
+                          @click="
+                            logValue(
+                              Math.round(
+                                pages[pIndex].questions[qIndex].answers[aIndex]
+                                  .loged
+                              ) + 1,
+                              pIndex,
+                              qIndex,
+                              aIndex
+                            )
+                          "
+                          style="
+                            font-size: 25px;
+                            border: 1px solid rgba(0, 0, 0, 0.2);
+                            width: 48px;
+                            height: 48px;
+                          "
                           class="rounded-lg px-3 text-center cursor-pointer numBtn mr-2 pt-1 block"
-                        >+</span>
+                          >+</span
+                        >
                         <span
-                          @click="logValue(pages[pIndex].questions[qIndex].answers[aIndex].loged-1,pIndex,qIndex,aIndex)"
-                          style="font-size:25px;border:1px solid rgba(0, 0, 0, 0.2);width:48px; height:48px;"
+                          @click="
+                            logValue(
+                              pages[pIndex].questions[qIndex].answers[aIndex]
+                                .loged - 1,
+                              pIndex,
+                              qIndex,
+                              aIndex
+                            )
+                          "
+                          style="
+                            font-size: 25px;
+                            border: 1px solid rgba(0, 0, 0, 0.2);
+                            width: 48px;
+                            height: 48px;
+                          "
                           class="rounded-lg px-3 text-center cursor-pointer numBtn block pt-1"
-                        >-</span>
+                          >-</span
+                        >
                       </div>
                     </div>
                   </template>
                   <template
-                    v-else-if="answer.type.id !== undefined && getTemplateType(answer.type.id)!==undefined && getTemplateType(answer.type.id).content=='signature'"
+                    v-else-if="
+                      answer.type.id !== undefined &&
+                      getTemplateType(answer.type.id) !== undefined &&
+                      getTemplateType(answer.type.id).content == 'signature'
+                    "
                   >
                     <div class="w-full">
                       <VueSignaturePad
                         height="150px"
-                        :ref="'signaturePad_'+pIndex+'_'+qIndex+'_'+aIndex"
+                        :ref="
+                          'signaturePad_' + pIndex + '_' + qIndex + '_' + aIndex
+                        "
                         class="w-full border border-solid d-theme-border-grey-light"
                         :options="{ onBegin, onEnd }"
                       />
                       <div class="w-full flex justify-between mt-2">
                         <vs-button
                           color="danger"
-                          @click="clearSign(pIndex,qIndex,aIndex)"
-                        >{{$t("clear")}}</vs-button>
+                          @click="clearSign(pIndex, qIndex, aIndex)"
+                          >{{ $t("clear") }}</vs-button
+                        >
                         <vs-button
                           color="warning"
-                          @click="undoSign(pIndex,qIndex,aIndex)"
-                        >{{$t("undo")}}</vs-button>
-                        <vs-button @click="saveSign(pIndex,qIndex,aIndex)">{{$t("save")}}</vs-button>
+                          @click="undoSign(pIndex, qIndex, aIndex)"
+                          >{{ $t("undo") }}</vs-button
+                        >
+                        <vs-button @click="saveSign(pIndex, qIndex, aIndex)">{{
+                          $t("save")
+                        }}</vs-button>
                       </div>
                     </div>
                   </template>
                   <template
-                    v-else-if="answer.type.id !== undefined && getTemplateType(answer.type.id)!==undefined && getTemplateType(answer.type.id).content=='instruction'"
+                    v-else-if="
+                      answer.type.id !== undefined &&
+                      getTemplateType(answer.type.id) !== undefined &&
+                      getTemplateType(answer.type.id).content == 'instruction'
+                    "
                   >
                     <div class="w-full">
                       <div
-                        style="white-space: pre-wrap;font-size: 12px;color: #86848a;"
+                        style="
+                          white-space: pre-wrap;
+                          font-size: 12px;
+                          color: #86848a;
+                        "
                         v-html="answer.type.instruction"
                       ></div>
                     </div>
                   </template>
                   <template
-                    v-else-if="answer.type.id !== undefined && getTemplateType(answer.type.id)!==undefined && getTemplateType(answer.type.id).content=='checkbox'"
+                    v-else-if="
+                      answer.type.id !== undefined &&
+                      getTemplateType(answer.type.id) !== undefined &&
+                      getTemplateType(answer.type.id).content == 'checkbox'
+                    "
                   >
                     <vs-checkbox
                       color="success"
-                      :value="pages[pIndex].questions[qIndex].answers[aIndex].loged"
-                      v-on:input="logValue($event,pIndex,qIndex,aIndex)"
+                      :value="
+                        pages[pIndex].questions[qIndex].answers[aIndex].loged
+                      "
+                      v-on:input="logValue($event, pIndex, qIndex, aIndex)"
                     ></vs-checkbox>
                   </template>
                   <template
-                    v-else-if="answer.type.id !== undefined && getTemplateType(answer.type.id)!==undefined && (getTemplateType(answer.type.id).content=='paragraph' || getTemplateType(answer.type.id).content=='short answer')"
+                    v-else-if="
+                      answer.type.id !== undefined &&
+                      getTemplateType(answer.type.id) !== undefined &&
+                      (getTemplateType(answer.type.id).content == 'paragraph' ||
+                        getTemplateType(answer.type.id).content ==
+                          'short answer')
+                    "
                   >
                     <div class="w-full">
                       <textarea
                         class="my-textarea"
-                        :value="pages[pIndex].questions[qIndex].answers[aIndex].loged"
-                        @blur="logValue($event.target.value,pIndex,qIndex,aIndex)"
+                        :value="
+                          pages[pIndex].questions[qIndex].answers[aIndex].loged
+                        "
+                        @blur="
+                          logValue($event.target.value, pIndex, qIndex, aIndex)
+                        "
                       />
                     </div>
                   </template>
                   <template
-                    v-else-if="answer.type.id !== undefined && getTemplateType(answer.type.id)!==undefined && getTemplateType(answer.type.id).content=='temperature'"
+                    v-else-if="
+                      answer.type.id !== undefined &&
+                      getTemplateType(answer.type.id) !== undefined &&
+                      getTemplateType(answer.type.id).content == 'temperature'
+                    "
                   >
                     <div class="w-full flex justify-between">
                       <vs-input
                         type="number"
                         class="w-full mr-1"
-                        :value="pages[pIndex].questions[qIndex].answers[aIndex].loged"
-                        @blur="logValue($event,pIndex,qIndex,aIndex)"
+                        :value="
+                          pages[pIndex].questions[qIndex].answers[aIndex].loged
+                        "
+                        @blur="logValue($event, pIndex, qIndex, aIndex)"
                       />
                       <span
-                        style="font-size:20px;border:1px solid rgba(0, 0, 0, 0.2); width:48px;"
+                        style="
+                          font-size: 20px;
+                          border: 1px solid rgba(0, 0, 0, 0.2);
+                          width: 48px;
+                        "
                         class="rounded-lg px-1 pt-2 text-center cursor-pointer numBtn"
-                        @click="logValue(pages[pIndex].questions[qIndex].answers[aIndex].loged * (-1),pIndex,qIndex,aIndex)"
-                      >&plus;&#8725;&minus;</span>
+                        @click="
+                          logValue(
+                            pages[pIndex].questions[qIndex].answers[aIndex]
+                              .loged * -1,
+                            pIndex,
+                            qIndex,
+                            aIndex
+                          )
+                        "
+                        >&plus;&#8725;&minus;</span
+                      >
                     </div>
                   </template>
                   <template
-                    v-else-if="answer.type.id !== undefined && getTemplateType(answer.type.id)!==undefined && getTemplateType(answer.type.id).content=='star'"
+                    v-else-if="
+                      answer.type.id !== undefined &&
+                      getTemplateType(answer.type.id) !== undefined &&
+                      getTemplateType(answer.type.id).content == 'star'
+                    "
                   >
                     <div class="w-full">
                       <!-- inactive-color="#fff"
@@ -249,10 +400,35 @@
                         :border-width="3"
                         :show-rating="false"
                         :star-size="30"
-                        :star-points="[23,2, 14,17, 0,19, 10,34, 7,50, 23,43, 38,50, 36,34, 46,19, 31,17]"
+                        :star-points="[
+                          23,
+                          2,
+                          14,
+                          17,
+                          0,
+                          19,
+                          10,
+                          34,
+                          7,
+                          50,
+                          23,
+                          43,
+                          38,
+                          50,
+                          36,
+                          34,
+                          46,
+                          19,
+                          31,
+                          17,
+                        ]"
                         text-class="text-warning font-medium"
-                        :rating="pages[pIndex].questions[qIndex].answers[aIndex].value"
-                        @rating-selected="logValue($event,pIndex,qIndex,aIndex)"
+                        :rating="
+                          pages[pIndex].questions[qIndex].answers[aIndex].value
+                        "
+                        @rating-selected="
+                          logValue($event, pIndex, qIndex, aIndex)
+                        "
                         :glow="5"
                         :increment="0.5"
                         :fixed-points="1"
@@ -260,33 +436,59 @@
                     </div>
                   </template>
                   <template
-                    v-else-if="answer.type.id !== undefined && getTemplateType(answer.type.id)!==undefined && getTemplateType(answer.type.id).content=='score'"
+                    v-else-if="
+                      answer.type.id !== undefined &&
+                      getTemplateType(answer.type.id) !== undefined &&
+                      getTemplateType(answer.type.id).content == 'score'
+                    "
                   >
                     <div class="w-full">
                       <score-item
                         :p="pIndex"
                         :q="qIndex"
                         :a="aIndex"
-                        :score="pages[pIndex].questions[qIndex].answers[aIndex].loged"
+                        :score="
+                          pages[pIndex].questions[qIndex].answers[aIndex].loged
+                        "
                         @input="logValue"
                       />
                     </div>
                   </template>
                   <template
-                    v-else-if="answer.type.id !== undefined && getTemplateType(answer.type.id)!==undefined && getTemplateType(answer.type.id).content=='automatic date and time stamp'"
+                    v-else-if="
+                      answer.type.id !== undefined &&
+                      getTemplateType(answer.type.id) !== undefined &&
+                      getTemplateType(answer.type.id).content ==
+                        'automatic date and time stamp'
+                    "
                   >
                     <div class="w-full">
                       <span
                         class
-                        style="font-style:italic;color: #1e1c26;opacity: 0.54;font-size: 12px;"
-                      >{{pages[pIndex].questions[qIndex].answers[aIndex].loged | moment("dddd, MMMM Do YYYY - H:mm:ss") }}</span>
+                        style="
+                          font-style: italic;
+                          color: #1e1c26;
+                          opacity: 0.54;
+                          font-size: 12px;
+                        "
+                        >{{
+                          pages[pIndex].questions[qIndex].answers[aIndex].loged
+                            | moment("dddd, MMMM Do YYYY - H:mm:ss")
+                        }}</span
+                      >
                     </div>
                   </template>
                   <template
-                    v-else-if="answer.type.id !== undefined && getTemplateType(answer.type.id)!==undefined && getTemplateType(answer.type.id).content=='items'"
+                    v-else-if="
+                      answer.type.id !== undefined &&
+                      getTemplateType(answer.type.id) !== undefined &&
+                      getTemplateType(answer.type.id).content == 'items'
+                    "
                   >
                     <food-item
-                      :selectedItem="pages[pIndex].questions[qIndex].answers[aIndex].loged "
+                      :selectedItem="
+                        pages[pIndex].questions[qIndex].answers[aIndex].loged
+                      "
                       :p="pIndex"
                       :q="qIndex"
                       :a="aIndex"
@@ -294,14 +496,23 @@
                     />
                   </template>
                   <template
-                    v-else-if="answer.type.id !== undefined && getTemplateType(answer.type.id)!==undefined && getTemplateType(answer.type.id).content=='users'"
+                    v-else-if="
+                      answer.type.id !== undefined &&
+                      getTemplateType(answer.type.id) !== undefined &&
+                      getTemplateType(answer.type.id).content == 'users'
+                    "
                   >
                     <div class="w-full">
                       <v-select
                         :filterable="false"
                         @search="searchUserList"
-                        :value="getUser(pages[pIndex].questions[qIndex].answers[aIndex].loged)"
-                        @input="logValue($event,pIndex,qIndex,aIndex,true)"
+                        :value="
+                          getUser(
+                            pages[pIndex].questions[qIndex].answers[aIndex]
+                              .loged
+                          )
+                        "
+                        @input="logValue($event, pIndex, qIndex, aIndex, true)"
                         :options="userList"
                         label="name"
                         :placeholder="$t('please type 3 letters at least')"
@@ -309,103 +520,175 @@
                     </div>
                   </template>
                   <template
-                    v-else-if="answer.type.id !== undefined && getTemplateType(answer.type.id)!==undefined && getTemplateType(answer.type.id).content=='teams'"
+                    v-else-if="
+                      answer.type.id !== undefined &&
+                      getTemplateType(answer.type.id) !== undefined &&
+                      getTemplateType(answer.type.id).content == 'teams'
+                    "
                   >
                     <div class="w-full">
                       <v-select
-                        :value="getTeam(pages[pIndex].questions[qIndex].answers[aIndex].loged)"
-                        @input="logValue($event,pIndex,qIndex,aIndex,true)"
+                        :value="
+                          getTeam(
+                            pages[pIndex].questions[qIndex].answers[aIndex]
+                              .loged
+                          )
+                        "
+                        @input="logValue($event, pIndex, qIndex, aIndex, true)"
                         :options="teamList"
                         label="name"
                       ></v-select>
                     </div>
                   </template>
                   <template
-                    v-else-if="answer.type.id !== undefined && getTemplateType(answer.type.id)!==undefined && getTemplateType(answer.type.id).content=='drop down'"
+                    v-else-if="
+                      answer.type.id !== undefined &&
+                      getTemplateType(answer.type.id) !== undefined &&
+                      getTemplateType(answer.type.id).content == 'drop down'
+                    "
                   >
                     <div class="w-full">
                       <v-select
-                        :value="pages[pIndex].questions[qIndex].answers[aIndex].loged"
-                        @input="logValue($event,pIndex,qIndex,aIndex)"
-                        :options="pages[pIndex].questions[qIndex].answers[aIndex].type.dropdown===undefined ? [] : pages[pIndex].questions[qIndex].answers[aIndex].type.dropdown.split(',')"
+                        :value="
+                          pages[pIndex].questions[qIndex].answers[aIndex].loged
+                        "
+                        @input="logValue($event, pIndex, qIndex, aIndex)"
+                        :options="
+                          pages[pIndex].questions[qIndex].answers[aIndex].type
+                            .dropdown === undefined
+                            ? []
+                            : pages[pIndex].questions[qIndex].answers[
+                                aIndex
+                              ].type.dropdown.split(',')
+                        "
                       ></v-select>
                     </div>
                   </template>
                   <template
-                    v-else-if="answer.type.id !== undefined && getTemplateType(answer.type.id)!==undefined && getTemplateType(answer.type.id).content=='date'"
+                    v-else-if="
+                      answer.type.id !== undefined &&
+                      getTemplateType(answer.type.id) !== undefined &&
+                      getTemplateType(answer.type.id).content == 'date'
+                    "
                   >
                     <div class="w-full hasClockIcon relative">
                       <flat-pickr
                         class="flatpickr-input w-full"
                         :config="configDatePicker"
-                        :value=" pages[pIndex].questions[qIndex].answers[aIndex].loged"
-                        @input="logValue($event,pIndex,qIndex,aIndex)"
+                        :value="
+                          pages[pIndex].questions[qIndex].answers[aIndex].loged
+                        "
+                        @input="logValue($event, pIndex, qIndex, aIndex)"
                       />
                     </div>
                   </template>
                   <template
-                    v-else-if="answer.type.id !== undefined && getTemplateType(answer.type.id)!==undefined && getTemplateType(answer.type.id).content=='date time'"
+                    v-else-if="
+                      answer.type.id !== undefined &&
+                      getTemplateType(answer.type.id) !== undefined &&
+                      getTemplateType(answer.type.id).content == 'date time'
+                    "
                   >
                     <div class="w-full hasClockIcon relative">
                       <flat-pickr
-                        v-if="answer.type.dateType === undefined || answer.type.dateType == 'Date'"
+                        v-if="
+                          answer.type.dateType === undefined ||
+                          answer.type.dateType == 'Date'
+                        "
                         class="flatpickr-input w-full"
                         :config="configDatePicker"
-                        :value="pages[pIndex].questions[qIndex].answers[aIndex].loged"
-                        @input="logValue($event,pIndex,qIndex,aIndex)"
+                        :value="
+                          pages[pIndex].questions[qIndex].answers[aIndex].loged
+                        "
+                        @input="logValue($event, pIndex, qIndex, aIndex)"
                       />
                       <flat-pickr
                         v-else-if="answer.type.dateType == 'Time'"
                         class="flatpickr-input w-full"
                         :config="configTimePicker"
-                        :value="pages[pIndex].questions[qIndex].answers[aIndex].loged"
-                        @input="logValue($event,pIndex,qIndex,aIndex)"
+                        :value="
+                          pages[pIndex].questions[qIndex].answers[aIndex].loged
+                        "
+                        @input="logValue($event, pIndex, qIndex, aIndex)"
                       />
                       <flat-pickr
                         v-else-if="answer.type.dateType == 'Date & Time'"
                         class="flatpickr-input w-full"
                         :config="configDateTimePicker"
-                        :value="pages[pIndex].questions[qIndex].answers[aIndex].loged "
-                        @input="logValue($event,pIndex,qIndex,aIndex)"
+                        :value="
+                          pages[pIndex].questions[qIndex].answers[aIndex].loged
+                        "
+                        @input="logValue($event, pIndex, qIndex, aIndex)"
                       />
                     </div>
                   </template>
                   <template
-                    v-else-if="answer.type.id !== undefined && getTemplateType(answer.type.id)!==undefined && getTemplateType(answer.type.id).content=='automatic user stamp'"
+                    v-else-if="
+                      answer.type.id !== undefined &&
+                      getTemplateType(answer.type.id) !== undefined &&
+                      getTemplateType(answer.type.id).content ==
+                        'automatic user stamp'
+                    "
                   >
                     <div class="w-full">
                       <span
-                        style="font-style:italic;color: #1e1c26;opacity: 0.54;font-size: 12px;"
-                      >{{currentUser.name | capitalize }}</span>
+                        style="
+                          font-style: italic;
+                          color: #1e1c26;
+                          opacity: 0.54;
+                          font-size: 12px;
+                        "
+                        >{{ currentUser.name | capitalize }}</span
+                      >
                     </div>
                   </template>
                   <template
-                    v-else-if="answer.type.id !== undefined && getTemplateType(answer.type.id)!==undefined && (getTemplateType(answer.type.id).content=='photo' || getTemplateType(answer.type.id).content=='receipts')"
+                    v-else-if="
+                      answer.type.id !== undefined &&
+                      getTemplateType(answer.type.id) !== undefined &&
+                      (getTemplateType(answer.type.id).content == 'photo' ||
+                        getTemplateType(answer.type.id).content == 'receipts')
+                    "
                   >
                     <div class="sm:pl-4 pl-0 w-full">
                       <div class="con-upload">
-                        <view-upload v-if="viewActive" :src="viewSrc" @closeImage="closeImage" />
+                        <view-upload
+                          v-if="viewActive"
+                          :src="viewSrc"
+                          @closeImage="closeImage"
+                        />
                         <div class="con-img-upload py-0 m-0">
                           <div
                             class="img-upload my-2"
-                            v-for="(image,imageKey) in pages[pIndex].questions[qIndex].answers[aIndex].loged"
+                            v-for="(image, imageKey) in pages[pIndex].questions[
+                              qIndex
+                            ].answers[aIndex].loged"
                             :key="imageKey"
                           >
                             <button
                               type="button"
                               class="btn-x-file"
-                              @click="removeImage(image.url,pIndex,qIndex,aIndex)"
+                              @click="
+                                removeImage(image.url, pIndex, qIndex, aIndex)
+                              "
                             >
-                              <i translate="translate" class="material-icons notranslate">delete</i>
+                              <i
+                                translate="translate"
+                                class="material-icons notranslate"
+                                >delete</i
+                              >
                             </button>
                             <img
                               :src="image.url"
-                              style="max-width: none; max-height: 100%;"
-                              @touchend="viewImage(image.url,$event)"
-                              @click="viewImage(image.url,$event)"
+                              style="max-width: none; max-height: 100%"
+                              @touchend="viewImage(image.url, $event)"
+                              @click="viewImage(image.url, $event)"
                             />
                           </div>
-                          <file-upload :indexs="[pIndex,qIndex,aIndex]" @url="uploadSucess" />
+                          <file-upload
+                            :indexs="[pIndex, qIndex, aIndex]"
+                            @url="uploadSucess"
+                          />
                         </div>
                       </div>
                     </div>
@@ -422,18 +705,18 @@
         color="rgba(108, 80, 240, 0.1)"
         text-color="rgba(108, 80, 240)"
         class="ml-2 mr-4 px-4"
-        :disabled="pageNum==0"
+        :disabled="pageNum == 0"
         @click="minusPage"
       >
-        <span class="karla px-6">{{$t("back")}}</span>
+        <span class="karla px-6">{{ $t("back") }}</span>
       </vs-button>
       <vs-button
-        :disabled="pageNum>=pages.length-1"
+        :disabled="pageNum >= pages.length - 1"
         color="rgba(108, 80, 240, 1)"
         class="ml-2 mr-4 px-4"
         @click="plusPage"
       >
-        <span class="karla px-6">{{$t("next")}}</span>
+        <span class="karla px-6">{{ $t("next") }}</span>
       </vs-button>
     </div>
   </vs-sidebar>
@@ -660,14 +943,12 @@ export default {
       };
     },
 
-
     hexToRGB() {
       return (h) => {
         if (h.includes("#") !== true) {
-          if(h=='primary' || h=='success' || h=='danger' || h=='dark')
+          if (h == "primary" || h == "success" || h == "danger" || h == "dark")
             return `rgb(var(--vs-${h}))`;
-          else 
-            return h
+          else return h;
         } else if (h == "green") {
           return h;
         } else {

@@ -229,6 +229,8 @@ export default {
               type: answer.type,
               action: Array.isArray(answer.action) ? answer.action : [],
               mandatory: answer.mandatory,
+              hasCondLogic:
+                answer.hasCondLogic !== undefined ? answer.hasCondLogic : false,
               score:
                 answer.score === undefined || !Array.isArray(answer.score)
                   ? []
@@ -285,6 +287,8 @@ export default {
                       type: {},
                       action: [],
                       mandatory: false,
+                      hasCondLogic: false,
+                      hasCondLogic: false,
                       score: [],
                       loged: "",
                     },
@@ -306,7 +310,7 @@ export default {
         if (item.group != "global") {
           const userInfo = JSON.parse(localStorage.getItem("userInfo"));
           if (userInfo.group != item.group) {
-            return false; 
+            return false;
           }
         }
         if (!item.lang) {
