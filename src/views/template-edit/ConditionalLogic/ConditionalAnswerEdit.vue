@@ -1,7 +1,9 @@
 <template>
   <div
-    v-if="
-      answerContent.isLogicQuestion == true && answerContent.parent == parentId
+    v-show="
+      answerContent.isLogicQuestion == true &&
+      answerContent.parent == parentId &&
+      answerContent.tabId == tabId
     "
     v-click-outside="outsideFull"
     class="answer-wrapper"
@@ -308,6 +310,9 @@ export default {
     parentId: {
       required: true,
     },
+    tabId: {
+      required: true,
+    },
     target: {
       type: Object,
     },
@@ -557,6 +562,23 @@ export default {
     template() {
       return this.$store.getters["app/getTempTemplate"];
     },
+    answers: {
+      get() {
+        return this.template.content.pages[this.page].questions[this.question]
+          .answers;
+      },
+      set(val) {
+        this.$store.commit("app/CHN_TEMP_TEMPLATE", {
+          index: {
+            page: this.page,
+            question: this.question,
+          },
+          target: "answer",
+          key: "chnAnswers",
+          val: val,
+        });
+      },
+    },
     answerContent() {
       return this.template.content.pages[this.page].questions[this.question]
         .answers[this.answer];
@@ -680,15 +702,25 @@ export default {
       // }
     },
     deleteAnswer() {
-      this.$store.commit("app/CHN_TEMP_TEMPLATE", {
-        index: {
-          page: this.page,
-          question: this.question,
-          answer: this.answer,
-        },
-        target: "answer",
-        key: "delete",
+      console.log("deleteAnswer", {
+        page: this.page,
+        question: this.question,
+        answer: this.answer,
+        answerId: this.answerId,
       });
+      // this.$store.commit("app/CHN_TEMP_TEMPLATE", {
+      //   index: {
+      //     page: this.page,
+      //     question: this.question,
+      //     answer: this.answer,
+      //   },
+      //   target: "answer",
+      //   key: "delete",
+      //   val: { answerId: this.answerId },
+      // });
+
+      console.log("this.answers", this.answers);
+      this.answers = this.answers.filter((item) => item.id != this.answerId);
     },
     duplicateAnswer() {
       this.$store.commit("app/CHN_TEMP_TEMPLATE", {

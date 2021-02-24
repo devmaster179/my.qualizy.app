@@ -113,29 +113,11 @@
       </transition-group>
     </draggable>
 
-    <!-- <div class="mt-10"></div>
-    <draggable
-      v-bind="dragOptions"
-      tag="div"
-      class="item-container"
-      v-model="tempData"
-    >
-      <div class="item-group" :key="index" v-for="(el, index) in tempData">
-        <div class="item">{{ el.title }}</div>
-        <draggable
-          v-bind="dragOptions"
-          tag="div"
-          class="item-sub"
-          v-model="el.items"
-        >
-          <div class="item-group" :key="index" v-for="(el, index) in el.items">
-            <div class="item">{{ el.title }}</div>
-          </div>
-        </draggable>
-      </div>
-    </draggable> -->
     <div class="vx-row p-2">
-      <p class="karla-bold text-primary cursor-pointer" @click="addQuestion">
+      <p
+        class="karla-bold text-primary cursor-pointer mt-2"
+        @click="addQuestion"
+      >
         {{ $t("add question") }}
       </p>
     </div>
@@ -285,10 +267,6 @@ export default {
     },
     answers: {
       get() {
-        console.log(
-          "questions",
-          this.template.content.pages[this.page].questions
-        );
         return this.template.content.pages[this.page].questions[this.question]
           .answers;
       },

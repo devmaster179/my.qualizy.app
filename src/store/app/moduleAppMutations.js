@@ -1,3 +1,5 @@
+const generateUniqueId = require("generate-unique-id");
+
 export default {
   SET_SENSOR_DATA(state, query) {
     state.sensorDatas = query
@@ -254,8 +256,12 @@ export default {
   },
   CHN_TEMP_TEMPLATE(state, query) {
     if (query.target == "answer") {
-      let allAnswers = state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers
-      let answer = state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer]
+      let allAnswers
+      let answer
+      if (state.tempTemplate.content.pages[query.index.page].questions[query.index.question] != undefined) {
+        allAnswers = state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers
+        answer = state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer]
+      }
 
       if (query.key == "instruction") {
         answer.type = { id: answer.type.id, instruction: query.val }
@@ -320,6 +326,7 @@ export default {
       }
       else if (query.key == 'addQuestion') {
         allAnswers.push({
+          id: generateUniqueId(),
           title: "",
           type: {},
           action: {},
@@ -331,6 +338,7 @@ export default {
       }
       else if (query.key == 'addLogicQuestion') {
         allAnswers.push({
+          id: generateUniqueId(),
           parent: query.parent,
           tabId: query.tabId,
           title: "",
@@ -363,7 +371,8 @@ export default {
         allAnswers = reorderedItems
       }
       else if (query.key == 'delete') {
-        allAnswers = allAnswers.filter((item, index) => index !== query.index.answer)
+        allAnswers = allAnswers.filter(item => item.id != query.val.answerId)
+        console.log('allAnswers delete', allAnswers, query)
       }
       else if (query.key == 'action') {
         let action = answer.action;
@@ -400,6 +409,11 @@ export default {
       } else if (query.key == "chnAnswers") {
         allAnswers = query.val
       }
+
+      if (state.tempTemplate.content.pages[query.index.page].questions[query.index.question] != undefined) {
+        state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers = allAnswers
+        state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer] = answer
+      }
     }
     else if (query.target == "page") {
       if (query.key == "addPage") {
@@ -419,12 +433,24 @@ export default {
       }
       if (query.key == "add") {
         conditionTabs.push(query.val)
+
       } else if (query.key == "chnTitle") {
-        conditionTabs[query.index.conditionTab].title = query.val
+        const tab = conditionTabs.find(tab => tab.id == query.tabId)
+        tab.title = query.val;
+
+      } else if (query.key == "chnCondition") {
+        const tab = conditionTabs.find(tab => tab.id == query.tabId)
+        tab.condition = query.val;
+
+      } else if (query.key == "chnAnswers") {
+        const tab = conditionTabs.find(tab => tab.id == query.tabId)
+        tab.answers = query.val;
+
+      } else if (query.key == "delete") {
+        conditionTabs = conditionTabs.filter(item => item.id != query.val.tabId)
       }
-      else if (query.key == "delete") {
-        conditionTabs = conditionTabs.filter((item, index) => index !== query.val)
-      }
+
+      state.tempTemplate.content.conditionTabs = conditionTabs
 
     } else if (query.target == "template") {
       if (query.key == "chnTitle") {

@@ -156,6 +156,7 @@ import firebase from "firebase/app";
 import "firebase/auth";
 
 import { db } from "@/firebase/firebaseConfig.js";
+const generateUniqueId = require("generate-unique-id");
 
 export default {
   components: {
@@ -225,6 +226,11 @@ export default {
               loged = [];
             else if (type.content == "score") loged = 0;
             answers.push({
+              id: answer.id == undefined ? generateUniqueId() : answer.id,
+              parent: answer.parent,
+              tabId: answer.tabId,
+              hasCondLogic: answer.hasCondLogic,
+              isLogicQuestion: answer.isLogicQuestion,
               title: answer.title,
               type: answer.type,
               action: Array.isArray(answer.action) ? answer.action : [],
@@ -258,6 +264,7 @@ export default {
           templateLabel: template.content.templateLabel,
           templateSD: "bookmarked",
           pages: pages,
+          conditionTabs: template.content.conditionTabs,
         },
       };
       this.$store.commit("app/SET_TEMPTEMPLATE", JSON.stringify(tempTemplate));
@@ -283,11 +290,11 @@ export default {
                   title: "",
                   answers: [
                     {
+                      id: generateUniqueId(),
                       title: "",
                       type: {},
                       action: [],
                       mandatory: false,
-                      hasCondLogic: false,
                       hasCondLogic: false,
                       score: [],
                       loged: "",
@@ -297,6 +304,7 @@ export default {
               ],
             },
           ],
+          conditionTabs: [],
         },
       };
       this.$store.commit("app/SET_TEMPTEMPLATE", JSON.stringify(tempTemplate));

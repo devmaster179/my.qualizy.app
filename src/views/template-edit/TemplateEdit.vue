@@ -318,6 +318,11 @@ export default {
           question.answers.map((answer) => {
             if (answer.type.id !== undefined) {
               answers.push({
+                id: answer.id,
+                parent: answer.parent,
+                tabId: answer.tabId,
+                hasCondLogic: answer.hasCondLogic,
+                isLogicQuestion: answer.isLogicQuestion,
                 title: answer.title,
                 type: answer.type,
                 action: [],
@@ -358,6 +363,7 @@ export default {
       var updated_at = new Date();
       var savingTemplate = {
         pages: pages,
+        conditionTabs: template.content.conditionTabs,
         location: template.content.location,
         templateTitle: template.content.templateTitle,
         templateComment: template.content.templateComment,

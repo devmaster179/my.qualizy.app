@@ -872,6 +872,7 @@ export default {
       });
     },
     logValue(value, p, q, a) {
+      console.log("logValue", value, p, q, a);
       value = value === null ? "" : value;
       value = value.target !== undefined ? value.target.value : value;
       value = value.id !== undefined ? value.id : value;

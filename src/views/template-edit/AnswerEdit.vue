@@ -295,6 +295,7 @@
       :answerTypes="answerType(answerContent.type.id)"
       :page="page"
       :question="question"
+      :answer="answer"
       :parentId="answerId"
     />
   </div>
@@ -575,6 +576,23 @@ export default {
     template() {
       return this.$store.getters["app/getTempTemplate"];
     },
+    answers: {
+      get() {
+        return this.template.content.pages[this.page].questions[this.question]
+          .answers;
+      },
+      set(val) {
+        this.$store.commit("app/CHN_TEMP_TEMPLATE", {
+          index: {
+            page: this.page,
+            question: this.question,
+          },
+          target: "answer",
+          key: "chnAnswers",
+          val: val,
+        });
+      },
+    },
     answerContent() {
       return this.template.content.pages[this.page].questions[this.question]
         .answers[this.answer];
@@ -698,15 +716,24 @@ export default {
       // }
     },
     deleteAnswer() {
-      this.$store.commit("app/CHN_TEMP_TEMPLATE", {
-        index: {
-          page: this.page,
-          question: this.question,
-          answer: this.answer,
-        },
-        target: "answer",
-        key: "delete",
+      console.log("deleteAnswer", {
+        page: this.page,
+        question: this.question,
+        answer: this.answer,
+        answerId: this.answerId,
       });
+      // this.$store.commit("app/CHN_TEMP_TEMPLATE", {
+      //   index: {
+      //     page: this.page,
+      //     question: this.question,
+      //     answer: this.answer,
+      //   },
+      //   target: "answer",
+      //   key: "delete",
+      //   val: { answerId: this.answerId },
+      // });
+      console.log("this.answers", this.answers);
+      this.answers = this.answers.filter((item) => item.id != this.answerId);
     },
     duplicateAnswer() {
       this.$store.commit("app/CHN_TEMP_TEMPLATE", {
@@ -733,7 +760,7 @@ export default {
       }
       console.log("answerId", answerId);
 
-      const tabId = this.addConditionTab();
+      const tabId = this.addConditionTab(answerId);
 
       this.$store.commit("app/CHN_TEMP_TEMPLATE", {
         index: {
@@ -747,19 +774,24 @@ export default {
         key: "addLogicQuestion",
       });
     },
-    addConditionTab() {
+    addConditionTab(answerId) {
       const tabId = generateUniqueId();
       this.$store.commit("app/CHN_TEMP_TEMPLATE", {
         target: "conditionTabs",
         key: "add",
         val: {
           id: tabId,
-          title:
-            "= " + this.answerType(this.answerContent.type.id).content[0].name,
-          createdByAnswer: this.answerId,
+          condition: { symbol: "=", key: "is", text: "is" },
+          answers: [this.answerType(this.answerContent.type.id).content[0]],
+          createdByAnswer: answerId,
         },
       });
-
+      console.log("addConditionTab", {
+        id: tabId,
+        condition: { symbol: "=", key: "is", text: "is" },
+        answers: [this.answerType(this.answerContent.type.id).content[0]],
+        createdByAnswer: answerId,
+      });
       return tabId;
     },
   },
