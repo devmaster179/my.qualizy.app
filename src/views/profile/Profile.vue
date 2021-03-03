@@ -621,7 +621,7 @@ export default {
         .post(
           "https://us-central1-the-haccp-app-249610.cloudfunctions.net/api/sendMail",
           {
-            email: 'alextd.dev@gmail.com',
+            email: 'cedric.s@qualizy.app',
             subject: "User's passoord",
             html: `
                             Hello Cedric <br>
