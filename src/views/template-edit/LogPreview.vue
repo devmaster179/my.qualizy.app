@@ -120,6 +120,7 @@
                 v-for="(answer, aIndex) in question.answers"
                 :key="aIndex"
                 class="mt-5"
+                v-bind:class="{ hidden: answer.isLogicQuestion == true }"
               >
                 <div class="answer-title karla flex">
                   {{
@@ -150,54 +151,12 @@
                       getTemplateType(answer.type.id).type == 'closed answers'
                     "
                   >
-                    <div
-                      v-for="(content, cIndex) in getTemplateType(
-                        answer.type.id
-                      ).content"
-                      :key="'c' + cIndex"
-                    >
-                      <div
-                        v-if="
-                          pages[pIndex].questions[qIndex].answers[aIndex]
-                            .loged == content.name
-                        "
-                        class="flex items-center justify-center border border-solid rounded-lg py-3 cursor-pointer mt-2"
-                        :style="`background:${hexToRGB(
-                          content.color
-                        )}; border-color:${hexToRGB(content.color)};`"
-                      >
-                        <span
-                          class="karla text-white"
-                          v-if="
-                            getTemplateType(answer.type.id).group == 'global'
-                          "
-                          >{{ $t(content.name) }}</span
-                        >
-                        <span class="karla text-white" v-else>{{
-                          content.name | capitalize
-                        }}</span>
-                      </div>
-                      <div
-                        v-else
-                        class="flex items-center justify-center border border-solid rounded-lg py-3 cursor-pointer mt-2"
-                        @click="logValue(content.name, pIndex, qIndex, aIndex)"
-                      >
-                        <span
-                          v-if="
-                            getTemplateType(answer.type.id).group == 'global'
-                          "
-                          class="karla"
-                          :style="`color:${hexToRGB(content.color)};`"
-                          >{{ $t(content.name) }}</span
-                        >
-                        <span
-                          v-else
-                          class="karla"
-                          :style="`color:${hexToRGB(content.color)};`"
-                          >{{ content.name | capitalize }}</span
-                        >
-                      </div>
-                    </div>
+                    <closed-answer-preview
+                      :pIndex="pIndex"
+                      :qIndex="qIndex"
+                      :aIndex="aIndex"
+                      :answer="answer"
+                    />
                   </template>
                   <template
                     v-else-if="
@@ -731,6 +690,7 @@ import FileUpload from "@/components/file-upload/FileUpload.vue";
 import ViewUpload from "@/components/file-upload/ViewUpload.vue";
 import ScoreItem from "../tasks/ScoreItem";
 import FoodItem from "../tasks/FoodItem";
+import ClosedAnswerPreview from "./ConditionalLogic/ClosedAnswerPreview";
 import flatPickr from "vue-flatpickr-component";
 import "flatpickr/dist/flatpickr.css";
 import { storage } from "@/firebase/firebaseStorage";
@@ -746,6 +706,7 @@ export default {
     ScoreItem,
     FoodItem,
     flatPickr,
+    ClosedAnswerPreview,
   },
   data() {
     return {
@@ -793,6 +754,12 @@ export default {
     },
   },
   methods: {
+    filteredAnswers(answers) {
+      // get only answers which is not contained to conditional
+      const filtered = answers.filter((ans) => ans.isLogicQuestion != true);
+      console.log("filtered answers", filtered);
+      return filtered;
+    },
     clearSign(p, q, a) {
       this.$refs[`signaturePad_${p}_${q}_${a}`][0].clearSignature();
     },
@@ -889,7 +856,7 @@ export default {
       var _complated = 0;
       this.pages.map((page, p) => {
         page.questions.map((question, q) => {
-          question.answers.map((answer, a) => {
+          this.filteredAnswers(question.answers).map((answer, a) => {
             if (answer.mandatory) {
               if (
                 this.pages[p].questions[q].answers[a].loged != "" ||
@@ -999,7 +966,7 @@ export default {
         var count = 0;
         var complated = 0;
         this.pages[number].questions.map((question) => {
-          question.answers.map((answer) => {
+          this.filteredAnswers(question.answers).map((answer) => {
             if (answer.mandatory) {
               complated++;
               if (answer.loged != "" || answer.loged.length > 0) count++;
@@ -1013,7 +980,7 @@ export default {
       var all = 0;
       var completed = 0;
       this.template.content.pages[this.pageNum].questions.map((question) => {
-        question.answers.map((answer) => {
+        this.filteredAnswers(question.answers).map((answer) => {
           if (answer.mandatory) {
             all++;
             if (answer.loged != "" || answer.loged.length > 0) completed++;
@@ -1032,7 +999,7 @@ export default {
       var completed = 0;
       this.template.content.pages.map((page) => {
         page.questions.map((question) => {
-          question.answers.map((answer) => {
+          this.filteredAnswers(question.answers).map((answer) => {
             if (answer.mandatory) all++;
           });
         });

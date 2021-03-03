@@ -327,10 +327,16 @@ export default {
       if (this.template.content.conditionTabs == undefined) {
         return [];
       }
-      return this.template.content.conditionTabs;
-      // return this.template.content.conditionTabs.filter(
-      //   (tab) => tab.createdByAnswer == this.parentId
-      // );
+      if (
+        this.template.content.conditionTabs.filter(
+          (tab) => tab.createdByAnswer == this.parentId
+        ).length == 1
+      ) {
+        this.activeCondTab = this.template.content.conditionTabs[0].id;
+      }
+      return this.template.content.conditionTabs.filter(
+        (tab) => tab.createdByAnswer == this.parentId
+      );
     },
     tabName() {
       return (tab) => {
@@ -374,6 +380,7 @@ export default {
     },
   },
   mounted() {
+    console.log("ConditionalQuestion Mounted", this.conditionTabs);
     this.selectedValues = [this.answerTypes.content[0]];
     this.selectedCondition = this.conditionList[0];
     this.activeCondTab =
@@ -484,17 +491,17 @@ export default {
         },
       });
 
-      this.$store.commit("app/CHN_TEMP_TEMPLATE", {
-        index: {
-          page: this.page,
-          question: this.question,
-          answer: this.answer,
-        },
-        parent: answerId,
-        tabId: tabId,
-        target: "answer",
-        key: "addLogicQuestion",
-      });
+      // this.$store.commit("app/CHN_TEMP_TEMPLATE", {
+      //   index: {
+      //     page: this.page,
+      //     question: this.question,
+      //     answer: this.answer,
+      //   },
+      //   parent: answerId,
+      //   tabId: tabId,
+      //   target: "answer",
+      //   key: "addLogicQuestion",
+      // });
 
       console.log("add Another Logic", {
         id: tabId,

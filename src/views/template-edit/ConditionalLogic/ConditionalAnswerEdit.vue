@@ -646,7 +646,8 @@ export default {
     },
   },
   mounted() {
-    // console.log("answerContent:", this.answerContent);
+    console.log("answerContent:", this.answerContent);
+    console.log("tabId :", this.tabId);
   },
   methods: {
     handleActiveEdit() {

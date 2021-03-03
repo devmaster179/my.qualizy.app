@@ -361,4 +361,9 @@ export default {
   getCurrentPricePlan: state => {
     return state.currentPricePlan
   },
+
+  logicQuestionsByAnswerId: state => params => {
+    const allAnswers = state.tempTemplate.content.pages[params.pIndex].questions[params.qIndex].answers
+    return allAnswers.filter(answer => answer.parent == params.answerId)
+  },
 }

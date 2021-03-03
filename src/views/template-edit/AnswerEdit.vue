@@ -762,17 +762,17 @@ export default {
 
       const tabId = this.addConditionTab(answerId);
 
-      this.$store.commit("app/CHN_TEMP_TEMPLATE", {
-        index: {
-          page: this.page,
-          question: this.question,
-          answer: this.answer,
-        },
-        parent: answerId,
-        tabId: tabId,
-        target: "answer",
-        key: "addLogicQuestion",
-      });
+      // this.$store.commit("app/CHN_TEMP_TEMPLATE", {
+      //   index: {
+      //     page: this.page,
+      //     question: this.question,
+      //     answer: this.answer,
+      //   },
+      //   parent: answerId,
+      //   tabId: tabId,
+      //   target: "answer",
+      //   key: "addLogicQuestion",
+      // });
     },
     addConditionTab(answerId) {
       const tabId = generateUniqueId();
