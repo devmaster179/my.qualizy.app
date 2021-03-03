@@ -67,219 +67,465 @@
                 </h4>
               </td>
             </tr>
-            <tr
-              v-for="(answer, aIndex) in question.answers"
-              :key="'a' + aIndex"
-            >
-              <template v-if="getType(answer.ref.type.id) !== undefined">
-                <td
-                  width="30%"
-                  class="p-2 py-3 border border-solid border-r-0 border-l-0 d-theme-border-grey-light border-b-0 text-large"
-                >
-                  <h5
-                    style="
-                      display: inline;
-                      font-size: 12px;
-                      font-weight: 500;
-                      color: #1e1c26;
-                      opacity: 0.78;
-                    "
+            <template v-for="(answer, aIndex) in question.answers">
+              <tr
+                :key="'a' + aIndex"
+                v-if="
+                  getType(answer.ref.type.id) !== undefined &&
+                  answer.ref.isLogicQuestion != true
+                "
+              >
+                <template>
+                  <td
+                    width="30%"
+                    class="p-2 py-3 border border-solid border-r-0 border-l-0 d-theme-border-grey-light border-b-0 text-large"
                   >
-                    {{ answer.ref.title }}
+                    <h5
+                      style="
+                        display: inline;
+                        font-size: 12px;
+                        font-weight: 500;
+                        color: #1e1c26;
+                        opacity: 0.78;
+                      "
+                    >
+                      {{ answer.ref.title }}
+                      <template
+                        v-if="
+                          getType(answer.ref.type.id).content == 'temperature'
+                        "
+                      >
+                        <span
+                          v-if="answer.ref.type.tempUnit"
+                          class="text-success"
+                          >({{ answer.ref.type.tempUnit }})&nbsp;</span
+                        >
+                        <span v-else class="text-success">(℃)&nbsp;</span>
+                      </template>
+                      <span v-if="answer.ref.mandatory" class="text-danger"
+                        >*</span
+                      >
+                    </h5>
+                  </td>
+                  <td
+                    class="p-2 py-4 border border-solid d-theme-border-grey-light border-b-0 border-r-0"
+                  >
+                    <span class="text-danger" v-if="!answer.loged">---</span>
+                    <span
+                      v-else-if="
+                        getType(answer.ref.type.id).content ==
+                          'automatic date and time stamp' ||
+                        getType(answer.ref.type.id).content == 'date'
+                      "
+                      >{{
+                        convDate(answer.value)
+                          | moment("DD MMMM ,YYYY @ HH[h]mm")
+                      }}</span
+                    >
                     <template
-                      v-if="
+                      v-else-if="
+                        getType(answer.ref.type.id).content == 'date time'
+                      "
+                    >
+                      <span v-if="answer.ref.type.dateType == 'Date'">{{
+                        answer.value | moment("DD MMMM ,YYYY")
+                      }}</span>
+                      <span v-else-if="answer.ref.type.dateType == 'Time'">{{
+                        answer.value | moment("HH:mm")
+                      }}</span>
+                      <span
+                        v-else-if="answer.ref.type.dateType == 'Date & Time'"
+                        >{{
+                          answer.value | moment("DD MMMM ,YYYY @ HH[h]mm")
+                        }}</span
+                      >
+                    </template>
+                    <star-rating
+                      v-else-if="getType(answer.ref.type.id).content == 'star'"
+                      :star-size="25"
+                      :read-only="true"
+                      :increment="0.1"
+                      :fixed-points="1"
+                      :rating="answer.value"
+                    ></star-rating>
+                    <span
+                      v-else-if="
+                        getType(answer.ref.type.id).content ==
+                          'automatic user stamp' &&
+                        getUserInfo(answer.value) != undefined
+                      "
+                      >{{ getUserInfo(answer.value).name | capitalize }}</span
+                    >
+                    <div
+                      v-else-if="
+                        getType(answer.ref.type.id).content == 'short answer' ||
+                        getType(answer.ref.type.id).content == 'paragraph'
+                      "
+                      class="text-primary"
+                      style="
+                        font-style: italic;
+                        white-space: pre-wrap;
+                        word-break: break-word;
+                      "
+                    >
+                      {{ answer.value }}
+                    </div>
+                    <vs-checkbox
+                      v-else-if="
+                        getType(answer.ref.type.id).content == 'checkbox'
+                      "
+                      disabled="true"
+                      :value="answer.value"
+                    ></vs-checkbox>
+                    <template
+                      v-else-if="getType(answer.ref.type.id).content == 'items'"
+                    >
+                      <span v-if="getItemInfo(answer.value) != undefined">{{
+                        getItemInfo(answer.value).name
+                      }}</span>
+                    </template>
+                    <template
+                      v-else-if="getType(answer.ref.type.id).content == 'users'"
+                    >
+                      <span v-if="getUserInfo(answer.value) != undefined">{{
+                        getUserInfo(answer.value).name | capitalize
+                      }}</span>
+                    </template>
+                    <template
+                      v-else-if="getType(answer.ref.type.id).content == 'teams'"
+                    >
+                      <span v-if="getTeamInfo(answer.value) != undefined">{{
+                        getTeamInfo(answer.value).name | capitalize
+                      }}</span>
+                    </template>
+                    <template
+                      v-else-if="
+                        getType(answer.ref.type.id).type == 'attachments'
+                      "
+                    >
+                      <a
+                        :href="image.url"
+                        target="_blank"
+                        v-for="(image, imgIndex) in answer.images"
+                        :key="'img_' + imgIndex"
+                        class="ml-1"
+                        style="float: left"
+                      >
+                        <img
+                          :src="image.url"
+                          style="max-width: 50px; max-height: 50px"
+                          class="rounded-lg"
+                        />
+                      </a>
+                    </template>
+                    <div
+                      v-else-if="
+                        getType(answer.ref.type.id).content == 'instruction'
+                      "
+                      style="
+                        font-size: 12px;
+                        color: #86848a;
+                        font-weight: normal;
+                        white-space: pre-wrap;
+                        word-break: break-word;
+                      "
+                    >
+                      {{ answer.ref.type.instruction }}
+                    </div>
+                    <template
+                      v-else-if="
                         getType(answer.ref.type.id).content == 'temperature'
                       "
                     >
-                      <span v-if="answer.ref.type.tempUnit" class="text-success"
-                        >({{ answer.ref.type.tempUnit }})&nbsp;</span
+                      <span
+                        :class="
+                          calcTemperatureColor(answer.ref.action, answer.value)
+                        "
+                        v-if="answer.value !== undefined"
+                        >{{ answer.value }}</span
                       >
-                      <span v-else class="text-success">(℃)&nbsp;</span>
                     </template>
-                    <span v-if="answer.ref.mandatory" class="text-danger"
-                      >*</span
-                    >
-                  </h5>
-                </td>
-                <td
-                  class="p-2 py-4 border border-solid d-theme-border-grey-light border-b-0 border-r-0"
-                >
-                  <span class="text-danger" v-if="!answer.loged">---</span>
-                  <span
-                    v-else-if="
-                      getType(answer.ref.type.id).content ==
-                        'automatic date and time stamp' ||
-                      getType(answer.ref.type.id).content == 'date'
-                    "
-                    >{{
-                      convDate(answer.value) | moment("DD MMMM ,YYYY @ HH[h]mm")
-                    }}</span
-                  >
-                  <template
-                    v-else-if="
-                      getType(answer.ref.type.id).content == 'date time'
-                    "
-                  >
-                    <span v-if="answer.ref.type.dateType == 'Date'">{{
-                      answer.value | moment("DD MMMM ,YYYY")
-                    }}</span>
-                    <span v-else-if="answer.ref.type.dateType == 'Time'">{{
-                      answer.value | moment("HH:mm")
-                    }}</span>
-                    <span
-                      v-else-if="answer.ref.type.dateType == 'Date & Time'"
-                      >{{
-                        answer.value | moment("DD MMMM ,YYYY @ HH[h]mm")
-                      }}</span
-                    >
-                  </template>
-                  <star-rating
-                    v-else-if="getType(answer.ref.type.id).content == 'star'"
-                    :star-size="25"
-                    :read-only="true"
-                    :increment="0.1"
-                    :fixed-points="1"
-                    :rating="answer.value"
-                  ></star-rating>
-                  <span
-                    v-else-if="
-                      getType(answer.ref.type.id).content ==
-                        'automatic user stamp' &&
-                      getUserInfo(answer.value) != undefined
-                    "
-                    >{{ getUserInfo(answer.value).name | capitalize }}</span
-                  >
-                  <div
-                    v-else-if="
-                      getType(answer.ref.type.id).content == 'short answer' ||
-                      getType(answer.ref.type.id).content == 'paragraph'
-                    "
-                    class="text-primary"
-                    style="
-                      font-style: italic;
-                      white-space: pre-wrap;
-                      word-break: break-word;
-                    "
-                  >
-                    {{ answer.value }}
-                  </div>
-                  <vs-checkbox
-                    v-else-if="
-                      getType(answer.ref.type.id).content == 'checkbox'
-                    "
-                    disabled="true"
-                    :value="answer.value"
-                  ></vs-checkbox>
-                  <template
-                    v-else-if="getType(answer.ref.type.id).content == 'items'"
-                  >
-                    <span v-if="getItemInfo(answer.value) != undefined">{{
-                      getItemInfo(answer.value).name
-                    }}</span>
-                  </template>
-                  <template
-                    v-else-if="getType(answer.ref.type.id).content == 'users'"
-                  >
-                    <span v-if="getUserInfo(answer.value) != undefined">{{
-                      getUserInfo(answer.value).name | capitalize
-                    }}</span>
-                  </template>
-                  <template
-                    v-else-if="getType(answer.ref.type.id).content == 'teams'"
-                  >
-                    <span v-if="getTeamInfo(answer.value) != undefined">{{
-                      getTeamInfo(answer.value).name | capitalize
-                    }}</span>
-                  </template>
-                  <template
-                    v-else-if="
-                      getType(answer.ref.type.id).type == 'attachments'
-                    "
-                  >
-                    <a
-                      :href="image.url"
-                      target="_blank"
-                      v-for="(image, imgIndex) in answer.images"
-                      :key="'img_' + imgIndex"
-                      class="ml-1"
-                      style="float: left"
+                    <template
+                      v-else-if="
+                        getType(answer.ref.type.id).content == 'signature'
+                      "
                     >
                       <img
-                        :src="image.url"
-                        style="max-width: 50px; max-height: 50px"
-                        class="rounded-lg"
+                        :src="answer.value.url"
+                        v-if="
+                          answer.value.url !== undefined &&
+                          answer.value.url != ''
+                        "
                       />
-                    </a>
-                  </template>
-                  <div
-                    v-else-if="
-                      getType(answer.ref.type.id).content == 'instruction'
-                    "
-                    style="
-                      font-size: 12px;
-                      color: #86848a;
-                      font-weight: normal;
-                      white-space: pre-wrap;
-                      word-break: break-word;
-                    "
-                  >
-                    {{ answer.ref.type.instruction }}
-                  </div>
-                  <template
-                    v-else-if="
-                      getType(answer.ref.type.id).content == 'temperature'
-                    "
-                  >
-                    <span
-                      :class="
-                        calcTemperatureColor(answer.ref.action, answer.value)
+                    </template>
+                    <template
+                      v-else-if="
+                        getType(answer.ref.type.id).type == 'closed answers'
                       "
-                      v-if="answer.value !== undefined"
-                      >{{ answer.value }}</span
                     >
-                  </template>
-                  <template
-                    v-else-if="
-                      getType(answer.ref.type.id).content == 'signature'
-                    "
-                  >
-                    <img
-                      :src="answer.value.url"
-                      v-if="
-                        answer.value.url !== undefined && answer.value.url != ''
-                      "
-                    />
-                  </template>
-                  <template
-                    v-else-if="
-                      getType(answer.ref.type.id).type == 'closed answers'
-                    "
-                  >
-                    <span
-                      :class="[
-                        {
-                          'text-danger':
-                            answer.ref.type.failedAnswer == answer.value,
-                        },
-                      ]"
-                      v-if="getType(answer.ref.type.id).group == 'global'"
-                      >{{ $t(answer.value) }}</span
+                      <span
+                        :class="[
+                          {
+                            'text-danger':
+                              answer.ref.type.failedAnswer == answer.value,
+                          },
+                        ]"
+                        v-if="getType(answer.ref.type.id).group == 'global'"
+                        >{{ $t(answer.value) }}</span
+                      >
+                      <span
+                        :class="[
+                          {
+                            'text-danger':
+                              answer.ref.type.failedAnswer == answer.value,
+                          },
+                        ]"
+                        v-else
+                        >{{ answer.value | capitalize }}</span
+                      >
+                    </template>
+                    <span v-else>{{ answer.value }}</span>
+                  </td>
+                </template>
+              </tr>
+
+              <template
+                v-for="cAnswer in filteredAnswers(question.answers, answer)"
+              >
+                <tr
+                  v-if="getType(cAnswer.ref.type.id) !== undefined"
+                  :key="cAnswer.id"
+                >
+                  <template>
+                    <td
+                      width="30%"
+                      class="p-2 py-3 border border-solid border-r-0 border-l-0 d-theme-border-grey-light border-b-0 text-large"
                     >
-                    <span
-                      :class="[
-                        {
-                          'text-danger':
-                            answer.ref.type.failedAnswer == answer.value,
-                        },
-                      ]"
-                      v-else
-                      >{{ answer.value | capitalize }}</span
+                      <h5
+                        style="
+                          display: inline;
+                          font-size: 12px;
+                          font-weight: 500;
+                          color: #1e1c26;
+                          opacity: 0.78;
+                        "
+                      >
+                        {{ cAnswer.ref.title }}
+                        <template
+                          v-if="
+                            getType(cAnswer.ref.type.id).content ==
+                            'temperature'
+                          "
+                        >
+                          <span
+                            v-if="cAnswer.ref.type.tempUnit"
+                            class="text-success"
+                            >({{ cAnswer.ref.type.tempUnit }})&nbsp;</span
+                          >
+                          <span v-else class="text-success">(℃)&nbsp;</span>
+                        </template>
+                        <span v-if="cAnswer.ref.mandatory" class="text-danger"
+                          >*</span
+                        >
+                      </h5>
+                    </td>
+                    <td
+                      class="p-2 py-4 border border-solid d-theme-border-grey-light border-b-0 border-r-0"
                     >
+                      <span class="text-danger" v-if="!cAnswer.loged">---</span>
+                      <span
+                        v-else-if="
+                          getType(cAnswer.ref.type.id).content ==
+                            'automatic date and time stamp' ||
+                          getType(cAnswer.ref.type.id).content == 'date'
+                        "
+                        >{{
+                          convDate(cAnswer.value)
+                            | moment("DD MMMM ,YYYY @ HH[h]mm")
+                        }}</span
+                      >
+                      <template
+                        v-else-if="
+                          getType(cAnswer.ref.type.id).content == 'date time'
+                        "
+                      >
+                        <span v-if="cAnswer.ref.type.dateType == 'Date'">{{
+                          cAnswer.value | moment("DD MMMM ,YYYY")
+                        }}</span>
+                        <span v-else-if="cAnswer.ref.type.dateType == 'Time'">{{
+                          cAnswer.value | moment("HH:mm")
+                        }}</span>
+                        <span
+                          v-else-if="cAnswer.ref.type.dateType == 'Date & Time'"
+                          >{{
+                            cAnswer.value | moment("DD MMMM ,YYYY @ HH[h]mm")
+                          }}</span
+                        >
+                      </template>
+                      <star-rating
+                        v-else-if="
+                          getType(cAnswer.ref.type.id).content == 'star'
+                        "
+                        :star-size="25"
+                        :read-only="true"
+                        :increment="0.1"
+                        :fixed-points="1"
+                        :rating="cAnswer.value"
+                      ></star-rating>
+                      <span
+                        v-else-if="
+                          getType(cAnswer.ref.type.id).content ==
+                            'automatic user stamp' &&
+                          getUserInfo(cAnswer.value) != undefined
+                        "
+                        >{{
+                          getUserInfo(cAnswer.value).name | capitalize
+                        }}</span
+                      >
+                      <div
+                        v-else-if="
+                          getType(cAnswer.ref.type.id).content ==
+                            'short answer' ||
+                          getType(cAnswer.ref.type.id).content == 'paragraph'
+                        "
+                        class="text-primary"
+                        style="
+                          font-style: italic;
+                          white-space: pre-wrap;
+                          word-break: break-word;
+                        "
+                      >
+                        {{ cAnswer.value }}
+                      </div>
+                      <vs-checkbox
+                        v-else-if="
+                          getType(cAnswer.ref.type.id).content == 'checkbox'
+                        "
+                        disabled="true"
+                        :value="cAnswer.value"
+                      ></vs-checkbox>
+                      <template
+                        v-else-if="
+                          getType(cAnswer.ref.type.id).content == 'items'
+                        "
+                      >
+                        <span v-if="getItemInfo(cAnswer.value) != undefined">{{
+                          getItemInfo(cAnswer.value).name
+                        }}</span>
+                      </template>
+                      <template
+                        v-else-if="
+                          getType(cAnswer.ref.type.id).content == 'users'
+                        "
+                      >
+                        <span v-if="getUserInfo(cAnswer.value) != undefined">{{
+                          getUserInfo(cAnswer.value).name | capitalize
+                        }}</span>
+                      </template>
+                      <template
+                        v-else-if="
+                          getType(cAnswer.ref.type.id).content == 'teams'
+                        "
+                      >
+                        <span v-if="getTeamInfo(cAnswer.value) != undefined">{{
+                          getTeamInfo(cAnswer.value).name | capitalize
+                        }}</span>
+                      </template>
+                      <template
+                        v-else-if="
+                          getType(cAnswer.ref.type.id).type == 'attachments'
+                        "
+                      >
+                        <a
+                          :href="image.url"
+                          target="_blank"
+                          v-for="(image, imgIndex) in cAnswer.images"
+                          :key="'img_' + imgIndex"
+                          class="ml-1"
+                          style="float: left"
+                        >
+                          <img
+                            :src="image.url"
+                            style="max-width: 50px; max-height: 50px"
+                            class="rounded-lg"
+                          />
+                        </a>
+                      </template>
+                      <div
+                        v-else-if="
+                          getType(cAnswer.ref.type.id).content == 'instruction'
+                        "
+                        style="
+                          font-size: 12px;
+                          color: #86848a;
+                          font-weight: normal;
+                          white-space: pre-wrap;
+                          word-break: break-word;
+                        "
+                      >
+                        {{ cAnswer.ref.type.instruction }}
+                      </div>
+                      <template
+                        v-else-if="
+                          getType(cAnswer.ref.type.id).content == 'temperature'
+                        "
+                      >
+                        <span
+                          :class="
+                            calcTemperatureColor(
+                              cAnswer.ref.action,
+                              cAnswer.value
+                            )
+                          "
+                          v-if="cAnswer.value !== undefined"
+                          >{{ cAnswer.value }}</span
+                        >
+                      </template>
+                      <template
+                        v-else-if="
+                          getType(cAnswer.ref.type.id).content == 'signature'
+                        "
+                      >
+                        <img
+                          :src="cAnswer.value.url"
+                          v-if="
+                            cAnswer.value.url !== undefined &&
+                            cAnswer.value.url != ''
+                          "
+                        />
+                      </template>
+                      <template
+                        v-else-if="
+                          getType(cAnswer.ref.type.id).type == 'closed answers'
+                        "
+                      >
+                        <span
+                          :class="[
+                            {
+                              'text-danger':
+                                cAnswer.ref.type.failedAnswer == cAnswer.value,
+                            },
+                          ]"
+                          v-if="getType(cAnswer.ref.type.id).group == 'global'"
+                          >{{ $t(cAnswer.value) }}</span
+                        >
+                        <span
+                          :class="[
+                            {
+                              'text-danger':
+                                cAnswer.ref.type.failedAnswer == cAnswer.value,
+                            },
+                          ]"
+                          v-else
+                          >{{ cAnswer.value | capitalize }}</span
+                        >
+                      </template>
+                      <span v-else>{{ cAnswer.value }}</span>
+                    </td>
                   </template>
-                  <span v-else>{{ answer.value }}</span>
-                </td>
+                </tr>
               </template>
-            </tr>
+            </template>
           </table>
         </div>
       </vs-collapse-item>
@@ -289,10 +535,12 @@
 
 <script>
 import StarRating from "vue-star-rating";
+import ClosedAnswerLogItem from "./ConditionalLogic/ClosedAnswerLogItem";
 
 export default {
   components: {
     StarRating,
+    ClosedAnswerLogItem,
   },
   props: {
     log: {
@@ -409,6 +657,85 @@ export default {
   },
   beforeMount() {
     if (this.order != 0) this.expand = true;
+  },
+  methods: {
+    filteredAnswers(answers, parent) {
+      if (parent.ref.hasCondLogic != true) {
+        return;
+      }
+      // get only answers which is matched to tab condition
+      console.log("filterAnswers", answers, parent);
+      answers = answers.filter((a) => a.ref.parent == parent.ref.id);
+      let selectedAnswer = parent.value;
+      let matchingTabs = [];
+      if (selectedAnswer == "") {
+        matchingTabs = this.conditionTabs(parent.ref.id).filter(
+          (tab) => tab.condition.symbol == "not_selected"
+        );
+      } else {
+        matchingTabs = this.conditionTabs(parent.ref.id).filter((tab) => {
+          if (tab.condition.symbol == "selected") {
+            return true;
+          } else {
+            if (
+              tab.condition.key == "is" &&
+              tab.answers[0].name == selectedAnswer
+            ) {
+              return true;
+            } else if (
+              tab.condition.key == "is_not" &&
+              tab.answers[0].name != selectedAnswer
+            ) {
+              return true;
+            } else if (
+              tab.condition.key == "is_one_of" &&
+              tab.answers.some((answer) => answer.name == selectedAnswer)
+            ) {
+              return true;
+            } else if (
+              tab.condition.key == "is_not_one_of" &&
+              tab.answers.some((answer) => answer.name == selectedAnswer)
+            ) {
+              return false;
+            } else {
+              return false;
+            }
+          }
+        });
+      }
+      console.log(
+        "matchingTabs:",
+        matchingTabs,
+        this.conditionTabs(parent.ref.id),
+        answers
+      );
+
+      const filtered = answers.filter((answer) => {
+        return matchingTabs.some((tab) => {
+          console.log("tId == answer.ref.tabId", tab.id, answer.ref.tabId);
+          return tab.id == answer.ref.tabId;
+        });
+      });
+
+      console.log("filtered ans", filtered);
+      return filtered;
+    },
+    conditionTabs(parentAnswerId) {
+      if (
+        this.template(this.log.templateID).content.conditionTabs == undefined
+      ) {
+        return [];
+      }
+      console.log(
+        "conditionTabs in LogItem",
+        this.template(this.log.templateID).content.conditionTabs.filter(
+          (tab) => tab.createdByAnswer == parentAnswerId
+        )
+      );
+      return this.template(this.log.templateID).content.conditionTabs.filter(
+        (tab) => tab.createdByAnswer == parentAnswerId
+      );
+    },
   },
 };
 </script>
