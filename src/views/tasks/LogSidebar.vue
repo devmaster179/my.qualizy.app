@@ -157,6 +157,7 @@
                   v-for="(answer, aIndex) in question.answers"
                   :key="aIndex"
                   class="mt-5"
+                  v-bind:class="{ hidden: answer.ref.isLogicQuestion == true }"
                 >
                   <div class="answer-title karla-bold">
                     {{ answer.ref.title | capitalize }}
@@ -172,77 +173,27 @@
                       >({{ answer.ref.type.tempUnit }})</span
                     >
                   </div>
-                  <div class="vx-row answer-content">
+                  <template
+                    v-if="
+                      getTemplateType(answer.ref.type.id).type ==
+                      'closed answers'
+                    "
+                  >
+                    <closed-answer-log
+                      :parentAnswer="answer"
+                      :pIndex="pIndex"
+                      :qIndex="qIndex"
+                      :aIndex="aIndex"
+                      :parent="parent"
+                      :isSidebarActive="isSidebarActive"
+                      :template="template"
+                      :pages="pages"
+                      :logID="logID"
+                    />
+                  </template>
+                  <div class="vx-row answer-content" v-else>
                     <template
                       v-if="
-                        getTemplateType(answer.ref.type.id).type ==
-                        'closed answers'
-                      "
-                    >
-                      <div
-                        :class="
-                          closeAnswerWidth(
-                            getTemplateType(answer.ref.type.id).content.length
-                          )
-                        "
-                        class="pl-4 sm:mt-0 mt-1 w-full"
-                        v-for="(content, cIndex) in getTemplateType(
-                          answer.ref.type.id
-                        ).content"
-                        :key="'c' + cIndex"
-                      >
-                        <div
-                          v-if="
-                            pages[pIndex].questions[qIndex].answers[aIndex]
-                              .value == content.name
-                          "
-                          class="flex items-center justify-center border border-solid rounded-lg py-3 cursor-pointer"
-                          :style="`background:${hexToRGB(
-                            content.color
-                          )}; border-color:${hexToRGB(content.color)};`"
-                        >
-                          <span
-                            class="karla text-white"
-                            v-if="
-                              getTemplateType(answer.ref.type.id).group ==
-                              'global'
-                            "
-                            >{{ $t(content.name) }}</span
-                          >
-                          <span class="karla text-white" v-else>{{
-                            content.name | capitalize
-                          }}</span>
-                        </div>
-                        <div
-                          v-else
-                          class="flex items-center justify-center border border-solid rounded-lg py-3 cursor-pointer"
-                          @click="
-                            chnContent(
-                              pIndex,
-                              qIndex,
-                              aIndex,
-                              content.name,
-                              answer.ref.type.failedAnswer,
-                              templateAction(pIndex, qIndex, aIndex)
-                            )
-                          "
-                        >
-                          <span
-                            class="karla"
-                            v-if="
-                              getTemplateType(answer.ref.type.id).group ==
-                              'global'
-                            "
-                            >{{ $t(content.name) }}</span
-                          >
-                          <span class="karla" v-else>{{
-                            content.name | capitalize
-                          }}</span>
-                        </div>
-                      </div>
-                    </template>
-                    <template
-                      v-else-if="
                         getTemplateType(answer.ref.type.id).content == 'number'
                       "
                     >
@@ -853,11 +804,13 @@ import StarRating from "vue-star-rating";
 import VSelect from "vue-select";
 import FileUpload from "@/components/file-upload/FileUpload.vue";
 import ViewUpload from "@/components/file-upload/ViewUpload.vue";
-import ScoreItem from "./ScoreItem";
-import FoodItem from "./FoodItem";
 import flatPickr from "vue-flatpickr-component";
 import "flatpickr/dist/flatpickr.css";
 import { storage } from "@/firebase/firebaseStorage";
+
+import ScoreItem from "./ScoreItem";
+import FoodItem from "./FoodItem";
+import ClosedAnswerLog from "./ConditionalLogic/ClosedAnswerLog";
 
 import firebase, { analytics } from "firebase/app";
 import "@firebase/firestore";
@@ -1769,6 +1722,7 @@ export default {
     FileUpload,
     ViewUpload,
     flatPickr,
+    ClosedAnswerLog,
   },
   created() {
     this.$nextTick(() => {

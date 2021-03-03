@@ -2,10 +2,7 @@
   <div class="conditional-logic">
     <div
       class="p-6 pt-3 pb-0 border-t-0 condition-tabs"
-      v-if="
-        conditionTabs.filter((tab) => tab.createdByAnswer == this.parentId)
-          .length > 1
-      "
+      v-if="conditionTabs.length > 1"
       :key="forceRender"
     >
       <vs-tabs v-model="logicTab">
@@ -18,11 +15,7 @@
           @click="changeTab(tab)"
         ></vs-tab> -->
 
-        <template
-          v-for="tab in conditionTabs.filter(
-            (tab) => tab.createdByAnswer == this.parentId
-          )"
-        >
+        <template v-for="tab in conditionTabs">
           <vs-tab :label="tabName(tab)" @click="changeTab(tab)" :key="tab.id">
             <div class="con-tab-ejemplo">
               <slot name="content"></slot>
@@ -323,7 +316,6 @@ export default {
       };
     },
     conditionTabs() {
-      console.log("conditionTabs", this.template.content.conditionTabs);
       if (this.template.content.conditionTabs == undefined) {
         return [];
       }
@@ -334,6 +326,12 @@ export default {
       ) {
         this.activeCondTab = this.template.content.conditionTabs[0].id;
       }
+      console.log(
+        "conditionTabs",
+        this.template.content.conditionTabs.filter(
+          (tab) => tab.createdByAnswer == this.parentId
+        )
+      );
       return this.template.content.conditionTabs.filter(
         (tab) => tab.createdByAnswer == this.parentId
       );
@@ -388,7 +386,6 @@ export default {
   },
   methods: {
     changeTab(tab) {
-      console.log("changeTab", tab);
       if (
         tab.condition.symbol == "selected" ||
         tab.condition.symbol == "not_selected"
@@ -397,26 +394,30 @@ export default {
       } else {
         this.showValueDrop = true;
       }
-
+      console.log("changeTab", tab.id, tab);
       this.activeCondTab = tab.id;
-      this.changeCondition(tab.condition);
+      this.changeCondition(tab.condition, true);
       this.changeSelectedValues(tab.answers, true);
     },
-    changeCondition(condition) {
+    changeCondition(condition, goToExistingTab) {
       console.log("changeCondition", condition);
       if (
         this.selectedCondition.key == "is_one_of" ||
         this.selectedCondition.key == "is_not_one_of"
       ) {
         if (condition.key != "is_one_of" && condition.key != "is_not_one_of") {
-          this.selectedValues = [this.answerTypes.content[0]];
-
-          this.$store.commit("app/CHN_TEMP_TEMPLATE", {
-            target: "conditionTabs",
-            key: "chnAnswers",
-            tabId: this.activeCondTab,
-            val: this.selectedValues,
-          });
+          if (goToExistingTab != true) {
+            // when changing condition
+            this.selectedValues = [this.answerTypes.content[0]];
+            this.$store.commit("app/CHN_TEMP_TEMPLATE", {
+              target: "conditionTabs",
+              key: "chnAnswers",
+              tabId: this.activeCondTab,
+              val: this.selectedValues,
+            });
+          } else {
+            // when changing tab
+          }
         }
       }
 
@@ -470,6 +471,7 @@ export default {
 
       console.log(
         "changeSelectedValues",
+        this.activeCondTab,
         answer,
         canUseDirectly,
         this.selectedValues

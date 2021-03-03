@@ -351,6 +351,16 @@ export default {
           isLogicQuestion: true
         })
       }
+      else if (query.key == "disableConditionalLogic") {
+        // mark false
+        answer.hasCondLogic = false
+        // remove logic questions which are contained in this answer
+        allAnswers = allAnswers.filter(item => item.parent != answer.id)
+        // remove tabs
+        let conditionTabs = state.tempTemplate.content.conditionTabs
+        conditionTabs = conditionTabs.filter(item => item.createdByAnswer != answer.id)
+        state.tempTemplate.content.conditionTabs = conditionTabs
+      }
       else if (query.key == "chnlogicAnswers") {
         answer.logicAnswers = query.val
       }

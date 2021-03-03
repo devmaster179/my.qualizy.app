@@ -362,8 +362,20 @@ export default {
     return state.currentPricePlan
   },
 
-  logicQuestionsByAnswerId: state => params => {
+  // from TEMP template
+  logicQuestionsByAnswerIdTemp: state => params => {
     const allAnswers = state.tempTemplate.content.pages[params.pIndex].questions[params.qIndex].answers
-    return allAnswers.filter(answer => answer.parent == params.answerId)
+    return allAnswers.filter((answer, index) => {
+      answer.index = index;
+      return answer.parent == params.answerId
+    })
+  },
+
+  logicQuestionsByAnswerId: state => params => {
+    const allAnswers = params.template.content.pages[params.pIndex].questions[params.qIndex].answers
+    return allAnswers.filter((answer, index) => {
+      answer.index = index;
+      return answer.parent == params.answerId
+    })
   },
 }

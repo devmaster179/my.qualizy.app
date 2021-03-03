@@ -25,7 +25,7 @@
       <div
         v-else
         class="flex items-center justify-center border border-solid rounded-lg py-3 cursor-pointer mt-2"
-        @click="logValue(content.name, pIndex, qIndex, aIndex)"
+        @click="logClosedAnswerValue(content, pIndex, qIndex, aIndex)"
       >
         <span
           v-if="getTemplateType(answer.type.id).group == 'global'"
@@ -78,7 +78,7 @@
           >
             <div
               v-if="
-                pages[pIndex].questions[qIndex].answers[aIndex].loged ==
+                pages[pIndex].questions[qIndex].answers[answer.index].loged ==
                 content.name
               "
               class="flex items-center justify-center border border-solid rounded-lg py-3 cursor-pointer mt-2"
@@ -98,7 +98,7 @@
             <div
               v-else
               class="flex items-center justify-center border border-solid rounded-lg py-3 cursor-pointer mt-2"
-              @click="logValue(content.name, pIndex, qIndex, aIndex)"
+              @click="logValue(content.name, pIndex, qIndex, answer.index)"
             >
               <span
                 v-if="getTemplateType(answer.type.id).group == 'global'"
@@ -126,19 +126,22 @@
             <vs-input
               type="number"
               class="w-full mr-2"
-              :value="pages[pIndex].questions[qIndex].answers[aIndex].loged"
-              v-on:input="logValue($event, pIndex, qIndex, aIndex)"
+              :value="
+                pages[pIndex].questions[qIndex].answers[answer.index].loged
+              "
+              v-on:input="logValue($event, pIndex, qIndex, answer.index)"
             />
             <div class="flex items-center">
               <span
                 @click="
                   logValue(
                     Math.round(
-                      pages[pIndex].questions[qIndex].answers[aIndex].loged
+                      pages[pIndex].questions[qIndex].answers[answer.index]
+                        .loged
                     ) + 1,
                     pIndex,
                     qIndex,
-                    aIndex
+                    answer.index
                   )
                 "
                 style="
@@ -153,10 +156,11 @@
               <span
                 @click="
                   logValue(
-                    pages[pIndex].questions[qIndex].answers[aIndex].loged - 1,
+                    pages[pIndex].questions[qIndex].answers[answer.index]
+                      .loged - 1,
                     pIndex,
                     qIndex,
-                    aIndex
+                    answer.index
                   )
                 "
                 style="
@@ -181,22 +185,24 @@
           <div class="w-full">
             <VueSignaturePad
               height="150px"
-              :ref="'signaturePad_' + pIndex + '_' + qIndex + '_' + aIndex"
+              :ref="
+                'signaturePad_' + pIndex + '_' + qIndex + '_' + answer.index
+              "
               class="w-full border border-solid d-theme-border-grey-light"
               :options="{ onBegin, onEnd }"
             />
             <div class="w-full flex justify-between mt-2">
               <vs-button
                 color="danger"
-                @click="clearSign(pIndex, qIndex, aIndex)"
+                @click="clearSign(pIndex, qIndex, answer.index)"
                 >{{ $t("clear") }}</vs-button
               >
               <vs-button
                 color="warning"
-                @click="undoSign(pIndex, qIndex, aIndex)"
+                @click="undoSign(pIndex, qIndex, answer.index)"
                 >{{ $t("undo") }}</vs-button
               >
-              <vs-button @click="saveSign(pIndex, qIndex, aIndex)">{{
+              <vs-button @click="saveSign(pIndex, qIndex, answer.index)">{{
                 $t("save")
               }}</vs-button>
             </div>
@@ -225,8 +231,8 @@
         >
           <vs-checkbox
             color="success"
-            :value="pages[pIndex].questions[qIndex].answers[aIndex].loged"
-            v-on:input="logValue($event, pIndex, qIndex, aIndex)"
+            :value="pages[pIndex].questions[qIndex].answers[answer.index].loged"
+            v-on:input="logValue($event, pIndex, qIndex, answer.index)"
           ></vs-checkbox>
         </template>
         <template
@@ -240,8 +246,12 @@
           <div class="w-full">
             <textarea
               class="my-textarea"
-              :value="pages[pIndex].questions[qIndex].answers[aIndex].loged"
-              @blur="logValue($event.target.value, pIndex, qIndex, aIndex)"
+              :value="
+                pages[pIndex].questions[qIndex].answers[answer.index].loged
+              "
+              @blur="
+                logValue($event.target.value, pIndex, qIndex, answer.index)
+              "
             />
           </div>
         </template>
@@ -256,8 +266,10 @@
             <vs-input
               type="number"
               class="w-full mr-1"
-              :value="pages[pIndex].questions[qIndex].answers[aIndex].loged"
-              @blur="logValue($event, pIndex, qIndex, aIndex)"
+              :value="
+                pages[pIndex].questions[qIndex].answers[answer.index].loged
+              "
+              @blur="logValue($event, pIndex, qIndex, answer.index)"
             />
             <span
               style="
@@ -268,10 +280,11 @@
               class="rounded-lg px-1 pt-2 text-center cursor-pointer numBtn"
               @click="
                 logValue(
-                  pages[pIndex].questions[qIndex].answers[aIndex].loged * -1,
+                  pages[pIndex].questions[qIndex].answers[answer.index].loged *
+                    -1,
                   pIndex,
                   qIndex,
-                  aIndex
+                  answer.index
                 )
               "
               >&plus;&#8725;&minus;</span
@@ -319,8 +332,10 @@
                 17,
               ]"
               text-class="text-warning font-medium"
-              :rating="pages[pIndex].questions[qIndex].answers[aIndex].value"
-              @rating-selected="logValue($event, pIndex, qIndex, aIndex)"
+              :rating="
+                pages[pIndex].questions[qIndex].answers[answer.index].value
+              "
+              @rating-selected="logValue($event, pIndex, qIndex, answer.index)"
               :glow="5"
               :increment="0.5"
               :fixed-points="1"
@@ -338,8 +353,10 @@
             <score-item
               :p="pIndex"
               :q="qIndex"
-              :a="aIndex"
-              :score="pages[pIndex].questions[qIndex].answers[aIndex].loged"
+              :a="answer.index"
+              :score="
+                pages[pIndex].questions[qIndex].answers[answer.index].loged
+              "
               @input="logValue"
             />
           </div>
@@ -362,7 +379,7 @@
                 font-size: 12px;
               "
               >{{
-                pages[pIndex].questions[qIndex].answers[aIndex].loged
+                pages[pIndex].questions[qIndex].answers[answer.index].loged
                   | moment("dddd, MMMM Do YYYY - H:mm:ss")
               }}</span
             >
@@ -377,11 +394,11 @@
         >
           <food-item
             :selectedItem="
-              pages[pIndex].questions[qIndex].answers[aIndex].loged
+              pages[pIndex].questions[qIndex].answers[answer.index].loged
             "
             :p="pIndex"
             :q="qIndex"
-            :a="aIndex"
+            :a="answer.index"
             @chnItem="logValue"
           />
         </template>
@@ -397,9 +414,11 @@
               :filterable="false"
               @search="searchUserList"
               :value="
-                getUser(pages[pIndex].questions[qIndex].answers[aIndex].loged)
+                getUser(
+                  pages[pIndex].questions[qIndex].answers[answer.index].loged
+                )
               "
-              @input="logValue($event, pIndex, qIndex, aIndex, true)"
+              @input="logValue($event, pIndex, qIndex, answer.index, true)"
               :options="userList"
               label="name"
               :placeholder="$t('please type 3 letters at least')"
@@ -416,9 +435,11 @@
           <div class="w-full">
             <v-select
               :value="
-                getTeam(pages[pIndex].questions[qIndex].answers[aIndex].loged)
+                getTeam(
+                  pages[pIndex].questions[qIndex].answers[answer.index].loged
+                )
               "
-              @input="logValue($event, pIndex, qIndex, aIndex, true)"
+              @input="logValue($event, pIndex, qIndex, answer.index, true)"
               :options="teamList"
               label="name"
             ></v-select>
@@ -433,14 +454,16 @@
         >
           <div class="w-full">
             <v-select
-              :value="pages[pIndex].questions[qIndex].answers[aIndex].loged"
-              @input="logValue($event, pIndex, qIndex, aIndex)"
+              :value="
+                pages[pIndex].questions[qIndex].answers[answer.index].loged
+              "
+              @input="logValue($event, pIndex, qIndex, answer.index)"
               :options="
-                pages[pIndex].questions[qIndex].answers[aIndex].type
+                pages[pIndex].questions[qIndex].answers[answer.index].type
                   .dropdown === undefined
                   ? []
                   : pages[pIndex].questions[qIndex].answers[
-                      aIndex
+                      answer.index
                     ].type.dropdown.split(',')
               "
             ></v-select>
@@ -457,8 +480,10 @@
             <flat-pickr
               class="flatpickr-input w-full"
               :config="configDatePicker"
-              :value="pages[pIndex].questions[qIndex].answers[aIndex].loged"
-              @input="logValue($event, pIndex, qIndex, aIndex)"
+              :value="
+                pages[pIndex].questions[qIndex].answers[answer.index].loged
+              "
+              @input="logValue($event, pIndex, qIndex, answer.index)"
             />
           </div>
         </template>
@@ -477,22 +502,28 @@
               "
               class="flatpickr-input w-full"
               :config="configDatePicker"
-              :value="pages[pIndex].questions[qIndex].answers[aIndex].loged"
-              @input="logValue($event, pIndex, qIndex, aIndex)"
+              :value="
+                pages[pIndex].questions[qIndex].answers[answer.index].loged
+              "
+              @input="logValue($event, pIndex, qIndex, answer.index)"
             />
             <flat-pickr
               v-else-if="answer.type.dateType == 'Time'"
               class="flatpickr-input w-full"
               :config="configTimePicker"
-              :value="pages[pIndex].questions[qIndex].answers[aIndex].loged"
-              @input="logValue($event, pIndex, qIndex, aIndex)"
+              :value="
+                pages[pIndex].questions[qIndex].answers[answer.index].loged
+              "
+              @input="logValue($event, pIndex, qIndex, answer.index)"
             />
             <flat-pickr
               v-else-if="answer.type.dateType == 'Date & Time'"
               class="flatpickr-input w-full"
               :config="configDateTimePicker"
-              :value="pages[pIndex].questions[qIndex].answers[aIndex].loged"
-              @input="logValue($event, pIndex, qIndex, aIndex)"
+              :value="
+                pages[pIndex].questions[qIndex].answers[answer.index].loged
+              "
+              @input="logValue($event, pIndex, qIndex, answer.index)"
             />
           </div>
         </template>
@@ -534,13 +565,15 @@
                 <div
                   class="img-upload my-2"
                   v-for="(image, imageKey) in pages[pIndex].questions[qIndex]
-                    .answers[aIndex].loged"
+                    .answers[answer.index].loged"
                   :key="imageKey"
                 >
                   <button
                     type="button"
                     class="btn-x-file"
-                    @click="removeImage(image.url, pIndex, qIndex, aIndex)"
+                    @click="
+                      removeImage(image.url, pIndex, qIndex, answer.index)
+                    "
                   >
                     <i translate="translate" class="material-icons notranslate"
                       >delete</i
@@ -554,7 +587,7 @@
                   />
                 </div>
                 <file-upload
-                  :indexs="[pIndex, qIndex, aIndex]"
+                  :indexs="[pIndex, qIndex, answer.index]"
                   @url="uploadSucess"
                 />
               </div>
@@ -625,7 +658,7 @@ export default {
         { symbol: "∈", key: "is_one_of", text: "is one of" },
         { symbol: "∉", key: "is_not_one_of", text: "is not one of" },
       ],
-      selectedAnswer: {},
+      selectedAnswer: null,
       signOptions: {
         penColor: "#c0f",
       },
@@ -831,30 +864,103 @@ export default {
       return this.$store.getters["app/getTempTemplate"];
     },
     conditionTabs() {
-      console.log("conditionTabs", this.template.content.conditionTabs);
       if (this.template.content.conditionTabs == undefined) {
         return [];
       }
-      return this.template.content.conditionTabs;
+      console.log(
+        "conditionTabs in ClosedAnswerPreview",
+        this.template.content.conditionTabs.filter(
+          (tab) => tab.createdByAnswer == this.answer.id
+        )
+      );
+      return this.template.content.conditionTabs.filter(
+        (tab) => tab.createdByAnswer == this.answer.id
+      );
     },
   },
   mounted() {
-    this.selectedAnswer = this.getTemplateType(this.answer.type.id).content[0];
+    // this.selectedAnswer = this.getTemplateType(this.answer.type.id).content[0];
   },
   methods: {
     getLogicQuestions() {
-      const questions = this.$store.getters["app/logicQuestionsByAnswerId"]({
-        answerId: this.answer.id,
-        pIndex: this.pIndex,
-        qIndex: this.qIndex,
-      });
+      const questions = this.$store.getters["app/logicQuestionsByAnswerIdTemp"](
+        {
+          answerId: this.answer.id,
+          pIndex: this.pIndex,
+          qIndex: this.qIndex,
+        }
+      );
       console.log("getLogicQuestions:", questions);
       return questions;
     },
     filteredAnswers(answers) {
-      // get only answers which is contained to conditional
-      // const filtered = answers.filter((ans) => ans.isLogicQuestion == true);
-      return answers;
+      // get only answers which is matched to tab condition
+      console.info("BEGIN filteredAnswers");
+      console.log("this.selectedAnswer", this.selectedAnswer);
+      console.log("this.conditionTabs", this.conditionTabs);
+      console.log("answers", answers);
+      console.info("END filteredAnswers");
+      let matchingTabs = [];
+      if (this.selectedAnswer == null) {
+        matchingTabs = this.conditionTabs.filter(
+          (tab) => tab.condition.symbol == "not_selected"
+        );
+      } else {
+        matchingTabs = this.conditionTabs.filter((tab) => {
+          if (tab.condition.symbol == "selected") {
+            return true;
+          } else {
+            if (
+              tab.condition.key == "is" &&
+              tab.answers[0].name == this.selectedAnswer.name
+            ) {
+              return true;
+            } else if (
+              tab.condition.key == "is_not" &&
+              tab.answers[0].name != this.selectedAnswer.name
+            ) {
+              return true;
+            } else if (
+              tab.condition.key == "is_one_of" &&
+              tab.answers.some(
+                (answer) => answer.name == this.selectedAnswer.name
+              )
+            ) {
+              return true;
+            } else if (
+              tab.condition.key == "is_not_one_of" &&
+              tab.answers.some(
+                (answer) => answer.name == this.selectedAnswer.name
+              )
+            ) {
+              return false;
+            } else {
+              return false;
+            }
+          }
+        });
+      }
+      console.log("matchingTabs", matchingTabs);
+
+      const filtered = answers.filter((answer) => {
+        return matchingTabs.some((tab) => {
+          console.log("tId == answer.tabId", tab.id, answer.tabId);
+          return tab.id == answer.tabId;
+        });
+      });
+
+      console.log("filtered ans", filtered);
+      return filtered;
+    },
+    logClosedAnswerValue(content, p, q, a) {
+      console.log("logClosedAnswerValue", content, p, q, a);
+
+      this.selectedAnswer = content;
+
+      this.$store.commit("app/LOG_VALUE", {
+        val: content.name,
+        index: { page: p, question: q, answer: a },
+      });
     },
     clearSign(p, q, a) {
       this.$refs[`signaturePad_${p}_${q}_${a}`][0].clearSignature();
@@ -935,11 +1041,11 @@ export default {
       });
     },
     logValue(value, p, q, a) {
-      console.log("logValue", value, p, q, a);
       value = value === null ? "" : value;
       value = value.target !== undefined ? value.target.value : value;
       value = value.id !== undefined ? value.id : value;
 
+      console.log("logValue", value, p, q, a);
       this.$store.commit("app/LOG_VALUE", {
         val: value,
         index: { page: p, question: q, answer: a },
