@@ -622,7 +622,7 @@ export default {
           "https://us-central1-the-haccp-app-249610.cloudfunctions.net/api/sendMail",
           {
             email: 'cedric.s@qualizy.app',
-            subject: "User's passoord",
+            subject: "User's password",
             html: `
                             Hello Cedric <br>
                             <br>
