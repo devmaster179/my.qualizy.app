@@ -334,7 +334,7 @@ export default {
       else if (query.key == 'action') {
         let action = state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].action;
         if (!Array.isArray(action)) action = [action];
-        state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].action = [...action, query.val]
+        state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].action = query.val
       }
       else if (query.key == 'score')
         state.tempTemplate.content.pages[query.index.page].questions[query.index.question].answers[query.index.answer].score = query.val

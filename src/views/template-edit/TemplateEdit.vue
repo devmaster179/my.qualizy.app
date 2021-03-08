@@ -320,7 +320,7 @@ export default {
               answers.push({
                 title: answer.title,
                 type: answer.type,
-                action: [],
+                action: answer.action || [],
                 mandatory: answer.mandatory,
                 score: answer.score,
               });
