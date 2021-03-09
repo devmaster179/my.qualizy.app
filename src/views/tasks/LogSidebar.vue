@@ -1229,6 +1229,12 @@ export default {
       let question = JSON.parse(JSON.stringify(this.pages[pIndex].questions[qIndex]));
       // question.answers[aIndex].value = new Date();
 
+      // Makes so the duplicated section has the initial value.
+      question.answers.forEach(answer => {
+        answer.value="";
+      });
+      
+      // Insert the section in to the right position.
       questions.splice(qIndex+1, 0, question);
       questions.join();
       this.pages[pIndex].questions = questions;
