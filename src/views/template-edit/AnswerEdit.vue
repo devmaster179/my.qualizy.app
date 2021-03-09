@@ -117,7 +117,7 @@
             >{{$t("required")}}</vs-checkbox>
           </div>
           <div
-            class="w-1/6 flex items-center justify-between"
+            class="w-1/6 flex items-center"
             :class="{'answer-item border-t-0 border-l-0 border-b-0':haveAction(answerContent.type.id)}"
           >
             <p
@@ -127,9 +127,10 @@
               @click="openAction"
             >{{$t("notification")}}</p>
             <p
-              class="karla-bold mr-2"
-              style="color:#6c50f0;"
+              class="karla-bold mr-2 cursor-pointer"
+              style="color:#6c50f0;padding-left: 10px;"
               v-if="haveAction(answerContent.type.id) && hadAction"
+              @click="openAction"
             >{{$t("active")}}</p>
           </div>
           <div
