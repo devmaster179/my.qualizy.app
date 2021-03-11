@@ -1,13 +1,16 @@
 <template>
   <div id="report-view" class="px-1">
-   
     <div class="flex items-center justify-between mb-3">
-      <div class="page-title flex items-center" style="max-width: 70%;">
+      <div class="page-title flex items-center" style="max-width: 70%">
         <p
           class="karla-bold main-title cursor-pointer"
           @click="$router.push('/report')"
-        >{{$t("reports") | capitalize}}</p>
-        <p class="karla-bold hidden sm:block ml-2 truncate">&nbsp;> {{reportTitle |capitalize}}</p>
+        >
+          {{ $t("reports") | capitalize }}
+        </p>
+        <p class="karla-bold hidden sm:block ml-2 truncate">
+          &nbsp;> {{ reportTitle | capitalize }}
+        </p>
       </div>
       <div class="flex items-center page-action">
         <vs-dropdown vs-custom-content vs-trigger-click>
@@ -15,15 +18,40 @@
             class="p-2 shadow-drop mr-2 w-10 rounded-lg d-theme-dark-bg cursor-pointer"
             icon="MoreVerticalIcon"
           />
-          <vs-dropdown-menu style="min-width:270px;">
-            <vs-dropdown-item @click="activeSchedule = true" class="mr-12 mb-2 mt-2" v-if="auth">
-              <vs-icon color="black" icon="icon-calendar" icon-pack="feather" size="16px" />
-              <span class="ml-3 font-semibold text-black" style="font-size:12px;">{{$t("scheduled email delivery")}}</span>
+          <vs-dropdown-menu style="min-width: 270px">
+            <vs-dropdown-item
+              @click="activeSchedule = true"
+              class="mr-12 mb-2 mt-2"
+              v-if="auth"
+            >
+              <vs-icon
+                color="black"
+                icon="icon-calendar"
+                icon-pack="feather"
+                size="16px"
+              />
+              <span
+                class="ml-3 font-semibold text-black"
+                style="font-size: 12px"
+                >{{ $t("scheduled email delivery") }}</span
+              >
             </vs-dropdown-item>
 
-            <vs-dropdown-item @click="activeExport = true" class="mr-12 mb-2 mt-2">
-              <vs-icon color="black" icon="icon-download" icon-pack="feather" size="16px" />
-              <span class="ml-3 font-semibold text-black" style="font-size:12px;">{{$t("export")}}</span>
+            <vs-dropdown-item
+              @click="activeExport = true"
+              class="mr-12 mb-2 mt-2"
+            >
+              <vs-icon
+                color="black"
+                icon="icon-download"
+                icon-pack="feather"
+                size="16px"
+              />
+              <span
+                class="ml-3 font-semibold text-black"
+                style="font-size: 12px"
+                >{{ $t("export") }}</span
+              >
             </vs-dropdown-item>
 
             <vs-dropdown-item
@@ -31,29 +59,56 @@
               class="mr-6 mb-2"
               v-if="this.visible == 'Public'"
             >
-              <vs-icon color="black" icon="icon-share-2" icon-pack="feather" size="16px" />
-              <span class="ml-3 font-semibold text-black" style="font-size:12px;">{{$t("share")}}</span>
+              <vs-icon
+                color="black"
+                icon="icon-share-2"
+                icon-pack="feather"
+                size="16px"
+              />
+              <span
+                class="ml-3 font-semibold text-black"
+                style="font-size: 12px"
+                >{{ $t("share") }}</span
+              >
             </vs-dropdown-item>
-            <vs-dropdown-item v-if="role<2" @click="deleteReport()" class="mr-6 mb-2">
-              <vs-icon color="black" icon="icon-trash-2" icon-pack="feather" size="16px" />
-              <span class="ml-3 font-semibold text-black" style="font-size:12px;">{{$t("delete")}}</span>
+            <vs-dropdown-item
+              v-if="role < 2"
+              @click="deleteReport()"
+              class="mr-6 mb-2"
+            >
+              <vs-icon
+                color="black"
+                icon="icon-trash-2"
+                icon-pack="feather"
+                size="16px"
+              />
+              <span
+                class="ml-3 font-semibold text-black"
+                style="font-size: 12px"
+                >{{ $t("delete") }}</span
+              >
             </vs-dropdown-item>
           </vs-dropdown-menu>
         </vs-dropdown>
         <feather-icon
-          v-if="role<3"
+          v-if="role < 3"
           @click="reportFilterSidebar = true"
           class="p-2 shadow-drop mr-2 w-10 rounded-lg d-theme-dark-bg cursor-pointer text-primary"
           icon="FilterIcon"
         />
         <vs-button
-          :disabled="filter.template === undefined || filter.template.length == 0  || !auth('report' , 'edit')"
+          :disabled="
+            filter.template === undefined ||
+            filter.template.length == 0 ||
+            !auth('report', 'edit')
+          "
           @click="activeSave = true"
           color="primary"
           icon="icon-file-text"
           icon-pack="feather"
           type="filled"
-        >{{ $t("save_report") | capitalize }}</vs-button>
+          >{{ $t("save_report") | capitalize }}</vs-button
+        >
       </div>
     </div>
 
@@ -61,89 +116,118 @@
       <vx-card :title="reportTitle">
         <div class="vx-row w-full" v-if="filteredLogs.length > 0">
           <div class="px-2 vx-col md:w-1/5 sm:w-1/2 w-full">
-            <div class="rounded-lg border border-solid d-theme-border-grey-light p-4">
+            <div
+              class="rounded-lg border border-solid d-theme-border-grey-light p-4"
+            >
               <div class="text-center">
                 <feather-icon
                   class="text-primary p-3 inline-flex rounded-full"
                   icon="EyeIcon"
-                  style="background: rgba(var(--vs-primary),.15);"
+                  style="background: rgba(var(--vs-primary), 0.15)"
                 ></feather-icon>
               </div>
-              <h2 class="text-center mt-4 mb-2 font-bold">{{ reportInfo.score }}</h2>
-              <p class="text-center">{{$t("general score")}}</p>
+              <h2 class="text-center mt-4 mb-2 font-bold">
+                {{ reportInfo.score }}
+              </h2>
+              <p class="text-center">{{ $t("general score") }}</p>
             </div>
           </div>
           <div class="px-2 vx-col md:w-1/5 sm:w-1/2 w-full mt-1 sm:mt-0">
-            <div class="rounded-lg border border-solid d-theme-border-grey-light p-4">
+            <div
+              class="rounded-lg border border-solid d-theme-border-grey-light p-4"
+            >
               <div class="text-center">
                 <feather-icon
                   class="p-3 inline-flex rounded-full"
                   icon="ClipboardIcon"
-                  style="background: #3980f626; color: #3980F6;"
+                  style="background: #3980f626; color: #3980f6"
                 ></feather-icon>
               </div>
-              <h2 class="text-center mt-4 mb-2 font-bold">{{ reportInfo.tasks }}</h2>
-              <p class="text-center">{{$t("tasks")}}</p>
+              <h2 class="text-center mt-4 mb-2 font-bold">
+                {{ reportInfo.tasks }}
+              </h2>
+              <p class="text-center">{{ $t("tasks") }}</p>
             </div>
           </div>
           <div class="px-2 vx-col md:w-1/5 sm:w-1/2 w-full md:mt-0 mt-1">
-            <div class="rounded-lg border border-solid d-theme-border-grey-light p-4">
+            <div
+              class="rounded-lg border border-solid d-theme-border-grey-light p-4"
+            >
               <div class="text-center">
                 <feather-icon
-                    class="text-danger p-3 inline-flex rounded-full"
-                    icon="SlashIcon"
-                    style="background: rgba(var(--vs-warning),.15)"
+                  class="text-danger p-3 inline-flex rounded-full"
+                  icon="SlashIcon"
+                  style="background: rgba(var(--vs-warning), 0.15)"
                 ></feather-icon>
               </div>
-              <h2 class="text-center mb-2 mt-4 font-bold">{{ nonCompliantTasksAmount }}</h2>
-              <p class="text-center">{{$t("non compliant")}}</p>
+              <h2 class="text-center mb-2 mt-4 font-bold">
+                {{ nonCompliantTasksAmount }}
+              </h2>
+              <p class="text-center">{{ $t("non compliant") }}</p>
             </div>
           </div>
           <div class="px-2 vx-col md:w-1/5 sm:w-1/2 w-full md:mt-0 mt-1">
-            <div class="rounded-lg border border-solid d-theme-border-grey-light p-4">
+            <div
+              class="rounded-lg border border-solid d-theme-border-grey-light p-4"
+            >
               <div class="text-center">
                 <feather-icon
                   class="text-warning p-3 inline-flex rounded-full"
                   icon="ListIcon"
-                  style="background: rgba(var(--vs-warning),.15)"
+                  style="background: rgba(var(--vs-warning), 0.15)"
                 ></feather-icon>
               </div>
-              <h2 class="text-center mb-2 mt-4 font-bold">{{ filteredLogs.length }}</h2>
-              <p class="text-center">{{$t("check list")}}</p>
+              <h2 class="text-center mb-2 mt-4 font-bold">
+                {{ filteredLogs.length }}
+              </h2>
+              <p class="text-center">{{ $t("check list") }}</p>
             </div>
           </div>
           <div class="px-2 vx-col md:w-1/5 sm:w-1/2 w-full md:mt-0 mt-1">
-            <div class="rounded-lg border border-solid d-theme-border-grey-light p-4">
+            <div
+              class="rounded-lg border border-solid d-theme-border-grey-light p-4"
+            >
               <div class="text-center">
                 <feather-icon
                   class="text-success p-3 inline-flex rounded-full"
                   icon="CalendarIcon"
-                  style="background: rgba(var(--vs-success),.15)"
+                  style="background: rgba(var(--vs-success), 0.15)"
                 ></feather-icon>
               </div>
-              <h2 class="text-center mb-2 mt-4 font-bold">{{ reportInfo.ontime }}</h2>
-              <p class="text-center">{{$t("completed on time")}}</p>
+              <h2 class="text-center mb-2 mt-4 font-bold">
+                {{ reportInfo.ontime }}
+              </h2>
+              <p class="text-center">{{ $t("completed on time") }}</p>
             </div>
           </div>
         </div>
-        <div id="reports" class="vx-row w-full" v-if="filteredLogs.length > 0" style="margin-top: 40px;">
+        <div
+          id="reports"
+          class="vx-row w-full"
+          v-if="filteredLogs.length > 0"
+          style="margin-top: 40px"
+        >
           <b-table
-                  :data="filteredRowLogs.length ? filteredRowLogs : filteredLogs"
-                  detailed
-                  :show-detail-icon="false"
-                  class="w-full"
-                  icon-pack="fa"
-                  sort-icon="chevron-down"
-                  default-sort-direction="asc"
+            :data="filteredRowLogs.length ? filteredRowLogs : filteredLogs"
+            detailed
+            :show-detail-icon="false"
+            class="w-full"
+            icon-pack="fa"
+            sort-icon="chevron-down"
+            default-sort-direction="asc"
           >
-
             <b-table-column :label="$t('check list')" v-slot="props">
               {{ logInfo(props.row).templateTitle }}
             </b-table-column>
 
             <b-table-column :label="$t('non compliant')">
               <template v-slot:header="{ column }">
-                <span @click="filterRows(0)" :style="{color: nonCompliantColor}" class="cursor-pointer">{{ column.label }}</span>
+                <span
+                  @click="filterRows(0)"
+                  :style="{ color: nonCompliantColor }"
+                  class="cursor-pointer"
+                  >{{ column.label }}</span
+                >
               </template>
               <template v-slot="props">
                 {{ logInfo(props.row).failed }}
@@ -152,7 +236,12 @@
 
             <b-table-column :label="$t('compliance')">
               <template v-slot:header="{ column }">
-                <span @click="filterRows(1)" :style="{color: compliantColor}" class="cursor-pointer">{{ column.label }}</span>
+                <span
+                  @click="filterRows(1)"
+                  :style="{ color: compliantColor }"
+                  class="cursor-pointer"
+                  >{{ column.label }}</span
+                >
               </template>
               <template v-slot="props">
                 {{ logInfo(props.row).compliance }}
@@ -160,12 +249,12 @@
             </b-table-column>
 
             <b-table-column v-slot="props" width="10">
-                <b-icon
-                        class="cursor-pointer"
-                        pack="fa"
-                        :icon="props.open ? 'sort-up' : 'sort-down'"
-                        @click.native="props.toggleDetails(props.row);"
-                ></b-icon>
+              <b-icon
+                class="cursor-pointer"
+                pack="fa"
+                :icon="props.open ? 'sort-up' : 'sort-down'"
+                @click.native="props.toggleDetails(props.row)"
+              ></b-icon>
             </b-table-column>
 
             <template #detail="props">
@@ -173,37 +262,60 @@
                 <div class="media-content">
                   <div class="content">
                     <b-table
-                        :data="[props.row]"
-                        detailed
-                        :show-detail-icon="false"
-                        class="w-full"
-                        icon-pack="fa"
-                        sort-icon="chevron-down"
-                        default-sort-direction="asc"
+                      :data="[props.row]"
+                      detailed
+                      :show-detail-icon="false"
+                      class="w-full"
+                      icon-pack="fa"
+                      sort-icon="chevron-down"
+                      default-sort-direction="asc"
                     >
-
-                      <b-table-column :visible="logInfo(props.row).show" :label="$t('date_used')" v-slot="props">
+                      <b-table-column
+                        :visible="logInfo(props.row).show"
+                        :label="$t('date_used')"
+                        v-slot="props"
+                      >
                         {{ logInfo(props.row).dateUsed }}
                       </b-table-column>
 
-                      <b-table-column :visible="logInfo(props.row).show" :label="$t('locations')" v-slot="props">
-                        {{ props.row.locations ? props.row.locations.join(', ') : '' }}
+                      <b-table-column
+                        :visible="logInfo(props.row).show"
+                        :label="$t('locations')"
+                        v-slot="props"
+                      >
+                        {{
+                          props.row.locations
+                            ? props.row.locations.join(", ")
+                            : ""
+                        }}
                       </b-table-column>
 
-                      <b-table-column :visible="logInfo(props.row).show" :label="$t('teams')" v-slot="props">
-                        {{ props.row.teams ? props.row.teams.join(', ') : '' }}
+                      <b-table-column
+                        :visible="logInfo(props.row).show"
+                        :label="$t('teams')"
+                        v-slot="props"
+                      >
+                        {{ props.row.teams ? props.row.teams.join(", ") : "" }}
                       </b-table-column>
 
-                      <b-table-column :visible="logInfo(props.row).show" :label="$t('tasks')" v-slot="props">
+                      <b-table-column
+                        :visible="logInfo(props.row).show"
+                        :label="$t('tasks')"
+                        v-slot="props"
+                      >
                         {{ logInfo(props.row).tasks }}
                       </b-table-column>
 
-                      <b-table-column :visible="logInfo(props.row).show" v-slot="props" width="10">
+                      <b-table-column
+                        :visible="logInfo(props.row).show"
+                        v-slot="props"
+                        width="10"
+                      >
                         <b-icon
-                            class="cursor-pointer"
-                            pack="fa"
-                            :icon="props.open ? 'sort-up' : 'sort-down'"
-                            @click.native="props.toggleDetails(props.row);"
+                          class="cursor-pointer"
+                          pack="fa"
+                          :icon="props.open ? 'sort-up' : 'sort-down'"
+                          @click.native="props.toggleDetails(props.row)"
                         ></b-icon>
                       </b-table-column>
 
@@ -212,7 +324,10 @@
                           <div class="media-content">
                             <div class="content">
                               <vx-card class="mb-base">
-                                <log-item :log="props.row" :order="props.index" />
+                                <log-item
+                                  :log="props.row"
+                                  :order="props.index"
+                                />
                               </vx-card>
                             </div>
                           </div>
@@ -224,33 +339,80 @@
               </article>
             </template>
           </b-table>
-
         </div>
 
         <div class="flex w-full mt-base" v-else>
           <div
             class="vx-col flex items-center flex-col sm:w-1/2 md:w-3/5 lg:w-3/4 xl:w-1/2 mx-auto text-center sm:mt-base mt-0"
-            style="min-height:500px;"
+            style="min-height: 500px"
           >
             <img
               :src="require('../../assets/images/pages/report/empty-doc.svg')"
               @click="reportFilterSidebar = true"
               class="mx-auto mb-4 cursor-pointer"
             />
-            <h3
-              class="mt-base text-grey"
-            >{{$t("select the options from right side bar to generate the report.")}}</h3>
+            <h3 class="mt-base text-grey">
+              {{
+                $t(
+                  "select the options from right side bar to generate the report."
+                )
+              }}
+            </h3>
           </div>
         </div>
       </vx-card>
-
     </div>
-    <div class="w-full" id="reprot-print">
+
+    <!-- <div class="m-10">
+      <button @click="printReprot('pdf-report')">Export PDF</button>
+    </div> -->
+
+    <!-- BEGIN PDF -->
+    <div
+      id="export-content-pdf"
+      style="background-color: white; padding: 50px; padding-top: 0"
+    >
+      <template v-for="(log, index) in filteredLogs">
+        <div :key="'print' + log.id">
+          <print-report-pdf
+            :key="'print' + log.id"
+            :log="log"
+            :ppIndex="index"
+          />
+          <br class="break-page" v-if="filteredLogs.length > index + 1" />
+        </div>
+      </template>
+    </div>
+    <!-- END PDF -->
+
+    <!-- BEGIN Word -->
+    <div
+      id="export-content-doc"
+      style="display: none; background-color: white; padding: 50px"
+    >
+      <template v-for="(log, index) in filteredLogs">
+        <div :key="'print' + log.id">
+          <print-report-doc
+            :key="'print' + log.id"
+            :log="log"
+            :ppIndex="index"
+          />
+          <br class="break-page" v-if="filteredLogs.length > index + 1" />
+        </div>
+      </template>
+    </div>
+    <!-- END Word -->
+
+    <div class="w-full" id="report-print">
       <vx-card id="invoice-container">
         <!-- REPROT METADATA -->
         <div class="p-base flex items-center justify-between">
           <div class="flex items-center">
-            <img alt="vuexy-logo" src="@/assets/images/logo/logo.png" style="width:100px;" />
+            <img
+              alt="vuexy-logo"
+              src="@/assets/images/logo/logo.png"
+              style="width: 100px"
+            />
             <h1 class="ml-base text-primary">Qualizy</h1>
           </div>
           <div class="text-right">
@@ -262,11 +424,16 @@
           </div>
         </div>
         <!-- REPROT CONTENT -->
-        <div :key="'print' + log.id" class="items-list-view" v-for="log in filteredLogs">
+        <div
+          :key="'print' + log.id"
+          class="items-list-view"
+          v-for="log in filteredLogs"
+        >
           <print-item :item="log" />
         </div>
       </vx-card>
     </div>
+
     <report-filter
       :filter="filter"
       :isSidebarActive="reportFilterSidebar"
@@ -274,6 +441,7 @@
       @closeSidebar="reportFilterSidebar = false"
       v-if="filter !== ''"
     />
+
     <vs-prompt
       :accept-text="$t('update') | capitalize"
       :active.sync="activeSave"
@@ -286,49 +454,66 @@
       <div class="vx-row">
         <div class="vx-coll w-full mb-4">
           <label class="font-semibold">Report Title</label>
-          <vs-input class="w-full" placeholder="Report Title" v-model="reportTitle" />
+          <vs-input
+            class="w-full"
+            placeholder="Report Title"
+            v-model="reportTitle"
+          />
         </div>
         <div class="vx-coll w-full mb-4">
           <label class="font-semibold">Description</label>
           <vs-textarea v-model="description" />
         </div>
         <div class="vx-coll w-full">
-          <label class="font-semibold">{{$t("visible to")}}</label>
+          <label class="font-semibold">{{ $t("visible to") }}</label>
           <div class="flex items-center mt-2">
             <!-- ['Just me' , 'Public'] -->
-            <div v-for="(visibleItem,vIndex) in visibles" :key="vIndex">
-              <div class="flex items-center ml-4" v-if="visibleItem.key==visible">
-                <vs-icon icon="radio_button_checked" size="25px" color="primary" />
-                <span class="karla text-primary">{{visibleItem.text}}</span>
+            <div v-for="(visibleItem, vIndex) in visibles" :key="vIndex">
+              <div
+                class="flex items-center ml-4"
+                v-if="visibleItem.key == visible"
+              >
+                <vs-icon
+                  icon="radio_button_checked"
+                  size="25px"
+                  color="primary"
+                />
+                <span class="karla text-primary">{{ visibleItem.text }}</span>
               </div>
               <div
                 class="flex items-center cursor-pointer ml-4"
                 v-else
-                @click="visible=visibleItem.key"
+                @click="visible = visibleItem.key"
               >
                 <vs-icon icon="radio_button_unchecked" size="25px" />
-                <span class="karla">{{visibleItem.text}}</span>
+                <span class="karla">{{ visibleItem.text }}</span>
               </div>
             </div>
           </div>
         </div>
-        <div class="vx-col w-full mt-4" v-if="visible=='Teams'">
-          <label class="font-semibold">{{$t('teams')}}</label>
+        <div class="vx-col w-full mt-4" v-if="visible == 'Teams'">
+          <label class="font-semibold">{{ $t("teams") }}</label>
           <v-select :options="teams" label="name" multiple v-model="team" />
         </div>
         <div class="vx-col w-full mt-4">
-          <label class="font-semibold">{{$t('tags')}}</label>
+          <label class="font-semibold">{{ $t("tags") }}</label>
           <v-select :options="tags" label="name" multiple v-model="tag">
             <template slot="option" slot-scope="option">
               <div class="flex items-center">
-                <div class="h-2 w-2 rounded-full mr-3" :style="`background:${option.color}`"></div>
-                <span class="karla">{{option.name}}</span>
+                <div
+                  class="h-2 w-2 rounded-full mr-3"
+                  :style="`background:${option.color}`"
+                ></div>
+                <span class="karla">{{ option.name }}</span>
               </div>
             </template>
             <template slot="selected-option" slot-scope="option">
               <div class="flex items-center">
-                <div class="h-2 w-2 rounded-full mr-1" :style="`background:${option.color}`"></div>
-                <span class="karla">{{option.name}}</span>
+                <div
+                  class="h-2 w-2 rounded-full mr-1"
+                  :style="`background:${option.color}`"
+                ></div>
+                <span class="karla">{{ option.name }}</span>
               </div>
             </template>
           </v-select>
@@ -351,7 +536,9 @@
             <vs-input v-model="shareUrl" />
             <template slot="append">
               <div class="append-text btn-addon">
-                <vs-button @click="copyText(shareUrl)" color="primary">Copy Url</vs-button>
+                <vs-button @click="copyText(shareUrl)" color="primary"
+                  >Copy Url</vs-button
+                >
               </div>
             </template>
           </vx-input-group>
@@ -367,16 +554,34 @@
               twitter-user="qualizy"
             >
               <div class="flex">
-                <network class="flex-col text-center cursor-pointer" network="facebook">
-                  <img :src="require('../../assets/images/social/facebook.svg')" class="block" />
+                <network
+                  class="flex-col text-center cursor-pointer"
+                  network="facebook"
+                >
+                  <img
+                    :src="require('../../assets/images/social/facebook.svg')"
+                    class="block"
+                  />
                   <p class="mt-2">Facebook</p>
                 </network>
-                <network class="flex-col text-center ml-3 cursor-pointer" network="twitter">
-                  <img :src="require('../../assets/images/social/twitter.svg')" class="block" />
+                <network
+                  class="flex-col text-center ml-3 cursor-pointer"
+                  network="twitter"
+                >
+                  <img
+                    :src="require('../../assets/images/social/twitter.svg')"
+                    class="block"
+                  />
                   <p class="mt-2">Twitter</p>
                 </network>
-                <network class="flex-col text-center ml-3 cursor-pointer" network="linkedin">
-                  <img :src="require('../../assets/images/social/linkedin.svg')" class="block" />
+                <network
+                  class="flex-col text-center ml-3 cursor-pointer"
+                  network="linkedin"
+                >
+                  <img
+                    :src="require('../../assets/images/social/linkedin.svg')"
+                    class="block"
+                  />
                   <p class="mt-2">Linkedin</p>
                 </network>
               </div>
@@ -392,6 +597,7 @@
         </div>
       </div>
     </vs-prompt>
+
     <vs-prompt
       :accept-text="$t('export') | capitalize"
       :active.sync="activeExport"
@@ -401,29 +607,37 @@
       @accept="exportFunction"
       class="export-options"
     >
-      <vs-input class="w-full" placeholder="Enter File Name.." v-model="fileName" />
+      <vs-input
+        class="w-full"
+        placeholder="Enter File Name.."
+        v-model="fileName"
+      />
       <v-select :options="formats" class="my-4" v-model="selectedFormat" />
       <div class="flex">
-        <span class="mr-4">{{$t("cell auto width")}}:</span>
-        <vs-switch :disabled="selectedFormat == 'pdf'" v-model="cellAutoWidth"></vs-switch>
+        <span class="mr-4">{{ $t("cell auto width") }}:</span>
+        <vs-switch
+          :disabled="selectedFormat == 'PDF'"
+          v-model="cellAutoWidth"
+        ></vs-switch>
       </div>
     </vs-prompt>
+
     <vs-prompt
       class="report-schedule"
-      :accept-text="existSchedule ? $t('update'): $t('save') "
+      :accept-text="existSchedule ? $t('update') : $t('save')"
       :active.sync="activeSchedule"
       :cancel-text="$t('cancel') | capitalize"
-      :is-valid="rTeam.length>0"
+      :is-valid="rTeam.length > 0"
       :title="$t('report schedule delivery settings')"
       @accept="scheduleReport"
     >
       <div class="vx-row">
         <div class="vx-col w-full mb-6">
-          <h4 class="font-weight-bold">{{ $t('delivery_schedule') }}</h4>
-          <p class="text-muted">{{ $t('create_schedule') }}</p>
+          <h4 class="font-weight-bold">{{ $t("delivery_schedule") }}</h4>
+          <p class="text-muted">{{ $t("create_schedule") }}</p>
         </div>
         <div class="vx-col w-full mb-6">
-          <label> {{$t('start date')}} </label>
+          <label> {{ $t("start date") }} </label>
           <datepicker
             placeholder="Available from"
             v-model="sDate"
@@ -432,26 +646,44 @@
           ></datepicker>
         </div>
         <div class="vx-col w-full mb-6">
-          <label>{{$t('repeat evey')}}</label>
-          <v-select :clearable="false" :options="['day' , 'week' , 'month' , 'year']" v-model="sRepeat">
-            <template #option="{label}">
-              <span class="">{{$t(label)}}</span>
+          <label>{{ $t("repeat evey") }}</label>
+          <v-select
+            :clearable="false"
+            :options="['day', 'week', 'month', 'year']"
+            v-model="sRepeat"
+          >
+            <template #option="{ label }">
+              <span class="">{{ $t(label) }}</span>
             </template>
-             <template #selected-option="{ label }">
-              <span class="">{{$t(label)}}</span>
-             </template>
+            <template #selected-option="{ label }">
+              <span class="">{{ $t(label) }}</span>
+            </template>
           </v-select>
         </div>
         <div class="vx-col w-full">
           <div class="flex items-center">
-            <label>{{$t('teams')}}</label>
+            <label>{{ $t("teams") }}</label>
           </div>
-          <v-select :options="teams" label="name" multiple v-model="rTeam" class="w-full">
-          </v-select> 
-          <div class="vx-col v-full mt-6 " v-if="existSchedule">
-            <div class="flex items-center cursor-pointer text-primary hover:text-danger" @click="deleteRD">
-              <vs-icon icon-pack="feather" size="20px" icon="icon-trash-2" class="mr-2"/>
-              <p class="">{{$t('delete shceduled email delivery')}}</p>
+          <v-select
+            :options="teams"
+            label="name"
+            multiple
+            v-model="rTeam"
+            class="w-full"
+          >
+          </v-select>
+          <div class="vx-col v-full mt-6" v-if="existSchedule">
+            <div
+              class="flex items-center cursor-pointer text-primary hover:text-danger"
+              @click="deleteRD"
+            >
+              <vs-icon
+                icon-pack="feather"
+                size="20px"
+                icon="icon-trash-2"
+                class="mr-2"
+              />
+              <p class="">{{ $t("delete shceduled email delivery") }}</p>
             </div>
           </div>
         </div>
@@ -461,11 +693,8 @@
 </template>
 
 <script>
-import Vue from 'vue';
+import Vue from "vue";
 import SocialSharing from "vue-social-sharing";
-import ReportFilter from "./ReportFilter.vue";
-import LogItem from "./LogItem.vue";
-import PrintItem from "./PrintItem.vue";
 
 import VSelect from "vue-select";
 import { db } from "@/firebase/firebaseConfig.js";
@@ -474,13 +703,25 @@ import XLSX from "xlsx";
 import Datepicker from "vuejs-datepicker";
 import * as lang from "vuejs-datepicker/src/locale";
 
-import { Table, Tag, Tabs, Button, Collapse, Icon } from 'buefy';
+import { saveAs } from "file-saver";
+
+import { Table, Tag, Tabs, Button, Collapse, Icon } from "buefy";
 Vue.use(Table);
 Vue.use(Tag);
 Vue.use(Tabs);
 Vue.use(Button);
 Vue.use(Collapse);
 Vue.use(Icon);
+
+import ReportFilter from "./ReportFilter.vue";
+import LogItem from "./LogItem.vue";
+import PrintItem from "./PrintItem.vue";
+import PrintReportDoc from "./Print/PrintReportDoc";
+import PrintReportPdf from "./Print/PrintReportPdf";
+import Test from "./Print/Test";
+
+import { jsPDF } from "jspdf";
+var domToPdf = require("dom-to-pdf");
 
 export default {
   components: {
@@ -489,17 +730,20 @@ export default {
     LogItem,
     VSelect,
     SocialSharing,
-    Datepicker
+    Datepicker,
+    PrintReportDoc,
+    PrintReportPdf,
+    Test,
   },
   data() {
     return {
       rTeam: [],
-      sRepeat: 'day',
+      sRepeat: "day",
       sDate: new Date(),
       languages: lang,
       activeSchedule: false,
-      selectedFormat: "pdf",
-      formats: ["xlsx", "csv", "pdf"],
+      selectedFormat: "PDF",
+      formats: ["Word", "PDF"],
       cellAutoWidth: true,
       fileName: "",
       activeExport: false,
@@ -517,27 +761,26 @@ export default {
       team: [],
       tag: [],
       filteredRowLogs: [],
-      nonCompliantColor: '#363636',
-      compliantColor: '#363636',
+      nonCompliantColor: "#363636",
+      compliantColor: "#363636",
     };
   },
   watch: {
     activeSchedule(val) {
-      if(val && this.existSchedule) {
-        let schedule = this.existSchedule
-        this.sDate = schedule.start.toDate()
-        this.sRepeat = schedule.__repeat
-        this.rTeam = []
-        schedule.team.map(id=> {
-          this.rTeam.push(this.$store.getters['app/getTeamById'](id))
-        })
+      if (val && this.existSchedule) {
+        let schedule = this.existSchedule;
+        this.sDate = schedule.start.toDate();
+        this.sRepeat = schedule.__repeat;
+        this.rTeam = [];
+        schedule.team.map((id) => {
+          this.rTeam.push(this.$store.getters["app/getTeamById"](id));
+        });
+      } else if (val && !this.existSchedule) {
+        this.sDate = new Date();
+        this.sRepeat = "day";
+        this.rTeam = [];
       }
-      else if(val && !this.existSchedule) {
-        this.sDate = new Date()
-        this.sRepeat = 'day'
-        this.rTeam = []
-      }
-    }
+    },
   },
   mounted() {
     // this.wasSidebarOpen = this.$store.state.reduceButton;
@@ -548,20 +791,20 @@ export default {
   },
   computed: {
     auth() {
-      return (sub,action) => {
-        let authList = this.$store.getters['app/auth']
+      return (sub, action) => {
+        let authList = this.$store.getters["app/auth"];
         var cUser = this.$store.getters["app/currentUser"];
-        if(cUser == undefined || cUser.role == undefined) return false
-        else if(cUser.role.key == 0) 
-          return true
-        else if(authList[sub][cUser.role.name.toLowerCase()][action])
-          return true
-        else 
-          return false
-      }
+        if (cUser == undefined || cUser.role == undefined) return false;
+        else if (cUser.role.key == 0) return true;
+        else if (authList[sub][cUser.role.name.toLowerCase()][action])
+          return true;
+        else return false;
+      };
     },
     existSchedule() {
-      return this.$store.getters['app/getReportScheduleByID'](this.$route.params.id)
+      return this.$store.getters["app/getReportScheduleByID"](
+        this.$route.params.id
+      );
     },
     tags() {
       const locale = this.$i18n.locale || "en-gb";
@@ -569,7 +812,7 @@ export default {
         if (item.group != "global") {
           const userInfo = JSON.parse(localStorage.getItem("userInfo"));
           if (userInfo.group != item.group) {
-            return false; 
+            return false;
           }
         }
         if (!item.lang) {
@@ -583,12 +826,12 @@ export default {
       return labels;
     },
     teams() {
-      let locationList = this.$store.getters['app/locationList']
+      let locationList = this.$store.getters["app/locationList"];
       return this.$store.getters["app/teams"].filter((item) => {
-        if(locationList.length>0) {
-          if(locationList.indexOf(item.id)< 0 ) return false
+        if (locationList.length > 0) {
+          if (locationList.indexOf(item.id) < 0) return false;
         }
-        return item.active
+        return item.active;
       });
     },
     role() {
@@ -600,7 +843,7 @@ export default {
     },
     logInfo() {
       return (log) => {
-        let locations = this.$store.getters['app/locationList'];
+        let locations = this.$store.getters["app/locationList"];
         let teams = this.filter.team;
         let template = this.getTemplateInfo(log.templateID);
         let templateTitle = template.content.templateTitle;
@@ -627,8 +870,8 @@ export default {
                   if (answer.loged) completed++;
                 }
                 if (
-                    answer.ref.type.failedAnswer &&
-                    answer.ref.type.failedAnswer == answer.value
+                  answer.ref.type.failedAnswer &&
+                  answer.ref.type.failedAnswer == answer.value
                 )
                   failed++;
               }
@@ -645,52 +888,55 @@ export default {
         let obj = {
           templateTitle: templateTitle,
           tasks: `${completed}/${total}`,
-          compliance: `${((total - failed) / total * 100).toFixed(2)}%`,
+          compliance: `${(((total - failed) / total) * 100).toFixed(2)}%`,
           status: status,
           done: done,
           failed: failed,
-          dateUsed: log.updated_at ? new Date(log.updated_at.toDate()).toLocaleString() : '',
+          dateUsed: log.updated_at
+            ? new Date(log.updated_at.toDate()).toLocaleString()
+            : "",
           locations: locs,
           teams: tms,
-          show: show
+          show: show,
         };
 
-        if(locations.length) {
-          template.content.location.forEach(loc => {
-            if(locations.includes(loc)) {
+        if (locations.length) {
+          template.content.location.forEach((loc) => {
+            if (locations.includes(loc)) {
               locs.push(this.$store.getters["app/getLocationById"](loc).name);
             }
-          })
+          });
           !locs.length && (show = false);
         } else {
-          template.content.location.forEach(loc => {
+          template.content.location.forEach((loc) => {
             db.collection("locations")
-                .doc(loc)
-                .get()
-                .then(snapshot => {
-                  locs.push(snapshot.data().name);
-                  !log.locations.includes(snapshot.data().name) && log.locations.push(snapshot.data().name);
-                })
+              .doc(loc)
+              .get()
+              .then((snapshot) => {
+                locs.push(snapshot.data().name);
+                !log.locations.includes(snapshot.data().name) &&
+                  log.locations.push(snapshot.data().name);
+              });
           });
         }
-        if(teams && teams.length) {
-          template.content.teams.forEach(team => {
-            if(teams.includes(team)) {
+        if (teams && teams.length) {
+          template.content.teams.forEach((team) => {
+            if (teams.includes(team)) {
               tms.push(this.$store.getters["app/getTeamById"](team).name);
             }
-          })
+          });
           !tms.length && (show = false);
         } else {
-          template.content.teams.forEach(team => {
+          template.content.teams.forEach((team) => {
             db.collection("teams")
-                .doc(team)
-                .get()
-                .then(snapshot => {
-                  tms.push(snapshot.data().name);
-                  !log.teams.includes(snapshot.data().name) && log.teams.push(snapshot.data().name);
-                });
-          })
-
+              .doc(team)
+              .get()
+              .then((snapshot) => {
+                tms.push(snapshot.data().name);
+                !log.teams.includes(snapshot.data().name) &&
+                  log.teams.push(snapshot.data().name);
+              });
+          });
         }
         return obj;
       };
@@ -702,7 +948,6 @@ export default {
         { key: "Teams", text: this.$t("teams") },
       ];
     },
-
     reportInfo() {
       let logs = this.filteredLogs;
       var scores = 0;
@@ -711,7 +956,7 @@ export default {
       var complted = 0;
       var ontime = 0;
       var scheduled = 0;
-      var defaultScore = 0
+      var defaultScore = 0;
       var ontimeTask = true;
       var checkOnTimeTask = 0;
       logs.map((log) => {
@@ -805,7 +1050,6 @@ export default {
                   }
 
                   scores += Math.round(score * 10) / 10;
-
                 } else if (
                   this.getTemplateType(answer.ref.type.id).type ==
                   "closed answers"
@@ -829,6 +1073,11 @@ export default {
         });
         if (ontime != 0 && ontimeTask) checkOnTimeTask++;
       });
+      console.log("reportInfo", this.filteredLogs, {
+        score: scores,
+        tasks: `${complted}/${tasks}`,
+        ontime: `${checkOnTimeTask}/${scheduled}`,
+      });
       return {
         score: scores,
         tasks: `${complted}/${tasks}`,
@@ -844,30 +1093,44 @@ export default {
     filteredLogs() {
       var filters = this.filter;
       var log = [];
-      var cUser = this.$store.getters["app/currentUser"]
-      var userTeam = cUser.team || []
-      var locationList = this.$store.getters['app/locationList']
-      if(locationList.length==0) {
-        if(cUser.role == undefined || cUser.role.key == undefined || cUser.role.key>0) {
-          if(cUser.location !== undefined && Array.isArray(cUser.location) && cUser.location.length>0) {
-            locationList = cUser.location
+      var cUser = this.$store.getters["app/currentUser"];
+      var userTeam = cUser.team || [];
+      var locationList = this.$store.getters["app/locationList"];
+      if (locationList.length == 0) {
+        if (
+          cUser.role == undefined ||
+          cUser.role.key == undefined ||
+          cUser.role.key > 0
+        ) {
+          if (
+            cUser.location !== undefined &&
+            Array.isArray(cUser.location) &&
+            cUser.location.length > 0
+          ) {
+            locationList = cUser.location;
           } else {
-            locationList = ['no']
+            locationList = ["no"];
           }
         }
       }
       var logs = this.$store.getters["app/logs"];
-      var checkLog = []
+      var checkLog = [];
       logs = logs.filter((log) => {
         var template = this.$store.getters["app/getTemplateById"](
           log.templateID
         );
-        if(!template) return false
+        if (!template) return false;
 
-        if(log.time && log.time.seconds) {
-          if(checkLog.find(check=> check.templateID == log.templateID && check.time == log.time.seconds))
-            return false
-          checkLog.push({templateID: log.templateID , time: log.time.seconds})
+        if (log.time && log.time.seconds) {
+          if (
+            checkLog.find(
+              (check) =>
+                check.templateID == log.templateID &&
+                check.time == log.time.seconds
+            )
+          )
+            return false;
+          checkLog.push({ templateID: log.templateID, time: log.time.seconds });
         }
 
         var filterFrom = true;
@@ -876,7 +1139,7 @@ export default {
         var teamFlag = true;
         var filterLabel = true;
         var filterStatus = true;
-        var filterLocation = true
+        var filterLocation = true;
         if (filters.from !== undefined && filters.from != "")
           filterFrom =
             log.updated_at.toDate().getTime() >= filters.from.getTime();
@@ -941,22 +1204,40 @@ export default {
             (filters.status != "passed" && falied);
         }
 
-        if(template.content.templateSD == 'bookmarked') {
-          if(template.content.teams!=undefined && Array.isArray(template.content.teams) && template.content.teams.length>0 && !template.content.teams.some(t=> userTeam.includes(t))) return false
-          if(locationList.length>0) {
-            if(!template.content.location || !Array.isArray(template.content.location)) return false
-            if(!locationList.some(ll=> template.content.location.includes(ll))) return false
+        if (template.content.templateSD == "bookmarked") {
+          if (
+            template.content.teams != undefined &&
+            Array.isArray(template.content.teams) &&
+            template.content.teams.length > 0 &&
+            !template.content.teams.some((t) => userTeam.includes(t))
+          )
+            return false;
+          if (locationList.length > 0) {
+            if (
+              !template.content.location ||
+              !Array.isArray(template.content.location)
+            )
+              return false;
+            if (
+              !locationList.some((ll) => template.content.location.includes(ll))
+            )
+              return false;
           }
-        }
-        else {
-          var schedule = this.$store.getters['app/getScheduleById'](log.schedule || '')
-          if(schedule == undefined) return false
-          if (schedule.deleted || (schedule.active !== undefined && !schedule.active)) return false;
-          var scheduleTeam = schedule.assign.concat(schedule.monitor || [])
-          if(!scheduleTeam.some(t=> userTeam.includes(t))) return false
-          if(schedule.location== undefined) return false
-          if(locationList.length>0) {
-            if(locationList.indexOf(schedule.location[0])<0) return false
+        } else {
+          var schedule = this.$store.getters["app/getScheduleById"](
+            log.schedule || ""
+          );
+          if (schedule == undefined) return false;
+          if (
+            schedule.deleted ||
+            (schedule.active !== undefined && !schedule.active)
+          )
+            return false;
+          var scheduleTeam = schedule.assign.concat(schedule.monitor || []);
+          if (!scheduleTeam.some((t) => userTeam.includes(t))) return false;
+          if (schedule.location == undefined) return false;
+          if (locationList.length > 0) {
+            if (locationList.indexOf(schedule.location[0]) < 0) return false;
           }
         }
 
@@ -1027,113 +1308,221 @@ export default {
     },
     nonCompliantTasksAmount() {
       let amount = 0;
-      this.filteredLogs.map(el => amount = amount + this.logInfo(el).failed);
+      this.filteredLogs.map(
+        (el) => (amount = amount + this.logInfo(el).failed)
+      );
       return amount;
-    }
+    },
   },
   methods: {
-    setLogs() {
-      if(this.filter.from == '') {
-        this.$vs.loading()
-        db.collection("logs").where('templateID', 'in', this.filter.template.slice(0,10)).orderBy('updated_at','desc').get().then((q) => {
-          this.$vs.loading.close()
-        let logs = [];
-        q.forEach((doc) => {
-          logs.push(Object.assign({}, doc.data(), { id: doc.id }));
-        });
-        this.$store.dispatch("app/setLogs", logs);
-      });    
-      } else {
-        this.$vs.loading()
-        db.collection("logs")
-          .where('templateID', 'in', this.filter.template.slice(0,10))
-          .where('updated_at' , '>=' , this.filter.from)
-          .where('updated_at' , '<=' , this.filter.to)
-          .orderBy('updated_at','desc')
-          .get().then((q) => {
-          this.$vs.loading.close()
-          let logs = [];
-          q.forEach((doc) => {
-            logs.push(Object.assign({}, doc.data(), { id: doc.id }));
-          });
-          this.$store.dispatch("app/setLogs", logs);
-        });    
+    exportPdf() {
+      // var element = document.getElementById("export-content-pdf");
+      // var options = {
+      //   filename: "test.pdf",
+      // };
+      // domToPdf(element, options, function () {
+      //   console.log("done");
+      // });
+      var that = this;
+      var margins = {
+        top: 70,
+        bottom: 40,
+        left: 30,
+        width: 550,
+      };
+      var pdf = new jsPDF("p", "pt", "a4");
+      pdf.setFontSize(18);
+      pdf.fromHTML(
+        document.getElementById("export-content-pdf"),
+        margins.left, // x coord
+        margins.top,
+        {
+          // y coord
+          width: margins.width, // max width of content on PDF
+        },
+        function (dispose) {
+          that.headerFooterFormatting(pdf);
+        },
+        margins
+      );
+
+      var iframe = document.createElement("iframe");
+      iframe.setAttribute(
+        "style",
+        "position:absolute;right:0; top:0; bottom:0; height:100%; width:650px; padding:20px;"
+      );
+      document.body.appendChild(iframe);
+
+      iframe.src = pdf.output("datauristring");
+    },
+    headerFooterFormatting(doc) {
+      var totalPages = doc.internal.getNumberOfPages();
+
+      for (var i = totalPages; i >= 1; i--) {
+        //make this page, the current page we are currently working on.
+        doc.setPage(i);
+
+        header(doc);
+
+        footer(doc, i, totalPages);
       }
-        
+    },
+    exportDocument(filename) {
+      var header = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'>
+        <title>Export HTML to Word Document with JavaScript</title>
+        <style>
+        body {
+          font-family: sans-serif;
+        }
+        .one-template {
+          page-break-before: always;
+          page-break-inside: avoid;
+        }
+        .break-page {
+          page-break-before: always;
+          display: inline;
+        }
+        .noPadding {
+          padding: 0!important;
+        }
+        .closedAnswerTd {
+          text-align: center;
+          color: white;
+        }
+        .normalAnswerTd {
+          text-align: right;
+        }
+        .closed-answer-span {
+        }
+        </style>
+        </head><body>`;
+
+      var footer = "</body></html>";
+
+      var sourceHTML =
+        header +
+        document.getElementById("export-content-doc").innerHTML +
+        footer;
+
+      var source =
+        "data:application/vnd.ms-word;charset=utf-8," +
+        encodeURIComponent(sourceHTML);
+
+      saveAs(source, `${filename}.doc`);
+    },
+    setLogs() {
+      if (this.filter.from == "") {
+        this.$vs.loading();
+        db.collection("logs")
+          .where("templateID", "in", this.filter.template.slice(0, 10))
+          .orderBy("updated_at", "desc")
+          .get()
+          .then((q) => {
+            this.$vs.loading.close();
+            let logs = [];
+            q.forEach((doc) => {
+              logs.push(Object.assign({}, doc.data(), { id: doc.id }));
+            });
+            this.$store.dispatch("app/setLogs", logs);
+          });
+      } else {
+        this.$vs.loading();
+        db.collection("logs")
+          .where("templateID", "in", this.filter.template.slice(0, 10))
+          .where("updated_at", ">=", this.filter.from)
+          .where("updated_at", "<=", this.filter.to)
+          .orderBy("updated_at", "desc")
+          .get()
+          .then((q) => {
+            this.$vs.loading.close();
+            let logs = [];
+            q.forEach((doc) => {
+              logs.push(Object.assign({}, doc.data(), { id: doc.id }));
+            });
+            this.$store.dispatch("app/setLogs", logs);
+          });
+      }
     },
     roleError(action) {
       this.$vs.notify({
         time: 5000,
         title: "Authorization Error",
-        text:
-          `You don't have authorization for ${action}.\n Please contact with your super admin`,
+        text: `You don't have authorization for ${action}.\n Please contact with your super admin`,
         color: "danger",
         iconPack: "feather",
         icon: "icon-lock",
       });
     },
     deleteRD() {
-      if(!this.auth('report' , 'delete')) {
-        this.roleError('delete')
-        return false
+      if (!this.auth("report", "delete")) {
+        this.roleError("delete");
+        return false;
       }
-      db.collection('report_schedule').doc(this.existSchedule.id).delete()
-      this.activeSchedule = false
+      db.collection("report_schedule").doc(this.existSchedule.id).delete();
+      this.activeSchedule = false;
       this.$vs.notify({
-          time: 5000,
-          title: "Deleted",
-          text: 'Schedule report is deleted.',
-          color: "success",
-          iconPack: "feather",
-          icon: "icon-check",
-        });
+        time: 5000,
+        title: "Deleted",
+        text: "Schedule report is deleted.",
+        color: "success",
+        iconPack: "feather",
+        icon: "icon-check",
+      });
     },
     scheduleReport() {
-      let existSchedule = this.existSchedule
-      var to = []
-      var users = []
-      var teams = []
-      this.rTeam.map(team=> {
-        teams.push(team.id)
-        users = this.$store.getters['app/users'].filter(user=> user.team.indexOf(team.id)>-1 && user.status && user.rEmail!=undefined && user.rEmail)
-        users.map(user=> {
-          if(!to.find(item=> item.email == user.email))
+      let existSchedule = this.existSchedule;
+      var to = [];
+      var users = [];
+      var teams = [];
+      this.rTeam.map((team) => {
+        teams.push(team.id);
+        users = this.$store.getters["app/users"].filter(
+          (user) =>
+            user.team.indexOf(team.id) > -1 &&
+            user.status &&
+            user.rEmail != undefined &&
+            user.rEmail
+        );
+        users.map((user) => {
+          if (!to.find((item) => item.email == user.email))
             to.push({
               email: user.email,
-              name: user.name || '',
-              lang: user.lang || 'en-us',
+              name: user.name || "",
+              lang: user.lang || "en-us",
               title: this.reportTitle,
-            })
-        })
-      })
-      
-      if(existSchedule) {
-        if(!this.auth('report' , 'edit')) {
-          this.roleError('edit')
-          return false
+            });
+        });
+      });
+
+      if (existSchedule) {
+        if (!this.auth("report", "edit")) {
+          this.roleError("edit");
+          return false;
         }
-        db.collection('report_schedule').doc(existSchedule.id).update({
-          updated_by: JSON.parse(localStorage.getItem("userInfo")).id,
-          updated_at: new Date(),
-          start: this.sDate,
-          __repeat: this.sRepeat,
-          to: to,
-          team: teams
-        })
+        db.collection("report_schedule")
+          .doc(existSchedule.id)
+          .update({
+            updated_by: JSON.parse(localStorage.getItem("userInfo")).id,
+            updated_at: new Date(),
+            start: this.sDate,
+            __repeat: this.sRepeat,
+            to: to,
+            team: teams,
+          });
         this.$vs.notify({
           time: 5000,
           title: "Updated",
-          text: 'Schedule report is updated.',
+          text: "Schedule report is updated.",
           color: "success",
           iconPack: "feather",
           icon: "icon-check",
         });
-      }else {
-        if(!this.auth('report' , 'create')) {
-          this.roleError('create')
-          return false
+      } else {
+        if (!this.auth("report", "create")) {
+          this.roleError("create");
+          return false;
         }
-        db.collection('report_schedule').add({
+        db.collection("report_schedule").add({
           group: JSON.parse(localStorage.getItem("userInfo")).group,
           reportID: this.$route.params.id,
           created_by: JSON.parse(localStorage.getItem("userInfo")).id,
@@ -1141,12 +1530,12 @@ export default {
           start: this.sDate,
           __repeat: this.sRepeat,
           to: to,
-          team: teams
-        })
+          team: teams,
+        });
         this.$vs.notify({
           time: 5000,
           title: "Created",
-          text: 'Schedule report is created.',
+          text: "Schedule report is created.",
           color: "success",
           iconPack: "feather",
           icon: "icon-check",
@@ -1248,10 +1637,15 @@ export default {
           this.$options.filters.capitalize(this.$t("report")) +
           "_" +
           this.$moment(new Date()).format("DD-MM-YYYYTHH-mm");
-      } else fileName1 = this.fileName;
-      if (this.selectedFormat == "pdf") this.printReprot(fileName1);
-      else {
-        this.exportExcel(fileName1);
+      } else {
+        fileName1 = this.fileName;
+      }
+
+      if (this.selectedFormat == "PDF") {
+        this.printReprot(fileName1);
+      } else {
+        this.exportDocument(fileName1);
+        // this.exportExcel(fileName1);
       }
     },
     copyText(text) {
@@ -1323,36 +1717,50 @@ export default {
       this.filter = filters;
     },
     filterRows(num) {
-      if(num === 0) { // if selected non compliant tasks
-        if(this.filteredRowLogs.length) {
-          this.compliantColor = '#363636';
-          if(this.logInfo(this.filteredRowLogs[0]).failed > 0) { // if already selected non compliant tasks
+      if (num === 0) {
+        // if selected non compliant tasks
+        if (this.filteredRowLogs.length) {
+          this.compliantColor = "#363636";
+          if (this.logInfo(this.filteredRowLogs[0]).failed > 0) {
+            // if already selected non compliant tasks
             this.filteredRowLogs = [];
-            this.nonCompliantColor = '#363636';
-          } else { // if selected compliant tasks
-            this.filteredRowLogs = this.filteredLogs.filter(el => this.logInfo(el).failed > 0);
-            this.nonCompliantColor = 'green';
+            this.nonCompliantColor = "#363636";
+          } else {
+            // if selected compliant tasks
+            this.filteredRowLogs = this.filteredLogs.filter(
+              (el) => this.logInfo(el).failed > 0
+            );
+            this.nonCompliantColor = "green";
           }
         } else {
-          this.filteredRowLogs = this.filteredLogs.filter(el => this.logInfo(el).failed > 0);
-          this.nonCompliantColor = 'green';
+          this.filteredRowLogs = this.filteredLogs.filter(
+            (el) => this.logInfo(el).failed > 0
+          );
+          this.nonCompliantColor = "green";
         }
-      } else { // if selected compliant tasks
-        if(this.filteredRowLogs.length) {
-          this.nonCompliantColor = '#363636';
-          if(this.logInfo(this.filteredRowLogs[0]).failed == 0) { // if already selected compliant tasks
+      } else {
+        // if selected compliant tasks
+        if (this.filteredRowLogs.length) {
+          this.nonCompliantColor = "#363636";
+          if (this.logInfo(this.filteredRowLogs[0]).failed == 0) {
+            // if already selected compliant tasks
             this.filteredRowLogs = [];
-            this.compliantColor = '#363636';
-          } else { // if selected non compliant tasks
-            this.filteredRowLogs = this.filteredLogs.filter(el => this.logInfo(el).failed == 0);
-            this.compliantColor = 'green';
+            this.compliantColor = "#363636";
+          } else {
+            // if selected non compliant tasks
+            this.filteredRowLogs = this.filteredLogs.filter(
+              (el) => this.logInfo(el).failed == 0
+            );
+            this.compliantColor = "green";
           }
         } else {
-          this.filteredRowLogs = this.filteredLogs.filter(el => this.logInfo(el).failed == 0);
-          this.compliantColor = 'green';
+          this.filteredRowLogs = this.filteredLogs.filter(
+            (el) => this.logInfo(el).failed == 0
+          );
+          this.compliantColor = "green";
         }
       }
-    }
+    },
   },
 
   created() {
@@ -1362,7 +1770,11 @@ export default {
 <img src="https://my.qualizy.app${this.badgeURL}" class="width: 444px;height: 142px;object-fit: contain;">
 </a>`;
     var report = this.$store.getters["app/reportByID"](reportID);
-    if(!report || report.group != JSON.parse(localStorage.getItem('userInfo')).group) this.$router.push('/report')
+    if (
+      !report ||
+      report.group != JSON.parse(localStorage.getItem("userInfo")).group
+    )
+      this.$router.push("/report");
     this.$vs.loading();
     report = db
       .collection("reports")
@@ -1453,13 +1865,17 @@ export default {
           this.filter.to == ""
             ? ""
             : new Date(this.filter.to.setHours(23, 59, 59, 999));
-        this.setLogs()
+        this.setLogs();
       });
   },
 };
 </script>
 
+
 <style scoped>
+/* BEGIN export content */
+/* END export content */
+
 .hasDatepickerIcon::after {
   font-family: "feather" !important;
   font-style: normal;
@@ -1480,17 +1896,14 @@ export default {
 .page-title > .main-title {
   opacity: 0.54;
 }
-
 .logStatusTable {
   border-spacing: 0;
 }
-
 .logStatusTable thead th:not(:first-child),
 .logStatusTable tbody td:not(:first-child) {
   text-align: right;
   padding-right: 1em;
 }
-
 .logStatusTable thead th {
   opacity: 0.6;
   font-family: Montserrat;
@@ -1502,7 +1915,6 @@ export default {
   letter-spacing: normal;
   color: #1e1c26;
 }
-
 .logStatusTable tbody td {
   opacity: 0.78;
   font-family: Montserrat;
@@ -1516,81 +1928,242 @@ export default {
 }
 </style>
 
+
+<style>
+.report-schedule .vs-dialog {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+</style>
+<style lang="scss" src="../analytics/buefy.scss"></style>
+
+
 <style lang="scss">
-#reprot-print {
+#report-print {
   display: none;
 }
 
 #invoice-container {
   visibility: hidden;
 }
+#failed-items {
+  min-height: 1000px;
+}
+
+#export-content-pdf {
+  display: none;
+}
 
 @media print {
-  //   @page {
-  //     size: auto;
-  //     margin: 20mm 0 10mm 0;
-  //   }
+  .break-inside-avoid {
+    page-break-inside: avoid !important;
+    page-break-after: always !important;
+  }
+  #failed-items {
+    min-height: 1000px;
+  }
   body {
     background: #ffffff !important;
   }
   .export-options {
     visibility: hidden;
   }
+  .background-color-ededed {
+    background: #ededed !important;
+  }
+  body * {
+    float: none;
+  }
+  .break-after {
+    display: block;
+    page-break-after: always;
+    position: relative;
+  }
+
+  .break-before {
+    display: block;
+    page-break-before: always;
+    position: relative;
+  }
 
   #app {
     * {
       visibility: hidden;
     }
-
-    #reprot-print {
-      display: block;
-    }
-
     #content-area {
       margin: 0 !important;
     }
-
-    #invoice-container,
-    #invoice-container * {
+    #export-content-pdf,
+    #export-content-pdf * {
       visibility: visible;
-    }
-
-    #invoice-container {
       -webkit-print-color-adjust: exact;
+    }
+    #export-content-pdf {
+      display: block;
       position: absolute;
-      left: 0;
-      top: 0;
-      box-shadow: none;
-      //   div * {
-      //     // page-break-inside: auto;
-      //   }
+      left: 0px;
+      top: 50px;
+      // bottom: 0;
+      overflow: auto;
+      width: 100%;
     }
-
-    #invoice-container table.questionTable {
-      page-break-inside: avoid;
-      page-break-after: avoid;
+    .break-page {
+      page-break-before: always !important;
+      // page-break-inside: avoid;
+      // clear: both;
     }
-
-    // #invoice-container div .vx-row * {
-    //   page-break-inside: avoid;
-    //   page-break-after: avoid;
-    // }
-    // #invoice-container .vs-progress--foreground * {
-    //   page-break-inside: avoid;
-    //   page-break-after: avoid;
-    // }
-    // #invoice-container h5 {
-    //   page-break-inside: avoid;
-    //   page-break-after: avoid;
-    // }
+  }
+  .noPadding {
+    padding: 0 !important;
+  }
+  .closed-answer-span {
+  }
+  .closedAnswerTd {
+    text-align: center;
+    color: white;
+    width: 30%;
+  }
+  .imgTd {
+    width: 100%;
+    text-align: left;
+  }
+  .normalAnswerTd {
+    text-align: right;
+    width: 30%;
+  }
+  .break-page {
+    page-break-before: always;
+  }
+  .vue-star-rating * {
+    display: flex !important;
+  }
+  .overview-data {
+    .overview-data-header {
+      > div {
+        width: 33.333333%;
+        background-color: #ededed !important;
+        padding: 8px 12px;
+      }
+    }
+    .overview-data-body {
+      > div {
+        padding: 8px 12px;
+        border-bottom: 1px solid #ededed !important;
+      }
+    }
+  }
+  .vue-star-rating {
+    .vue-star-rating-star {
+      display: flex !important;
+    }
   }
 }
 </style>
 
-<style>
-  .report-schedule .vs-dialog {
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
+<style lang="scss">
+// #report-print {
+//   display: none;
+// }
+
+// #invoice-container {
+//   visibility: hidden;
+// }
+
+// @media print {
+//   //   @page {
+//   //     size: auto;
+//   //     margin: 20mm 0 10mm 0;
+//   //   }
+//   body {
+//     background: #ffffff !important;
+//   }
+//   .export-options {
+//     visibility: hidden;
+//   }
+
+//   #app {
+//     * {
+//       visibility: hidden;
+//     }
+
+//     #export-content-pdf,
+//     #export-content-pdf * {
+//       visibility: visible;
+//     }
+//     // #export-content-pdf {
+//     //   visibility: visible;
+//     //   position: relative;
+//     //   top: -500px;
+//     // }
+//     #export-content-pdf {
+//       position: absolute;
+//       left: 20px;
+//       top: 50px;
+//       bottom: 0;
+//       overflow: auto;
+//       width: 600px;
+//     }
+
+//     .one-template {
+//       page-break-before: always;
+//       page-break-inside: avoid;
+//     }
+//     .break-page {
+//       page-break-before: always;
+//       page-break-inside: avoid;
+//       clear: both;
+//     }
+//     .page-break {
+//       page-break-after: always;
+//       page-break-inside: avoid;
+//       clear: both;
+//     }
+//     .page-break-before {
+//       page-break-before: always;
+//       page-break-inside: avoid;
+//       clear: both;
+//     }
+//     #report-print {
+//       display: none;
+//     }
+
+//     #content-area {
+//       margin: 0 !important;
+//     }
+
+//     #invoice-container,
+//     #invoice-container * {
+//       visibility: hidden;
+//     }
+
+//     #invoice-container {
+//       -webkit-print-color-adjust: exact;
+//       position: absolute;
+//       left: 0;
+//       top: 0;
+//       box-shadow: none;
+//       //   div * {
+//       //     // page-break-inside: auto;
+//       //   }
+//     }
+
+//     #invoice-container table.questionTable {
+//       page-break-inside: avoid;
+//       page-break-after: avoid;
+//     }
+
+//     // #invoice-container div .vx-row * {
+//     //   page-break-inside: avoid;
+//     //   page-break-after: avoid;
+//     // }
+//     // #invoice-container .vs-progress--foreground * {
+//     //   page-break-inside: avoid;
+//     //   page-break-after: avoid;
+//     // }
+//     // #invoice-container h5 {
+//     //   page-break-inside: avoid;
+//     //   page-break-after: avoid;
+//     // }
+//   }
+// }
 </style>
-<style lang="scss" src="../analytics/buefy.scss"></style>
