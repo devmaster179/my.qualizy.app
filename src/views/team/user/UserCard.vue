@@ -7,7 +7,7 @@
           <vs-avatar v-else size="50px" :src="require('@/assets/images/user.png')" />
           <div class="user-name">
             <p class="karla-bold text-lg color-my-black">{{user.name}}</p>
-            <p class="karla text-sm">{{user.email}}</p>
+            <p class="karla text-sm" style="word-break: break-word;">{{user.email}}</p>
           </div>
         </div>
         <vs-dropdown vs-trigger-click v-if="canEdit">
