@@ -989,9 +989,10 @@ export default {
   computed: {
     templateAction() {
       return (p, q, a) => {
-        return false;
-        return this.templateInfo.content.pages[p].questions[q].answers[a]
-          .action;
+        if (this.templateInfo.content.pages[p].questions[q].answers[a].action === undefined) {
+          return [];
+        }
+        return this.templateInfo.content.pages[p].questions[q].answers[a].action;
       };
     },
     isMobile() {
