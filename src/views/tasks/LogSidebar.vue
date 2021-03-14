@@ -1672,7 +1672,7 @@ export default {
               });
               db.collection("notifications").add({
                 icon: "CheckSquareIcon",
-                type: actionItem.types,
+                types: actionItem.types,
                 readIds: [],
                 sendEmails: mUsers,
                 text: actionItem.description,
@@ -1705,7 +1705,7 @@ export default {
               db.collection("notifications")
                 .doc(notification.id)
                 .update({
-                  type: actionItem.types,
+                  types: actionItem.types,
                   readIds: [],
                   sendEmails: mUsers,
                   text: actionItem.description,
