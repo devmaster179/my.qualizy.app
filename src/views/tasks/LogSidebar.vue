@@ -1506,15 +1506,15 @@ export default {
       actions.forEach((action) => {
         if (action && action.content !== undefined) {
           if (
-            (action.condition == "Equal" && e == action.content[0]) ||
-            (action.condition == "Not Equal" && e != action.content[0]) ||
-            (action.condition == "Less Than" && e < action.content[0]) ||
-            (action.condition == "Less Than or Equal" &&
+            (action.condition == "equal" && e == action.content[0]) ||
+            (action.condition == "not equal" && e != action.content[0]) ||
+            (action.condition == "less than" && e < action.content[0]) ||
+            (action.condition == "less than or equal" &&
               e <= action.content[0]) ||
-            (action.condition == "Greater Than" && e > action.content[0]) ||
-            (action.condition == "Greater Than or Equal" &&
+            (action.condition == "greater than" && e > action.content[0]) ||
+            (action.condition == "greater than or equal" &&
               e >= action.content[0]) ||
-            (action.condition == "Between" &&
+            (action.condition == "between" &&
               e >= action.content[0] &&
               e <= action.content[1])
           ) {
@@ -1531,7 +1531,7 @@ export default {
             });
             var templateTitle = this.templateInfo.content.templateTitle;
             var mUsers = [];
-            action.toUser.map((id) => {
+            action.teams.map((id) => {
               let team = this.$store.getters["app/getTeamById"](id);
               if (team == undefined) return;
               let user = this.$store.getters["app/users"].filter(
@@ -1543,8 +1543,7 @@ export default {
                 mUsers.push({ email: item.email, name: item.name });
               });
             });
-
-            if (notification == undefined) {
+            if (notification === undefined) {
               db.collection("notifications").add({
                 readIds: [],
                 sendEmails: mUsers,
@@ -1566,8 +1565,8 @@ export default {
                   e +
                   this.pages[pIndex].questions[qIndex].answers[aIndex].ref.type
                     .tempUnit,
-                alertType: action.alertType || action.alwertType,
-                toTeam: action.toUser,
+                types: action.types,
+                toTeam: action.teams,
                 group: JSON.parse(localStorage.getItem("userInfo")).group,
                 updated_by: JSON.parse(localStorage.getItem("userInfo")).id,
                 updated_at: new Date(),

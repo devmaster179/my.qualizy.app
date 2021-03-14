@@ -299,7 +299,9 @@ export default {
   },
   unreadNotifications: state => user => {
     // var notifications = state.notifications.filter(item => item.at != undefined && item.readIds.indexOf(user.id) < 0 && item.toTeam.some(team => user.team.includes(team)))
-    var notifications = state.notifications.filter(item => item.readIds.indexOf(user.id) < 0 && item.toTeam.some(team => user.team.includes(team)))
+    var notifications = state.notifications.filter(item => 
+      item.readIds.indexOf(user.id) < 0 && item.toTeam.some(team => user.team.includes(team))
+      )
     return notifications.sort((a, b) => b.updated_at.toDate().getTime() - a.updated_at.toDate().getTime())
   },
   getNotificationById: state => (id) => {
