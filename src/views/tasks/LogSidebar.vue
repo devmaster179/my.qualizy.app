@@ -1539,16 +1539,15 @@ export default {
               );
 
               user.map((item) => {
-                if (mUsers.find((mUser) => mUser.email == item.email)) return;
+                if (
+                  mUsers.find((mUser) => mUser.email == item.email) != undefined || item.rEmail === undefined || !item.rEmail
+                )
+                  return;
                 mUsers.push({ email: item.email, name: item.name });
               });
             });
             if (notification === undefined) {
-              db.collection("notifications").add({
-                readIds: [],
-                sendEmails: mUsers,
-                text:
-                  "Captured " +
+              const notificationText = "Captured " +
                   '"' +
                   e +
                   this.pages[pIndex].questions[qIndex].answers[aIndex].ref.type
@@ -1556,7 +1555,11 @@ export default {
                   '" in ' +
                   '"' +
                   this.pages[pIndex].questions[qIndex].title +
-                  '"',
+                  '"';
+              db.collection("notifications").add({
+                readIds: [],
+                sendEmails: mUsers,
+                text: notificationText,
                 templateIndexes: [pIndex, qIndex, aIndex],
                 logID: this.logID,
                 templateId: this.template,
@@ -1572,6 +1575,20 @@ export default {
                 updated_at: new Date(),
                 at: firebase.firestore.FieldValue.serverTimestamp(),
               });
+
+              mUsers.map((mUser) => {
+                this.$http
+                .post(
+                  "https://us-central1-the-haccp-app-249610.cloudfunctions.net/api/sendMail",
+                  {
+                    email: mUser.email,
+                    subject: templateTitle,
+                    html: notificationText
+                  }
+                )
+                .then(() => {});
+              });
+              
             } else {
               db.collection("notifications")
                 .doc(notification.id)
@@ -1655,7 +1672,7 @@ export default {
               });
               db.collection("notifications").add({
                 icon: "CheckSquareIcon",
-                type: actionItem.types,
+                types: actionItem.types,
                 readIds: [],
                 sendEmails: mUsers,
                 text: actionItem.description,
@@ -1671,11 +1688,24 @@ export default {
                 updated_at: new Date(),
                 at: firebase.firestore.FieldValue.serverTimestamp(),
               });
+
+              mUsers.map((mUser) => {
+                this.$http
+                .post(
+                  "https://us-central1-the-haccp-app-249610.cloudfunctions.net/api/sendMail",
+                  {
+                    email: mUser.email,
+                    subject: actionItem.name,
+                    html: actionItem.description
+                  }
+                )
+                .then(() => {});
+              });
             } else {
               db.collection("notifications")
                 .doc(notification.id)
                 .update({
-                  type: actionItem.types,
+                  types: actionItem.types,
                   readIds: [],
                   sendEmails: mUsers,
                   text: actionItem.description,
