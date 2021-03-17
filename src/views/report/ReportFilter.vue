@@ -140,8 +140,14 @@ export default {
     date1(val) {
       var today = new Date();
       if (val == "custom") {
-        this.from = new Date(today.getTime() - 10 * 24 * 60 * 60 * 1000);
-        this.to = today;
+        console.log("filter", this.filter);
+        if (this.filter._from  !== undefined) {
+          this.from = this.filter._from;
+          this.to = this.filter._to;
+        } else{
+          this.from = new Date(today.getTime() - 10 * 24 * 60 * 60 * 1000);
+          this.to = today;
+        }
       } else if (val == "today") {
         this.from = this.to = today;
       } else if (val == "thisW") {

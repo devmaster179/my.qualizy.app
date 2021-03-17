@@ -1370,7 +1370,16 @@ export default {
       .get()
       .then((doc) => {
         this.$vs.loading.close();
-        this.filter = doc.data().filter;
+        const filter = doc.data().filter;
+        const from = doc.data().filter.from;
+        const to = doc.data().filter.to;
+
+        if (from !== "" && from !== undefined) {
+          filter._from = new Date(from.seconds * 1000);
+          filter._to = new Date(to.seconds * 1000);
+        }
+        
+        this.filter = filter;
         this.reportTitle = doc.data().title;
         this.description = doc.data().description;
         this.visible = doc.data().visible;
@@ -1387,10 +1396,16 @@ export default {
 
         var today = new Date();
         if (this.filter.date == "custom") {
-          this.filter.from = new Date(
-            today.getTime() - 10 * 24 * 60 * 60 * 1000
-          );
-          this.filter.to = today;
+          if (this.filter._from !== undefined) {
+            this.filter.from = this.filter._from;
+            this.filter.to = this.filter._to;
+          } else {
+            this.filter.from = new Date(
+              today.getTime() - 10 * 24 * 60 * 60 * 1000
+            );
+            this.filter.to = today;
+          }
+          
         } else if (this.filter.date == "today") {
           this.filter.from = this.filter.to = today;
         } else if (this.filter.date == "thisW") {
