@@ -79,7 +79,7 @@
                       <span class="text-danger" v-if="!questionTR.data.loged">---</span>
                       <span
                         v-else-if="getType(questionTR.data.ref.type.id).content=='automatic date and time stamp' || getType(questionTR.data.ref.type.id).content=='date'"
-                      >{{convDate(questionTR) | moment('DD MMMM ,YYYY @ HH[h]mm')}}</span>
+                      >{{convDate(questionTR.data.value) | moment('DD MMMM ,YYYY @ HH[h]mm')}}</span>
                       <template
                         v-else-if="getType(questionTR.data.ref.type.id).content=='date time'"
                       >
