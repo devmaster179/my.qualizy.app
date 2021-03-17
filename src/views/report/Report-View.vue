@@ -737,11 +737,17 @@ export default {
                   if (answer.loged) complted++;
                 }
               }
-              if (ontime != 0 && answer.ref.mandatory) {
+              if (ontime != 0 && answer.ref.mandatory && typeof(answer.time) === "object") {
                 ontimeTask =
                   ontimeTask &&
                   answer.loged &&
                   answer.time.toDate().getTime() <= ontime;
+              }
+              if (ontime != 0 && answer.ref.mandatory && typeof(answer.time) === "string") {
+                ontimeTask =
+                  ontimeTask &&
+                  answer.loged &&
+                  (new Date(answer.time)).getTime() <= ontime;
               }
               if (answer.loged) {
                 if (
