@@ -538,7 +538,9 @@
                         'automatic date and time stamp'
                       "
                     >
-                      <div class="pl-4 w-full flex items-center justify-between">
+                      <div
+                        class="pl-4 w-full flex items-center justify-between"
+                      >
                         <span
                           class
                           style="
@@ -764,10 +766,42 @@
                             :src="viewSrc"
                             @closeImage="closeImage"
                           />
-                          <div class="con-img-upload py-0 m-0">
+                          <div v-if="!temporPages.length" class="con-img-upload py-0 m-0">
                             <div
                               class="img-upload my-2"
                               v-for="(image, imageKey) in pages[pIndex]
+                                .questions[qIndex].answers[aIndex].images"
+                              :key="imageKey"
+                            >
+                              <button
+                                type="button"
+                                class="btn-x-file"
+                                @click="
+                                  removeImage(image.url, pIndex, qIndex, aIndex)
+                                "
+                              >
+                                <i
+                                  translate="translate"
+                                  class="material-icons notranslate"
+                                  >delete</i
+                                >
+                              </button>
+                              <img
+                                :src="image.url"
+                                style="max-width: none; max-height: 100%"
+                                @touchend="viewImage(image.url, $event)"
+                                @click="viewImage(image.url, $event)"
+                              />
+                            </div>
+                            <file-upload
+                              :indexs="[pIndex, qIndex, aIndex]"
+                              @url="uploadSucess"
+                            />
+                          </div>
+                          <div v-else class="con-img-upload py-0 m-0">
+                            <div
+                              class="img-upload my-2"
+                              v-for="(image, imageKey) in temporPages[pIndex]
                                 .questions[qIndex].answers[aIndex].images"
                               :key="imageKey"
                             >
@@ -801,11 +835,12 @@
                     </template>
                   </div>
                 </div>
-                <div
-                  class="mt-5">
+                <div class="mt-5">
                   <div class="vx-row answer-content">
                     <template>
-                      <div class="pl-4 w-full flex items-center justify-between">
+                      <div
+                        class="pl-4 w-full flex items-center justify-between"
+                      >
                         <span></span>
                         <vs-button
                           class="px-1 sm:px-4 text-right align-end"
@@ -952,6 +987,7 @@ export default {
       pageNum: 0,
       log: [],
       number: 0,
+      temporPages: [],
     };
   },
   watch: {
@@ -983,16 +1019,20 @@ export default {
       //   setTimeout(() => {
       //     this.showThread = false;
       //   }, 500);
-    },
+    }
   },
 
   computed: {
     templateAction() {
       return (p, q, a) => {
-        if (this.templateInfo.content.pages[p].questions[q].answers[a].action === undefined) {
+        if (
+          this.templateInfo.content.pages[p].questions[q].answers[a].action ===
+          undefined
+        ) {
           return [];
         }
-        return this.templateInfo.content.pages[p].questions[q].answers[a].action;
+        return this.templateInfo.content.pages[p].questions[q].answers[a]
+          .action;
       };
     },
     isMobile() {
@@ -1227,16 +1267,18 @@ export default {
   methods: {
     duplicateSection(pIndex, qIndex) {
       let questions = this.pages[pIndex].questions;
-      let question = JSON.parse(JSON.stringify(this.pages[pIndex].questions[qIndex]));
+      let question = JSON.parse(
+        JSON.stringify(this.pages[pIndex].questions[qIndex])
+      );
       // question.answers[aIndex].value = new Date();
 
       // Makes so the duplicated section has the initial value.
-      question.answers.forEach(answer => {
-        answer.value="";
+      question.answers.forEach((answer) => {
+        answer.value = "";
       });
-      
+
       // Insert the section in to the right position.
-      questions.splice(qIndex+1, 0, question);
+      questions.splice(qIndex + 1, 0, question);
       questions.join();
       this.pages[pIndex].questions = questions;
 
@@ -1429,21 +1471,39 @@ export default {
         }
       }
     },
-    uploadSucess(url, ref, indexs) {
+    uploadSucess(url, ref, indexs, kind = "online") {
       this.initState = false;
       this.saveState = true;
-      this.pages[indexs[0]].questions[indexs[1]].answers[
-        indexs[2]
-      ].images.push({ url: url, ref: ref });
-      this.pages[indexs[0]].questions[indexs[1]].answers[
-        indexs[2]
-      ].loged = true;
-      this.pages[indexs[0]].questions[indexs[1]].answers[
-        indexs[2]
-      ].time = new Date();
-      this.pages[indexs[0]].questions[indexs[1]].answers[
-        indexs[2]
-      ].user = JSON.parse(localStorage.getItem("userInfo")).id;
+      if (kind === "online") {
+        this.temporPages = []
+        this.pages[indexs[0]].questions[indexs[1]].answers[
+          indexs[2]
+        ].images.push({ url: url, ref: ref });
+        this.pages[indexs[0]].questions[indexs[1]].answers[
+          indexs[2]
+        ].loged = true;
+        this.pages[indexs[0]].questions[indexs[1]].answers[
+          indexs[2]
+        ].time = new Date();
+        this.pages[indexs[0]].questions[indexs[1]].answers[
+          indexs[2]
+        ].user = JSON.parse(localStorage.getItem("userInfo")).id;
+      } else if (kind === "offline") {
+        if (!this.temporPages.length)
+          this.temporPages = JSON.parse(JSON.stringify(this.pages));
+        this.temporPages[indexs[0]].questions[indexs[1]].answers[
+          indexs[2]
+        ].images.push({ url: url, ref: ref });
+        this.temporPages[indexs[0]].questions[indexs[1]].answers[
+          indexs[2]
+        ].loged = true;
+        this.temporPages[indexs[0]].questions[indexs[1]].answers[
+          indexs[2]
+        ].time = new Date();
+        this.temporPages[indexs[0]].questions[indexs[1]].answers[
+          indexs[2]
+        ].user = JSON.parse(localStorage.getItem("userInfo")).id;
+      }
       db.collection("logs")
         .doc(this.logID)
         .update({
