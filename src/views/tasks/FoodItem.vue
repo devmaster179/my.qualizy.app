@@ -115,7 +115,7 @@ export default {
       let items = this.$store.getters["app/items"];
       let _items = [];
       items.map(item => {
-        if (item.discard) return;
+        if (item.discard || item.deleted === true) return;
         _items.push(item);
       });
       if (this.searchQuery == "" || this.searchQuery == this.selectedText)

@@ -539,10 +539,7 @@ export default {
           .onSnapshot((q) => {
             let items = [];
             q.forEach((doc) => {
-              const item = doc.data();
-              if (item.deleted === undefined || item.deleted === false) {
-                items.push(Object.assign({}, doc.data(), { id: doc.id }));
-              }
+              items.push(Object.assign({}, doc.data(), { id: doc.id }));
             });
             this.$store.dispatch("app/setItems", items);
             resolve("OK");
