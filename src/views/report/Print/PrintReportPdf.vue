@@ -1,11 +1,17 @@
 <template>
   <div class="break-inside-avoid">
-    <div id="report-overview" class="break-inside-avoid">
+    <div
+      id="report-overview"
+      style="min-height: 900px"
+      class="break-inside-avoid"
+    >
       <div class="logo">
         <img
           :src="
             applyImage(getTemplateInfo(log.templateID).content.templateImage)
           "
+          height="50"
+          width="50"
           ref="tem_img"
         />
         <!-- <img :src="tmpl_logo" alt="template logo" /> -->
@@ -52,16 +58,82 @@
           </div>
           <div class="flex justify-between">
             <div>Prepared by</div>
-            <div>{{ getUserInfo(log.updated_by).name }}</div>
+            <div>{{ getUserInfo(log.updated_by).name | capitalize }}</div>
+          </div>
+          <div class="flex justify-between">
+            <div>Country</div>
+            <div>
+              <template
+                v-for="(location, index) in getLocationsByNames(oneLog)
+                  .locationCountries"
+              >
+                <span :key="location.key">{{ location.key | capitalize }}</span>
+                <span
+                  :key="'2' + location.key"
+                  v-if="
+                    getLocationsByNames(oneLog).locationCountries.length !=
+                    index + 1
+                  "
+                  >,
+                </span>
+              </template>
+            </div>
+          </div>
+          <div class="flex justify-between">
+            <div>Region</div>
+            <div>
+              <template
+                v-for="(location, index) in getLocationsByNames(oneLog)
+                  .locationRegions"
+              >
+                <span :key="location.key">{{ location.key | capitalize }}</span>
+                <span
+                  :key="'2' + location.key"
+                  v-if="
+                    getLocationsByNames(oneLog).locationRegions.length !=
+                    index + 1
+                  "
+                  >,
+                </span>
+              </template>
+            </div>
+          </div>
+          <div class="flex justify-between">
+            <div>Area</div>
+            <div>
+              <template
+                v-for="(location, index) in getLocationsByNames(oneLog)
+                  .locationAreas"
+              >
+                <span :key="location.key">{{ location.key | capitalize }}</span>
+                <span
+                  :key="'2' + location.key"
+                  v-if="
+                    getLocationsByNames(oneLog).locationAreas.length !=
+                    index + 1
+                  "
+                  >,
+                </span>
+              </template>
+            </div>
           </div>
           <div class="flex justify-between">
             <div>Location</div>
             <div>
-              {{
-                $store.getters["app/getLocationById"](
-                  getUserInfo(log.updated_by).location[0]
-                ).name
-              }}
+              <template
+                v-for="(location, index) in getLocationsByNames(oneLog)
+                  .locationNames"
+              >
+                <span :key="location.id">{{ location.name | capitalize }}</span>
+                <span
+                  :key="'2' + location.id"
+                  v-if="
+                    getLocationsByNames(oneLog).locationNames.length !=
+                    index + 1
+                  "
+                  >,
+                </span>
+              </template>
             </div>
           </div>
         </div>
@@ -110,10 +182,12 @@
               background: rgb(191 10 10);
               color: white;
               width: 30%;
-              min-width: 300px;
+              display: flex;
+              justify-content: center;
+              align-items: center;
             "
           >
-            {{ answer.value }}
+            <span>{{ answer.value }}</span>
           </div>
         </div>
       </div>
@@ -321,6 +395,7 @@
                     v-if="
                       answer.value.url !== undefined && answer.value.url != ''
                     "
+                    style="width: 100%"
                   />
                 </template>
                 <template
@@ -533,6 +608,7 @@
                         cAnswer.value.url !== undefined &&
                         cAnswer.value.url != ''
                       "
+                      style="width: 100%"
                     />
                   </template>
                   <template
@@ -656,7 +732,14 @@ export default {
   data() {
     return {
       tmpl_logo: "",
+      oneLog: { locations: [] },
       baseUrl: window.location.protocol + "//" + window.location.host,
+      locationDetails: {
+        locationCountries: [],
+        locationRegions: [],
+        locationAreas: [],
+        locationNames: [],
+      },
     };
   },
   computed: {
@@ -1017,6 +1100,103 @@ export default {
         ontime: `${checkOnTimeTask}/${scheduled}`,
       };
     },
+    getLocationsByNames() {
+      return (log) => {
+        let names = log.locations;
+        var cUser = this.$store.getters["app/currentUser"];
+        var roleKey = 4;
+        var userLocation = [];
+        if (cUser == undefined || cUser.role == undefined) {
+          roleKey = 4;
+        } else {
+          roleKey = cUser.role.key;
+          userLocation = cUser.location || [];
+        }
+        let locations = this.$store.getters["app/locations"].filter((item) => {
+          if (roleKey > 1) {
+            if (userLocation.indexOf(item.id) < 0) return false;
+          }
+          if (item.active && !item.deleted && names.indexOf(item.name) > -1) {
+            return true;
+          }
+          return false;
+        });
+        var locationCountries = [];
+        var locationRegions = [];
+        var locationAreas = [];
+        var locationNames = [];
+        var typedLocations = {
+          key: this.$t("all"),
+          count: 0,
+          items: [],
+        };
+        var count = 0;
+        locations.map((location) => {
+          if (location.address.country === undefined) return;
+          count++;
+          var country, region, area;
+          country = typedLocations.items.find(
+            (countries) => countries.key == location.address.country
+          );
+
+          if (country === undefined) {
+            typedLocations.items.push({
+              key: location.address.country,
+              items: [],
+            });
+            locationCountries.push({
+              key: location.address.country,
+              items: [],
+            });
+          }
+
+          country = typedLocations.items.find(
+            (countries) => countries.key == location.address.country
+          );
+
+          if (location.region !== undefined && location.region != "") {
+            region = country.items.find(
+              (regions) => regions.key == location.region
+            );
+            if (region === undefined) {
+              country.items.push({ key: location.region, items: [] });
+              locationRegions.push({ key: location.region, items: [] });
+            }
+            region = country.items.find(
+              (regions) => regions.key == location.region
+            );
+
+            if (location.area !== undefined && location.area != "") {
+              area = region.items.find((areas) => areas.key == location.area);
+              if (area === undefined) {
+                region.items.push({ key: location.area, items: [] });
+                locationAreas.push({ key: location.area, items: [] });
+              }
+              area = region.items.find((areas) => areas.key == location.area);
+              area.items.push({ name: location.name, id: location.id });
+              locationNames.push({ name: location.name, id: location.id });
+            } else {
+              region.items.unshift({ name: location.name, id: location.id });
+              locationNames.push({ name: location.name, id: location.id });
+            }
+          } else {
+            country.items.unshift({ name: location.name, id: location.id });
+            locationNames.push({ name: location.name, id: location.id });
+          }
+        });
+        typedLocations.count = count;
+        var obj = {
+          locationCountries,
+          locationRegions,
+          locationAreas,
+          locationNames,
+        };
+
+        console.log("getLocationsByNames", names, this.log, log, obj);
+        this.locationDetails = obj;
+        return obj;
+      };
+    },
   },
   mounted() {
     console.log(
@@ -1025,23 +1205,26 @@ export default {
       this.log,
       this.getTemplateInfo(this.log.templateID)
     );
-    console.log("getUserInfo:", this.getUserInfo(this.log.updated_by));
-    console.log("reportInfo:", this.reportInfo);
-    console.log("failedItems:", this.failedItems);
+    this.oneLog = this.log;
   },
   methods: {
     applyImage(image) {
+      console.log("applyImage", image);
       if (image.indexOf("firebasestorage") > -1) {
         return image;
       }
-      return this.baseUrl + require(`@/assets/images/template_image/${image}`);
+      let img = require(`@/assets/images/template_image/${image}`);
+
+      if (image.indexOf("png") > -1) {
+        return img;
+      }
+      return this.baseUrl + img;
     },
     filteredAnswers(answers, parent) {
       if (parent.ref.hasCondLogic != true) {
         return;
       }
       // get only answers which is matched to tab condition
-      console.log("filterAnswers", answers, parent);
       answers = answers.filter((a) => a.ref.parent == parent.ref.id);
       let selectedAnswer = parent.value;
       let matchingTabs = [];
@@ -1080,16 +1263,9 @@ export default {
           }
         });
       }
-      console.log(
-        "matchingTabs:",
-        matchingTabs,
-        this.conditionTabs(parent.ref.id),
-        answers
-      );
 
       const filtered = answers.filter((answer) => {
         return matchingTabs.some((tab) => {
-          console.log("tId == answer.ref.tabId", tab.id, answer.ref.tabId);
           return tab.id == answer.ref.tabId;
         });
       });
@@ -1104,12 +1280,7 @@ export default {
       ) {
         return [];
       }
-      console.log(
-        "conditionTabs in LogItem",
-        this.getTemplateInfo(this.log.templateID).content.conditionTabs.filter(
-          (tab) => tab.createdByAnswer == parentAnswerId
-        )
-      );
+
       return this.getTemplateInfo(
         this.log.templateID
       ).content.conditionTabs.filter(
@@ -1143,6 +1314,9 @@ export default {
   text-align: center;
   color: white;
   width: 30%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .imgTd {
   width: 100%;
@@ -1180,9 +1354,5 @@ export default {
   .vue-star-rating-star {
     display: flex !important;
   }
-}
-
-#failed-items {
-  min-height: 1000px;
 }
 </style>

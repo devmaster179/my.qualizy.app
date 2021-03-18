@@ -178,11 +178,9 @@ export default {
       return !this.errors.any() && this.email != "" && this.password != "";
     },
   },
-
   created() {
-    console.log("12-31");
+    console.log("3-17");
   },
-
   methods: {
     pressEnter() {
       this.$nextTick(() => {

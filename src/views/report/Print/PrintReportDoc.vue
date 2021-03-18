@@ -7,6 +7,8 @@
           :src="
             applyImage(getTemplateInfo(log.templateID).content.templateImage)
           "
+          width="50"
+          height="50"
           ref="tem_img"
         />
         <!-- <img :src="tmpl_logo" alt="template logo" /> -->
@@ -79,17 +81,6 @@
               </table>
             </td>
           </tr>
-          <!-- <tr>
-            <td style="border-bottom: 1px solid #ededed; padding: 7px 10px">
-              Site
-            </td>
-            <td
-              colspan="2"
-              style="border-bottom: 1px solid #ededed; text-align: right"
-            >
-              Paris
-            </td>
-          </tr> -->
           <tr>
             <td style="border-bottom: 1px solid #ededed; padding: 7px 10px">
               Conducted on
@@ -111,7 +102,79 @@
               colspan="2"
               style="border-bottom: 1px solid #ededed; text-align: right"
             >
-              {{ getUserInfo(log.updated_by).name }}
+              {{ getUserInfo(log.updated_by).name | capitalize }}
+            </td>
+          </tr>
+          <tr>
+            <td style="border-bottom: 1px solid #ededed; padding: 7px 10px">
+              Country
+            </td>
+            <td
+              colspan="2"
+              style="border-bottom: 1px solid #ededed; text-align: right"
+            >
+              <template
+                v-for="(location, index) in getLocationsByNames(oneLog)
+                  .locationCountries"
+              >
+                <span :key="location.key">{{ location.key | capitalize }}</span>
+                <span
+                  :key="'2' + location.key"
+                  v-if="
+                    getLocationsByNames(oneLog).locationCountries.length !=
+                    index + 1
+                  "
+                  >,
+                </span>
+              </template>
+            </td>
+          </tr>
+          <tr>
+            <td style="border-bottom: 1px solid #ededed; padding: 7px 10px">
+              Region
+            </td>
+            <td
+              colspan="2"
+              style="border-bottom: 1px solid #ededed; text-align: right"
+            >
+            <template
+                v-for="(location, index) in getLocationsByNames(oneLog)
+                  .locationRegions"
+              >
+                <span :key="location.key">{{ location.key | capitalize  }}</span>
+                <span
+                  :key="'2' + location.key"
+                  v-if="
+                    getLocationsByNames(oneLog).locationRegions.length !=
+                    index + 1
+                  "
+                  >,
+                </span>
+              </template>
+            </td>
+          </tr>
+          <tr>
+            <td style="border-bottom: 1px solid #ededed; padding: 7px 10px">
+              Area
+            </td>
+            <td
+              colspan="2"
+              style="border-bottom: 1px solid #ededed; text-align: right"
+            >
+            <template
+                v-for="(location, index) in getLocationsByNames(oneLog)
+                  .locationAreas"
+              >
+                <span :key="location.key">{{ location.key | capitalize  }}</span>
+                <span
+                  :key="'2' + location.key"
+                  v-if="
+                    getLocationsByNames(oneLog).locationAreas.length !=
+                    index + 1
+                  "
+                  >,
+                </span>
+              </template>
             </td>
           </tr>
           <tr>
@@ -122,11 +185,20 @@
               colspan="2"
               style="border-bottom: 1px solid #ededed; text-align: right"
             >
-              {{
-                $store.getters["app/getLocationById"](
-                  getUserInfo(log.updated_by).location[0]
-                ).name
-              }}
+            <template
+                v-for="(location, index) in getLocationsByNames(oneLog)
+                  .locationNames"
+              >
+                <span :key="location.id">{{ location.name | capitalize  }}</span>
+                <span
+                  :key="'2' + location.id"
+                  v-if="
+                    getLocationsByNames(oneLog).locationNames.length !=
+                    index + 1
+                  "
+                  >,
+                </span>
+              </template>
             </td>
           </tr>
         </table>
@@ -400,6 +472,8 @@
                       v-if="
                         answer.value.url !== undefined && answer.value.url != ''
                       "
+                    width="300"
+                          style="position: relative"
                     />
                   </template>
                   <template
@@ -632,6 +706,8 @@
                             cAnswer.value.url !== undefined &&
                             cAnswer.value.url != ''
                           "
+                          style="position: relative"
+                    width="300"
                         />
                       </template>
                       <template
@@ -823,6 +899,7 @@ export default {
   },
   data() {
     return {
+      oneLog: { locations: [] },
       tmpl_logo: "",
       baseUrl: window.location.protocol + "//" + window.location.host,
     };
@@ -1185,6 +1262,103 @@ export default {
         ontime: `${checkOnTimeTask}/${scheduled}`,
       };
     },
+    getLocationsByNames() {
+      return (log) => {
+        let names = log.locations;
+        var cUser = this.$store.getters["app/currentUser"];
+        var roleKey = 4;
+        var userLocation = [];
+        if (cUser == undefined || cUser.role == undefined) {
+          roleKey = 4;
+        } else {
+          roleKey = cUser.role.key;
+          userLocation = cUser.location || [];
+        }
+        let locations = this.$store.getters["app/locations"].filter((item) => {
+          if (roleKey > 1) {
+            if (userLocation.indexOf(item.id) < 0) return false;
+          }
+          if (item.active && !item.deleted && names.indexOf(item.name) > -1) {
+            return true;
+          }
+          return false;
+        });
+        var locationCountries = [];
+        var locationRegions = [];
+        var locationAreas = [];
+        var locationNames = [];
+        var typedLocations = {
+          key: this.$t("all"),
+          count: 0,
+          items: [],
+        };
+        var count = 0;
+        locations.map((location) => {
+          if (location.address.country === undefined) return;
+          count++;
+          var country, region, area;
+          country = typedLocations.items.find(
+            (countries) => countries.key == location.address.country
+          );
+
+          if (country === undefined) {
+            typedLocations.items.push({
+              key: location.address.country,
+              items: [],
+            });
+            locationCountries.push({
+              key: location.address.country,
+              items: [],
+            });
+          }
+
+          country = typedLocations.items.find(
+            (countries) => countries.key == location.address.country
+          );
+
+          if (location.region !== undefined && location.region != "") {
+            region = country.items.find(
+              (regions) => regions.key == location.region
+            );
+            if (region === undefined) {
+              country.items.push({ key: location.region, items: [] });
+              locationRegions.push({ key: location.region, items: [] });
+            }
+            region = country.items.find(
+              (regions) => regions.key == location.region
+            );
+
+            if (location.area !== undefined && location.area != "") {
+              area = region.items.find((areas) => areas.key == location.area);
+              if (area === undefined) {
+                region.items.push({ key: location.area, items: [] });
+                locationAreas.push({ key: location.area, items: [] });
+              }
+              area = region.items.find((areas) => areas.key == location.area);
+              area.items.push({ name: location.name, id: location.id });
+              locationNames.push({ name: location.name, id: location.id });
+            } else {
+              region.items.unshift({ name: location.name, id: location.id });
+              locationNames.push({ name: location.name, id: location.id });
+            }
+          } else {
+            country.items.unshift({ name: location.name, id: location.id });
+            locationNames.push({ name: location.name, id: location.id });
+          }
+        });
+        typedLocations.count = count;
+        var obj = {
+          locationCountries,
+          locationRegions,
+          locationAreas,
+          locationNames,
+        };
+
+        console.log("getLocationsByNames", names, this.log, log, obj);
+        this.locationDetails = obj;
+        return obj;
+      };
+    },
   },
   mounted() {
     console.log(
@@ -1196,13 +1370,20 @@ export default {
     console.log("getUserInfo:", this.getUserInfo(this.log.updated_by));
     console.log("reportInfo:", this.reportInfo);
     console.log("failedItems:", this.failedItems);
+    this.oneLog = this.log;
   },
   methods: {
     applyImage(image) {
+      console.log("applyImage", image);
       if (image.indexOf("firebasestorage") > -1) {
         return image;
       }
-      return this.baseUrl + require(`@/assets/images/template_image/${image}`);
+      let img = require(`@/assets/images/template_image/${image}`);
+      console.log("applyImage", img);
+      if (image.indexOf("png") > -1) {
+        return img;
+      }
+      return this.baseUrl + img;
     },
     filteredAnswers(answers, parent) {
       if (parent.ref.hasCondLogic != true) {

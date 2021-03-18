@@ -403,10 +403,10 @@
     </div>
     <!-- END Word -->
 
-    <div class="w-full" id="report-print">
-      <vx-card id="invoice-container">
-        <!-- REPROT METADATA -->
-        <div class="p-base flex items-center justify-between">
+    <!-- <div class="w-full" id="report-print">
+      <vx-card id="invoice-container"> -->
+    <!-- REPROT METADATA -->
+    <!-- <div class="p-base flex items-center justify-between">
           <div class="flex items-center">
             <img
               alt="vuexy-logo"
@@ -422,9 +422,9 @@
               <p>{{ new Date() | date(true) }}</p>
             </div>
           </div>
-        </div>
-        <!-- REPROT CONTENT -->
-        <div
+        </div> -->
+    <!-- REPROT CONTENT -->
+    <!-- <div
           :key="'print' + log.id"
           class="items-list-view"
           v-for="log in filteredLogs"
@@ -432,7 +432,7 @@
           <print-item :item="log" />
         </div>
       </vx-card>
-    </div>
+    </div> -->
 
     <report-filter
       :filter="filter"
@@ -938,6 +938,7 @@ export default {
               });
           });
         }
+
         return obj;
       };
     },
@@ -1393,6 +1394,10 @@ export default {
           text-align: right;
         }
         .closed-answer-span {
+        }
+        .break-inside-avoid {
+          page-break-inside: avoid !important;
+          page-break-after: always !important;
         }
         </style>
         </head><body>`;
@@ -1958,9 +1963,6 @@ export default {
   .break-inside-avoid {
     page-break-inside: avoid !important;
     page-break-after: always !important;
-  }
-  #failed-items {
-    min-height: 1000px;
   }
   body {
     background: #ffffff !important;
