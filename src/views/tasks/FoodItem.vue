@@ -115,7 +115,9 @@ export default {
       let items = this.$store.getters["app/items"];
       let _items = [];
       items.map(item => {
-        if (item.discard || item.deleted === true) return;
+        let expired = true;
+        expired = (item.e_date.seconds * 1000 > (new Date()).getTime()) || !item.forever;
+        if (item.discard || item.deleted === true || expired) return;
         _items.push(item);
       });
       if (this.searchQuery == "" || this.searchQuery == this.selectedText)
