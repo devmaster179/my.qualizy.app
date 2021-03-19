@@ -316,8 +316,15 @@
                       getType(answer.ref.type.id).type != 'attachments',
                   }"
                 >
+                  <!-- <vs-checkbox
+                    v-if="getType(answer.ref.type.id).content == 'checkbox'"
+                    disabled="true"
+                    :value="answer.value"
+                    style="float: right"
+                  ></vs-checkbox> -->
+                  <input type="checkbox" v-if="getType(answer.ref.type.id).content == 'checkbox'" disabled="true" :checked="answer.value" />
                   <p
-                    v-if="!answer.loged"
+                    v-else-if="!answer.loged"
                     style="color: rgb(191, 10, 10); text-align: right"
                   >
                     ---
@@ -380,13 +387,6 @@
                   >
                     {{ answer.value }}
                   </div>
-                  <vs-checkbox
-                    v-else-if="
-                      getType(answer.ref.type.id).content == 'checkbox'
-                    "
-                    disabled="true"
-                    :value="answer.value"
-                  ></vs-checkbox>
                   <template
                     v-else-if="getType(answer.ref.type.id).content == 'items'"
                   >
@@ -534,9 +534,16 @@
                           getType(cAnswer.ref.type.id).type != 'attachments',
                       }"
                     >
+                      <!-- <vs-checkbox
+                        v-if="getType(cAnswer.ref.type.id).content == 'checkbox'"
+                        disabled="true"
+                        :value="cAnswer.value"
+                        style="float: right"
+                      ></vs-checkbox> -->
+                      <input type="checkbox" v-if="getType(cAnswer.ref.type.id).content == 'checkbox'" disabled="true" :checked="cAnswer.value" />
                       <p
+                        v-else-if="!cAnswer.loged"
                         style="color: rgb(191, 10, 10); text-align: right"
-                        v-if="!cAnswer.loged"
                       >
                         ---
                       </p>
@@ -604,13 +611,6 @@
                       >
                         {{ cAnswer.value }}
                       </div>
-                      <vs-checkbox
-                        v-else-if="
-                          getType(cAnswer.ref.type.id).content == 'checkbox'
-                        "
-                        disabled="true"
-                        :value="cAnswer.value"
-                      ></vs-checkbox>
                       <template
                         v-else-if="
                           getType(cAnswer.ref.type.id).content == 'items'
