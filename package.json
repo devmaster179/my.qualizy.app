@@ -17,7 +17,6 @@
     "core-js": "^3.9.1",
     "cron": "^1.8.2",
     "crypto-js": "^4.0.0",
-    "dom-to-pdf": "^0.2.0",
     "easy-circular-progress": "^1.0.4",
     "element-ui": "^2.15.1",
     "emoji-mart-vue-fast": "^7.0.1",
