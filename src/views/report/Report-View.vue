@@ -720,9 +720,6 @@ import PrintReportDoc from "./Print/PrintReportDoc";
 import PrintReportPdf from "./Print/PrintReportPdf";
 import Test from "./Print/Test";
 
-import { jsPDF } from "jspdf";
-var domToPdf = require("dom-to-pdf");
-
 export default {
   components: {
     PrintItem,
@@ -983,17 +980,25 @@ export default {
                   if (answer.loged) complted++;
                 }
               }
-              if (ontime != 0 && answer.ref.mandatory && typeof(answer.time) === "object") {
+              if (
+                ontime != 0 &&
+                answer.ref.mandatory &&
+                typeof answer.time === "object"
+              ) {
                 ontimeTask =
                   ontimeTask &&
                   answer.loged &&
                   answer.time.toDate().getTime() <= ontime;
               }
-              if (ontime != 0 && answer.ref.mandatory && typeof(answer.time) === "string") {
+              if (
+                ontime != 0 &&
+                answer.ref.mandatory &&
+                typeof answer.time === "string"
+              ) {
                 ontimeTask =
                   ontimeTask &&
                   answer.loged &&
-                  (new Date(answer.time)).getTime() <= ontime;
+                  new Date(answer.time).getTime() <= ontime;
               }
               if (answer.loged) {
                 if (
@@ -1318,51 +1323,6 @@ export default {
     },
   },
   methods: {
-    exportPdf() {
-      var that = this;
-      var margins = {
-        top: 70,
-        bottom: 40,
-        left: 30,
-        width: 550,
-      };
-      var pdf = new jsPDF("p", "pt", "a4");
-      pdf.setFontSize(18);
-      pdf.fromHTML(
-        document.getElementById("export-content-pdf"),
-        margins.left, // x coord
-        margins.top,
-        {
-          // y coord
-          width: margins.width, // max width of content on PDF
-        },
-        function (dispose) {
-          that.headerFooterFormatting(pdf);
-        },
-        margins
-      );
-
-      var iframe = document.createElement("iframe");
-      iframe.setAttribute(
-        "style",
-        "position:absolute;right:0; top:0; bottom:0; height:100%; width:650px; padding:20px;"
-      );
-      document.body.appendChild(iframe);
-
-      iframe.src = pdf.output("datauristring");
-    },
-    headerFooterFormatting(doc) {
-      var totalPages = doc.internal.getNumberOfPages();
-
-      for (var i = totalPages; i >= 1; i--) {
-        //make this page, the current page we are currently working on.
-        doc.setPage(i);
-
-        header(doc);
-
-        footer(doc, i, totalPages);
-      }
-    },
     exportDocument(filename) {
       var header = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'>
         <title>Export HTML to Word Document with JavaScript</title>
@@ -1790,7 +1750,7 @@ export default {
           filter._from = new Date(from.seconds * 1000);
           filter._to = new Date(to.seconds * 1000);
         }
-        
+
         this.filter = filter;
         this.reportTitle = doc.data().title;
         this.description = doc.data().description;
@@ -1817,7 +1777,6 @@ export default {
             );
             this.filter.to = today;
           }
-          
         } else if (this.filter.date == "today") {
           this.filter.from = this.filter.to = today;
         } else if (this.filter.date == "thisW") {
