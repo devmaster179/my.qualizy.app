@@ -41,6 +41,9 @@ const mutations = {
     UPDATE_WINDOW_WIDTH(state, width) {
       state.windowWidth = width;
     },
+    UPDATE_INTERNET_ONLINE(state, val) {
+      state.internetOnline = val;
+    },
 
 
     // ////////////////////////////////////////////

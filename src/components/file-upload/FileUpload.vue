@@ -31,6 +31,7 @@
 
 <script>
 import { storage } from "../../firebase/firebaseStorage";
+import { mapGetters } from 'vuex'
 
 export default {
   props: {
@@ -46,6 +47,11 @@ export default {
       file: File,
       ref: "",
     };
+  },
+  computed: {
+    ...mapGetters([
+      'internetOnline'
+    ])
   },
   methods: {
     detectFiles(fileList) {
@@ -86,7 +92,7 @@ export default {
       };
       reader.readAsDataURL(fileList[0]);
     },
-    upload(file, name, type) {
+    async upload(file, name, type) {
       var d = new Date();
       var storageRef = storage.ref();
       this.ref =
@@ -95,6 +101,16 @@ export default {
         JSON.parse(localStorage.getItem("userInfo")).id +
         "/logs/images/" +
         name;
+
+      
+      if (this.internetOnline === false)
+        this.$vs.notify({
+          time: 10000,
+          title: "Offline mode",
+          text:
+            "Your internet connection is off or so slow. Files will be uploaded automatically once the connection is activated.",
+          color: "primary",
+        });
 
       this.inUpload = false;
       this.$emit("url", this.imagePreview, this.ref, this.indexs, "offline");
