@@ -10,10 +10,20 @@
     </div>
 
     <div v-else>
-      <input type="file" accept="image/*" @change="detectFiles($event.target.files)" />
+      <input
+        type="file"
+        accept="image/*"
+        @change="detectFiles($event.target.files)"
+      />
       <span class="text-input">Upload File</span>
-      <button type="button" title="Upload" class="btn-upload-all vs-upload--button-upload">
-        <i translate="translate" class="material-icons notranslate">cloud_upload</i>
+      <button
+        type="button"
+        title="Upload"
+        class="btn-upload-all vs-upload--button-upload"
+      >
+        <i translate="translate" class="material-icons notranslate"
+          >cloud_upload</i
+        >
       </button>
     </div>
   </div>
@@ -25,8 +35,8 @@ import { storage } from "../../firebase/firebaseStorage";
 export default {
   props: {
     indexs: {
-      type: Array
-    }
+      type: Array,
+    },
   },
   data() {
     return {
@@ -34,19 +44,18 @@ export default {
       inUpload: false,
       progressUpload: 100,
       file: File,
-      ref: ""
+      ref: "",
     };
   },
   methods: {
     detectFiles(fileList) {
       var that = this;
-      var img = new Image()
-      var reader = new FileReader();  
-      reader.onload = function(e) {
-        img.src = e.target.result; 
-        that.imagePreview = e.target.result; 
-        that.inUpload = true;
-        img.onload = function() {
+      var img = new Image();
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        img.src = e.target.result;
+        that.imagePreview = e.target.result;
+        img.onload = function () {
           var canvas = document.createElement("canvas");
           var ctx = canvas.getContext("2d");
           ctx.drawImage(img, 0, 0);
@@ -72,12 +81,10 @@ export default {
           var ctx = canvas.getContext("2d");
           ctx.drawImage(img, 0, 0, width, height);
           var dataurl = canvas.toDataURL(fileList[0].type);
-          that.upload(dataurl,fileList[0].name, fileList[0].type);
-        }
-      }
+          that.upload(dataurl, fileList[0].name, fileList[0].type);
+        };
+      };
       reader.readAsDataURL(fileList[0]);
-
-      
     },
     upload(file, name, type) {
       var d = new Date();
@@ -89,17 +96,21 @@ export default {
         "/logs/images/" +
         name;
 
+      this.inUpload = false;
+      this.$emit("url", this.imagePreview, this.ref, this.indexs, "offline");
       var mountainsRef = storageRef.child(this.ref);
-      var uploadTask = mountainsRef.putString(file,'data_url' , {contentType:type});
+      var uploadTask = mountainsRef.putString(file, "data_url", {
+        contentType: type,
+      });
       // var uploadTask = mountainsRef.put(file);
 
       uploadTask.on(
         "state_changed",
-        sp => {
+        (sp) => {
           this.progressUpload =
             100 - (sp.bytesTransferred / sp.totalBytes) * 100;
         },
-        error => {
+        (error) => {
           this.$vs.notify({
             time: 7000,
             title: "Failed uploading",
@@ -109,20 +120,19 @@ export default {
                 Error is occured when file is uploding.`,
             iconPack: "feather",
             icon: "icon-alert-circle",
-            color: "danger"
+            color: "danger",
           });
         },
         () => {
-          uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
+          uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
             this.$emit("url", downloadURL, this.ref, this.indexs);
             this.progressUpload = 0;
             this.inUpload = false;
           });
         }
       );
-    }
+    },
   },
-  watch: {}
 };
 </script>
 

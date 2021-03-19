@@ -325,7 +325,7 @@ export default {
                 isLogicQuestion: answer.isLogicQuestion,
                 title: answer.title,
                 type: answer.type,
-                action: [],
+                action: answer.action || [],
                 mandatory: answer.mandatory,
                 hasCondLogic:
                   answer.hasCondLogic !== undefined

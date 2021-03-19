@@ -223,6 +223,70 @@
                 {{ $t("active") }}
               </p>
             </div>
+          </template>
+          <template v-if="answerType(answerContent.type.id).type=='closed answers'">
+            <p class="karla mt-4">{{$t("failed response")}}:</p>
+            <v-select v-model="failedAnswer" :options="failedAnswerLists(answerContent.type.id)">
+              <template slot="selected-option" slot-scope="option">
+                <span v-if="answerType(answerContent.type.id).group=='global'">{{$t(option.label)}}</span>
+                <span v-else>{{option.label | capitalize}}</span>
+              </template>
+              <template slot="option" slot-scope="option">
+                <span v-if="answerType(answerContent.type.id).group=='global'">{{$t(option.label)}}</span>
+                <span v-else>{{option.label | capitalize}}</span>
+              </template>
+            </v-select>
+          </template>
+        </div>
+      </div>
+      <div
+        class="vx-col w-full py-3 answer-item border-t-0 border-l-0 border-r-0"
+        v-if="activeEdit"
+      >
+        <div class="flex items-center">
+          <div class="w-1/6 answer-item border-t-0 border-l-0 border-b-0">
+            <vs-checkbox
+              v-model="mandatory"
+              class="karla"
+              style="color:#1e1c26"
+              v-if="hasCanMandatory"
+            >{{$t("required")}}</vs-checkbox>
+          </div>
+          <div
+            class="w-1/6 flex items-center"
+            :class="{'answer-item border-t-0 border-l-0 border-b-0':haveAction(answerContent.type.id)}"
+          >
+            <p
+              class="karla-bold ml-2 cursor-pointer"
+              style="color:#6c50f0;"
+              v-if="haveAction(answerContent.type.id)"
+              @click="openAction"
+            >{{$t("notification")}}</p>
+            <p
+              class="karla-bold mr-2 cursor-pointer"
+              style="color:#6c50f0;padding-left: 10px;"
+              v-if="haveAction(answerContent.type.id) && hadAction"
+              @click="openAction"
+            >{{$t("active")}}</p>
+          </div>
+          <div
+            class="w-1/6 flex items-center justify-between"
+            :class="{'answer-item border-t-0 border-l-0 border-b-0':haveAction(answerContent.type.id)}"
+          >
+            <p
+              class="karla-bold ml-2 cursor-pointer"
+              style="color:#6c50f0;"
+              @click="openScore"
+              v-if="haveAction(answerContent.type.id)"
+            >{{$t("add score")}}</p>
+            <p
+              class="karla-bold mr-2"
+              style="color:#6c50f0;"
+              v-if="haveAction(answerContent.type.id) && hadScore"
+            >{{$t("active")}}</p>
+          </div>
+          <div class="w-1/6"></div>
+          <div class="w-1/6 answer-item border-t-0 border-b-0">
             <div
               class="w-1/6 flex items-center justify-between"
               :class="{
