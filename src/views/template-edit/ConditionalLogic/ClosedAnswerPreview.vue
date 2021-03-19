@@ -867,12 +867,6 @@ export default {
       if (this.template.content.conditionTabs == undefined) {
         return [];
       }
-      console.log(
-        "conditionTabs in ClosedAnswerPreview",
-        this.template.content.conditionTabs.filter(
-          (tab) => tab.createdByAnswer == this.answer.id
-        )
-      );
       return this.template.content.conditionTabs.filter(
         (tab) => tab.createdByAnswer == this.answer.id
       );
@@ -890,16 +884,10 @@ export default {
           qIndex: this.qIndex,
         }
       );
-      console.log("getLogicQuestions:", questions);
       return questions;
     },
     filteredAnswers(answers) {
       // get only answers which is matched to tab condition
-      console.info("BEGIN filteredAnswers");
-      console.log("this.selectedAnswer", this.selectedAnswer);
-      console.log("this.conditionTabs", this.conditionTabs);
-      console.log("answers", answers);
-      console.info("END filteredAnswers");
       let matchingTabs = [];
       if (this.selectedAnswer == null) {
         matchingTabs = this.conditionTabs.filter(
@@ -940,21 +928,16 @@ export default {
           }
         });
       }
-      console.log("matchingTabs", matchingTabs);
 
       const filtered = answers.filter((answer) => {
         return matchingTabs.some((tab) => {
-          console.log("tId == answer.tabId", tab.id, answer.tabId);
           return tab.id == answer.tabId;
         });
       });
 
-      console.log("filtered ans", filtered);
       return filtered;
     },
     logClosedAnswerValue(content, p, q, a) {
-      console.log("logClosedAnswerValue", content, p, q, a);
-
       this.selectedAnswer = content;
 
       this.$store.commit("app/LOG_VALUE", {
@@ -1045,7 +1028,6 @@ export default {
       value = value.target !== undefined ? value.target.value : value;
       value = value.id !== undefined ? value.id : value;
 
-      console.log("logValue", value, p, q, a);
       this.$store.commit("app/LOG_VALUE", {
         val: value,
         index: { page: p, question: q, answer: a },

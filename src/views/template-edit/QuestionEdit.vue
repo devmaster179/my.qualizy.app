@@ -190,9 +190,6 @@ export default {
       ],
     };
   },
-  mounted() {
-    console.log("answers", this.answers);
-  },
   methods: {
     shouldAcceptDrop(s, p) {
       return true;

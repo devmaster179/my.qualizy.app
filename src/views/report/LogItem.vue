@@ -652,9 +652,7 @@ export default {
       };
     },
   },
-  mounted() {
-    console.log("LogItem", this.log.logs);
-  },
+  mounted() {},
   beforeMount() {
     if (this.order != 0) this.expand = true;
   },
@@ -664,7 +662,6 @@ export default {
         return;
       }
       // get only answers which is matched to tab condition
-      console.log("filterAnswers", answers, parent);
       answers = answers.filter((a) => a.ref.parent == parent.ref.id);
       let selectedAnswer = parent.value;
       let matchingTabs = [];
@@ -703,21 +700,13 @@ export default {
           }
         });
       }
-      console.log(
-        "matchingTabs:",
-        matchingTabs,
-        this.conditionTabs(parent.ref.id),
-        answers
-      );
 
       const filtered = answers.filter((answer) => {
         return matchingTabs.some((tab) => {
-          console.log("tId == answer.ref.tabId", tab.id, answer.ref.tabId);
           return tab.id == answer.ref.tabId;
         });
       });
 
-      console.log("filtered ans", filtered);
       return filtered;
     },
     conditionTabs(parentAnswerId) {
@@ -726,12 +715,7 @@ export default {
       ) {
         return [];
       }
-      console.log(
-        "conditionTabs in LogItem",
-        this.template(this.log.templateID).content.conditionTabs.filter(
-          (tab) => tab.createdByAnswer == parentAnswerId
-        )
-      );
+
       return this.template(this.log.templateID).content.conditionTabs.filter(
         (tab) => tab.createdByAnswer == parentAnswerId
       );

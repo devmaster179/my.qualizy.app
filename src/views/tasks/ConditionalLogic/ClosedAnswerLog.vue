@@ -970,20 +970,12 @@ export default {
       if (this.templateInfo.content.conditionTabs == undefined) {
         return [];
       }
-      console.log(
-        "conditionTabs in ClosedAnswerPreview",
-        this.templateInfo.content.conditionTabs.filter(
-          (tab) => tab.createdByAnswer == this.parentAnswer.ref.id
-        )
-      );
       return this.templateInfo.content.conditionTabs.filter(
         (tab) => tab.createdByAnswer == this.parentAnswer.ref.id
       );
     },
   },
   mounted() {
-    console.log("answer in ca log", this.parentAnswer);
-    console.log("template in ca log", this.templateInfo);
     this.getTemplateType(this.parentAnswer.ref.type.id).content.map(
       (content) => {
         if (
@@ -1003,12 +995,9 @@ export default {
         pIndex: this.pIndex,
         qIndex: this.qIndex,
       });
-      console.log("getLogicQuestions:", questions);
       return questions;
     },
     logClosedAnswerValue(content) {
-      console.log("logClosedAnswerValue", content);
-
       this.selectedAnswer = content;
       this.chnContent(
         this.pIndex,
@@ -1021,11 +1010,6 @@ export default {
     },
     filteredAnswers(answers) {
       // get only answers which is matched to tab condition
-      console.info("BEGIN filteredAnswers");
-      console.log("this.selectedAnswer", this.selectedAnswer);
-      console.log("this.conditionTabs", this.conditionTabs);
-      console.log("answers", answers);
-      console.info("END filteredAnswers");
       let matchingTabs = [];
       if (this.selectedAnswer == null) {
         matchingTabs = this.conditionTabs.filter(
@@ -1066,16 +1050,13 @@ export default {
           }
         });
       }
-      console.log("matchingTabs", matchingTabs);
 
       const filtered = answers.filter((answer) => {
         return matchingTabs.some((tab) => {
-          console.log("tId == answer.tabId", tab.id, answer.tabId);
           return tab.id == answer.tabId;
         });
       });
 
-      console.log("filtered ans", filtered);
       return filtered;
     },
     scrollHandle(evt) {
@@ -1297,13 +1278,6 @@ export default {
       if (this.pages[pIndex].questions[qIndex].answers[aIndex].value === e) {
         return false;
       }
-      console.log(
-        "chnValue",
-        e,
-        this.pages[pIndex].questions[qIndex].answers[aIndex].value,
-        this.pages[pIndex].questions[qIndex].answers[aIndex].loged
-      );
-
       if (this.pages[pIndex].questions[qIndex].answers[aIndex].loged == false) {
         db.collection("log_usages")
           .add({
@@ -1318,9 +1292,7 @@ export default {
             created_at: new Date(),
           })
           .then((res) => {
-            console.log("usage added");
             if (this.subscribed) {
-              console.log("usage added to subscription");
               let usage_url = `${this.$firebaseFunctionUrl}/addUsageToSubscription`;
               this.$http
                 .get(usage_url, {
@@ -1329,9 +1301,7 @@ export default {
                     usageCount: 1,
                   },
                 })
-                .then((res) => {
-                  console.log("usage res: ", res);
-                });
+                .then((res) => {});
             }
           });
       }
@@ -1354,11 +1324,6 @@ export default {
           logs: this.pages,
         });
 
-      console.log(
-        "action:",
-        action,
-        this.pages[pIndex].questions[qIndex].answers[aIndex]
-      );
       const actions = type == "temperature" ? action : [action];
 
       actions.forEach((action) => {
@@ -1475,9 +1440,7 @@ export default {
             created_at: new Date(),
           })
           .then((res) => {
-            console.log("usage added");
             if (this.subscribed) {
-              console.log("usage added to subscripiton");
               let usage_url = `${this.$firebaseFunctionUrl}/addUsageToSubscription`;
               this.$http
                 .get(usage_url, {
@@ -1486,9 +1449,7 @@ export default {
                     usageCount: 1,
                   },
                 })
-                .then((res) => {
-                  console.log("usage res: ", res);
-                });
+                .then((res) => {});
             }
           });
       }
@@ -1503,11 +1464,6 @@ export default {
       this.pages[pIndex].questions[qIndex].answers[aIndex].user = JSON.parse(
         localStorage.getItem("userInfo")
       ).id;
-      console.log(
-        "chnContent",
-        this.pages[pIndex].questions[qIndex].answers[aIndex].value,
-        this.pages[pIndex].questions[qIndex].answers[aIndex].loged
-      );
 
       db.collection("logs")
         .doc(this.logID)

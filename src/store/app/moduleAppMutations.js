@@ -382,7 +382,6 @@ export default {
       }
       else if (query.key == 'delete') {
         allAnswers = allAnswers.filter(item => item.id != query.val.answerId)
-        console.log('allAnswers delete', allAnswers, query)
       }
       else if (query.key == 'action') {
         let action = answer.action;

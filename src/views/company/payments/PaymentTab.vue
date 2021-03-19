@@ -400,7 +400,6 @@ import $ from "jquery";
 import { loadStripe } from "@stripe/stripe-js";
 let tempDate = new Date();
 tempDate.setFullYear(2000);
-console.log("tempDate", tempDate, tempDate.getFullYear());
 
 export default {
   components: {
@@ -550,25 +549,6 @@ export default {
           (this.mainBarWidth / 100) * (alreadyWidth + currentPlanIndex / 3.5)
         );
 
-      // console.log("currentPlan ", currentPlan);
-      // console.log("beforePlan ", beforePlan);
-      // console.log("diffBySteps ", currentPlan - beforePlan);
-      // console.log("percentOfcurrentLogs ", percentOfcurrentLogs);
-      // console.log("partWidth ", partWidth);
-      // console.log("this.numberOfLogs ", this.numberOfLogs);
-      // console.log("this.mainBarWidth ", this.mainBarWidth);
-      // console.log(
-      //   "alreadyWidth ",
-      //   alreadyWidth,
-      //   eval((this.mainBarWidth / 100) * alreadyWidth)
-      // );
-      // console.log(
-      //   "[currentPlanIndex].width ",
-      //   this.logTrackInfos[currentPlanIndex].width,
-      //   eval((partWidth / 100) * percentOfcurrentLogs)
-      // );
-      // console.log("scroll ", scroll);
-
       return scroll + "px";
     },
   },
@@ -582,7 +562,6 @@ export default {
       .then((doc) => {
         if (doc.exists) {
           this.customerStripeId = doc.data().stripeId;
-          console.log("customer ", this.customerStripeId, doc);
           this.getInvoices();
         } else {
           this.customerStripeId = "invalid";
@@ -594,7 +573,6 @@ export default {
 
     // SET mainBar width (log track bar)
     this.mainBarWidth = $(".logs-track-bar .main-bar").width();
-    console.log("this.$refs.mainBar, ", this.mainBarWidth);
   },
   methods: {
     async addBillingDetail() {
@@ -619,7 +597,6 @@ export default {
           },
         })
         .then((res) => {
-          console.log("customer res", res.data.result);
           stripe.redirectToCheckout({
             sessionId: res.data.result.session.id,
           });
@@ -655,7 +632,6 @@ export default {
           },
         })
         .then((res) => {
-          console.log("invoices", res.data.invoices);
           this.billings = res.data.invoices;
           this.upcomingInvoice = res.data.upcomingInvoice;
           if (this.upcomingInvoice) {
@@ -664,7 +640,6 @@ export default {
                 this.upcomingInvoice.amount_paid) /
               100;
           }
-          console.log("upcomingInvoice", res.data.upcomingInvoice);
           this.allLoaded = true;
           this.$vs.loading.close();
         });

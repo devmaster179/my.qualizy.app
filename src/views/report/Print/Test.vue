@@ -82,8 +82,6 @@ p {
         <p>Page #3...</p>
       `;
 
-      console.log("sourceHTML", sourceHTML);
-
       var source =
         "data:application/vnd.ms-word;charset=utf-8," +
         encodeURIComponent(sourceHTML);

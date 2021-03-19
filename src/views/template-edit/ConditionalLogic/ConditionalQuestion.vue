@@ -258,7 +258,6 @@ export default {
   computed: {
     hexToRGB() {
       return (h) => {
-        console.log("hexToRGB", h);
         if (h == "green") {
           return {
             color: `rgb(0,255,0)`,
@@ -303,7 +302,6 @@ export default {
       };
     },
     template() {
-      console.log("template ", this.$store.getters["app/getTempTemplate"]);
       return this.$store.getters["app/getTempTemplate"];
     },
     answerContent() {
@@ -326,19 +324,12 @@ export default {
       ) {
         this.activeCondTab = this.template.content.conditionTabs[0].id;
       }
-      console.log(
-        "conditionTabs",
-        this.template.content.conditionTabs.filter(
-          (tab) => tab.createdByAnswer == this.parentId
-        )
-      );
       return this.template.content.conditionTabs.filter(
         (tab) => tab.createdByAnswer == this.parentId
       );
     },
     tabName() {
       return (tab) => {
-        console.log("tabName", tab);
         let title = "";
 
         if (tab.condition.symbol == "selected") {
@@ -378,7 +369,6 @@ export default {
     },
   },
   mounted() {
-    console.log("ConditionalQuestion Mounted", this.conditionTabs);
     this.selectedValues = [this.answerTypes.content[0]];
     this.selectedCondition = this.conditionList[0];
     this.activeCondTab =
@@ -394,13 +384,11 @@ export default {
       } else {
         this.showValueDrop = true;
       }
-      console.log("changeTab", tab.id, tab);
       this.activeCondTab = tab.id;
       this.changeCondition(tab.condition, true);
       this.changeSelectedValues(tab.answers, true);
     },
     changeCondition(condition, goToExistingTab) {
-      console.log("changeCondition", condition);
       if (
         this.selectedCondition.key == "is_one_of" ||
         this.selectedCondition.key == "is_not_one_of"
@@ -449,7 +437,6 @@ export default {
           const isExists = this.selectedValues.find(
             (item) => item.name == answer.name
           );
-          console.log("isExists", isExists);
           if (isExists == undefined) {
             this.selectedValues = [...this.selectedValues, answer];
           } else if (this.selectedValues.length > 1) {
@@ -468,14 +455,6 @@ export default {
         tabId: this.activeCondTab,
         val: this.selectedValues,
       });
-
-      console.log(
-        "changeSelectedValues",
-        this.activeCondTab,
-        answer,
-        canUseDirectly,
-        this.selectedValues
-      );
     },
     addAnotherLogic() {
       let answerId = this.parentId;
@@ -492,27 +471,6 @@ export default {
           createdByAnswer: answerId,
         },
       });
-
-      // this.$store.commit("app/CHN_TEMP_TEMPLATE", {
-      //   index: {
-      //     page: this.page,
-      //     question: this.question,
-      //     answer: this.answer,
-      //   },
-      //   parent: answerId,
-      //   tabId: tabId,
-      //   target: "answer",
-      //   key: "addLogicQuestion",
-      // });
-
-      console.log("add Another Logic", {
-        id: tabId,
-        condition: this.conditionList[0],
-        answers: [this.answerType(this.answerContent.type.id).content[0]],
-        createdByAnswer: answerId,
-      });
-      // this.selectedValues = this.answerTypes.content[0];
-      // this.selectedCondition = this.conditionList[0];
     },
     deleteLogic() {
       const tabs = this.conditionTabs.filter(

@@ -796,7 +796,7 @@ export default {
     calcTemperatureColor() {
       return (action, e) => {
         if (action === undefined || action.condition === undefined) return "";
-        console.log("calcTemperatureColor", action, e);
+
         if (
           (action.condition == "Equal" && e == action.content[0]) ||
           (action.condition == "Not Equal" && e != action.content[0]) ||
@@ -910,7 +910,6 @@ export default {
         show: show,
       };
 
-      console.log("obj", obj);
       return obj;
     },
     failedItems() {
@@ -1089,11 +1088,6 @@ export default {
       });
       if (ontime != 0 && ontimeTask) checkOnTimeTask++;
 
-      console.log("reportInfo", this.filteredLogs, {
-        score: scores,
-        tasks: `${complted}/${tasks}`,
-        ontime: `${checkOnTimeTask}/${scheduled}`,
-      });
       return {
         score: scores,
         tasks: `${complted}/${tasks}`,
@@ -1192,24 +1186,16 @@ export default {
           locationNames,
         };
 
-        console.log("getLocationsByNames", names, this.log, log, obj);
         this.locationDetails = obj;
         return obj;
       };
     },
   },
   mounted() {
-    console.log(
-      "log printreport",
-      this.ppIndex,
-      this.log,
-      this.getTemplateInfo(this.log.templateID)
-    );
     this.oneLog = this.log;
   },
   methods: {
     applyImage(image) {
-      console.log("applyImage", image);
       if (image.indexOf("firebasestorage") > -1) {
         return image;
       }
@@ -1270,7 +1256,6 @@ export default {
         });
       });
 
-      console.log("filtered ans", filtered);
       return filtered;
     },
     conditionTabs(parentAnswerId) {

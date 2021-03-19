@@ -841,12 +841,6 @@ export default {
   },
   data() {
     return {
-      cloud_functions_url:
-        "http://localhost:5001/the-haccp-app-249610/us-central1",
-      // cloud_functions_url:
-      //   "https://us-central1-the-haccp-app-249610.cloudfunctions.net/",
-      // subscribed: false,
-      // subscriptionId: false,
       signatureTop: -1,
       scrollUpdate: false,
       userList: [],
@@ -1165,30 +1159,7 @@ export default {
       };
     },
   },
-  mounted() {
-    // db.collection("customers")
-    //   .doc(JSON.parse(localStorage.getItem("userInfo")).id)
-    //   .collection("subscriptions")
-    //   .where("status", "in", ["trialing", "active"])
-    //   .onSnapshot(async (snapshot) => {
-    //     if (snapshot.empty) {
-    //       // Show products
-    //       this.subscribed = false;
-    //       console.log("this.subscribed 1", this.subscribed);
-    //       return;
-    //     }
-    //     snapshot.forEach((doc) => {
-    //       console.log(
-    //         "subscriptions",
-    //         Object.assign({}, doc.data(), { id: doc.id })
-    //       );
-    //       this.subscriptionId = doc.id;
-    //     });
-    //     this.subscribed = true;
-    //     console.log("this.subscribed 2", this.subscribed);
-    //   });
-    // console.log("this.subscribed", this.subscribed);
-  },
+  mounted() {},
   methods: {
     scrollHandle(evt) {
       if (this.signatureTop > -1)
@@ -1409,12 +1380,6 @@ export default {
       if (this.pages[pIndex].questions[qIndex].answers[aIndex].value === e) {
         return false;
       }
-      console.log(
-        "chnValue",
-        e,
-        this.pages[pIndex].questions[qIndex].answers[aIndex].value,
-        this.pages[pIndex].questions[qIndex].answers[aIndex].loged
-      );
 
       if (this.pages[pIndex].questions[qIndex].answers[aIndex].loged == false) {
         db.collection("log_usages")
@@ -1430,9 +1395,7 @@ export default {
             created_at: new Date(),
           })
           .then((res) => {
-            console.log("usage added");
             if (this.subscribed) {
-              console.log("usage added to subscription");
               let usage_url = `${this.$firebaseFunctionUrl}/addUsageToSubscription`;
               this.$http
                 .get(usage_url, {
@@ -1441,9 +1404,7 @@ export default {
                     usageCount: 1,
                   },
                 })
-                .then((res) => {
-                  console.log("usage res: ", res);
-                });
+                .then((res) => {});
             }
           });
       }
@@ -1466,11 +1427,6 @@ export default {
           logs: this.pages,
         });
 
-      console.log(
-        "action:",
-        action,
-        this.pages[pIndex].questions[qIndex].answers[aIndex]
-      );
       const actions = type == "temperature" ? action : [action];
 
       actions.forEach((action) => {
@@ -1587,9 +1543,7 @@ export default {
             created_at: new Date(),
           })
           .then((res) => {
-            console.log("usage added");
             if (this.subscribed) {
-              console.log("usage added to subscripiton");
               let usage_url = `${this.$firebaseFunctionUrl}/addUsageToSubscription`;
               this.$http
                 .get(usage_url, {
@@ -1598,9 +1552,7 @@ export default {
                     usageCount: 1,
                   },
                 })
-                .then((res) => {
-                  console.log("usage res: ", res);
-                });
+                .then((res) => {});
             }
           });
       }
@@ -1615,11 +1567,6 @@ export default {
       this.pages[pIndex].questions[qIndex].answers[aIndex].user = JSON.parse(
         localStorage.getItem("userInfo")
       ).id;
-      console.log(
-        "chnContent",
-        this.pages[pIndex].questions[qIndex].answers[aIndex].value,
-        this.pages[pIndex].questions[qIndex].answers[aIndex].loged
-      );
 
       db.collection("logs")
         .doc(this.logID)

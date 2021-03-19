@@ -398,11 +398,6 @@ export default {
         return this.answerContent.hasCondLogic;
       },
       set(val) {
-        console.log("hasCondLogic set", val, {
-          page: this.page,
-          question: this.question,
-          answer: this.answer,
-        });
         this.$store.commit("app/CHN_TEMP_TEMPLATE", {
           index: {
             page: this.page,
@@ -659,12 +654,8 @@ export default {
       };
     },
   },
-  mounted() {
-    // console.log("answerContent:", this.answerContent);
-  },
   methods: {
     handleActiveEdit() {
-      console.log("event", $(event.target).attr("excludeFrom"));
       if ($(event.target).attr("excludeFrom") == "activeEdit") {
         return;
       }
@@ -716,23 +707,6 @@ export default {
       // }
     },
     deleteAnswer() {
-      console.log("deleteAnswer", {
-        page: this.page,
-        question: this.question,
-        answer: this.answer,
-        answerId: this.answerId,
-      });
-      // this.$store.commit("app/CHN_TEMP_TEMPLATE", {
-      //   index: {
-      //     page: this.page,
-      //     question: this.question,
-      //     answer: this.answer,
-      //   },
-      //   target: "answer",
-      //   key: "delete",
-      //   val: { answerId: this.answerId },
-      // });
-      console.log("this.answers", this.answers);
       this.answers = this.answers.filter((item) => item.id != this.answerId);
     },
     duplicateAnswer() {
@@ -750,7 +724,6 @@ export default {
     makeLogicAnswer() {
       this.hasCondLogic = true;
       this.addLogicQuestion();
-      console.log("makeLogicAnswer", this.hasCondLogic, this.answerContent);
     },
     addLogicQuestion() {
       let answerId = this.answerId;
@@ -758,7 +731,6 @@ export default {
         answerId = generateUniqueId();
         this.answerId = answerId;
       }
-      console.log("answerId", answerId);
 
       const tabId = this.addConditionTab(answerId);
 
@@ -785,12 +757,6 @@ export default {
           answers: [this.answerType(this.answerContent.type.id).content[0]],
           createdByAnswer: answerId,
         },
-      });
-      console.log("addConditionTab", {
-        id: tabId,
-        condition: { symbol: "=", key: "is", text: "is" },
-        answers: [this.answerType(this.answerContent.type.id).content[0]],
-        createdByAnswer: answerId,
       });
       return tabId;
     },

@@ -459,9 +459,6 @@ export default {
       };
     },
   },
-  mounted() {
-    console.log("PrintItem logData", this.logData);
-  },
   methods: {
     applyImage(image) {
       if (image.indexOf("firebasestorage") > -1) {

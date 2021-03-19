@@ -152,13 +152,8 @@ export default {
         template.content.pages[index.page].questions[index.question].answers[
           index.answer
         ];
-      console.log(
-        "applyAnswer",
-        this.answerType(answer.type.id),
-        this.answerType(id)
-      );
+
       if (!answer.type.id || answer.type.id != id) {
-        console.log("if called");
         let answerType = this.answerType(id);
         // when answer is changed to other answer from closed answer.
         if (

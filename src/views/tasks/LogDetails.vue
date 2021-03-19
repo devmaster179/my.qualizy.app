@@ -68,9 +68,6 @@ export default {
       },
     },
   },
-  mounted() {
-    console.log("LogDetails", this.log);
-  },
 };
 </script>
 

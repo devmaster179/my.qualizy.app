@@ -1074,11 +1074,7 @@ export default {
         });
         if (ontime != 0 && ontimeTask) checkOnTimeTask++;
       });
-      console.log("reportInfo", this.filteredLogs, {
-        score: scores,
-        tasks: `${complted}/${tasks}`,
-        ontime: `${checkOnTimeTask}/${scheduled}`,
-      });
+
       return {
         score: scores,
         tasks: `${complted}/${tasks}`,
@@ -1317,13 +1313,6 @@ export default {
   },
   methods: {
     exportPdf() {
-      // var element = document.getElementById("export-content-pdf");
-      // var options = {
-      //   filename: "test.pdf",
-      // };
-      // domToPdf(element, options, function () {
-      //   console.log("done");
-      // });
       var that = this;
       var margins = {
         top: 70,

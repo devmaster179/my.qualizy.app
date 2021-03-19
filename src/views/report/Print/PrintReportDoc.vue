@@ -958,7 +958,7 @@ export default {
     calcTemperatureColor() {
       return (action, e) => {
         if (action === undefined || action.condition === undefined) return "";
-        console.log("calcTemperatureColor", action, e);
+
         if (
           (action.condition == "Equal" && e == action.content[0]) ||
           (action.condition == "Not Equal" && e != action.content[0]) ||
@@ -1072,7 +1072,6 @@ export default {
         show: show,
       };
 
-      console.log("obj", obj);
       return obj;
     },
     failedItems() {
@@ -1251,11 +1250,6 @@ export default {
       });
       if (ontime != 0 && ontimeTask) checkOnTimeTask++;
 
-      console.log("reportInfo", this.filteredLogs, {
-        score: scores,
-        tasks: `${complted}/${tasks}`,
-        ontime: `${checkOnTimeTask}/${scheduled}`,
-      });
       return {
         score: scores,
         tasks: `${complted}/${tasks}`,
@@ -1354,32 +1348,20 @@ export default {
           locationNames,
         };
 
-        console.log("getLocationsByNames", names, this.log, log, obj);
         this.locationDetails = obj;
         return obj;
       };
     },
   },
   mounted() {
-    console.log(
-      "log printreport",
-      this.ppIndex,
-      this.log,
-      this.getTemplateInfo(this.log.templateID)
-    );
-    console.log("getUserInfo:", this.getUserInfo(this.log.updated_by));
-    console.log("reportInfo:", this.reportInfo);
-    console.log("failedItems:", this.failedItems);
     this.oneLog = this.log;
   },
   methods: {
     applyImage(image) {
-      console.log("applyImage", image);
       if (image.indexOf("firebasestorage") > -1) {
         return image;
       }
       let img = require(`@/assets/images/template_image/${image}`);
-      console.log("applyImage", img);
       if (image.indexOf("png") > -1) {
         return img;
       }
@@ -1390,7 +1372,6 @@ export default {
         return;
       }
       // get only answers which is matched to tab condition
-      console.log("filterAnswers", answers, parent);
       answers = answers.filter((a) => a.ref.parent == parent.ref.id);
       let selectedAnswer = parent.value;
       let matchingTabs = [];
@@ -1429,21 +1410,13 @@ export default {
           }
         });
       }
-      console.log(
-        "matchingTabs:",
-        matchingTabs,
-        this.conditionTabs(parent.ref.id),
-        answers
-      );
 
       const filtered = answers.filter((answer) => {
         return matchingTabs.some((tab) => {
-          console.log("tId == answer.ref.tabId", tab.id, answer.ref.tabId);
           return tab.id == answer.ref.tabId;
         });
       });
 
-      console.log("filtered ans", filtered);
       return filtered;
     },
     conditionTabs(parentAnswerId) {
@@ -1453,12 +1426,7 @@ export default {
       ) {
         return [];
       }
-      console.log(
-        "conditionTabs in LogItem",
-        this.getTemplateInfo(this.log.templateID).content.conditionTabs.filter(
-          (tab) => tab.createdByAnswer == parentAnswerId
-        )
-      );
+
       return this.getTemplateInfo(
         this.log.templateID
       ).content.conditionTabs.filter(

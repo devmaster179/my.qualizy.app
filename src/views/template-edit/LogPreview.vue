@@ -757,7 +757,6 @@ export default {
     filteredAnswers(answers) {
       // get only answers which is not contained to conditional
       const filtered = answers.filter((ans) => ans.isLogicQuestion != true);
-      console.log("filtered answers", filtered);
       return filtered;
     },
     clearSign(p, q, a) {
@@ -839,7 +838,6 @@ export default {
       });
     },
     logValue(value, p, q, a) {
-      console.log("logValue", value, p, q, a);
       value = value === null ? "" : value;
       value = value.target !== undefined ? value.target.value : value;
       value = value.id !== undefined ? value.id : value;

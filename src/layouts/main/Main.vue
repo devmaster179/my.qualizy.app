@@ -148,7 +148,6 @@ import { db } from "@/firebase/firebaseConfig.js";
 
 let tempDate = new Date();
 tempDate.setFullYear(2000);
-// console.log("tempDate", tempDate, tempDate.getFullYear());
 
 export default {
   data() {
@@ -177,17 +176,11 @@ export default {
       this.routeTitle = this.$route.meta.pageTitle;
       var cUser = this.$store.getters["app/currentUser"];
       this.activeProPricePlanPopup = false;
-      console.log(
-        "modal",
-        this.$store.getters["app/getCurrentPricePlan"].isFreePlan,
-        this.$store.getters["app/getSubscription"].subscribed,
-        to.name
-      );
+
       if (this.$store.getters["app/getCurrentPricePlan"].isFreePlan == false) {
         let subscription = this.$store.getters["app/getSubscription"];
         if (subscription.subscribed == false && to.name != "company") {
           this.activeProPricePlanPopup = true;
-          console.log("ruu");
         }
       } else {
         this.activeProPricePlanPopup = false;
@@ -204,7 +197,6 @@ export default {
   computed: {
     subscribedForModal() {
       let subscription = this.$store.getters["app/getSubscription"];
-      console.log("subscribedForModal in computed", subscription);
       if (this.$route.name == "company") {
         this.activeProPricePlanPopup = false;
       }
@@ -449,25 +441,6 @@ export default {
     },
 
     setTemplateLabels() {
-      // db.collection("template_labels")
-      //   .where("group", "==", "global")
-      //   .where("lang", "==", "en-gb")
-      //   .get()
-      //   .then((q) => {
-      //     q.forEach((doc) => {
-      //       if (doc.data().trashed) return;
-      //       // db.collection("template_labels").doc(doc.id).delete();
-      //       var label = Object.assign({}, doc.data(), {
-      //         lang: "it",
-      //         name: doc.data()["name"] + "-LT",
-      //       });
-
-      //       console.log("doc template_labels", label);
-
-      //       db.collection("template_labels").add(label);
-      //     });
-      //   });
-
       return new Promise((resolve, reject) => {
         db.collection("template_labels")
           .where("group", "in", [
@@ -767,9 +740,6 @@ export default {
           });
       });
     },
-    // fcm.onMessage((payload) => {
-    //     // console.log('Message received. ', payload);
-    // });
 
     changeRouteTitle(title) {
       this.routeTitle = title;
@@ -823,10 +793,6 @@ export default {
           let subID = false;
           // In this implementation we only expect one Subscription to exist
           snapshot.forEach((doc) => {
-            console.log(
-              "subscriptions",
-              Object.assign({}, doc.data(), { id: doc.id })
-            );
             this.currBillingDate = doc.data().current_period_start.toDate();
             this.nextBillingDate = doc.data().current_period_end.toDate();
             subID = doc.id;
@@ -861,11 +827,6 @@ export default {
                   numberOfLogs: qq.size,
                   isFreePlan: this.numberOfLogs < 312, //<
                 });
-                console.log(
-                  "modal: below 1",
-                  this.numberOfLogs < 312,
-                  this.$store.getters["app/getSubscription"].subscribed
-                );
                 if (this.numberOfLogs < 312 == false) {
                   let subscription = this.$store.getters["app/getSubscription"];
                   if (
@@ -880,7 +841,6 @@ export default {
                   this.activeProPricePlanPopup = false;
                 }
               });
-            console.log("in usage tempDate", tempDate);
           } else {
             db.collection("log_usages")
               .where(
@@ -894,11 +854,7 @@ export default {
                   numberOfLogs: qq.size,
                   isFreePlan: this.numberOfLogs < 312, //<
                 });
-                console.log(
-                  "modal: below 2",
-                  this.numberOfLogs < 312,
-                  this.$store.getters["app/getSubscription"].subscribed
-                );
+
                 if (this.numberOfLogs < 312 == false) {
                   let subscription = this.$store.getters["app/getSubscription"];
                   if (
@@ -913,7 +869,6 @@ export default {
                   this.activeProPricePlanPopup = false;
                 }
               });
-            console.log("in usage currBillingDate", this.currBillingDate);
           }
         });
     },
@@ -926,8 +881,6 @@ export default {
     ProPricePlanPopup,
   },
   mounted() {
-    console.log("this.$route,", this.$route);
-
     var user = JSON.parse(localStorage.getItem("userInfo"));
     var role = 4;
     var roles = ["Super admin", "Admin", "Supervisor", "Operator", "Auditor"];

@@ -178,9 +178,7 @@ export default {
       return !this.errors.any() && this.email != "" && this.password != "";
     },
   },
-  created() {
-    console.log("3-19");
-  },
+  created() {},
   methods: {
     pressEnter() {
       this.$nextTick(() => {
