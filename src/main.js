@@ -12,6 +12,7 @@ import Vue from 'vue'
 import App from './App.vue'
 
 import './registerServiceWorker'
+
 import './gist'
 // Vuesax Component Framework
 import Vuesax from 'vuesax'
@@ -205,6 +206,8 @@ Vue.directive(
 ),
 
   Vue.config.productionTip = false
+  
+import "./connectionCronWorker"
 
 new Vue({
   router,
