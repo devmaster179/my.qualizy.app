@@ -116,7 +116,7 @@ export default {
       let _items = [];
       items.map(item => {
         let expired = true;
-        expired = (item.e_date.seconds * 1000 > (new Date()).getTime()) || !item.forever;
+        expired = (item.e_date.seconds * 1000 < (new Date()).getTime()) && !item.forever;
         if (item.discard || item.deleted === true || expired) return;
         _items.push(item);
       });
