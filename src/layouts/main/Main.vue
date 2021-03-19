@@ -395,7 +395,10 @@ export default {
           .onSnapshot((q) => {
             let users = [];
             q.forEach((doc) => {
-              users.push(Object.assign({}, doc.data(), { id: doc.id }));
+              const data = doc.data();
+              if (data.deleted === undefined || data.deleted === false) {
+                users.push(Object.assign({}, doc.data(), { id: doc.id }));
+              }
             });
             this.$store.dispatch("app/setUsers", users);
             resolve("OK");

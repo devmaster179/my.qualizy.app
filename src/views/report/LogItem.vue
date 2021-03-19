@@ -635,15 +635,15 @@ export default {
       return (action, e) => {
         if (action === undefined || action.condition === undefined) return "";
         if (
-          (action.condition == "Equal" && e == action.content[0]) ||
-          (action.condition == "Not Equal" && e != action.content[0]) ||
-          (action.condition == "Less Than" && e < action.content[0]) ||
-          (action.condition == "Less Than or Equal" &&
+          (action.condition == "equal" && e == action.content[0]) ||
+          (action.condition == "not equal" && e != action.content[0]) ||
+          (action.condition == "less than" && e < action.content[0]) ||
+          (action.condition == "less than or equal" &&
             e <= action.content[0]) ||
-          (action.condition == "Greater Than" && e > action.content[0]) ||
-          (action.condition == "Greater Than or Equal" &&
+          (action.condition == "greater than" && e > action.content[0]) ||
+          (action.condition == "greater than or equal" &&
             e >= action.content[0]) ||
-          (action.condition == "Between" &&
+          (action.condition == "between" &&
             e >= action.content[0] &&
             e <= action.content[1])
         ) {

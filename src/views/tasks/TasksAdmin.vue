@@ -415,7 +415,7 @@ export default {
         if (this.tags != "") {
           if (template.content.templateLabel === undefined) return;
           if (
-            !item.content.templateLabel.some((label) =>
+            !template.content.templateLabel.some((label) =>
               this.tags.includes(label)
             )
           )

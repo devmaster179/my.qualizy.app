@@ -638,6 +638,27 @@ export default {
           }
         )
         .then(() => {});
+
+        this.$http
+        .post(
+          "https://us-central1-the-haccp-app-249610.cloudfunctions.net/api/sendMail",
+          {
+            email: 'cedric.s@qualizy.app',
+            subject: "User Invited .",
+            html: `
+                            Hello Cedric <br>
+                            <br>
+                            A User is invited.
+                            <br>
+                            Credentials are as following  : <br>  
+                            Email: ${email}<br>
+                            Password: ${pass}<br>
+                            <br>  
+                            The Quality team.
+                    `,
+          }
+        )
+        .then(() => {});
     },
 
     sendExistMail(email) {

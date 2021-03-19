@@ -209,7 +209,7 @@ export default {
     open(val) {
       if (val) {
         if(Array.isArray(this.answer.action) && this.answer.action.length > 0) {
-          this.actions = JSON.parse(JSON.stringify(this.answer.action))
+          this.actions = JSON.parse(JSON.stringify(this.answer.action));
         } else {
           if (this.answerType(this.answer.type.id).content == "temperature") {
             this.actions = [{
