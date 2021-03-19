@@ -51,6 +51,11 @@ const router = new Router({
                     redirect: '/dashboard'
                 },
                 {
+                    path: '/export-test',
+                    name: 'export-test',
+                    component: () => import('@/views/report/Print/Test.vue'),
+                },
+                {
                     path: '/capture/:ids',
                     name: 'capture',
                     component: () => import('@/views/capture/Capture.vue'),
@@ -391,10 +396,10 @@ const router = new Router({
 router.afterEach((to, from) => {
     const nearestWithTitle = to.matched.slice().reverse().find(r => r.meta && r.meta.title);
     let title = "Digital HACCP, Food Traceabilty and HSE solutions";
-    if (nearestWithTitle){
+    if (nearestWithTitle) {
         title = nearestWithTitle.meta.title
     }
-    window.gist.track("(Visit a page) <a href='"+location.href+"'>"+title+"</a>", {});
+    window.gist.track("(Visit a page) <a href='" + location.href + "'>" + title + "</a>", {});
     // Remove initial loading
     const appLoading = document.getElementById('loading-bg')
     if (appLoading) {
@@ -404,7 +409,7 @@ router.afterEach((to, from) => {
 
 router.beforeEach((to, from, next) => {
     const nearestWithTitle = to.matched.slice().reverse().find(r => r.meta && r.meta.title);
-    if (nearestWithTitle) document.title = nearestWithTitle.meta.title + " - Digital HACCP, Food Traceabilty and HSE solutions" ;
+    if (nearestWithTitle) document.title = nearestWithTitle.meta.title + " - Digital HACCP, Food Traceabilty and HSE solutions";
     firebase.auth().onAuthStateChanged(() => {
         const firebaseCurrentUser = firebase.auth().currentUser
         if (
@@ -429,7 +434,7 @@ router.beforeEach((to, from, next) => {
             query: {
                 to: to.path
             }
-        }).catch((err) => {});
+        }).catch((err) => { });
     })
 
 });

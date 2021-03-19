@@ -42,7 +42,9 @@
                   @click="sidebarActive = false"
                 />
                 <img
-                  :src="applyImage(templateInfo.content.templateImage)"
+                  :src="
+                    require(`../../assets/images/template_image/${templateInfo.content.templateImage}`)
+                  "
                   width="37"
                   height="37"
                   class="rounded-full"
@@ -155,6 +157,7 @@
                   v-for="(answer, aIndex) in question.answers"
                   :key="aIndex"
                   class="mt-5"
+                  v-bind:class="{ hidden: answer.ref.isLogicQuestion == true }"
                 >
                   <div class="answer-title karla-bold">
                     {{ answer.ref.title | capitalize }}
@@ -170,77 +173,27 @@
                       >({{ answer.ref.type.tempUnit }})</span
                     >
                   </div>
-                  <div class="vx-row answer-content">
+                  <template
+                    v-if="
+                      getTemplateType(answer.ref.type.id).type ==
+                      'closed answers'
+                    "
+                  >
+                    <closed-answer-log
+                      :parentAnswer="answer"
+                      :pIndex="pIndex"
+                      :qIndex="qIndex"
+                      :aIndex="aIndex"
+                      :parent="parent"
+                      :isSidebarActive="isSidebarActive"
+                      :template="template"
+                      :pages="pages"
+                      :logID="logID"
+                    />
+                  </template>
+                  <div class="vx-row answer-content" v-else>
                     <template
                       v-if="
-                        getTemplateType(answer.ref.type.id).type ==
-                        'closed answers'
-                      "
-                    >
-                      <div
-                        :class="
-                          closeAnswerWidth(
-                            getTemplateType(answer.ref.type.id).content.length
-                          )
-                        "
-                        class="pl-4 sm:mt-0 mt-1 w-full"
-                        v-for="(content, cIndex) in getTemplateType(
-                          answer.ref.type.id
-                        ).content"
-                        :key="'c' + cIndex"
-                      >
-                        <div
-                          v-if="
-                            pages[pIndex].questions[qIndex].answers[aIndex]
-                              .value == content.name
-                          "
-                          class="flex items-center justify-center border border-solid rounded-lg py-3 cursor-pointer"
-                          :style="`background:${hexToRGB(
-                            content.color
-                          )}; border-color:${hexToRGB(content.color)};`"
-                        >
-                          <span
-                            class="karla text-white"
-                            v-if="
-                              getTemplateType(answer.ref.type.id).group ==
-                              'global'
-                            "
-                            >{{ $t(content.name) }}</span
-                          >
-                          <span class="karla text-white" v-else>{{
-                            content.name | capitalize
-                          }}</span>
-                        </div>
-                        <div
-                          v-else
-                          class="flex items-center justify-center border border-solid rounded-lg py-3 cursor-pointer"
-                          @click="
-                            chnContent(
-                              pIndex,
-                              qIndex,
-                              aIndex,
-                              content.name,
-                              answer.ref.type.failedAnswer,
-                              templateAction(pIndex, qIndex, aIndex)
-                            )
-                          "
-                        >
-                          <span
-                            class="karla"
-                            v-if="
-                              getTemplateType(answer.ref.type.id).group ==
-                              'global'
-                            "
-                            >{{ $t(content.name) }}</span
-                          >
-                          <span class="karla" v-else>{{
-                            content.name | capitalize
-                          }}</span>
-                        </div>
-                      </div>
-                    </template>
-                    <template
-                      v-else-if="
                         getTemplateType(answer.ref.type.id).content == 'number'
                       "
                     >
@@ -538,9 +491,7 @@
                         'automatic date and time stamp'
                       "
                     >
-                      <div
-                        class="pl-4 w-full flex items-center justify-between"
-                      >
+                      <div class="pl-4 w-full">
                         <span
                           class
                           style="
@@ -560,14 +511,6 @@
                                 | moment("dddd, MMMM Do YYYY - H:mm:ss")
                           }}</span
                         >
-                        <!-- <vs-button
-                          class="px-1 sm:px-4 text-right align-end"
-                          color="primary"
-                          v-if="aIndex === question.answers.length-1"
-                          type="filled"
-                          @click="duplicateSection(pIndex, qIndex, aIndex)"
-                          >{{ $t("duplicate") | capitalize }}</vs-button
-                        > -->
                       </div>
                     </template>
                     <template
@@ -766,7 +709,7 @@
                             :src="viewSrc"
                             @closeImage="closeImage"
                           />
-                          <div v-if="!temporPages.length" class="con-img-upload py-0 m-0">
+                          <div class="con-img-upload py-0 m-0">
                             <div
                               class="img-upload my-2"
                               v-for="(image, imageKey) in pages[pIndex]
@@ -798,57 +741,7 @@
                               @url="uploadSucess"
                             />
                           </div>
-                          <div v-else class="con-img-upload py-0 m-0">
-                            <div
-                              class="img-upload my-2"
-                              v-for="(image, imageKey) in temporPages[pIndex]
-                                .questions[qIndex].answers[aIndex].images"
-                              :key="imageKey"
-                            >
-                              <button
-                                type="button"
-                                class="btn-x-file"
-                                @click="
-                                  removeImage(image.url, pIndex, qIndex, aIndex)
-                                "
-                              >
-                                <i
-                                  translate="translate"
-                                  class="material-icons notranslate"
-                                  >delete</i
-                                >
-                              </button>
-                              <img
-                                :src="image.url"
-                                style="max-width: none; max-height: 100%"
-                                @touchend="viewImage(image.url, $event)"
-                                @click="viewImage(image.url, $event)"
-                              />
-                            </div>
-                            <file-upload
-                              :indexs="[pIndex, qIndex, aIndex]"
-                              @url="uploadSucess"
-                            />
-                          </div>
                         </div>
-                      </div>
-                    </template>
-                  </div>
-                </div>
-                <div class="mt-5">
-                  <div class="vx-row answer-content">
-                    <template>
-                      <div
-                        class="pl-4 w-full flex items-center justify-between"
-                      >
-                        <span></span>
-                        <vs-button
-                          class="px-1 sm:px-4 text-right align-end"
-                          color="primary"
-                          type="filled"
-                          @click="duplicateSection(pIndex, qIndex)"
-                          >{{ $t("duplicate") | capitalize }}</vs-button
-                        >
                       </div>
                     </template>
                   </div>
@@ -911,11 +804,13 @@ import StarRating from "vue-star-rating";
 import VSelect from "vue-select";
 import FileUpload from "@/components/file-upload/FileUpload.vue";
 import ViewUpload from "@/components/file-upload/ViewUpload.vue";
-import ScoreItem from "./ScoreItem";
-import FoodItem from "./FoodItem";
 import flatPickr from "vue-flatpickr-component";
 import "flatpickr/dist/flatpickr.css";
 import { storage } from "@/firebase/firebaseStorage";
+
+import ScoreItem from "./ScoreItem";
+import FoodItem from "./FoodItem";
+import ClosedAnswerLog from "./ConditionalLogic/ClosedAnswerLog";
 
 import firebase, { analytics } from "firebase/app";
 import "@firebase/firestore";
@@ -987,7 +882,6 @@ export default {
       pageNum: 0,
       log: [],
       number: 0,
-      temporPages: [],
     };
   },
   watch: {
@@ -1019,18 +913,19 @@ export default {
       //   setTimeout(() => {
       //     this.showThread = false;
       //   }, 500);
-    }
+    },
   },
-
   computed: {
+    subscribed() {
+      let subscription = this.$store.getters["app/getSubscription"];
+      return subscription.subscribed;
+    },
+    subscriptionId() {
+      let subscription = this.$store.getters["app/getSubscription"];
+      return subscription.subscriptionId;
+    },
     templateAction() {
       return (p, q, a) => {
-        if (
-          this.templateInfo.content.pages[p].questions[q].answers[a].action ===
-          undefined
-        ) {
-          return [];
-        }
         return this.templateInfo.content.pages[p].questions[q].answers[a]
           .action;
       };
@@ -1264,48 +1159,8 @@ export default {
       };
     },
   },
+  mounted() {},
   methods: {
-    duplicateSection(pIndex, qIndex) {
-      let questions = this.pages[pIndex].questions;
-      let question = JSON.parse(
-        JSON.stringify(this.pages[pIndex].questions[qIndex])
-      );
-      // question.answers[aIndex].value = new Date();
-
-      // Makes so the duplicated section has the initial value.
-      question.answers.forEach((answer) => {
-        answer.value = "";
-      });
-
-      // Insert the section in to the right position.
-      questions.splice(qIndex + 1, 0, question);
-      questions.join();
-      this.pages[pIndex].questions = questions;
-
-      db.collection("logs")
-        .doc(this.logID)
-        .update({
-          updated_at: new Date(),
-          updated_by: JSON.parse(localStorage.getItem("userInfo")).id,
-          initial: false,
-          logs: this.pages,
-        });
-
-      this.$vs.notify({
-        title: "Success",
-        time: 7000,
-        text: "You've duplicated it uccessfully",
-        iconPack: "feather",
-        icon: "icon-check-circle",
-        color: "success",
-      });
-    },
-    applyImage(image) {
-      if (image.indexOf("firebasestorage") > -1) {
-        return image;
-      }
-      return require(`@/assets/images/template_image/${image}`);
-    },
     scrollHandle(evt) {
       if (this.signatureTop > -1)
         this.$refs.pageLists.$el.scrollTop = this.signatureTop;
@@ -1471,39 +1326,21 @@ export default {
         }
       }
     },
-    uploadSucess(url, ref, indexs, kind = "online") {
+    uploadSucess(url, ref, indexs) {
       this.initState = false;
       this.saveState = true;
-      if (kind === "online") {
-        this.temporPages = []
-        this.pages[indexs[0]].questions[indexs[1]].answers[
-          indexs[2]
-        ].images.push({ url: url, ref: ref });
-        this.pages[indexs[0]].questions[indexs[1]].answers[
-          indexs[2]
-        ].loged = true;
-        this.pages[indexs[0]].questions[indexs[1]].answers[
-          indexs[2]
-        ].time = new Date();
-        this.pages[indexs[0]].questions[indexs[1]].answers[
-          indexs[2]
-        ].user = JSON.parse(localStorage.getItem("userInfo")).id;
-      } else if (kind === "offline") {
-        if (!this.temporPages.length)
-          this.temporPages = JSON.parse(JSON.stringify(this.pages));
-        this.temporPages[indexs[0]].questions[indexs[1]].answers[
-          indexs[2]
-        ].images.push({ url: url, ref: ref });
-        this.temporPages[indexs[0]].questions[indexs[1]].answers[
-          indexs[2]
-        ].loged = true;
-        this.temporPages[indexs[0]].questions[indexs[1]].answers[
-          indexs[2]
-        ].time = new Date();
-        this.temporPages[indexs[0]].questions[indexs[1]].answers[
-          indexs[2]
-        ].user = JSON.parse(localStorage.getItem("userInfo")).id;
-      }
+      this.pages[indexs[0]].questions[indexs[1]].answers[
+        indexs[2]
+      ].images.push({ url: url, ref: ref });
+      this.pages[indexs[0]].questions[indexs[1]].answers[
+        indexs[2]
+      ].loged = true;
+      this.pages[indexs[0]].questions[indexs[1]].answers[
+        indexs[2]
+      ].time = new Date();
+      this.pages[indexs[0]].questions[indexs[1]].answers[
+        indexs[2]
+      ].user = JSON.parse(localStorage.getItem("userInfo")).id;
       db.collection("logs")
         .doc(this.logID)
         .update({
@@ -1540,8 +1377,37 @@ export default {
     },
     chnValue(e, pIndex, qIndex, aIndex, type = "", action = false) {
       if (type == "temperature") e = Math.round(e.target.value * 100) / 100;
-      if (this.pages[pIndex].questions[qIndex].answers[aIndex].value === e)
+      if (this.pages[pIndex].questions[qIndex].answers[aIndex].value === e) {
         return false;
+      }
+
+      if (this.pages[pIndex].questions[qIndex].answers[aIndex].loged == false) {
+        db.collection("log_usages")
+          .add({
+            logId: this.logID,
+            pIndex: pIndex,
+            qIndex: qIndex,
+            aIndex: aIndex,
+            content: e,
+            logged: true,
+            count: 1,
+            created_by: JSON.parse(localStorage.getItem("userInfo")).id,
+            created_at: new Date(),
+          })
+          .then((res) => {
+            if (this.subscribed) {
+              let usage_url = `${this.$firebaseFunctionUrl}/addUsageToSubscription`;
+              this.$http
+                .get(usage_url, {
+                  params: {
+                    subscription: this.subscriptionId,
+                    usageCount: 1,
+                  },
+                })
+                .then((res) => {});
+            }
+          });
+      }
 
       this.initState = false;
       this.saveState = true;
@@ -1566,15 +1432,15 @@ export default {
       actions.forEach((action) => {
         if (action && action.content !== undefined) {
           if (
-            (action.condition == "equal" && e == action.content[0]) ||
-            (action.condition == "not equal" && e != action.content[0]) ||
-            (action.condition == "less than" && e < action.content[0]) ||
-            (action.condition == "less than or equal" &&
+            (action.condition == "Equal" && e == action.content[0]) ||
+            (action.condition == "Not Equal" && e != action.content[0]) ||
+            (action.condition == "Less Than" && e < action.content[0]) ||
+            (action.condition == "Less Than or Equal" &&
               e <= action.content[0]) ||
-            (action.condition == "greater than" && e > action.content[0]) ||
-            (action.condition == "greater than or equal" &&
+            (action.condition == "Greater Than" && e > action.content[0]) ||
+            (action.condition == "Greater Than or Equal" &&
               e >= action.content[0]) ||
-            (action.condition == "between" &&
+            (action.condition == "Between" &&
               e >= action.content[0] &&
               e <= action.content[1])
           ) {
@@ -1591,7 +1457,7 @@ export default {
             });
             var templateTitle = this.templateInfo.content.templateTitle;
             var mUsers = [];
-            action.teams.map((id) => {
+            action.toUser.map((id) => {
               let team = this.$store.getters["app/getTeamById"](id);
               if (team == undefined) return;
               let user = this.$store.getters["app/users"].filter(
@@ -1599,15 +1465,17 @@ export default {
               );
 
               user.map((item) => {
-                if (
-                  mUsers.find((mUser) => mUser.email == item.email) != undefined || item.rEmail === undefined || !item.rEmail
-                )
-                  return;
+                if (mUsers.find((mUser) => mUser.email == item.email)) return;
                 mUsers.push({ email: item.email, name: item.name });
               });
             });
-            if (notification === undefined) {
-              const notificationText = "Captured " +
+
+            if (notification == undefined) {
+              db.collection("notifications").add({
+                readIds: [],
+                sendEmails: mUsers,
+                text:
+                  "Captured " +
                   '"' +
                   e +
                   this.pages[pIndex].questions[qIndex].answers[aIndex].ref.type
@@ -1615,11 +1483,7 @@ export default {
                   '" in ' +
                   '"' +
                   this.pages[pIndex].questions[qIndex].title +
-                  '"';
-              db.collection("notifications").add({
-                readIds: [],
-                sendEmails: mUsers,
-                text: notificationText,
+                  '"',
                 templateIndexes: [pIndex, qIndex, aIndex],
                 logID: this.logID,
                 templateId: this.template,
@@ -1628,27 +1492,13 @@ export default {
                   e +
                   this.pages[pIndex].questions[qIndex].answers[aIndex].ref.type
                     .tempUnit,
-                types: action.types,
-                toTeam: action.teams,
+                alertType: action.alertType || action.alwertType,
+                toTeam: action.toUser,
                 group: JSON.parse(localStorage.getItem("userInfo")).group,
                 updated_by: JSON.parse(localStorage.getItem("userInfo")).id,
                 updated_at: new Date(),
                 at: firebase.firestore.FieldValue.serverTimestamp(),
               });
-
-              mUsers.map((mUser) => {
-                this.$http
-                .post(
-                  "https://us-central1-the-haccp-app-249610.cloudfunctions.net/api/sendMail",
-                  {
-                    email: mUser.email,
-                    subject: templateTitle,
-                    html: notificationText
-                  }
-                )
-                .then(() => {});
-              });
-              
             } else {
               db.collection("notifications")
                 .doc(notification.id)
@@ -1679,6 +1529,34 @@ export default {
       });
     },
     chnContent(pIndex, qIndex, aIndex, content, failed, action = false) {
+      if (this.pages[pIndex].questions[qIndex].answers[aIndex].loged == false) {
+        db.collection("log_usages")
+          .add({
+            logId: this.logID,
+            pIndex: pIndex,
+            qIndex: qIndex,
+            aIndex: aIndex,
+            content: content,
+            logged: true,
+            count: 1,
+            created_by: JSON.parse(localStorage.getItem("userInfo")).id,
+            created_at: new Date(),
+          })
+          .then((res) => {
+            if (this.subscribed) {
+              let usage_url = `${this.$firebaseFunctionUrl}/addUsageToSubscription`;
+              this.$http
+                .get(usage_url, {
+                  params: {
+                    subscription: this.subscriptionId,
+                    usageCount: 1,
+                  },
+                })
+                .then((res) => {});
+            }
+          });
+      }
+
       this.initState = false;
       this.saveState = true;
       this.pages[pIndex].questions[qIndex].answers[aIndex].value = content;
@@ -1732,7 +1610,7 @@ export default {
               });
               db.collection("notifications").add({
                 icon: "CheckSquareIcon",
-                types: actionItem.types,
+                type: actionItem.types,
                 readIds: [],
                 sendEmails: mUsers,
                 text: actionItem.description,
@@ -1748,24 +1626,11 @@ export default {
                 updated_at: new Date(),
                 at: firebase.firestore.FieldValue.serverTimestamp(),
               });
-
-              mUsers.map((mUser) => {
-                this.$http
-                .post(
-                  "https://us-central1-the-haccp-app-249610.cloudfunctions.net/api/sendMail",
-                  {
-                    email: mUser.email,
-                    subject: actionItem.name,
-                    html: actionItem.description
-                  }
-                )
-                .then(() => {});
-              });
             } else {
               db.collection("notifications")
                 .doc(notification.id)
                 .update({
-                  types: actionItem.types,
+                  type: actionItem.types,
                   readIds: [],
                   sendEmails: mUsers,
                   text: actionItem.description,
@@ -1804,6 +1669,7 @@ export default {
     FileUpload,
     ViewUpload,
     flatPickr,
+    ClosedAnswerLog,
   },
   created() {
     this.$nextTick(() => {

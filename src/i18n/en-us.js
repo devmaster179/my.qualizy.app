@@ -622,6 +622,8 @@ export default {
     "Current saving": "Current saving",
     "about_estimate": `This estimate is based on the informations you have provided and an average time spent creating a record using Pen & Paper of 1:30 min per record and an average of 7 recording points per employees per day (Temp logs, cleaning logs, delivery logs, food labelling etc..)`,
     "Add your Billing Detail": "Add your Billing Detail",
+    "Loading...": "Loading...",
+    "Manage billing details": "Manage billing details",
     "date_used": 'Date used',
     "tasks_type": "Tasks type",
     "total_tasks": "Total tasks",

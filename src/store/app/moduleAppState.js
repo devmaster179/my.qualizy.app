@@ -1,6 +1,10 @@
 var date = new Date()
 date = new Date(date.getFullYear(), date.getMonth(), date.getDate())
 var from = new Date(date.getTime() - (10 * 24 * 60 * 60 * 1000));
+
+let tempDate = new Date();
+tempDate.setFullYear(2000);
+
 export default {
   sensorDatas: [],
   analytics: [],
@@ -78,5 +82,15 @@ export default {
   editScore: false,
   ipInfo: {},
   auth: {},
-  report_schedule: []
+  report_schedule: [],
+  subscription: {
+    subscribed: false,
+    subscriptionId: false,
+    currBillingDate: tempDate,
+    nextBillingDate: new Date(),
+  },
+  currentPricePlan: {
+    numberOfLogs: 0,
+    isFreePlan: false,
+  }
 }

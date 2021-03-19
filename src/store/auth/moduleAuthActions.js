@@ -519,7 +519,7 @@ export default {
       } else if (monthlyTitles.indexOf(title.toLowerCase()) > -1) {
         repeat = "Monthly";
       }
-      console.log('repeat compare title', title)
+
       return repeat;
     }
     // create user using firebase
@@ -679,10 +679,6 @@ export default {
             updated_at: createdDate
           })
 
-          console.log('payload: ', payload)
-          console.log('payload.userDetails.locationInfo: ', payload.userDetails.locationInfo)
-          console.log('userIndustry: ', userIndustry)
-
           let tags = [];
           db.collection("template_labels") // get tag ids by industry name == tag name && group == global
             .where("group", "in", [
@@ -694,7 +690,6 @@ export default {
               q.forEach((doc) => {
                 tags.push(doc.id);
               });
-              console.log("getTemplateLabels", tags);
 
               db.collection("templates") // get templates that has tag(same name with user industry)
                 .where("group", "==", "global")
@@ -712,8 +707,6 @@ export default {
                     )
                   );
 
-                  console.log("result.user", result.user);
-                  console.log("tag filtered templates", templates);
                   let tempBatch = db.batch()
                   let newTemps = []
                   templates.map((t) => {
@@ -731,7 +724,6 @@ export default {
                     temp.content.location = [res.id]
                     temp.content.teams = teamIDs
 
-                    console.log('each before save', temp)
                     var docRef = db.collection("templates").doc(); //automatically generate unique id
                     tempBatch.set(docRef, temp);
 
@@ -743,7 +735,6 @@ export default {
                   let repoBatch = db.batch()
 
                   newTemps.map(nt => {
-                    console.log('newTemps', nt)
                     let temp = nt.temp
                     // BEGIN activating schedules
                     if (temp.content.templateSD == "schedule this template") {
@@ -802,7 +793,6 @@ export default {
                         updated_at: new Date(),
                         active: true,
                       }
-                      console.log('schedule created', newSchedule, temp)
                       var scdRef = db.collection("schedules").doc(); //automatically generate unique id
                       scheduBatch.set(scdRef, newSchedule);
                     }
@@ -830,7 +820,7 @@ export default {
                       created_by: result.user.uid,
                       group: result.user.uid,
                     }
-                    console.log('report created', newReport)
+
                     var repoRef = db.collection("reports").doc(); //automatically generate unique id
                     repoBatch.set(repoRef, newReport);
                     // END activating reports
@@ -874,7 +864,6 @@ export default {
                       updated_at: new Date(),
                     });
 
-                    console.log('knowledge created', newKng)
                     var articleRef = db.collection("knowledge").doc(); //automatically generate unique id
                     kngAtcBatch.set(articleRef, newKng);
 

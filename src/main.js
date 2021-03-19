@@ -20,15 +20,22 @@ import 'material-icons/iconfont/material-icons.css' //Material Icons
 import 'vuesax/dist/vuesax.css'; // Vuesax
 Vue.use(Vuesax)
 
-// Element UI
-// import ElementUI from 'element-ui';
-// import './assets/scss/element-ui-variables.scss';
-// Vue.use(ElementUI);
+// Buety
+// import { Tabs } from "buefy";
+// Vue.use(Tabs);
+// import "./views/analytics/buefy.scss"
 
 // // axios
 import axios from 'axios'
 Vue.prototype.$http = axios
 // Vue.prototype.$gist = gist
+
+// SET firebase functions URL
+// Vue.prototype.$firebaseFunctionUrl = "http://localhost:5001/the-haccp-app-249610/us-central1"
+Vue.prototype.$firebaseFunctionUrl = "https://us-central1-the-haccp-app-249610.cloudfunctions.net"
+
+// SET stripe global values
+Vue.prototype.$stripePublishableKey = "pk_test_6dCN5HWGN4mXJVOHuF6NDjbq";
 
 // Firebase-kk
 import '@/firebase/firebaseInit'

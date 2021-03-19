@@ -91,11 +91,13 @@
                 </vs-dropdown>-->
               </div>
             </transition>
-            <div 
+            <div
               class="video-launcher sm:mb-6"
               v-if="$route.meta.breadcrumb || $route.meta.pageTitle"
             >
-              <a href="#" @click="howtoTemplate">Watch this video to see how it works</a>
+              <a href="#" @click="howtoTemplate"
+                >Watch this video to see how it works</a
+              >
             </div>
             <div class="content-area__content">
               <back-to-top
@@ -116,9 +118,15 @@
           </div>
         </div>
       </div>
-
+      <div class="hidden">{{ subscribedForModal }}</div>
       <the-footer></the-footer>
     </div>
+
+    <pro-price-plan-popup
+      :open="activeProPricePlanPopup"
+      @close="activeProPricePlanPopup = true"
+      class="pro-price-plan-popup"
+    />
   </div>
 </template>
 
@@ -126,6 +134,7 @@
 import VxSidebar from "@/layouts/components/vx-sidebar/VxSidebar.vue";
 import TheNavbar from "../components/TheNavbar.vue";
 import TheFooter from "../components/TheFooter.vue";
+import ProPricePlanPopup from "../components/ProPricePlanPopup.vue";
 import themeConfig from "@/../themeConfig.js";
 import sidebarItems from "@/layouts/components/vx-sidebar/sidebarItems.js";
 import BackToTop from "vue-backtotop";
@@ -136,9 +145,14 @@ import "firebase/auth";
 import { db } from "@/firebase/firebaseConfig.js";
 
 // import {fcm} from '@/firebase/cloudMessage.js';
+
+let tempDate = new Date();
+tempDate.setFullYear(2000);
+
 export default {
   data() {
     return {
+      activeProPricePlanPopup: false,
       navbarType: themeConfig.navbarType || "floating",
       navbarColor: themeConfig.navbarColor || "#fff",
       footerType: themeConfig.footerType || "static",
@@ -150,12 +164,27 @@ export default {
       windowWidth: window.innerWidth, //width of windows
       hideScrollToTop: themeConfig.hideScrollToTop,
       disableThemeTour: themeConfig.disableThemeTour,
+      subscribed: false,
+      isFreePlan: false,
+      numberOfLogs: 0,
+      currBillingDate: tempDate,
+      nextBillingDate: new Date(),
     };
   },
   watch: {
-    $route() {
+    $route(to, from) {
       this.routeTitle = this.$route.meta.pageTitle;
       var cUser = this.$store.getters["app/currentUser"];
+      this.activeProPricePlanPopup = false;
+
+      if (this.$store.getters["app/getCurrentPricePlan"].isFreePlan == false) {
+        let subscription = this.$store.getters["app/getSubscription"];
+        if (subscription.subscribed == false && to.name != "company") {
+          this.activeProPricePlanPopup = true;
+        }
+      } else {
+        this.activeProPricePlanPopup = false;
+      }
     },
     isThemeDark(val) {
       if (this.navbarColor == "#fff" && val) {
@@ -166,6 +195,13 @@ export default {
     },
   },
   computed: {
+    subscribedForModal() {
+      let subscription = this.$store.getters["app/getSubscription"];
+      if (this.$route.name == "company") {
+        this.activeProPricePlanPopup = false;
+      }
+      return subscription.subscribed;
+    },
     breadcrumb() {
       var route = {
         meta: {
@@ -223,7 +259,7 @@ export default {
   methods: {
     howtoTemplate(event) {
       event.preventDefault();
-      this.$userflow.start('2fad2cec-aba7-45ff-9ad1-6c9448700a24');
+      this.$userflow.start("2fad2cec-aba7-45ff-9ad1-6c9448700a24");
     },
     deleteTrashedData() {
       // db.collection('fooditems').where('deleted', '==' ,true).get().then(q => {
@@ -408,25 +444,6 @@ export default {
     },
 
     setTemplateLabels() {
-      // db.collection("template_labels")
-      //   .where("group", "==", "global")
-      //   .where("lang", "==", "en-gb")
-      //   .get()
-      //   .then((q) => {
-      //     q.forEach((doc) => {
-      //       if (doc.data().trashed) return;
-      //       // db.collection("template_labels").doc(doc.id).delete();
-      //       var label = Object.assign({}, doc.data(), {
-      //         lang: "it",
-      //         name: doc.data()["name"] + "-LT",
-      //       });
-
-      //       console.log("doc template_labels", label);
-
-      //       db.collection("template_labels").add(label);
-      //     });
-      //   });
-
       return new Promise((resolve, reject) => {
         db.collection("template_labels")
           .where("group", "in", [
@@ -726,9 +743,6 @@ export default {
           });
       });
     },
-    // fcm.onMessage((payload) => {
-    //     // console.log('Message received. ', payload);
-    // });
 
     changeRouteTitle(title) {
       this.routeTitle = title;
@@ -765,12 +779,109 @@ export default {
         // console.log("offline");
       }
     },
+    checkSubscribed() {
+      // GET status of subscription and next billing date
+      db.collection("customers")
+        .doc(JSON.parse(localStorage.getItem("userInfo")).id)
+        .collection("subscriptions")
+        .where("status", "in", ["trialing", "active"])
+        .onSnapshot(async (snapshot) => {
+          if (snapshot.empty) {
+            this.$store.dispatch("app/setSubscription", {
+              subscribed: false,
+            });
+            return;
+          }
+
+          let subID = false;
+          // In this implementation we only expect one Subscription to exist
+          snapshot.forEach((doc) => {
+            this.currBillingDate = doc.data().current_period_start.toDate();
+            this.nextBillingDate = doc.data().current_period_end.toDate();
+            subID = doc.id;
+          });
+
+          this.$store.dispatch("app/setSubscription", {
+            subscribed: true,
+            subscriptionId: subID,
+            currBillingDate: this.currBillingDate,
+            nextBillingDate: this.nextBillingDate,
+          });
+        });
+    },
+    checkFreePlan() {
+      db.collection("log_usages")
+        .where(
+          "created_by",
+          "==",
+          JSON.parse(localStorage.getItem("userInfo")).id
+        )
+        .onSnapshot((q) => {
+          if (q.size <= 311) {
+            db.collection("log_usages")
+              .where(
+                "created_by",
+                "==",
+                JSON.parse(localStorage.getItem("userInfo")).id
+              )
+              .where("created_at", ">=", tempDate)
+              .onSnapshot((qq) => {
+                this.$store.dispatch("app/setCurrentPricePlan", {
+                  numberOfLogs: qq.size,
+                  isFreePlan: this.numberOfLogs < 312, //<
+                });
+                if (this.numberOfLogs < 312 == false) {
+                  let subscription = this.$store.getters["app/getSubscription"];
+                  if (
+                    subscription.subscribed == false &&
+                    this.$route.name != "company"
+                  ) {
+                    this.activeProPricePlanPopup = true;
+                  } else {
+                    this.activeProPricePlanPopup = false;
+                  }
+                } else {
+                  this.activeProPricePlanPopup = false;
+                }
+              });
+          } else {
+            db.collection("log_usages")
+              .where(
+                "created_by",
+                "==",
+                JSON.parse(localStorage.getItem("userInfo")).id
+              )
+              .where("created_at", ">=", this.currBillingDate)
+              .onSnapshot((qq) => {
+                this.$store.dispatch("app/setCurrentPricePlan", {
+                  numberOfLogs: qq.size,
+                  isFreePlan: this.numberOfLogs < 312, //<
+                });
+
+                if (this.numberOfLogs < 312 == false) {
+                  let subscription = this.$store.getters["app/getSubscription"];
+                  if (
+                    subscription.subscribed == false &&
+                    this.$route.name != "company"
+                  ) {
+                    this.activeProPricePlanPopup = true;
+                  } else {
+                    this.activeProPricePlanPopup = false;
+                  }
+                } else {
+                  this.activeProPricePlanPopup = false;
+                }
+              });
+          }
+        });
+    },
   },
   components: {
     VxSidebar,
     TheNavbar,
     TheFooter,
     BackToTop,
+    ProPricePlanPopup,
   },
   mounted() {
     var user = JSON.parse(localStorage.getItem("userInfo"));
@@ -832,6 +943,9 @@ export default {
     } else {
       this.updateNavbarColor(this.navbarColor);
     }
+
+    await this.checkSubscribed();
+    await this.checkFreePlan();
 
     // this.$vs.loading();
     this.$store.commit("app/SET_LOCATION_LIST", []);
@@ -953,7 +1067,7 @@ export default {
 .video-launcher {
   font-size: 10px;
   height: 12px;
-  color: #844CF5;
+  color: #844cf5;
 }
 </style>
 <style>
@@ -962,4 +1076,7 @@ export default {
             display: none !important;
         }
     } */
+.pro-price-plan-popup .vs-popup--close--icon {
+  display: none;
+}
 </style>

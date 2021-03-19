@@ -391,7 +391,6 @@ export default {
         (a, b) =>
           b.updated_at.toDate().getTime() - a.updated_at.toDate().getTime()
       );
-
       var unshceduledTemplate = [];
       templates.map((template) => {
         if (template.trashed) return;
@@ -681,7 +680,6 @@ export default {
         var validSchedules = [];
         for (let i = dayFrom; i <= dayTo; i++) {
           schedules.map((schedule) => {
-
             if (
               schedule.dueTimes != undefined &&
               Array.isArray(schedule.dueTimes)
@@ -740,7 +738,6 @@ export default {
                   }
                 }
               });
-            } else {
             }
           });
         }
@@ -1057,7 +1054,7 @@ export default {
                   answers.push({
                     ref: answer,
                     loged: false,
-                    value: "",
+                    value: 0,
                     time: "",
                     user: "",
                   });
@@ -1159,7 +1156,7 @@ export default {
                   answers.push({
                     ref: answer,
                     loged: false,
-                    value: "",
+                    value: 0,
                     time: "",
                     user: "",
                   });

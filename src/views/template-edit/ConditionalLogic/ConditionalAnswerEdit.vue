@@ -1,6 +1,10 @@
 <template>
   <div
-    v-if="answerContent.isLogicQuestion != true"
+    v-show="
+      answerContent.isLogicQuestion == true &&
+      answerContent.parent == parentId &&
+      answerContent.tabId == tabId
+    "
     v-click-outside="outsideFull"
     class="answer-wrapper"
   >
@@ -270,41 +274,17 @@
                 <p class="karla ml-2">{{ $t("duplicate") }}</p>
               </div>
             </div>
-            <div
-              v-if="
-                hasCondLogic != true &&
-                answerType(answerContent.type.id) != undefined &&
-                answerType(answerContent.type.id).type == 'closed answers'
-              "
-              class="w-1/6 answer-item border-t-0 border-b-0 border-r-0"
-            >
-              <div
-                class="flex items-center ml-2 hover:text-primary cursor-pointer"
-                @click="makeLogicAnswer"
-              >
-                <vs-icon icon="device_hub" />
-                <p class="karla ml-2">{{ $t("Make Logic") }}</p>
-              </div>
-            </div>
           </div>
         </div>
       </div>
     </div>
-    <conditional-question
-      v-if="hasCondLogic == true && toggleConditionals == true"
-      :answerTypes="answerType(answerContent.type.id)"
-      :page="page"
-      :question="question"
-      :answer="answer"
-      :parentId="answerId"
-    />
   </div>
 </template>
 
 <script>
-import TemplateTypeIcon from "./TemplateTypeIcon.vue";
+import TemplateTypeIcon from "../TemplateTypeIcon.vue";
 import VSelect from "vue-select";
-import ConditionalQuestion from "./ConditionalLogic/ConditionalQuestion.vue";
+import ConditionalQuestion from "./ConditionalQuestion.vue";
 import $ from "jquery";
 const generateUniqueId = require("generate-unique-id");
 
@@ -325,6 +305,12 @@ export default {
     },
     answer: {
       type: Number,
+      required: true,
+    },
+    parentId: {
+      required: true,
+    },
+    tabId: {
       required: true,
     },
     target: {
@@ -729,36 +715,12 @@ export default {
       let answerId = this.answerId;
       if (this.answerId == undefined) {
         answerId = generateUniqueId();
-        this.answerId = answerId;
       }
-
-      const tabId = this.addConditionTab(answerId);
-
-      // this.$store.commit("app/CHN_TEMP_TEMPLATE", {
-      //   index: {
-      //     page: this.page,
-      //     question: this.question,
-      //     answer: this.answer,
-      //   },
-      //   parent: answerId,
-      //   tabId: tabId,
-      //   target: "answer",
-      //   key: "addLogicQuestion",
-      // });
-    },
-    addConditionTab(answerId) {
-      const tabId = generateUniqueId();
       this.$store.commit("app/CHN_TEMP_TEMPLATE", {
-        target: "conditionTabs",
-        key: "add",
-        val: {
-          id: tabId,
-          condition: { symbol: "=", key: "is", text: "is" },
-          answers: [this.answerType(this.answerContent.type.id).content[0]],
-          createdByAnswer: answerId,
-        },
+        parent: answerId,
+        target: "answer",
+        key: "addLogicQuestion",
       });
-      return tabId;
     },
   },
   watch: {

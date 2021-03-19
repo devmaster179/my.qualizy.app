@@ -278,6 +278,7 @@
 
 <script>
 import { db } from "@/firebase/firebaseConfig";
+const generateUniqueId = require("generate-unique-id");
 // import TemplatemakingPopup from "../template-making/TemplatemakingPopup";
 export default {
   props: {
@@ -419,10 +420,17 @@ export default {
             else if (type.content == "automatic date and time stamp")
               loged = new Date();
             var answerObject = {
+              id: answer.id == undefined ? generateUniqueId() : answer.id,
+              parent: answer.parent,
+              tabId: answer.tabId,
+              hasCondLogic: answer.hasCondLogic,
+              isLogicQuestion: answer.isLogicQuestion,
               title: answer.title,
               type: answer.type,
               action: Array.isArray(answer.action) ? answer.action : [],
               mandatory: answer.mandatory,
+              hasCondLogic:
+                answer.hasCondLogic !== undefined ? answer.hasCondLogic : false,
               loged: loged,
               score: answer.score === undefined ? "" : answer.score,
             };
@@ -448,6 +456,7 @@ export default {
           templateLabel: this.template.content.templateLabel,
           templateSD: this.template.content.templateSD,
           pages: pages,
+          conditionTabs: this.template.content.conditionTabs,
         },
       };
       this.$store.commit("app/SET_EDIT_ANSWER_INDEXES", {
@@ -489,6 +498,8 @@ export default {
               type: answer.type,
               action: answer.action,
               mandatory: answer.mandatory,
+              hasCondLogic:
+                answer.hasCondLogic !== undefined ? answer.hasCondLogic : false,
               score:
                 answer.score === undefined || !Array.isArray(answer.score)
                   ? []

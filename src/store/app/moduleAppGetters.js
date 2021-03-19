@@ -354,5 +354,30 @@ export default {
 
   tempClosedAnswer: state => {
     return state.tempClosedAnswer
-  }
+  },
+
+  getSubscription: state => {
+    return state.subscription
+  },
+
+  getCurrentPricePlan: state => {
+    return state.currentPricePlan
+  },
+
+  // from TEMP template
+  logicQuestionsByAnswerIdTemp: state => params => {
+    const allAnswers = state.tempTemplate.content.pages[params.pIndex].questions[params.qIndex].answers
+    return allAnswers.filter((answer, index) => {
+      answer.index = index;
+      return answer.parent == params.answerId
+    })
+  },
+
+  logicQuestionsByAnswerId: state => params => {
+    const allAnswers = params.template.content.pages[params.pIndex].questions[params.qIndex].answers
+    return allAnswers.filter((answer, index) => {
+      answer.index = index;
+      return answer.parent == params.answerId
+    })
+  },
 }

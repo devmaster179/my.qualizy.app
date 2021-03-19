@@ -2,21 +2,29 @@
   <div
     class="w-full no-gutter items-center justify-center relative mx-auto px-4"
     id="page-public-template"
-    style="max-width:1000px; height: calc(100vh - 92px);"
+    style="max-width: 1000px; height: calc(100vh - 92px)"
   >
     <div class="text-right mt-base">
       <vs-dropdown vs-custom-content vs-trigger-click class="cursor-pointer">
         <span class="cursor-pointer flex i18n-locale">
-          <span class="ml-2">{{ setedLang=="all" ? $t('all') : setedLang }}</span>
+          <span class="ml-2">{{
+            setedLang == "all" ? $t("all") : setedLang
+          }}</span>
           <vs-icon icon-pack="feather" icon="icon-chevron-down" />
         </span>
         <vs-dropdown-menu class="w-48 i18n-dropdown vx-navbar-dropdown">
-          <vs-dropdown-item @click="setedLang = 'English'">English</vs-dropdown-item>
-          <vs-dropdown-item @click="setedLang = 'Français'">Français</vs-dropdown-item>
+          <vs-dropdown-item @click="setedLang = 'English'"
+            >English</vs-dropdown-item
+          >
+          <vs-dropdown-item @click="setedLang = 'Français'"
+            >Français</vs-dropdown-item
+          >
         </vs-dropdown-menu>
       </vs-dropdown>
     </div>
-    <div class="relative bg-white border rounded border-solid d-theme-border-grey-light">
+    <div
+      class="relative bg-white border rounded border-solid d-theme-border-grey-light"
+    >
       <vue-simple-suggest
         ref="suggestComponent"
         :styles="autoCompleteStyle"
@@ -35,7 +43,7 @@
         />
         <div
           class="absolute top-0 right-0 py-4 md:px-6 sm:px-2"
-          v-if="chosen != '' "
+          v-if="chosen != ''"
           @click="emptySearchKey"
         >
           <feather-icon icon="XIcon" svgClasses="h-6 w-6 cursor-pointer" />
@@ -48,7 +56,11 @@
         </div>
       </vue-simple-suggest>
     </div>
-    <VuePerfectScrollbar class="scroll-area mt-4" :settings="settings" ref="taskListPS">
+    <VuePerfectScrollbar
+      class="scroll-area mt-4"
+      :settings="settings"
+      ref="taskListPS"
+    >
       <div class="items-grid-view vx-row no-gutter">
         <div
           class="vx-col mt-4 sm:mt-0 md:w-1/3 sm:w-1/2 w-full sm:px-2"
@@ -66,7 +78,9 @@
                     @click="viewTemplate(template)"
                   >
                     <feather-icon icon="EyeIcon" svgClasses="h-5 w-5" />
-                    <span class="text-sm font-semibold ml-2">View Template</span>
+                    <span class="text-sm font-semibold ml-2"
+                      >View Template</span
+                    >
                   </div>
                   <div
                     class="item-view-secondary-action-btn bg-primary p-3 flex flex-grow items-center justify-center text-white cursor-pointer"
@@ -85,7 +99,7 @@
     <view-template
       :template="selectedTemplate"
       :isSidebarActive="isSidebarActive"
-      @closeSidebar="isSidebarActive=false"
+      @closeSidebar="isSidebarActive = false"
     />
   </div>
 </template>
@@ -171,6 +185,8 @@ export default {
               type: answer.type,
               action: answer.action,
               mandatory: answer.mandatory,
+              hasCondLogic:
+                answer.hasCondLogic !== undefined ? answer.hasCondLogic : false,
               score:
                 answer.score === undefined || !Array.isArray(answer.score)
                   ? []

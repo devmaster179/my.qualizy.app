@@ -181,6 +181,8 @@ export default {
               type: answer.type,
               action: answer.action,
               mandatory: answer.mandatory,
+              hasCondLogic:
+                answer.hasCondLogic !== undefined ? answer.hasCondLogic : false,
               score: answer.score,
               loged: loged,
             });

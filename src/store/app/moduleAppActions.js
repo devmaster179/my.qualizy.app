@@ -182,7 +182,13 @@ export default {
   },
   chnTempClosedAnswer({ commit }, query) {
     commit("CHN_TEMP_CLOSED_ANSWER", query)
+  },
+  setSubscription({ commit }, query) {
+    commit("SET_SUBSCRIPTION", query)
+  },
+  setCurrentPricePlan({ commit }, query) {
+    commit("SET_CURRENT_PRICE_PLAN", query)
+  },
 
-  }
 
 }

@@ -1,20 +1,32 @@
 <template>
   <div class="page-edit-section">
     <div class="flex justify-between items-center">
-      <div class="flex items-center cursor-pointer py-3" @click="activeTitle" v-if="!editTitle">
-        <p class="page-title karla-bold text-sm">{{pageTitle}}</p>
-        <feather-icon icon="Edit2Icon" class="ml-4" style="width:15px; height:15px;" />
+      <div
+        class="flex items-center cursor-pointer py-3"
+        @click="activeTitle"
+        v-if="!editTitle"
+      >
+        <p class="page-title karla-bold text-sm">{{ pageTitle }}</p>
+        <feather-icon
+          icon="Edit2Icon"
+          class="ml-4"
+          style="width: 15px; height: 15px"
+        />
       </div>
       <vs-input
         v-else
         @focus="$event.target.select()"
         v-model="pageTitle"
         ref="pageTitle"
-        @blur="editTitle=false"
+        @blur="editTitle = false"
         class="vs-input-no-shdow-focus w-full edit-page-title"
       />
       <vs-dropdown vs-custom-content class="cursor-pointer" vs-trigger-click>
-        <feather-icon icon="MoreVerticalIcon" class="p-2 cursor-pointer" style="height:2.6rem;" />
+        <feather-icon
+          icon="MoreVerticalIcon"
+          class="p-2 cursor-pointer"
+          style="height: 2.6rem"
+        />
         <vs-dropdown-menu class="vx-navbar-dropdown">
           <ul style="min-width: 9rem" class="p-0">
             <li
@@ -22,15 +34,18 @@
               @click="duplicatePage"
             >
               <feather-icon icon="CopyIcon" svgClasses="w-4 h-4"></feather-icon>
-              <span class="ml-2 karla">{{$t("duplicate page")}}</span>
+              <span class="ml-2 karla">{{ $t("duplicate page") }}</span>
             </li>
             <li
               class="flex py-1 px-2 my-1 cursor-pointer hover:bg-primary hover:text-white"
               @click="deletePage"
-              v-if="template.content.pages.length>1"
+              v-if="template.content.pages.length > 1"
             >
-              <feather-icon icon="Trash2Icon" svgClasses="w-4 h-4"></feather-icon>
-              <span class="ml-2 karla">{{$t("delete page")}}</span>
+              <feather-icon
+                icon="Trash2Icon"
+                svgClasses="w-4 h-4"
+              ></feather-icon>
+              <span class="ml-2 karla">{{ $t("delete page") }}</span>
             </li>
           </ul>
         </vs-dropdown-menu>
@@ -40,15 +55,19 @@
       <div slot="no-body" class="pb-2">
         <div
           class="template-question"
-          :class="{'section-divider':index>0}"
-          v-for="(question,index) in pageContent.questions"
+          :class="{ 'section-divider': index > 0 }"
+          v-for="(question, index) in pageContent.questions"
           :key="index"
         >
           <question-edit :page="page" :question="index" />
         </div>
       </div>
     </vx-card>
-    <answer-type-select :open="activeSelectType" @close="closeEdit('type')" @apply="applyAnswer" />
+    <answer-type-select
+      :open="activeSelectType"
+      @close="closeEdit('type')"
+      @apply="applyAnswer"
+    />
     <answer-action-set
       :open="activeAction"
       @close="closeEdit('action')"
@@ -77,13 +96,13 @@ export default {
     vSelect,
     AnswerTypeSelect,
     AnswerActionSet,
-    AnswerScoreSet
+    AnswerScoreSet,
   },
   props: {
     page: {
       type: Number,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
@@ -91,8 +110,8 @@ export default {
       selectedIndex: {
         page: 0,
         question: 0,
-        answer: 0
-      }
+        answer: 0,
+      },
     };
   },
   methods: {
@@ -109,7 +128,7 @@ export default {
         index: this.$store.getters["app/editAnswerIndexes"],
         target: "answer",
         key: "score",
-        val: score
+        val: score,
       });
       setTimeout(() => {
         this.activeScore = false;
@@ -120,25 +139,43 @@ export default {
         index: this.$store.getters["app/editAnswerIndexes"],
         target: "answer",
         key: "action",
-        val: action
+        val: action,
       });
       setTimeout(() => {
         this.$store.commit("app/SET_EDIT_ACTION", false);
       }, 10);
     },
     applyAnswer(id) {
-      let template = this.template
-      let index = this.$store.getters["app/editAnswerIndexes"]
-      if(!template.content.pages[index.page].questions[index.question].answers[index.answer].type.id || template.content.pages[index.page].questions[index.question].answers[index.answer].type.id != id){
+      let template = this.template;
+      let index = this.$store.getters["app/editAnswerIndexes"];
+      let answer =
+        template.content.pages[index.page].questions[index.question].answers[
+          index.answer
+        ];
+
+      if (!answer.type.id || answer.type.id != id) {
         let answerType = this.answerType(id);
+        // when answer is changed to other answer from closed answer.
+        if (
+          answer.hasCondLogic == true &&
+          this.answerType(answer.type.id).type == "closed answers" &&
+          answerType.type != "closed answers"
+        ) {
+          this.$store.commit("app/CHN_TEMP_TEMPLATE", {
+            index: this.$store.getters["app/editAnswerIndexes"],
+            target: "answer",
+            key: "disableConditionalLogic",
+          });
+        }
+
         this.$store.commit("app/CHN_TEMP_TEMPLATE", {
           index: this.$store.getters["app/editAnswerIndexes"],
           target: "answer",
           key: "type",
           val: id,
-          answerType: answerType
+          answerType: answerType,
         });
-        if(answerType.content == 'temperature') {
+        if (answerType.content == "temperature") {
           this.$store.commit("app/CHN_TEMP_TEMPLATE", {
             index: this.$store.getters["app/editAnswerIndexes"],
             target: "answer",
@@ -147,8 +184,8 @@ export default {
           });
         }
 
-        this.applyAction([])
-        this.applyScore([])
+        this.applyAction([]);
+        this.applyScore([]);
       }
 
       setTimeout(() => {
@@ -160,14 +197,14 @@ export default {
       this.$store.commit("app/CHN_TEMP_TEMPLATE", {
         target: "page",
         key: "addPage",
-        val: page
+        val: page,
       });
     },
     deletePage() {
       this.$store.commit("app/CHN_TEMP_TEMPLATE", {
         target: "page",
         key: "deletePage",
-        val: this.page
+        val: this.page,
       });
     },
     activeTitle() {
@@ -175,7 +212,7 @@ export default {
       this.$nextTick(() => {
         this.$refs.pageTitle.focusInput();
       });
-    }
+    },
   },
 
   computed: {
@@ -186,7 +223,7 @@ export default {
       ].answers[indexes.answer];
     },
     answerType() {
-      return id => {
+      return (id) => {
         return this.$store.getters["app/getTemplateTypeById"](id);
       };
     },
@@ -196,7 +233,7 @@ export default {
       },
       set() {
         this.$store.commit("app/SET_EDIT_SCORE", false);
-      }
+      },
     },
     activeAction: {
       get() {
@@ -204,7 +241,7 @@ export default {
       },
       set() {
         this.$store.commit("app/SET_EDIT_ACTION", false);
-      }
+      },
     },
     activeSelectType: {
       get() {
@@ -212,7 +249,7 @@ export default {
       },
       set() {
         this.$store.commit("app/SET_EDIT_TYPE", false);
-      }
+      },
     },
     template() {
       return this.$store.getters["app/getTempTemplate"];
@@ -229,15 +266,15 @@ export default {
       set(val) {
         this.$store.commit("app/CHN_TEMP_TEMPLATE", {
           index: {
-            page: this.page
+            page: this.page,
           },
           target: "page",
           key: "chnTitle",
-          val: val
+          val: val,
         });
-      }
-    }
-  }
+      },
+    },
+  },
 };
 </script>
 

@@ -1,19 +1,51 @@
 <template>
-  <div class="vx-row items-grid-view match-height">
-    <div class="vx-col md:w-7/12 w-full mt-4 block">
+  <div
+    class="vx-row items-grid-view match-height"
+    v-bind:class="{ hidden: !allLoaded }"
+  >
+    <div class="vx-col md:w-7/12 w-full mt-4 flex-wrap">
+      <!-- <vs-button
+        :disabled="loadingAddBillingDetail"
+        @click="addBillingDetail"
+        >{{
+          loadingAddBillingDetail ? $t("Loading...") : $t("Add billing details")
+        }}</vs-button
+      > -->
       <vx-card>
         <div class="card-header p-6" slot="no-body">
           <div class="flex justify-between items-center pb-3">
-            <h4 class="font-semibold">{{ $t("Billing Details") }}</h4>
-            <vs-button @click="billingDetailPopup = true">{{
-              $t("Add billing details")
-            }}</vs-button>
+            <h4 class="font-semibold hidden md:block">
+              {{ $t("Billing Details") }}
+            </h4>
+            <vs-button
+              :disabled="loadingAddBillingDetail"
+              @click="addBillingDetail"
+              v-if="!subscribed"
+              class="w-full md:w-auto"
+              >{{
+                loadingAddBillingDetail
+                  ? $t("Loading...")
+                  : $t("Add billing details")
+              }}</vs-button
+            >
+
+            <vs-button
+              :disabled="loadingManageBillingDetails"
+              @click="manageBillingDetails"
+              v-if="subscribed"
+              >{{
+                loadingManageBillingDetails
+                  ? $t("Loading...")
+                  : $t("Manage billing details")
+              }}</vs-button
+            >
           </div>
           <vs-alert
             :active="true"
             color="#8E4D00"
             icon="warning"
             class="ek-header-alert"
+            v-if="!subscribed && numberOfLogs >= 311"
           >
             <span>
               {{
@@ -23,15 +55,23 @@
               }}
             </span>
           </vs-alert>
+
+          <div id="my-subscription" v-if="subscribed && !isFreePlan">
+            <p>
+              Your monthly payment depends on the number of logs you make during
+              a month. Next payment will be billed on
+              {{ nextBillingDate | moment("DD/MM/YYYY") }}.
+            </p>
+          </div>
         </div>
 
         <div class="">
-          <p class="current-log-text pb-5">
+          <p class="current-log-text pb-5 hidden md:block">
             {{ $t("Current logs usage per month") }}
           </p>
-          <div>
+          <div class="hidden md:block">
             <div class="logs-track-bar mt-20 mb-10">
-              <div class="main-bar">
+              <div class="main-bar" ref="mainBar">
                 <div class="hight-bars">
                   <div>
                     <div class="log-count absolute left-0">0</div>
@@ -41,31 +81,46 @@
                     </div>
                   </div>
                   <div
-                    v-for="item in logTrackInfos"
+                    v-for="(item, index) in logTrackInfos"
                     :key="item.dolars"
                     :style="'margin-left:' + item.width + '%'"
                   >
-                    <div class="log-count absolute">{{ item.logs }}</div>
-                    <div class="hight-bar"></div>
-                    <div class="dollar-rate absolute">
-                      {{ "$" + item.dolars }}
+                    <div v-if="index != 6">
+                      <div class="log-count absolute">{{ item.logs }}</div>
+                      <div class="hight-bar"></div>
+                      <div class="dollar-rate absolute">
+                        {{ "$" + item.dolars }}
+                      </div>
+                    </div>
+
+                    <div v-else>
+                      <div class="log-count absolute" style="left: -10px">
+                        {{ item.logs }}
+                      </div>
+                      <div class="hight-bar"></div>
+                      <div class="dollar-rate absolute" style="left: -20px">
+                        {{ "$" + item.dolars }}
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="scroll-bar">
+              <div class="scroll-bar" :style="{ width: scrollNumberOfLogs }">
                 <div class="hight-bar">
                   <span class="tooltiptext"
-                    ><span> 287 {{ $t("logs") }}</span></span
+                    ><span> {{ numberOfLogs }} {{ $t("logs") }}</span></span
                   >
                 </div>
               </div>
             </div>
           </div>
-          <p class="current-log-text pt-5 pb-5">
+          <p
+            class="current-log-text pt-5"
+            v-bind:class="{ hidden: isFreePlan }"
+          >
             {{
               $t("You need to log another") +
-              156 +
+              numberOfLogsRemained +
               $t("logs to reach a cheaper pricing plan.")
             }}
             <vs-tooltip
@@ -80,14 +135,16 @@
               ></vs-icon>
             </vs-tooltip>
           </p>
-          <p class="text-2xl mb-5 mt-1">
+          <p class="text-2xl pb-5 pt-5 mt-1" style="font-size: 20px">
             {{ $t("Accrued amount to be paid this month:") }}
-            <span class="font-semibold">$16.78</span>
+            <span class="font-semibold" style="font-size: 25px"
+              >${{ nextPaymentPrice }}</span
+            >
           </p>
         </div>
       </vx-card>
 
-      <vx-card class="mt-6">
+      <vx-card class="mt-6 hidden">
         <div class="" slot="no-body">
           <div class="p-6 inline-block w-10/12">
             <h4 class="font-semibold mt-2">
@@ -147,23 +204,49 @@
             description-body="Count"
           >
             <template slot="thead">
-              <vs-th sort-key="email"> Email </vs-th>
-              <vs-th sort-key="username"> Name </vs-th>
-              <vs-th sort-key="id"> Nro </vs-th>
+              <vs-th sort-key="created"> Date </vs-th>
+              <vs-th sort-key="total"> Amount </vs-th>
+              <vs-th sort-key="status"> Status </vs-th>
+              <vs-th> </vs-th>
             </template>
 
             <template slot-scope="{ data }">
               <vs-tr :key="indextr" v-for="(tr, indextr) in data">
-                <vs-td :data="data[indextr].email">
-                  {{ data[indextr].email }}
+                <vs-td :data="data[indextr].created">
+                  {{ data[indextr].created | moment("DD/MM/YYYY") }}
                 </vs-td>
 
-                <vs-td :data="data[indextr].username">
-                  {{ data[indextr].username }}
+                <vs-td :data="data[indextr].total">
+                  $ {{ (data[indextr].total / 100).toFixed(2) }}
                 </vs-td>
 
-                <vs-td :data="data[indextr].id">
-                  {{ data[indextr].id }}
+                <vs-td :data="data[indextr].status">
+                  <span
+                    v-bind:class="{
+                      'text-gray-400': data[indextr].status == 'draft',
+                      'text-yellow-300': data[indextr].status == 'pending',
+                      'text-yellow-700': data[indextr].status == 'failed',
+                      aaa: data[indextr].status == 'paid',
+                    }"
+                  >
+                    {{ data[indextr].status | capitalize }}
+                  </span>
+                </vs-td>
+
+                <vs-td>
+                  <a
+                    :href="
+                      data[indextr].invoice_pdf ? data[indextr].invoice_pdf : ''
+                    "
+                  >
+                    <img
+                      class="w-2/3 h-full"
+                      :src="
+                        require(`@/assets/images/pages/company/invoice-download.svg`)
+                      "
+                      alt="invoice-download"
+                    />
+                  </a>
                 </vs-td>
               </vs-tr>
             </template>
@@ -177,7 +260,7 @@
               {{ $t("You have no billing history yet") }}
             </p>
             <img
-              class="w-2/3 h-full"
+              class="w-2/3 h-full pb-24"
               :src="require(`@/assets/images/pages/company/no-billings.svg`)"
               alt="no-billings"
             />
@@ -186,7 +269,7 @@
       </vx-card>
     </div>
 
-    <div class="vx-col md:w-12/12 w-full mt-4 mb-20 block">
+    <div class="vx-col md:w-12/12 w-full mt-4 mb-20 block hidden">
       <vx-card>
         <h4 class="font-semibold mt-2 mb-6">
           {{
@@ -233,12 +316,12 @@
                   <span> {{ $t("employees") }}</span>
                 </div>
                 <div class="value-slider">
-                  <vs-slider v-model="employees" />
+                  <vs-slider v-model="employees" :max="1000" />
                   <div class="hight-bar"></div>
                   <div class="marks flex justify-between">
                     <div>0</div>
                     <div style="position: relative; left: 5px">500</div>
-                    <div>100</div>
+                    <div>1000</div>
                   </div>
                 </div>
               </div>
@@ -310,13 +393,36 @@
 <script>
 import BillingDetailPopup from "./BillingDetailPopup";
 import VxCard from "../../../components/vx-card/VxCard.vue";
+import { db } from "@/firebase/firebaseConfig.js";
+import firebase from "firebase/app";
+import $ from "jquery";
+
+import { loadStripe } from "@stripe/stripe-js";
+let tempDate = new Date();
+tempDate.setFullYear(2000);
+
 export default {
   components: {
     BillingDetailPopup,
   },
   data() {
     return {
+      // subscribed: false,
+      // isFreePlan: false,
+      // currBillingDate: tempDate,
+      // nextBillingDate: new Date(),
+      // numberOfLogs: 0,
+      allLoaded: false,
+      functionLocation: "us-central1",
+      stripePrice: "price_1IGqz0KotMxlCKnOhC34kaqB",
+      sessionId: "",
+      customerStripeId: "false",
+      mySubscription: "",
+      loadingAddBillingDetail: false,
+      loadingManageBillingDetails: false,
       billingDetailPopup: false,
+      mainBarWidth: 0,
+      numberOfLogsRemained: 469,
       dollarPerHour: 30,
       employees: 34,
       units: 60,
@@ -324,126 +430,220 @@ export default {
         {
           width: 7,
           logs: 312,
-          dolars: 0.0027,
+          dolars: 0.027,
         },
         {
           width: 9,
           logs: 780,
-          dolars: 0.0024,
+          dolars: 0.024,
         },
         {
           width: 9,
           logs: 1300,
-          dolars: 0.0023,
+          dolars: 0.023,
         },
         {
           width: 10,
           logs: 2080,
-          dolars: 0.0022,
+          dolars: 0.022,
         },
         {
           width: 12,
           logs: 3120,
-          dolars: 0.0019,
+          dolars: 0.019,
         },
         {
           width: 15,
           logs: "26k",
-          dolars: 0.0016,
+          dolars: 0.016,
         },
         {
           width: 32,
           logs: "260k",
-          dolars: 0.0014,
+          dolars: 0.014,
         },
       ],
-      billings: [
-        {
-          id: 1,
-          name: "Leanne Graham",
-          username: "Bret",
-          email: "Sincere@april.biz",
-          website: "hildegard.org",
-        },
-        {
-          id: 2,
-          name: "Ervin Howell",
-          username: "Antonette",
-          email: "Shanna@melissa.tv",
-          website: "anastasia.net",
-        },
-        {
-          id: 3,
-          name: "Clementine Bauch",
-          username: "Samantha",
-          email: "Nathan@yesenia.net",
-          website: "ramiro.info",
-        },
-        {
-          id: 4,
-          name: "Patricia Lebsack",
-          username: "Karianne",
-          email: "Julianne.OConner@kory.org",
-          website: "kale.biz",
-        },
-        {
-          id: 5,
-          name: "Chelsey Dietrich",
-          username: "Kamren",
-          email: "Lucio_Hettinger@annie.ca",
-          website: "demarco.info",
-        },
-        {
-          id: 6,
-          name: "Mrs. Dennis Schulist",
-          username: "Leopoldo_Corkery",
-          email: "Karley_Dach@jasper.info",
-          website: "ola.org",
-        },
-        {
-          id: 7,
-          name: "Kurtis Weissnat",
-          username: "Elwyn.Skiles",
-          email: "Telly.Hoeger@billy.biz",
-          website: "elvis.io",
-        },
-        {
-          id: 8,
-          name: "Nicholas Runolfsdottir V",
-          username: "Maxime_Nienow",
-          email: "Sherwood@rosamond.me",
-          website: "jacynthe.com",
-        },
-        {
-          id: 9,
-          name: "Glenna Reichert",
-          username: "Delphine",
-          email: "Chaim_McDermott@dana.io",
-          website: "conrad.com",
-        },
-        {
-          id: 10,
-          name: "Clementina DuBuque",
-          username: "Moriah.Stanton",
-          email: "Rey.Padberg@karina.biz",
-          website: "ambrose.net",
-        },
-        {
-          id: 10,
-          name: "Clementina DuBuque",
-          username: "Moriah.Stanton",
-          email: "Rey.Padberg@karina.biz",
-          website: "ambrose.net",
-        },
-        {
-          id: 10,
-          name: "Clementina DuBuque",
-          username: "Moriah.Stanton",
-          email: "Rey.Padberg@karina.biz",
-          website: "ambrose.net",
-        },
-      ],
+      billings: [],
+      upcomingInvoice: {},
+      nextPaymentPrice: 0,
     };
+  },
+  computed: {
+    subscribed() {
+      let subscription = this.$store.getters["app/getSubscription"];
+      return subscription.subscribed;
+    },
+    currBillingDate() {
+      let subscription = this.$store.getters["app/getSubscription"];
+      return subscription.currBillingDate;
+    },
+    nextBillingDate() {
+      let subscription = this.$store.getters["app/getSubscription"];
+      return subscription.nextBillingDate;
+    },
+    numberOfLogs() {
+      let currentPricePlan = this.$store.getters["app/getCurrentPricePlan"];
+      return currentPricePlan.numberOfLogs;
+    },
+    isFreePlan() {
+      let currentPricePlan = this.$store.getters["app/getCurrentPricePlan"];
+      return currentPricePlan.isFreePlan;
+    },
+    scrollNumberOfLogs() {
+      let plans = [];
+      let scroll = 0;
+      let commingPlan = 312;
+      let alreadyWidth = 0;
+      let stepPercent = 7;
+      let currentPlanIndex = 0;
+
+      if (this.numberOfLogs < 312) {
+      } else if (this.numberOfLogs < 780) {
+        currentPlanIndex = 1;
+      } else if (this.numberOfLogs < 1300) {
+        currentPlanIndex = 2;
+      } else if (this.numberOfLogs < 2080) {
+        currentPlanIndex = 3;
+      } else if (this.numberOfLogs < 3120) {
+        currentPlanIndex = 4;
+      } else if (this.numberOfLogs < 26000) {
+        currentPlanIndex = 5;
+      } else if (this.numberOfLogs < 260000) {
+        currentPlanIndex = 6;
+      } else if (this.numberOfLogs == 260000) {
+        currentPlanIndex = 6;
+      } else {
+        return this.mainBarWidth;
+      }
+
+      let currentPlan = this.logTrackInfos[currentPlanIndex].logs;
+      if (currentPlan == "26k") {
+        currentPlan = 26000;
+      } else if (currentPlan == "260k") {
+        currentPlan = 260000;
+      }
+
+      let beforePlan = 0;
+      if (currentPlanIndex != 0) {
+        beforePlan = this.logTrackInfos[currentPlanIndex - 1].logs;
+        if (beforePlan == "26k") {
+          beforePlan = 26000;
+        } else if (beforePlan == "260k") {
+          beforePlan = 260000;
+        }
+      }
+
+      this.numberOfLogsRemained = currentPlan - this.numberOfLogs;
+
+      for (let i = 0; i < currentPlanIndex; i++) {
+        alreadyWidth += parseInt(this.logTrackInfos[i].width);
+      }
+
+      let percentOfcurrentLogs =
+        ((this.numberOfLogs - beforePlan) / (currentPlan - beforePlan)) * 100;
+      let partWidth =
+        (this.mainBarWidth / 100) * this.logTrackInfos[currentPlanIndex].width;
+      scroll =
+        eval((partWidth / 100) * percentOfcurrentLogs) +
+        eval(
+          (this.mainBarWidth / 100) * (alreadyWidth + currentPlanIndex / 3.5)
+        );
+
+      return scroll + "px";
+    },
+  },
+  async mounted() {
+    this.$vs.loading();
+
+    // GET customer stripe ID and GET Invoices
+    db.collection("customers")
+      .doc(JSON.parse(localStorage.getItem("userInfo")).id)
+      .get()
+      .then((doc) => {
+        if (doc.exists) {
+          this.customerStripeId = doc.data().stripeId;
+          this.getInvoices();
+        } else {
+          this.customerStripeId = "invalid";
+          this.billings = [];
+          this.allLoaded = true;
+          this.$vs.loading.close();
+        }
+      });
+
+    // SET mainBar width (log track bar)
+    this.mainBarWidth = $(".logs-track-bar .main-bar").width();
+  },
+  methods: {
+    async addBillingDetail() {
+      const stripe = await loadStripe(this.$stripePublishableKey);
+      this.loadingAddBillingDetail = true;
+
+      // stripe.redirectToCheckout({
+      //   sessionId:
+      //     "cs_test_c1DlmTPo5S61HnpS8wQYgvikwWevWdmdhM0BGx0suJXSmZpuF6BR39hx9P",
+      // });
+      // return;
+
+      let customer_url = `${this.$firebaseFunctionUrl}/setupBillingDetail`;
+      this.$http
+        .get(customer_url, {
+          params: {
+            uid: JSON.parse(localStorage.getItem("userInfo")).id,
+            email: JSON.parse(localStorage.getItem("userInfo")).email,
+            success_url: window.location.href,
+            cancel_url: window.location.href,
+            currentUsageOfLogs: this.numberOfLogs,
+          },
+        })
+        .then((res) => {
+          stripe.redirectToCheckout({
+            sessionId: res.data.result.session.id,
+          });
+        });
+    },
+
+    async manageBillingDetails() {
+      // Call billing portal function
+      this.loadingManageBillingDetails = true;
+      const functionRef = firebase
+        .app()
+        .functions(this.functionLocation)
+        .httpsCallable("ext-firestore-stripe-subscriptions-createPortalLink");
+      const { data } = await functionRef({ returnUrl: window.location.href });
+      window.location.assign(data.url);
+      // this.loadingManageBillingDetails = false;
+    },
+
+    async getCustomClaimRole() {
+      await firebase.auth().currentUser.getIdToken(true);
+      const decodedToken = await firebase.auth().currentUser.getIdTokenResult();
+      return decodedToken.claims.stripeRole;
+    },
+
+    async getInvoices() {
+      let invoice_url = `${this.$firebaseFunctionUrl}/getInvoicesByCus`;
+      this.$http
+        .get(invoice_url, {
+          params: {
+            customerStripeId: this.customerStripeId,
+            startingAfter: null,
+            limit: 10,
+          },
+        })
+        .then((res) => {
+          this.billings = res.data.invoices;
+          this.upcomingInvoice = res.data.upcomingInvoice;
+          if (this.upcomingInvoice) {
+            this.nextPaymentPrice =
+              (this.upcomingInvoice.amount_due -
+                this.upcomingInvoice.amount_paid) /
+              100;
+          }
+          this.allLoaded = true;
+          this.$vs.loading.close();
+        });
+    },
   },
 };
 </script>
@@ -517,7 +717,8 @@ export default {
   }
 
   .scroll-bar {
-    width: 39px;
+    // width: 39px;
+    transition: 0.3s;
     height: 24px;
     background: linear-gradient(90deg, #3b4dee 0%, #6c50f0 100%);
     border-radius: 2px;
@@ -686,5 +887,20 @@ export default {
       }
     }
   }
+}
+.text-yellow-400 {
+  color: rgba(251, 191, 36, 1);
+}
+.text-yellow-300 {
+  color: rgba(252, 211, 77, 1);
+}
+.text-yellow-700 {
+  color: rgba(180, 83, 9, 1);
+}
+.text-gray-400 {
+  color: rgba(156, 163, 175, 1);
+}
+.font-bold {
+  font-weight: bold;
 }
 </style>
