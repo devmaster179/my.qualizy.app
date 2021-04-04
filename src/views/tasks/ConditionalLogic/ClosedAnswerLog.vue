@@ -734,6 +734,12 @@ export default {
     },
     templateAction() {
       return (p, q, a) => {
+        if (
+          this.templateInfo.content.pages[p].questions[q].answers[a].action ===
+          undefined
+        ) {
+          return [];
+        }
         return this.templateInfo.content.pages[p].questions[q].answers[a]
           .action;
       };

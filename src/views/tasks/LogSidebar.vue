@@ -709,7 +709,7 @@
                             :src="viewSrc"
                             @closeImage="closeImage"
                           />
-                          <div class="con-img-upload py-0 m-0">
+                          <div v-if="!temporPages.length" class="con-img-upload py-0 m-0">
                             <div
                               class="img-upload my-2"
                               v-for="(image, imageKey) in pages[pIndex]
@@ -741,7 +741,57 @@
                               @url="uploadSucess"
                             />
                           </div>
+                          <div v-else class="con-img-upload py-0 m-0">
+                            <div
+                              class="img-upload my-2"
+                              v-for="(image, imageKey) in temporPages[pIndex]
+                                .questions[qIndex].answers[aIndex].images"
+                              :key="imageKey"
+                            >
+                              <button
+                                type="button"
+                                class="btn-x-file"
+                                @click="
+                                  removeImage(image.url, pIndex, qIndex, aIndex)
+                                "
+                              >
+                                <i
+                                  translate="translate"
+                                  class="material-icons notranslate"
+                                  >delete</i
+                                >
+                              </button>
+                              <img
+                                :src="image.url"
+                                style="max-width: none; max-height: 100%"
+                                @touchend="viewImage(image.url, $event)"
+                                @click="viewImage(image.url, $event)"
+                              />
+                            </div>
+                            <file-upload
+                              :indexs="[pIndex, qIndex, aIndex]"
+                              @url="uploadSucess"
+                            />
+                          </div>
                         </div>
+                      </div>
+                    </template>
+                  </div>
+                </div>
+                <div class="mt-5">
+                  <div class="vx-row answer-content">
+                    <template>
+                      <div
+                        class="pl-4 w-full flex items-center justify-between"
+                      >
+                        <span></span>
+                        <vs-button
+                          class="px-1 sm:px-4 text-right align-end"
+                          color="primary"
+                          type="filled"
+                          @click="duplicateSection(pIndex, qIndex)"
+                          >{{ $t("duplicate") | capitalize }}</vs-button
+                        >
                       </div>
                     </template>
                   </div>
@@ -882,6 +932,7 @@ export default {
       pageNum: 0,
       log: [],
       number: 0,
+      temporPages: [],
     };
   },
   watch: {
@@ -926,6 +977,12 @@ export default {
     },
     templateAction() {
       return (p, q, a) => {
+        if (
+          this.templateInfo.content.pages[p].questions[q].answers[a].action ===
+          undefined
+        ) {
+          return [];
+        }
         return this.templateInfo.content.pages[p].questions[q].answers[a]
           .action;
       };
@@ -1161,6 +1218,47 @@ export default {
   },
   mounted() {},
   methods: {
+    duplicateSection(pIndex, qIndex) {
+      let questions = this.pages[pIndex].questions;
+      let question = JSON.parse(
+        JSON.stringify(this.pages[pIndex].questions[qIndex])
+      );
+      // question.answers[aIndex].value = new Date();
+
+      // Makes so the duplicated section has the initial value.
+      question.answers.forEach((answer) => {
+        answer.value = "";
+      });
+
+      // Insert the section in to the right position.
+      questions.splice(qIndex + 1, 0, question);
+      questions.join();
+      this.pages[pIndex].questions = questions;
+
+      db.collection("logs")
+        .doc(this.logID)
+        .update({
+          updated_at: new Date(),
+          updated_by: JSON.parse(localStorage.getItem("userInfo")).id,
+          initial: false,
+          logs: this.pages,
+        });
+
+      this.$vs.notify({
+        title: "Success",
+        time: 7000,
+        text: "You've duplicated it uccessfully",
+        iconPack: "feather",
+        icon: "icon-check-circle",
+        color: "success",
+      });
+    },
+    applyImage(image) {
+      if (image.indexOf("firebasestorage") > -1) {
+        return image;
+      }
+      return require(`@/assets/images/template_image/${image}`);
+    },
     scrollHandle(evt) {
       if (this.signatureTop > -1)
         this.$refs.pageLists.$el.scrollTop = this.signatureTop;
@@ -1326,21 +1424,39 @@ export default {
         }
       }
     },
-    uploadSucess(url, ref, indexs) {
+    uploadSucess(url, ref, indexs, kind = "online") {
       this.initState = false;
       this.saveState = true;
-      this.pages[indexs[0]].questions[indexs[1]].answers[
-        indexs[2]
-      ].images.push({ url: url, ref: ref });
-      this.pages[indexs[0]].questions[indexs[1]].answers[
-        indexs[2]
-      ].loged = true;
-      this.pages[indexs[0]].questions[indexs[1]].answers[
-        indexs[2]
-      ].time = new Date();
-      this.pages[indexs[0]].questions[indexs[1]].answers[
-        indexs[2]
-      ].user = JSON.parse(localStorage.getItem("userInfo")).id;
+      if (kind === "online") {
+        this.temporPages = []
+        this.pages[indexs[0]].questions[indexs[1]].answers[
+          indexs[2]
+        ].images.push({ url: url, ref: ref });
+        this.pages[indexs[0]].questions[indexs[1]].answers[
+          indexs[2]
+        ].loged = true;
+        this.pages[indexs[0]].questions[indexs[1]].answers[
+          indexs[2]
+        ].time = new Date();
+        this.pages[indexs[0]].questions[indexs[1]].answers[
+          indexs[2]
+        ].user = JSON.parse(localStorage.getItem("userInfo")).id;
+      } else if (kind === "offline") {
+        if (!this.temporPages.length)
+          this.temporPages = JSON.parse(JSON.stringify(this.pages));
+        this.temporPages[indexs[0]].questions[indexs[1]].answers[
+          indexs[2]
+        ].images.push({ url: url, ref: ref });
+        this.temporPages[indexs[0]].questions[indexs[1]].answers[
+          indexs[2]
+        ].loged = true;
+        this.temporPages[indexs[0]].questions[indexs[1]].answers[
+          indexs[2]
+        ].time = new Date();
+        this.temporPages[indexs[0]].questions[indexs[1]].answers[
+          indexs[2]
+        ].user = JSON.parse(localStorage.getItem("userInfo")).id;
+      }
       db.collection("logs")
         .doc(this.logID)
         .update({
@@ -1377,37 +1493,8 @@ export default {
     },
     chnValue(e, pIndex, qIndex, aIndex, type = "", action = false) {
       if (type == "temperature") e = Math.round(e.target.value * 100) / 100;
-      if (this.pages[pIndex].questions[qIndex].answers[aIndex].value === e) {
+      if (this.pages[pIndex].questions[qIndex].answers[aIndex].value === e)
         return false;
-      }
-
-      if (this.pages[pIndex].questions[qIndex].answers[aIndex].loged == false) {
-        db.collection("log_usages")
-          .add({
-            logId: this.logID,
-            pIndex: pIndex,
-            qIndex: qIndex,
-            aIndex: aIndex,
-            content: e,
-            logged: true,
-            count: 1,
-            created_by: JSON.parse(localStorage.getItem("userInfo")).id,
-            created_at: new Date(),
-          })
-          .then((res) => {
-            if (this.subscribed) {
-              let usage_url = `${this.$firebaseFunctionUrl}/addUsageToSubscription`;
-              this.$http
-                .get(usage_url, {
-                  params: {
-                    subscription: this.subscriptionId,
-                    usageCount: 1,
-                  },
-                })
-                .then((res) => {});
-            }
-          });
-      }
 
       this.initState = false;
       this.saveState = true;
@@ -1432,15 +1519,15 @@ export default {
       actions.forEach((action) => {
         if (action && action.content !== undefined) {
           if (
-            (action.condition == "Equal" && e == action.content[0]) ||
-            (action.condition == "Not Equal" && e != action.content[0]) ||
-            (action.condition == "Less Than" && e < action.content[0]) ||
-            (action.condition == "Less Than or Equal" &&
+            (action.condition == "equal" && e == action.content[0]) ||
+            (action.condition == "not equal" && e != action.content[0]) ||
+            (action.condition == "less than" && e < action.content[0]) ||
+            (action.condition == "less than or equal" &&
               e <= action.content[0]) ||
-            (action.condition == "Greater Than" && e > action.content[0]) ||
-            (action.condition == "Greater Than or Equal" &&
+            (action.condition == "greater than" && e > action.content[0]) ||
+            (action.condition == "greater than or equal" &&
               e >= action.content[0]) ||
-            (action.condition == "Between" &&
+            (action.condition == "between" &&
               e >= action.content[0] &&
               e <= action.content[1])
           ) {
@@ -1457,7 +1544,7 @@ export default {
             });
             var templateTitle = this.templateInfo.content.templateTitle;
             var mUsers = [];
-            action.toUser.map((id) => {
+            action.teams.map((id) => {
               let team = this.$store.getters["app/getTeamById"](id);
               if (team == undefined) return;
               let user = this.$store.getters["app/users"].filter(
@@ -1465,17 +1552,15 @@ export default {
               );
 
               user.map((item) => {
-                if (mUsers.find((mUser) => mUser.email == item.email)) return;
+                if (
+                  mUsers.find((mUser) => mUser.email == item.email) != undefined || item.rEmail === undefined || !item.rEmail
+                )
+                  return;
                 mUsers.push({ email: item.email, name: item.name });
               });
             });
-
-            if (notification == undefined) {
-              db.collection("notifications").add({
-                readIds: [],
-                sendEmails: mUsers,
-                text:
-                  "Captured " +
+            if (notification === undefined) {
+              const notificationText = "Captured " +
                   '"' +
                   e +
                   this.pages[pIndex].questions[qIndex].answers[aIndex].ref.type
@@ -1483,7 +1568,11 @@ export default {
                   '" in ' +
                   '"' +
                   this.pages[pIndex].questions[qIndex].title +
-                  '"',
+                  '"';
+              db.collection("notifications").add({
+                readIds: [],
+                sendEmails: mUsers,
+                text: notificationText,
                 templateIndexes: [pIndex, qIndex, aIndex],
                 logID: this.logID,
                 templateId: this.template,
@@ -1492,13 +1581,27 @@ export default {
                   e +
                   this.pages[pIndex].questions[qIndex].answers[aIndex].ref.type
                     .tempUnit,
-                alertType: action.alertType || action.alwertType,
-                toTeam: action.toUser,
+                types: action.types,
+                toTeam: action.teams,
                 group: JSON.parse(localStorage.getItem("userInfo")).group,
                 updated_by: JSON.parse(localStorage.getItem("userInfo")).id,
                 updated_at: new Date(),
                 at: firebase.firestore.FieldValue.serverTimestamp(),
               });
+
+              mUsers.map((mUser) => {
+                this.$http
+                .post(
+                  "https://us-central1-the-haccp-app-249610.cloudfunctions.net/api/sendMail",
+                  {
+                    email: mUser.email,
+                    subject: templateTitle,
+                    html: notificationText
+                  }
+                )
+                .then(() => {});
+              });
+              
             } else {
               db.collection("notifications")
                 .doc(notification.id)
@@ -1529,34 +1632,6 @@ export default {
       });
     },
     chnContent(pIndex, qIndex, aIndex, content, failed, action = false) {
-      if (this.pages[pIndex].questions[qIndex].answers[aIndex].loged == false) {
-        db.collection("log_usages")
-          .add({
-            logId: this.logID,
-            pIndex: pIndex,
-            qIndex: qIndex,
-            aIndex: aIndex,
-            content: content,
-            logged: true,
-            count: 1,
-            created_by: JSON.parse(localStorage.getItem("userInfo")).id,
-            created_at: new Date(),
-          })
-          .then((res) => {
-            if (this.subscribed) {
-              let usage_url = `${this.$firebaseFunctionUrl}/addUsageToSubscription`;
-              this.$http
-                .get(usage_url, {
-                  params: {
-                    subscription: this.subscriptionId,
-                    usageCount: 1,
-                  },
-                })
-                .then((res) => {});
-            }
-          });
-      }
-
       this.initState = false;
       this.saveState = true;
       this.pages[pIndex].questions[qIndex].answers[aIndex].value = content;
@@ -1610,7 +1685,7 @@ export default {
               });
               db.collection("notifications").add({
                 icon: "CheckSquareIcon",
-                type: actionItem.types,
+                types: actionItem.types,
                 readIds: [],
                 sendEmails: mUsers,
                 text: actionItem.description,
@@ -1626,11 +1701,24 @@ export default {
                 updated_at: new Date(),
                 at: firebase.firestore.FieldValue.serverTimestamp(),
               });
+
+              mUsers.map((mUser) => {
+                this.$http
+                .post(
+                  "https://us-central1-the-haccp-app-249610.cloudfunctions.net/api/sendMail",
+                  {
+                    email: mUser.email,
+                    subject: actionItem.name,
+                    html: actionItem.description
+                  }
+                )
+                .then(() => {});
+              });
             } else {
               db.collection("notifications")
                 .doc(notification.id)
                 .update({
-                  type: actionItem.types,
+                  types: actionItem.types,
                   readIds: [],
                   sendEmails: mUsers,
                   text: actionItem.description,
