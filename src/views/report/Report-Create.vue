@@ -29,7 +29,7 @@
     <div class="vx-row">
       <vx-card>
         <div class="vx-row w-full" v-if="filteredLogs.length>0">
-          <div class="px-2 vx-col md:w-1/4 sm:w-1/2 w-full">
+          <div class="px-2 vx-col md:w-1/5 sm:w-1/2 w-full">
             <div class="rounded-lg border border-solid d-theme-border-grey-light p-4">
               <div class="text-center">
                 <feather-icon
@@ -39,10 +39,10 @@
                 ></feather-icon>
               </div>
               <h2 class="text-center mt-4 mb-2 font-bold">{{reportInfo.score}}</h2>
-              <p class="text-center">General Score</p>
+              <p class="text-center">{{ $t("general score") }}</p>
             </div>
           </div>
-          <div class="px-2 vx-col md:w-1/4 sm:w-1/2 w-full mt-1 sm:mt-0">
+          <div class="px-2 vx-col md:w-1/5 sm:w-1/2 w-full mt-1 sm:mt-0">
             <div class="rounded-lg border border-solid d-theme-border-grey-light p-4">
               <div class="text-center">
                 <feather-icon
@@ -52,10 +52,27 @@
                 ></feather-icon>
               </div>
               <h2 class="text-center mt-4 mb-2 font-bold">{{reportInfo.tasks}}</h2>
-              <p class="text-center">Tasks</p>
+              <p class="text-center">{{ $t("tasks") }}</p>
             </div>
           </div>
-          <div class="px-2 vx-col md:w-1/4 sm:w-1/2 w-full md:mt-0 mt-1">
+          <div class="px-2 vx-col md:w-1/5 sm:w-1/2 w-full md:mt-0 mt-1">
+            <div
+                    class="rounded-lg border border-solid d-theme-border-grey-light p-4"
+            >
+              <div class="text-center">
+                <feather-icon
+                        class="text-danger p-3 inline-flex rounded-full"
+                        icon="SlashIcon"
+                        style="background: rgba(var(--vs-warning), 0.15)"
+                ></feather-icon>
+              </div>
+              <h2 class="text-center mb-2 mt-4 font-bold">
+                {{ nonCompliantTasksAmount }}
+              </h2>
+              <p class="text-center">{{ $t("non compliant") }}</p>
+            </div>
+          </div>
+          <div class="px-2 vx-col md:w-1/5 sm:w-1/2 w-full md:mt-0 mt-1">
             <div class="rounded-lg border border-solid d-theme-border-grey-light p-4">
               <div class="text-center">
                 <feather-icon
@@ -65,10 +82,10 @@
                 ></feather-icon>
               </div>
               <h2 class="text-center mb-2 mt-4 font-bold">{{filteredLogs.length}}</h2>
-              <p class="text-center">Check List</p>
+              <p class="text-center">{{ $t("check list") }}</p>
             </div>
           </div>
-          <div class="px-2 vx-col md:w-1/4 sm:w-1/2 w-full md:mt-0 mt-1">
+          <div class="px-2 vx-col md:w-1/5 sm:w-1/2 w-full md:mt-0 mt-1">
             <div class="rounded-lg border border-solid d-theme-border-grey-light p-4">
               <div class="text-center">
                 <feather-icon
@@ -78,7 +95,7 @@
                 ></feather-icon>
               </div>
               <h2 class="text-center mb-2 mt-4 font-bold">{{reportInfo.ontime}}</h2>
-              <p class="text-center">Completed on time</p>
+              <p class="text-center">{{ $t("completed on time") }}</p>
             </div>
           </div>
         </div>
@@ -287,9 +304,11 @@ export default {
       return (log) => {
         let templateTitle = this.getTemplateInfo(log.templateID).content
           .templateTitle;
-        var total = 0;
-        var completed = 0;
-        var state, done;
+        let total = 0;
+        let completed = 0;
+        let failed = 0;
+        let state, done;
+
         log.logs.map((page) => {
           page.questions.map((question) => {
             question.answers.map((answer) => {
@@ -301,6 +320,11 @@ export default {
                   total++;
                   if (answer.loged) completed++;
                 }
+                if (
+                        answer.ref.type.failedAnswer &&
+                        answer.ref.type.failedAnswer == answer.value
+                )
+                  failed++;
               }
             });
           });
@@ -317,6 +341,7 @@ export default {
           tasks: `${completed}/${total}`,
           status: status,
           done: done,
+          failed: failed,
         };
       };
     },
@@ -588,6 +613,13 @@ export default {
         { key: "Just me", text: this.$t("me")},
         { key: "Public", text: this.$t("public") },
       ];
+    },
+    nonCompliantTasksAmount() {
+      let amount = 0;
+      this.filteredLogs.map(
+              (el) => (amount = amount + this.logInfo(el).failed)
+      );
+      return amount;
     },
   },
   methods: {
