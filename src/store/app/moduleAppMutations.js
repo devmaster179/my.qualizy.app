@@ -386,7 +386,7 @@ export default {
       else if (query.key == 'action') {
         let action = answer.action;
         if (!Array.isArray(action)) { action = [action]; }
-        answer.action = [...action, query.val]
+        answer.action = query.val;
       }
       else if (query.key == 'score') {
         answer.score = query.val
