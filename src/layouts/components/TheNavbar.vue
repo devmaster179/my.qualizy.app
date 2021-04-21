@@ -271,6 +271,30 @@
                   ></feather-icon>
                   <span class="ml-2">{{ $t("tasks") }}</span>
                 </li>
+
+                <li
+                  v-if="subscribed"
+                  class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white"
+                  @click="$router.push('/company').catch((err) => {})"
+                >
+                  <feather-icon
+                    icon="CreditCardIcon"
+                    svgClasses="w-4 h-4"
+                  ></feather-icon>
+                  <span class="ml-2">{{ $t("Billing") }}</span>
+                </li>
+                <li
+                  v-else
+                  class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white"
+                  @click="goToSalePage"
+                >
+                  <feather-icon
+                    icon="CreditCardIcon"
+                    svgClasses="w-4 h-4"
+                  ></feather-icon>
+                  <span class="ml-2">{{ $t("Billing") }}</span>
+                </li>
+
                 <li
                   class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white sm:hidden block"
                   @click="$router.push('/knowledge-page').catch((err) => {})"
@@ -355,6 +379,10 @@ export default {
     },
   },
   computed: {
+    subscribed() {
+      let subscription = this.$store.getters["app/getSubscription"];
+      return subscription.subscribed;
+    },
     calcTime() {
       return (time) => {
         return time.getTime() - this.now.getTime();
@@ -374,7 +402,9 @@ export default {
       return notify.filter(
         (item) =>
           this.$store.getters["app/getTemplateById"](item.templateId) !==
-            undefined && item.types !== undefined && item.types.indexOf("app") > -1
+            undefined &&
+          item.types !== undefined &&
+          item.types.indexOf("app") > -1
       );
     },
     country() {
@@ -428,6 +458,9 @@ export default {
     },
   },
   methods: {
+    goToSalePage(){
+      window.open("https://www.qualizy.app/get/", '_blank');
+    },
     removeLocations(val) {
       val.map((item) => {
         this.$store.commit("app/REMOVE_LOCATION_LIST", item);

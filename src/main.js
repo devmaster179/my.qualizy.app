@@ -206,7 +206,7 @@ Vue.directive(
 ),
 
   Vue.config.productionTip = false
-  
+
 import "./connectionCronWorker"
 
 new Vue({

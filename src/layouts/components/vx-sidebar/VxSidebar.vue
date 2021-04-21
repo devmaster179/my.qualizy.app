@@ -26,15 +26,16 @@
         <div
           class="header-sidebar flex justify-between m-0 mb-4"
           slot="header"
-          style="padding:20px; background:#6C50F0;"
+          style="padding: 20px; background: #6c50f0"
         >
           <img
             :src="logo"
             alt="logo"
             class="cursor-pointer"
             v-if="logo"
-            width="40px" height="40px"
-            @click="$router.push('/').catch(err => {})"
+            width="40px"
+            height="40px"
+            @click="$router.push('/').catch((err) => {})"
           />
         </div>
 
@@ -52,7 +53,10 @@
               :key="`header-${index}`"
               v-if="sidebarItem.header && !sidebarItemsMin"
               class="navigation-header truncate"
-            >{{ $t(sidebarItem.i18n) || sidebarItem.header | capitalize }}</span>
+              >{{
+                $t(sidebarItem.i18n) || sidebarItem.header | capitalize
+              }}</span
+            >
             <template v-else-if="!sidebarItem.header">
               <!-- IF IT'S SINGLE ITEM -->
               <vx-sidebar-item
@@ -64,20 +68,24 @@
                 :href="sidebarItem.slug == 'external' ? sidebarItem.url : ''"
                 :icon="sidebarItem.icon"
                 :target="sidebarItem.target"
-                :featherIcon="sidebarItem.feather===undefined"
+                :featherIcon="sidebarItem.feather === undefined"
                 :isDisabled="sidebarDisabled(sidebarItem)"
                 :slug="sidebarItem.slug"
               >
                 <span
                   v-show="!sidebarItemsMin"
                   class="karla block"
-                  style="font-size:10px; white-space: normal;"
-                >{{ $t(sidebarItem.i18n) || sidebarItem.name | capitalize }}</span>
+                  style="font-size: 10px; white-space: normal"
+                  >{{
+                    $t(sidebarItem.i18n) || sidebarItem.name | capitalize
+                  }}</span
+                >
                 <vs-chip
                   class="ml-auto"
                   :color="sidebarItem.tagColor"
                   v-if="sidebarItem.tag && (isMouseEnter || !reduce)"
-                >{{ sidebarItem.tag }}</vs-chip>
+                  >{{ sidebarItem.tag }}</vs-chip
+                >
               </vx-sidebar-item>
 
               <!-- IF HAVE SUBMENU / DROPDOWN -->
@@ -104,8 +112,9 @@
             <span
               v-show="!sidebarItemsMin"
               class="karla block"
-              style="font-size:10px; white-space: normal;"
-            >{{$t('support') | capitalize}}</span>
+              style="font-size: 10px; white-space: normal"
+              >{{ $t("support") | capitalize }}</span
+            >
           </vx-sidebar-item>
         </div>
       </div>
@@ -166,31 +175,29 @@ export default {
   }),
   computed: {
     auth() {
-      return (sub,action) => {
-        let authList = this.$store.getters['app/auth']
+      return (sub, action) => {
+        let authList = this.$store.getters["app/auth"];
         var cUser = this.$store.getters["app/currentUser"];
-        if(cUser == undefined || cUser.role == undefined) return false
-        else if(cUser.role.key == 0) 
-          return true
-        else if(authList[sub][cUser.role.name.toLowerCase()][action])
-          return true
-        else 
-          return false
-      }
+        if (cUser == undefined || cUser.role == undefined) return false;
+        else if (cUser.role.key == 0) return true;
+        else if (authList[sub][cUser.role.name.toLowerCase()][action])
+          return true;
+        else return false;
+      };
     },
     sidebarDisabled() {
       return (item) => {
-        return false
+        return false;
         // if(item.slug == '') return false
         // return !this.auth(item.slug , 'read')
 
-      //   if (!item.role) return false;
+        //   if (!item.role) return false;
 
-      //   var cUser = this.$store.getters["app/currentUser"];
-      //   if (cUser == undefined || cUser.role == undefined) return true;
-      //   if (item.role.indexOf(cUser.role.key) > -1) return false;
+        //   var cUser = this.$store.getters["app/currentUser"];
+        //   if (cUser == undefined || cUser.role == undefined) return true;
+        //   if (item.role.indexOf(cUser.role.key) > -1) return false;
 
-      //   return true;
+        //   return true;
       };
     },
     isSidebarActive: {
@@ -259,9 +266,9 @@ export default {
   methods: {
     toggleSupportChat() {
       // if(this.showSupportChat){
-        window.gist.chat('hideLauncher');
-        window.gist.chat('open')
-        // this.showSupportChat = false
+      window.gist.chat("hideLauncher");
+      window.gist.chat("open");
+      // this.showSupportChat = false
       // }
       // else {
       //   window.gist.chat('close')

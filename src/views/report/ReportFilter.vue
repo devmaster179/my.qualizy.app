@@ -140,7 +140,6 @@ export default {
     date1(val) {
       var today = new Date();
       if (val == "custom") {
-        console.log("filter", this.filter);
         if (this.filter._from  !== undefined) {
           this.from = this.filter._from;
           this.to = this.filter._to;

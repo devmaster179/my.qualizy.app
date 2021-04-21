@@ -194,18 +194,18 @@
                 <p class="text-sm color-black opacity-50 text-center">
                   {{
                     $t(
-                      "Tell us about your company so that we could customize your experience"
+                      "Help us set-up the right food safety program for your company"
                     )
                   }}
                 </p>
               </div>
               <div class="vx-col w-full mt-4">
-                <p class="caption mb-2">{{ $t("company name") }}</p>
+                <p class="caption mb-2">{{ $t("What is the name of your company?") }}</p>
                 <vs-input
                   v-validate="'required|min:3'"
                   data-vv-validate-on="blur"
                   class="w-full"
-                  :placeholder="$t('company name')"
+                  :placeholder="$t(`What is the name of your company?`)"
                   v-model="company"
                   name="companyname"
                 />
@@ -214,7 +214,7 @@
                 }}</span>
               </div>
               <div class="vx-col w-full mt-4">
-                <p class="caption mb-4">{{ $t("industry") }}</p>
+                <p class="caption mb-4">{{ $t("What describes the best your operation? This will help us deploy the perfect templates for you.") }}</p>
                 <v-select
                   :options="companyTypes"
                   :clearable="false"
@@ -224,7 +224,7 @@
               </div>
 
               <div class="vx-col w-full mt-4">
-                <p class="caption mb-4">{{ $t("job title") }}</p>
+                <p class="caption mb-4">{{ $t("What is your job title?") }}</p>
                 <v-select
                   :options="industryTypes"
                   :clearable="false"
@@ -234,7 +234,7 @@
               </div>
 
               <div class="vx-col w-full mt-4">
-                <p class="caption mb-2">{{ $t("Number of employees") }}</p>
+                <p class="caption mb-2">{{ $t("How many locations does your company have?") }}</p>
                 <v-select
                   :clearable="false"
                   :options="employeeList"
@@ -296,61 +296,6 @@
                   >{{ $t("back") }}</vs-button
                 >
                 <vs-button
-                  @click.native="plusPage"
-                  color="#6c50f0"
-                  class="w-full karla-bold"
-                  :disabled="!pageCheck(2)"
-                  >{{ $t("next") }}</vs-button
-                >
-              </div>
-              <div class="absolute skip-item cursor-pointer">
-                <div
-                  class="flex items-center hover:font-bold"
-                  @click="currentPage = 3"
-                >
-                  <span class="text-sm mr-2" style="color: #6c50f0">{{
-                    $t("skip")
-                  }}</span>
-                  <vs-icon
-                    color="#6C50F0"
-                    size="20px"
-                    icon-pack="feather"
-                    icon="icon-arrow-right"
-                  ></vs-icon>
-                </div>
-              </div>
-            </div>
-            <div
-              v-else-if="currentPage == page && currentPage == 3"
-              class="vx-row py-12 course-content mt-4"
-              style="max-width: 700px"
-            >
-              <div class="vx-col w-full">
-                <p class="text-center karla-bold text-2xl color-black mb-4">
-                  {{
-                    $t("Grab a time here with an expert for a FREE set-up call")
-                  }}
-                </p>
-                <p class="text-base color-black opacity-50 text-center">
-                  {{
-                    $t(
-                      "Rather than spending hours trying out our software and reading documentation, We invite you to spend 30 minutes with our experts getting specific answers to your questions and having a true expert help you customise the product to your specific needs & workflow"
-                    )
-                  }}
-                </p>
-              </div>
-              <div class="vx-row w-full" style="margin-top: -30px">
-                <vue-calendly :url="calendlyUrl" :height="1000"></vue-calendly>
-              </div>
-              <div class="vx-col w-full flex items-center justify-between">
-                <vs-button
-                  color="#ebe8fd"
-                  class="w-full mr-4 karla-bold"
-                  text-color="#6c50f0"
-                  @click.native="minusPage"
-                  >{{ $t("back") }}</vs-button
-                >
-                <vs-button
                   @click.native="registerUser"
                   color="#6c50f0"
                   class="w-full karla-bold"
@@ -374,6 +319,7 @@
                 </div>
               </div>
             </div>
+
           </template>
         </transition>
         <!-- </VuePerfectScrollbar> -->
@@ -507,24 +453,24 @@ export default {
     employeeList() {
       return [
         {
-          text: "0 ~ 10",
+          text: "Only 1",
+          value: 1,
+        },
+        {
+          text: "1 ~ 5",
           value: 5,
         },
         {
-          text: "11 ~ 50",
-          value: 50,
+          text: "6 ~ 10",
+          value: 10,
         },
         {
-          text: "51 ~ 200",
-          value: 200,
+          text: "11 ~ 20",
+          value: 20,
         },
         {
-          text: "201 ~ 500",
-          value: 500,
-        },
-        {
-          text: "500 +",
-          value: -1,
+          text: "More than 20",
+          value: 21,
         },
       ];
     },
@@ -558,11 +504,6 @@ export default {
           name: this.$t("step") + " 3",
           title: this.$t("get link to the app"),
           icon: "icon-phone",
-        },
-        {
-          name: this.$t("step") + " 4",
-          title: this.$t("schedule a free set-up call"),
-          icon: "icon-calendar",
         },
       ];
     },
