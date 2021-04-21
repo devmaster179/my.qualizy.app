@@ -21,9 +21,8 @@
             class="w-full"
             frameborder="0"
             id="customerPortalIframe"
-            :secret="paykickstart_secret"
             scrolling="no"
-            src="https://app.paykickstart.com/billing?portal=809LqB6hq3COxnbdKT7V6fqvhqVzFQ4DQTcJZdnz0kml4BXqda"
+            :src="'https://app.paykickstart.com/billing?portal=809LqB6hq3COxnbdKT7V6fqvhqVzFQ4DQTcJZdnz0kml4BXqda&secret='+pksAtoLoginSecret"
           ></iframe>
         </div>
         <div v-else>
@@ -41,7 +40,7 @@
 export default {
   data() {
     return {
-      paykickstart_secret: "",
+      pksAtoLoginSecret: "",
     };
   },
   directives: {},
@@ -90,7 +89,7 @@ export default {
         })
         .then((res) => {
           console.log("res", res);
-          this.paykickstart_secret = res.data.secret;
+          this.pksAtoLoginSecret = res.data.secret;
         });
     },
   },
