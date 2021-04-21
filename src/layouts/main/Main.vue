@@ -1051,12 +1051,19 @@ export default {
 .layout--main-non-subscribed .main-layout-navbar .vx-navbar-wrapper {
   top: 32px!important;
 }
+.layout--main-non-subscribed #content-area {
+  position: relative;
+  top: 32px!important;
+}
 .banner-non-subscribed {
   background-color: #fffbcc;
   height: 32px;
   padding: 5px;
   text-align: center;
   font-size: 13px;
+  position: fixed;
+  width: 100%;
+  z-index: 100000;
 }
 .banner-non-subscribed a {
   font-size: 14px;

@@ -16,7 +16,7 @@
         </div>
       </div>
       <div>
-        <div v-if="subscribed">
+        <div v-if="!subscribed">
           <iframe
             class="w-full"
             frameborder="0"
