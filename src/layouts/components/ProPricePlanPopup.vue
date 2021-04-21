@@ -20,9 +20,9 @@
     </VuePerfectScrollbar>
     <vs-divider />
     <div class="flex items-center justify-end">
-      <router-link to="/company" exact>
-        <vs-button>Upgrade to pro</vs-button></router-link
-      >
+      <a href="https://www.qualizy.app/get/" target="_blank">
+        <vs-button>Upgrade to pro</vs-button>
+      </a>
     </div>
   </vs-popup>
 </template>

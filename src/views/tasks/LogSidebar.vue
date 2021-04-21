@@ -1496,6 +1496,24 @@ export default {
       if (this.pages[pIndex].questions[qIndex].answers[aIndex].value === e)
         return false;
 
+      if (this.pages[pIndex].questions[qIndex].answers[aIndex].loged == false) {
+        db.collection("log_usages")
+          .add({
+            logId: this.logID,
+            pIndex: pIndex,
+            qIndex: qIndex,
+            aIndex: aIndex,
+            content: e,
+            logged: true,
+            count: 1,
+            created_by: JSON.parse(localStorage.getItem("userInfo")).id,
+            created_at: new Date(),
+          })
+          .then((res) => {
+            console.log("usage added");
+          });
+      }
+
       this.initState = false;
       this.saveState = true;
       this.pages[pIndex].questions[qIndex].answers[aIndex].value = e;
@@ -1601,7 +1619,7 @@ export default {
                 )
                 .then(() => {});
               });
-              
+
             } else {
               db.collection("notifications")
                 .doc(notification.id)

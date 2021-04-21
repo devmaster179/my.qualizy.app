@@ -9,60 +9,66 @@
 
 
 <template>
-  <div
-    class="layout--main"
-    :class="[navbarClasses, footerClasses, { 'app-page': isAppPage }]"
-  >
-    <vx-sidebar
-      :sidebarItems="sidebarItems"
-      :logo="require('@/assets/images/logo/logo.png')"
-      title="Vuesax"
-      parent=".layout--main"
-    />
+  <div>
+    <div v-if="!subscribed" class="banner-non-subscribed">
+      <span class="info-badge">Info</span>
+      You're still on Free Plan. Please upgrade <a href="https://www.qualizy.app/get/" target="_blank" class="underline">here</a> to use pro features of paperless
+          environment.
+    </div>
     <div
-      id="content-area"
-      :class="[contentAreaClass, { 'show-overlay': bodyOverlay }]"
+      class="layout--main"
+      :class="[navbarClasses, footerClasses, { 'app-page': isAppPage, 'layout--main-non-subscribed':!subscribed }]"
     >
-      <div id="content-overlay"></div>
+      <vx-sidebar
+        :sidebarItems="sidebarItems"
+        :logo="require('@/assets/images/logo/logo.png')"
+        title="Vuesax"
+        parent=".layout--main"
+      />
+      <div
+        id="content-area"
+        :class="[contentAreaClass, { 'show-overlay': bodyOverlay }]"
+      >
+        <div id="content-overlay"></div>
 
-      <div class="content-wrapper">
-        <the-navbar
-          :navbarColor="navbarColor"
-          :class="[
-            { 'text-white': isNavbarDark && !isThemeDark },
-            { 'text-base': !isNavbarDark && isThemeDark },
-          ]"
-          class="no-print"
-        />
+        <div class="content-wrapper">
+          <the-navbar
+            :navbarColor="navbarColor"
+            :class="[
+              { 'text-white': isNavbarDark && !isThemeDark },
+              { 'text-base': !isNavbarDark && isThemeDark },
+            ]"
+            class="no-print main-layout-navbar"
+          />
 
-        <div class="router-view">
-          <div
-            class="router-content"
-            :class="{ 'mt-0': navbarType == 'hidden' }"
-          >
-            <transition :name="routerTransition">
-              <div
-                class="router-header flex flex-wrap items-center"
-                v-if="$route.meta.breadcrumb || $route.meta.pageTitle"
-              >
+          <div class="router-view">
+            <div
+              class="router-content"
+              :class="{ 'mt-0': navbarType == 'hidden' }"
+            >
+              <transition :name="routerTransition">
                 <div
-                  class="content-area__heading"
-                  :class="{
-                    'pr-4 border-0 md:border-r border-t-0 border-b-0 border-l-0 border-solid border-grey-light':
-                      $route.meta.breadcrumb,
-                  }"
+                  class="router-header flex flex-wrap items-center"
+                  v-if="$route.meta.breadcrumb || $route.meta.pageTitle"
                 >
-                  <h2 class="mb-1">{{ $t(routeTitle) | capitalize }}</h2>
-                </div>
+                  <div
+                    class="content-area__heading"
+                    :class="{
+                      'pr-4 border-0 md:border-r border-t-0 border-b-0 border-l-0 border-solid border-grey-light':
+                        $route.meta.breadcrumb,
+                    }"
+                  >
+                    <h2 class="mb-1">{{ $t(routeTitle) | capitalize }}</h2>
+                  </div>
 
-                <!-- BREADCRUMB -->
-                <vx-breadcrumb
-                  class="ml-4 md:block hidden"
-                  v-if="$route.meta.breadcrumb"
-                  :route="breadcrumb"
-                />
-                <!-- DROPDOWN -->
-                <!-- <vs-dropdown class="ml-auto md:block hidden cursor-pointer" vs-trigger-click>
+                  <!-- BREADCRUMB -->
+                  <vx-breadcrumb
+                    class="ml-4 md:block hidden"
+                    v-if="$route.meta.breadcrumb"
+                    :route="breadcrumb"
+                  />
+                  <!-- DROPDOWN -->
+                  <!-- <vs-dropdown class="ml-auto md:block hidden cursor-pointer" vs-trigger-click>
                                 <vs-button radius icon="icon-settings" icon-pack="feather"></vs-button>
 
                                 <vs-dropdown-menu class="w-32">
@@ -89,44 +95,47 @@
                                     </vs-dropdown-item>
                                 </vs-dropdown-menu>
                 </vs-dropdown>-->
-              </div>
-            </transition>
-            <div
-              class="video-launcher sm:mb-6"
-              v-if="$route.meta.breadcrumb || $route.meta.pageTitle"
-            >
-              <a href="#" @click="howtoTemplate"
-                >Watch this video to see how it works</a
-              >
-            </div>
-            <div class="content-area__content">
-              <back-to-top
-                bottom="5%"
-                visibleoffset="500"
-                v-if="!hideScrollToTop"
-              >
-                <vs-button
-                  icon-pack="feather"
-                  icon="icon-arrow-up"
-                  class="shadow-lg"
-                />
-              </back-to-top>
-              <transition :name="routerTransition" mode="out-in">
-                <router-view @changeRouteTitle="changeRouteTitle"></router-view>
+                </div>
               </transition>
+              <div
+                class="video-launcher sm:mb-6"
+                v-if="$route.meta.breadcrumb || $route.meta.pageTitle"
+              >
+                <a href="#" @click="howtoTemplate"
+                  >Watch this video to see how it works</a
+                >
+              </div>
+              <div class="content-area__content">
+                <back-to-top
+                  bottom="5%"
+                  visibleoffset="500"
+                  v-if="!hideScrollToTop"
+                >
+                  <vs-button
+                    icon-pack="feather"
+                    icon="icon-arrow-up"
+                    class="shadow-lg"
+                  />
+                </back-to-top>
+                <transition :name="routerTransition" mode="out-in">
+                  <router-view
+                    @changeRouteTitle="changeRouteTitle"
+                  ></router-view>
+                </transition>
+              </div>
             </div>
           </div>
         </div>
+        <div class="hidden">{{ subscribedForModal }}</div>
+        <the-footer></the-footer>
       </div>
-      <div class="hidden">{{ subscribedForModal }}</div>
-      <the-footer></the-footer>
-    </div>
 
-    <pro-price-plan-popup
-      :open="activeProPricePlanPopup"
-      @close="activeProPricePlanPopup = true"
-      class="pro-price-plan-popup"
-    />
+      <pro-price-plan-popup
+        :open="activeProPricePlanPopup"
+        @close="activeProPricePlanPopup = true"
+        class="pro-price-plan-popup"
+      />
+    </div>
   </div>
 </template>
 
@@ -164,7 +173,7 @@ export default {
       windowWidth: window.innerWidth, //width of windows
       hideScrollToTop: themeConfig.hideScrollToTop,
       disableThemeTour: themeConfig.disableThemeTour,
-      subscribed: false,
+      // subscribed: false,
       isFreePlan: false,
       numberOfLogs: 0,
       currBillingDate: tempDate,
@@ -195,6 +204,10 @@ export default {
     },
   },
   computed: {
+    subscribed() {
+      let subscription = this.$store.getters["app/getSubscription"];
+      return subscription.subscribed;
+    },
     subscribedForModal() {
       let subscription = this.$store.getters["app/getSubscription"];
       if (this.$route.name == "company") {
@@ -781,10 +794,12 @@ export default {
     },
     checkSubscribed() {
       // GET status of subscription and next billing date
-      db.collection("customers")
-        .doc(JSON.parse(localStorage.getItem("userInfo")).id)
-        .collection("subscriptions")
-        .where("status", "in", ["trialing", "active"])
+      db.collection("paykickstart_subscriptions")
+        // .where("content.buyer_email", "==", "bestsolution2028@gmail.com")
+        .where("content.buyer_email", "==", JSON.parse(localStorage.getItem("userInfo")).email)
+        // .where("content.event", "in", ['subscription-updated', 'subscription-payment', 'subscription-created', 'sales'])
+        .orderBy("created_at", "desc")
+        .limit(1)
         .onSnapshot(async (snapshot) => {
           if (snapshot.empty) {
             this.$store.dispatch("app/setSubscription", {
@@ -793,21 +808,15 @@ export default {
             return;
           }
 
-          let subID = false;
-          // In this implementation we only expect one Subscription to exist
+          let subscription;
           snapshot.forEach((doc) => {
-            this.currBillingDate = doc.data().current_period_start.toDate();
-            this.nextBillingDate = doc.data().current_period_end.toDate();
-            subID = doc.id;
+            console.log('doc.data(): ', doc.data())
+            subscription = doc.data();
           });
-
           this.$store.dispatch("app/setSubscription", {
-            subscribed: true,
-            subscriptionId: subID,
-            currBillingDate: this.currBillingDate,
-            nextBillingDate: this.nextBillingDate,
+            subscribed: subscription.content.event != "subscription-cancelled",
           });
-        });
+        })
     },
     checkFreePlan() {
       db.collection("log_usages")
@@ -816,62 +825,26 @@ export default {
           "==",
           JSON.parse(localStorage.getItem("userInfo")).id
         )
-        .onSnapshot((q) => {
-          if (q.size <= 311) {
-            db.collection("log_usages")
-              .where(
-                "created_by",
-                "==",
-                JSON.parse(localStorage.getItem("userInfo")).id
-              )
-              .where("created_at", ">=", tempDate)
-              .onSnapshot((qq) => {
-                this.$store.dispatch("app/setCurrentPricePlan", {
-                  numberOfLogs: qq.size,
-                  isFreePlan: this.numberOfLogs < 312, //<
-                });
-                if (this.numberOfLogs < 312 == false) {
-                  let subscription = this.$store.getters["app/getSubscription"];
-                  if (
-                    subscription.subscribed == false &&
-                    this.$route.name != "company"
-                  ) {
-                    this.activeProPricePlanPopup = true;
-                  } else {
-                    this.activeProPricePlanPopup = false;
-                  }
-                } else {
-                  this.activeProPricePlanPopup = false;
-                }
-              });
-          } else {
-            db.collection("log_usages")
-              .where(
-                "created_by",
-                "==",
-                JSON.parse(localStorage.getItem("userInfo")).id
-              )
-              .where("created_at", ">=", this.currBillingDate)
-              .onSnapshot((qq) => {
-                this.$store.dispatch("app/setCurrentPricePlan", {
-                  numberOfLogs: qq.size,
-                  isFreePlan: this.numberOfLogs < 312, //<
-                });
+        .onSnapshot((snap) => {
+          console.log("log_usages", snap.size);
+          this.$store.dispatch("app/setCurrentPricePlan", {
+            numberOfLogs: snap.size,
+            isFreePlan: snap.size < 300, //<
+          });
 
-                if (this.numberOfLogs < 312 == false) {
-                  let subscription = this.$store.getters["app/getSubscription"];
-                  if (
-                    subscription.subscribed == false &&
-                    this.$route.name != "company"
-                  ) {
-                    this.activeProPricePlanPopup = true;
-                  } else {
-                    this.activeProPricePlanPopup = false;
-                  }
-                } else {
-                  this.activeProPricePlanPopup = false;
-                }
-              });
+          // when user exceed the log-usage-limit: 300
+          if (snap.size < 300 == false) {
+            let subscription = this.$store.getters["app/getSubscription"];
+            if (
+              subscription.subscribed == false &&
+              this.$route.name != "company"
+            ) {
+              this.activeProPricePlanPopup = true;
+            } else {
+              this.activeProPricePlanPopup = false;
+            }
+          } else {
+            this.activeProPricePlanPopup = false;
           }
         });
     },
@@ -1071,6 +1044,32 @@ export default {
 }
 </style>
 <style>
+
+.layout--main-non-subscribed .vs-sidebar {
+  top: 32px!important;
+}
+.layout--main-non-subscribed .main-layout-navbar .vx-navbar-wrapper {
+  top: 32px!important;
+}
+.banner-non-subscribed {
+  background-color: #fffbcc;
+  height: 32px;
+  padding: 5px;
+  text-align: center;
+  font-size: 13px;
+}
+.banner-non-subscribed a {
+  font-size: 14px;
+  font-weight: bold;
+}
+.info-badge {
+  padding: 2px 7px;
+  background: orange;
+  border-radius: 3px;
+  margin-right: 2px;
+  color: white;
+  font-size: 12px;
+}
 /* @media print{
         .no-print{
             display: none !important;

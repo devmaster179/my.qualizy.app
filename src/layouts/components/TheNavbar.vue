@@ -374,7 +374,9 @@ export default {
       return notify.filter(
         (item) =>
           this.$store.getters["app/getTemplateById"](item.templateId) !==
-            undefined && item.types !== undefined && item.types.indexOf("app") > -1
+            undefined &&
+          item.types !== undefined &&
+          item.types.indexOf("app") > -1
       );
     },
     country() {
