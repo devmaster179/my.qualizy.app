@@ -12,8 +12,7 @@
   <div>
     <div v-if="!subscribed" class="banner-non-subscribed">
       <span class="info-badge">Info</span>
-      You're still on Free Plan. Please upgrade <a href="https://www.qualizy.app/get/" target="_blank" class="underline">here</a> to use pro features of paperless
-          environment.
+      Please upgrade <a href="https://www.qualizy.app/get/" target="_blank" class="underline">here</a> to use Qualizy’s pro features and unlock an unlimited number of logs.
     </div>
     <div
       class="layout--main"
@@ -829,11 +828,11 @@ export default {
           console.log("log_usages", snap.size);
           this.$store.dispatch("app/setCurrentPricePlan", {
             numberOfLogs: snap.size,
-            isFreePlan: snap.size < 300, //<
+            isFreePlan: snap.size < 5, //<
           });
 
           // when user exceed the log-usage-limit: 300
-          if (snap.size < 300 == false) {
+          if (snap.size < 5 == false) {
             let subscription = this.$store.getters["app/getSubscription"];
             if (
               subscription.subscribed == false &&
