@@ -69,7 +69,6 @@ export default {
   mounted() {
     this.loginToCustomerPortal();
 
-    console.log("numberOfLogs", this.numberOfLogs);
     let recaptchaScript = document.createElement("script");
     recaptchaScript.setAttribute(
       "src",
@@ -79,7 +78,6 @@ export default {
   },
   methods: {
     loginToCustomerPortal() {
-      console.log("loginToCustomerPortal called");
       let url = `${this.$firebaseFunctionUrl}/loginToCustomerPortal`;
       this.$http
         .post(url, {
@@ -88,7 +86,6 @@ export default {
             JSON.parse(localStorage.getItem("userInfo")).email,
         })
         .then((res) => {
-          console.log("res", res);
           this.pksAtoLoginSecret = res.data.secret;
         });
     },

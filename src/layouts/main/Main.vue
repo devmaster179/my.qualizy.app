@@ -809,7 +809,6 @@ export default {
 
           let subscription;
           snapshot.forEach((doc) => {
-            console.log('doc.data(): ', doc.data())
             subscription = doc.data();
           });
           this.$store.dispatch("app/setSubscription", {
@@ -825,7 +824,6 @@ export default {
           JSON.parse(localStorage.getItem("userInfo")).id
         )
         .onSnapshot((snap) => {
-          console.log("log_usages", snap.size);
           this.$store.dispatch("app/setCurrentPricePlan", {
             numberOfLogs: snap.size,
             isFreePlan: snap.size < 5, //<

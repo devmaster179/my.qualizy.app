@@ -1510,7 +1510,6 @@ export default {
             created_at: new Date(),
           })
           .then((res) => {
-            console.log("usage added");
           });
       }
 
