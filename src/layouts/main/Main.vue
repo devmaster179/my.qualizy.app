@@ -795,7 +795,7 @@ export default {
       // GET status of subscription and next billing date
       db.collection("paykickstart_subscriptions")
         // .where("content.buyer_email", "==", "bestsolution2028@gmail.com")
-        .where("content.buyer_email", "==", JSON.parse(localStorage.getItem("userInfo")).email)
+        .where("user_group", "==", JSON.parse(localStorage.getItem("userInfo")).group)
         // .where("content.event", "in", ['subscription-updated', 'subscription-payment', 'subscription-created', 'sales'])
         .orderBy("created_at", "desc")
         .limit(1)

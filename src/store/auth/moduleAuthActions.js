@@ -543,6 +543,19 @@ export default {
 
         var group = result.user.uid;
 
+        // check subscription and add user_group to subscription if buyer_email is matched to user email
+        db.collection("paykickstart_subscriptions")
+        .where("content.buyer_email", "==", payload.userDetails.email)
+        .get()
+        .then(async (snapshot) => {
+          snapshot.forEach((doc) => {
+            db.collection('paykickstart_subscriptions').doc(doc.id).set({
+              ...doc.data(),
+              user_group: group,
+            })
+          });
+        })
+
         const newPayload = {
           userDetails: payload.userDetails,
           notify: payload.notify,
