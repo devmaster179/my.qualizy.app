@@ -428,7 +428,8 @@ export default {
   mounted(){
     var superRole = {name:"super admin",key:0};
     var userRole = JSON.parse(localStorage.getItem("userInfo")).role;
-    this.isSuperAdmin = JSON.stringify(userRole) == JSON.stringify(superRole);
+    this.isSuperAdmin = userRole.key == superRole.key && userRole.name == superRole.name;
+    console.log('this.isSuperAdmin', this.isSuperAdmin)
   }
 };
 </script>
