@@ -366,7 +366,13 @@ export default {
 
   // from TEMP template
   logicQuestionsByAnswerIdTemp: state => params => {
-    const allAnswers = state.tempTemplate.content.pages[params.pIndex].questions[params.qIndex].answers
+    let allAnswers = [];
+    if (params.template.content.pages[params.pIndex].questions[params.qIndex] === undefined) {
+      allAnswers = params.template.content.pages[params.pIndex].questions[0].answers;
+    } else{
+      allAnswers = params.template.content.pages[params.pIndex].questions[params.qIndex].answers;
+    }
+    
     return allAnswers.filter((answer, index) => {
       answer.index = index;
       return answer.parent == params.answerId
@@ -374,7 +380,13 @@ export default {
   },
 
   logicQuestionsByAnswerId: state => params => {
-    const allAnswers = params.template.content.pages[params.pIndex].questions[params.qIndex].answers
+    let allAnswers = [];
+    if (params.template.content.pages[params.pIndex].questions[params.qIndex] === undefined) {
+      allAnswers = params.template.content.pages[params.pIndex].questions[0].answers;
+    } else{
+      allAnswers = params.template.content.pages[params.pIndex].questions[params.qIndex].answers;
+    }
+
     return allAnswers.filter((answer, index) => {
       answer.index = index;
       return answer.parent == params.answerId

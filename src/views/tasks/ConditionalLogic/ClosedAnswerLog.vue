@@ -734,14 +734,13 @@ export default {
     },
     templateAction() {
       return (p, q, a) => {
-        if (
-          this.templateInfo.content.pages[p].questions[q].answers[a].action ===
-          undefined
-        ) {
-          return [];
-        }
-        return this.templateInfo.content.pages[p].questions[q].answers[a]
+        if (this.templateInfo.content.pages[p].questions[q] === undefined) {
+          return this.templateInfo.content.pages[p].questions[0].answers[a]
           .action;
+        } else{
+          return this.templateInfo.content.pages[p].questions[q].answers[a]
+          .action;
+        }
       };
     },
     isMobile() {
