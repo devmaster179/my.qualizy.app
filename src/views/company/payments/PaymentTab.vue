@@ -6,13 +6,20 @@
       <div class="card-header p-6" slot="no-body">
         <div class="flex justify-between items-center">
           <h4 class="font-semibold hidden md:block">
-            {{ $t("Count of logs you used: ") }} <b>{{ numberOfLogs }}</b>
+            {{ $t("Accrued log count: ") }} <b>{{ numberOfLogs }}</b>
           </h4>
-          <a href="https://www.qualizy.app/get/" target="_blank">
-            <vs-button class="w-full md:w-auto">{{
-              $t("Upgrade Plan")
-            }}</vs-button>
-          </a>
+          <div>
+            <a href="https://www.qualizy.app/sensors-first/" target="_blank">
+              <vs-button class="w-full md:w-auto mr-2">{{
+                $t("Buy temperature sensors")
+              }}</vs-button>
+            </a>
+            <a href="https://www.qualizy.app/get/" target="_blank">
+              <vs-button class="w-full md:w-auto">{{
+                $t("Upgrade Plan")
+              }}</vs-button>
+            </a>
+          </div>
         </div>
       </div>
       <div>
@@ -22,7 +29,10 @@
             frameborder="0"
             id="customerPortalIframe"
             scrolling="no"
-            :src="'https://app.paykickstart.com/billing?portal=809LqB6hq3COxnbdKT7V6fqvhqVzFQ4DQTcJZdnz0kml4BXqda&secret='+pksAtoLoginSecret"
+            :src="
+              'https://app.paykickstart.com/billing?portal=809LqB6hq3COxnbdKT7V6fqvhqVzFQ4DQTcJZdnz0kml4BXqda&secret=' +
+              pksAtoLoginSecret
+            "
           ></iframe>
         </div>
         <div v-else>
@@ -36,7 +46,6 @@
 </template>
 
 <script>
-
 export default {
   data() {
     return {

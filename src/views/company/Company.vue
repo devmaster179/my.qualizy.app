@@ -30,11 +30,6 @@
           </div>
         </div>
       </div>
-      <div class="video-launcher ml-4">
-        <a href="#" @click="howtoTemplate">{{
-          $t("Watch this video to see how it works")
-        }}</a>
-      </div>
 
       <div class="page-content">
         <payment-tab v-if="isSuperAdmin && tab == 'payments'" />

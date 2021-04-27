@@ -249,7 +249,7 @@
             </div>
 
             <vs-dropdown-menu class="vx-navbar-dropdown">
-              <ul style="min-width: 9rem">
+              <ul style="min-width: 10rem">
                 <li
                   class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white"
                   @click="$router.push('/profile').catch((err) => {})"
@@ -293,6 +293,28 @@
                     svgClasses="w-4 h-4"
                   ></feather-icon>
                   <span class="ml-2">{{ $t("Billing") }}</span>
+                </li>
+
+                <li
+                  class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white"
+                  @click="goToBuySensor"
+                >
+                  <feather-icon
+                    icon="SpeakerIcon"
+                    svgClasses="w-4 h-4"
+                  ></feather-icon>
+                  <span class="ml-2">{{ $t("Sensors") }}</span>
+                </li>
+
+                <li
+                  class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white"
+                  @click="goToReferEarn"
+                >
+                  <feather-icon
+                    icon="PackageIcon"
+                    svgClasses="w-4 h-4"
+                  ></feather-icon>
+                  <span class="ml-2">{{ $t("Refer & earn") }}</span>
                 </li>
 
                 <li
@@ -458,8 +480,14 @@ export default {
     },
   },
   methods: {
-    goToSalePage(){
-      window.open("https://www.qualizy.app/get/", '_blank');
+    goToSalePage() {
+      window.open("https://www.qualizy.app/get/", "_blank");
+    },
+    goToBuySensor() {
+      window.open("https://www.qualizy.app/sensors-first/", "_blank");
+    },
+    goToReferEarn() {
+      window.open("https://www.qualizy.app/affiliates/", "_blank");
     },
     removeLocations(val) {
       val.map((item) => {
