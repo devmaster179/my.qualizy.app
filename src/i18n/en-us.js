@@ -631,9 +631,13 @@ export default {
     "Billing": "Billing",
     "Upgrade Plan": "Upgrade Plan",
     "Count of logs you used: ": "Count of logs you used: ",
+    "Accrued log count: ": "Accrued log count: ",
     "Help us set-up the right food safety program for your company": "Help us set-up the right food safety program for your company",
     "What is the name of your company?": "What is the name of your company?",
     "What describes the best your operation? This will help us deploy the perfect templates for you.": "What describes the best your operation? This will help us deploy the perfect templates for you.",
     "What is your job title?": "What is your job title?",
     "How many locations does your company have?": "How many locations does your company have?",
+    "Sensors": "Sensors",
+    "Buy temperature sensors": "Buy temperature sensors",
+    "Refer & earn": "Refer & earn",
 }

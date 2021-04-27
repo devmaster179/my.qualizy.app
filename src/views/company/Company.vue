@@ -11,6 +11,7 @@
           </p>
           <div
             class="switch-tab flex items-center sm:ml-12 mt-2 sm:mt-0 mb-2 md:mb-0 md:ml-0 ml-4"
+            v-if="isSuperAdmin"
           >
             <div
               class="text-center py-3 px-6 karla"
@@ -29,15 +30,10 @@
           </div>
         </div>
       </div>
-      <div class="video-launcher ml-4">
-        <a href="#" @click="howtoTemplate">{{
-          $t("Watch this video to see how it works")
-        }}</a>
-      </div>
 
       <div class="page-content">
-        <payment-tab v-if="tab == 'payments'" />
-        <location-tab v-else-if="tab == 'locations'" />
+        <payment-tab v-if="isSuperAdmin && tab == 'payments'" />
+        <location-tab v-else-if="!isSuperAdmin || tab == 'locations'" />
       </div>
     </div>
   </div>
@@ -70,6 +66,7 @@ export default {
   data() {
     return {
       tab: "payments",
+      isSuperAdmin: false,
       companyName: "",
       companyPhone: "",
       companyAddress: "",
@@ -423,6 +420,12 @@ export default {
         this.companyPhone = this.company.phone;
       });
   },
+  mounted(){
+    var superRole = {name:"super admin",key:0};
+    var userRole = JSON.parse(localStorage.getItem("userInfo")).role;
+    this.isSuperAdmin = userRole.key == superRole.key && userRole.name == superRole.name;
+    console.log('this.isSuperAdmin', this.isSuperAdmin)
+  }
 };
 </script>
 

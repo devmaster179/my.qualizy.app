@@ -35,6 +35,7 @@
     <div class="vx-row" v-if="region!=''">
       <vs-input class="w-full" :label-placeholder="$t('area')" v-model="area" />
     </div>
+
   </vs-prompt>
 </template>
 
@@ -52,6 +53,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    warn: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -59,6 +64,7 @@ export default {
       address: "",
       region: "",
       area: "",
+      popupActivo: false,
     };
   },
   computed: {
@@ -68,6 +74,14 @@ export default {
       },
       set() {
         this.$emit("close");
+      },
+    },
+    warnSubscription: {
+      get() {
+        return this.warn;
+      },
+      set() {
+        this.$emit("warnSubscription");
       },
     },
     validateForm() {
@@ -138,6 +152,7 @@ export default {
       });
     },
     async addLocation() {
+      this.warnSubscription = true;
       var locationNames = [];
       var locations = this.$store.getters["app/locations"].filter(
         (item) => !item.deleted
