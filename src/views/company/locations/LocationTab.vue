@@ -327,7 +327,15 @@
         ></vue-tel-input>
       </div>
     </vs-prompt>
-    <add-location :open="addLocation" @close="addLocation = false" />
+
+    <add-location :open="addLocation" :warn="afterAddedLocation" @close="addLocation = false" @warnSubscription="afterAddedLocation=true" />
+
+    <vs-prompt :accept-text="false" cancel-text="Close" class="modal-after-added-location"  title="Info" :active.sync="afterAddedLocation">
+      <p>
+        Please note that an additional location will be added to your subscription
+      </p>
+    </vs-prompt>
+
     <edit-location
       :open="activeEdit"
       :id="editLocationID"
@@ -438,6 +446,7 @@ export default {
       editLocationID: "",
       activeEdit: false,
       addLocation: false,
+      afterAddedLocation: false,
       openCountries: [],
       openRegions: [],
       openAreas: [],
@@ -785,6 +794,12 @@ export default {
   },
 };
 </script>
+
+<style>
+.modal-after-added-location footer button:first-child {
+display: none;
+}
+</style>
 
 <style scoped>
 .expand-icon {
