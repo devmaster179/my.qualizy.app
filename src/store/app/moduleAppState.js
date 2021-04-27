@@ -86,6 +86,7 @@ export default {
   subscription: {
     subscribed: false,
     subscriptionId: false,
+    invoiceId: false,
     currBillingDate: tempDate,
     nextBillingDate: new Date(),
   },

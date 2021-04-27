@@ -803,6 +803,7 @@ export default {
           if (snapshot.empty) {
             this.$store.dispatch("app/setSubscription", {
               subscribed: false,
+              invoiceId: false,
             });
             return;
           }
@@ -813,15 +814,16 @@ export default {
           });
           this.$store.dispatch("app/setSubscription", {
             subscribed: subscription.content.event != "subscription-cancelled",
+            invoiceId: subscription.content.invoice_id
           });
         })
     },
     checkFreePlan() {
       db.collection("log_usages")
         .where(
-          "created_by",
+          "group",
           "==",
-          JSON.parse(localStorage.getItem("userInfo")).id
+          JSON.parse(localStorage.getItem("userInfo")).group
         )
         .onSnapshot((snap) => {
           this.$store.dispatch("app/setCurrentPricePlan", {
