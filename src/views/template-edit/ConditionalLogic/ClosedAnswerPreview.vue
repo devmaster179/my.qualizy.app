@@ -882,6 +882,7 @@ export default {
           answerId: this.answer.id,
           pIndex: this.pIndex,
           qIndex: this.qIndex,
+          template: this.template,
         }
       );
       return questions;
