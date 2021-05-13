@@ -363,10 +363,6 @@
       </vx-card>
     </div>
 
-    <!-- <div class="m-10">
-      <button @click="printReprot('pdf-report')">Export PDF</button>
-    </div> -->
-
     <!-- BEGIN PDF -->
     <div
       id="export-content-pdf"
@@ -402,37 +398,6 @@
       </template>
     </div>
     <!-- END Word -->
-
-    <!-- <div class="w-full" id="report-print">
-      <vx-card id="invoice-container"> -->
-    <!-- REPROT METADATA -->
-    <!-- <div class="p-base flex items-center justify-between">
-          <div class="flex items-center">
-            <img
-              alt="vuexy-logo"
-              src="@/assets/images/logo/logo.png"
-              style="width: 100px"
-            />
-            <h1 class="ml-base text-primary">Qualizy</h1>
-          </div>
-          <div class="text-right">
-            <h1>REPORT</h1>
-            <div class="invoice__invoice-detail mt-6">
-              <h6 class="mt-4">REPORT DATE</h6>
-              <p>{{ new Date() | date(true) }}</p>
-            </div>
-          </div>
-        </div> -->
-    <!-- REPROT CONTENT -->
-    <!-- <div
-          :key="'print' + log.id"
-          class="items-list-view"
-          v-for="log in filteredLogs"
-        >
-          <print-item :item="log" />
-        </div>
-      </vx-card>
-    </div> -->
 
     <report-filter
       :filter="filter"
@@ -694,6 +659,8 @@
 
 <script>
 import Vue from "vue";
+import jsPDF from "jspdf";
+
 import SocialSharing from "vue-social-sharing";
 
 import VSelect from "vue-select";
