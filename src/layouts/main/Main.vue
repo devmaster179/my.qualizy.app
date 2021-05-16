@@ -828,11 +828,11 @@ export default {
         .onSnapshot((snap) => {
           this.$store.dispatch("app/setCurrentPricePlan", {
             numberOfLogs: snap.size,
-            isFreePlan: snap.size < 300, //<
+            isFreePlan: snap.size < 150, //<
           });
 
-          // when user exceed the log-usage-limit: 300
-          if (snap.size < 300 == false) {
+          // when user exceed the log-usage-limit: 150
+          if (snap.size < 150 == false) {
             let subscription = this.$store.getters["app/getSubscription"];
             if (
               subscription.subscribed == false &&
