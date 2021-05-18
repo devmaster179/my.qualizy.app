@@ -1,27 +1,27 @@
 <template>
   <div id="report-view" class="px-1">
     <div class="flex items-center justify-between mb-3">
-      <div class="page-title flex items-center" style="max-width: 70%">
+      <div class="flex items-center page-title" style="max-width: 70%">
         <p
-          class="karla-bold main-title cursor-pointer"
+          class="cursor-pointer karla-bold main-title"
           @click="$router.push('/report')"
         >
           {{ $t("reports") | capitalize }}
         </p>
-        <p class="karla-bold hidden sm:block ml-2 truncate">
+        <p class="hidden ml-2 truncate karla-bold sm:block">
           &nbsp;> {{ reportTitle | capitalize }}
         </p>
       </div>
       <div class="flex items-center page-action">
         <vs-dropdown vs-custom-content vs-trigger-click>
           <feather-icon
-            class="p-2 shadow-drop mr-2 w-10 rounded-lg d-theme-dark-bg cursor-pointer"
+            class="w-10 p-2 mr-2 rounded-lg cursor-pointer shadow-drop d-theme-dark-bg"
             icon="MoreVerticalIcon"
           />
           <vs-dropdown-menu style="min-width: 270px">
             <vs-dropdown-item
               @click="activeSchedule = true"
-              class="mr-12 mb-2 mt-2"
+              class="mt-2 mb-2 mr-12"
               v-if="auth"
             >
               <vs-icon
@@ -39,7 +39,7 @@
 
             <vs-dropdown-item
               @click="activeExport = true"
-              class="mr-12 mb-2 mt-2"
+              class="mt-2 mb-2 mr-12"
             >
               <vs-icon
                 color="black"
@@ -56,7 +56,7 @@
 
             <vs-dropdown-item
               @click="activeShare = true"
-              class="mr-6 mb-2"
+              class="mb-2 mr-6"
               v-if="this.visible == 'Public'"
             >
               <vs-icon
@@ -74,7 +74,7 @@
             <vs-dropdown-item
               v-if="role < 2"
               @click="deleteReport()"
-              class="mr-6 mb-2"
+              class="mb-2 mr-6"
             >
               <vs-icon
                 color="black"
@@ -93,14 +93,14 @@
         <feather-icon
           v-if="role < 3"
           @click="reportFilterSidebar = true"
-          class="p-2 shadow-drop mr-2 w-10 rounded-lg d-theme-dark-bg cursor-pointer text-primary"
+          class="w-10 p-2 mr-2 rounded-lg cursor-pointer shadow-drop d-theme-dark-bg text-primary"
           icon="FilterIcon"
         />
         <vs-button
           :disabled="
             filter.template === undefined ||
-            filter.template.length == 0 ||
-            !auth('report', 'edit')
+              filter.template.length == 0 ||
+              !auth('report', 'edit')
           "
           @click="activeSave = true"
           color="primary"
@@ -114,87 +114,87 @@
 
     <div class="vx-row">
       <vx-card :title="reportTitle">
-        <div class="vx-row w-full" v-if="filteredLogs.length > 0">
-          <div class="px-2 vx-col md:w-1/5 sm:w-1/2 w-full">
+        <div class="w-full vx-row" v-if="filteredLogs.length > 0">
+          <div class="w-full px-2 vx-col md:w-1/5 sm:w-1/2">
             <div
-              class="rounded-lg border border-solid d-theme-border-grey-light p-4"
+              class="p-4 border border-solid rounded-lg d-theme-border-grey-light"
             >
               <div class="text-center">
                 <feather-icon
-                  class="text-primary p-3 inline-flex rounded-full"
+                  class="inline-flex p-3 rounded-full text-primary"
                   icon="EyeIcon"
                   style="background: rgba(var(--vs-primary), 0.15)"
                 ></feather-icon>
               </div>
-              <h2 class="text-center mt-4 mb-2 font-bold">
+              <h2 class="mt-4 mb-2 font-bold text-center">
                 {{ reportInfo.score }}
               </h2>
               <p class="text-center">{{ $t("general score") }}</p>
             </div>
           </div>
-          <div class="px-2 vx-col md:w-1/5 sm:w-1/2 w-full mt-1 sm:mt-0">
+          <div class="w-full px-2 mt-1 vx-col md:w-1/5 sm:w-1/2 sm:mt-0">
             <div
-              class="rounded-lg border border-solid d-theme-border-grey-light p-4"
+              class="p-4 border border-solid rounded-lg d-theme-border-grey-light"
             >
               <div class="text-center">
                 <feather-icon
-                  class="p-3 inline-flex rounded-full"
+                  class="inline-flex p-3 rounded-full"
                   icon="ClipboardIcon"
                   style="background: #3980f626; color: #3980f6"
                 ></feather-icon>
               </div>
-              <h2 class="text-center mt-4 mb-2 font-bold">
+              <h2 class="mt-4 mb-2 font-bold text-center">
                 {{ reportInfo.tasks }}
               </h2>
               <p class="text-center">{{ $t("tasks") }}</p>
             </div>
           </div>
-          <div class="px-2 vx-col md:w-1/5 sm:w-1/2 w-full md:mt-0 mt-1">
+          <div class="w-full px-2 mt-1 vx-col md:w-1/5 sm:w-1/2 md:mt-0">
             <div
-              class="rounded-lg border border-solid d-theme-border-grey-light p-4"
+              class="p-4 border border-solid rounded-lg d-theme-border-grey-light"
             >
               <div class="text-center">
                 <feather-icon
-                  class="text-danger p-3 inline-flex rounded-full"
+                  class="inline-flex p-3 rounded-full text-danger"
                   icon="SlashIcon"
                   style="background: rgba(var(--vs-warning), 0.15)"
                 ></feather-icon>
               </div>
-              <h2 class="text-center mb-2 mt-4 font-bold">
+              <h2 class="mt-4 mb-2 font-bold text-center">
                 {{ nonCompliantTasksAmount }}
               </h2>
               <p class="text-center">{{ $t("non compliant") }}</p>
             </div>
           </div>
-          <div class="px-2 vx-col md:w-1/5 sm:w-1/2 w-full md:mt-0 mt-1">
+          <div class="w-full px-2 mt-1 vx-col md:w-1/5 sm:w-1/2 md:mt-0">
             <div
-              class="rounded-lg border border-solid d-theme-border-grey-light p-4"
+              class="p-4 border border-solid rounded-lg d-theme-border-grey-light"
             >
               <div class="text-center">
                 <feather-icon
-                  class="text-warning p-3 inline-flex rounded-full"
+                  class="inline-flex p-3 rounded-full text-warning"
                   icon="ListIcon"
                   style="background: rgba(var(--vs-warning), 0.15)"
                 ></feather-icon>
               </div>
-              <h2 class="text-center mb-2 mt-4 font-bold">
+              <h2 class="mt-4 mb-2 font-bold text-center">
                 {{ filteredLogs.length }}
               </h2>
               <p class="text-center">{{ $t("check list") }}</p>
             </div>
           </div>
-          <div class="px-2 vx-col md:w-1/5 sm:w-1/2 w-full md:mt-0 mt-1">
+          <div class="w-full px-2 mt-1 vx-col md:w-1/5 sm:w-1/2 md:mt-0">
             <div
-              class="rounded-lg border border-solid d-theme-border-grey-light p-4"
+              class="p-4 border border-solid rounded-lg d-theme-border-grey-light"
             >
               <div class="text-center">
                 <feather-icon
-                  class="text-success p-3 inline-flex rounded-full"
+                  class="inline-flex p-3 rounded-full text-success"
                   icon="CalendarIcon"
                   style="background: rgba(var(--vs-success), 0.15)"
                 ></feather-icon>
               </div>
-              <h2 class="text-center mb-2 mt-4 font-bold">
+              <h2 class="mt-4 mb-2 font-bold text-center">
                 {{ reportInfo.ontime }}
               </h2>
               <p class="text-center">{{ $t("completed on time") }}</p>
@@ -203,7 +203,7 @@
         </div>
         <div
           id="reports"
-          class="vx-row w-full"
+          class="w-full vx-row"
           v-if="filteredLogs.length > 0"
           style="margin-top: 40px"
         >
@@ -343,7 +343,7 @@
 
         <div class="flex w-full mt-base" v-else>
           <div
-            class="vx-col flex items-center flex-col sm:w-1/2 md:w-3/5 lg:w-3/4 xl:w-1/2 mx-auto text-center sm:mt-base mt-0"
+            class="flex flex-col items-center mx-auto mt-0 text-center vx-col sm:w-1/2 md:w-3/5 lg:w-3/4 xl:w-1/2 sm:mt-base"
             style="min-height: 500px"
           >
             <img
@@ -363,10 +363,14 @@
       </vx-card>
     </div>
 
+    <!-- <div class="m-10">
+      <button @click="printReprot('pdf-report')">Export PDF</button>
+    </div> -->
+
     <!-- BEGIN PDF -->
     <div
       id="export-content-pdf"
-      ref="export-content-pdf"
+      ref="exportPdf"
       style="background-color: white; padding: 50px; padding-top: 0"
     >
       <template v-for="(log, index) in filteredLogs">
@@ -400,6 +404,37 @@
     </div>
     <!-- END Word -->
 
+    <!-- <div class="w-full" id="report-print">
+      <vx-card id="invoice-container"> -->
+    <!-- REPROT METADATA -->
+    <!-- <div class="flex items-center justify-between p-base">
+          <div class="flex items-center">
+            <img
+              alt="vuexy-logo"
+              src="@/assets/images/logo/logo.png"
+              style="width: 100px"
+            />
+            <h1 class="ml-base text-primary">Qualizy</h1>
+          </div>
+          <div class="text-right">
+            <h1>REPORT</h1>
+            <div class="mt-6 invoice__invoice-detail">
+              <h6 class="mt-4">REPORT DATE</h6>
+              <p>{{ new Date() | date(true) }}</p>
+            </div>
+          </div>
+        </div> -->
+    <!-- REPROT CONTENT -->
+    <!-- <div
+          :key="'print' + log.id"
+          class="items-list-view"
+          v-for="log in filteredLogs"
+        >
+          <print-item :item="log" />
+        </div>
+      </vx-card>
+    </div> -->
+
     <report-filter
       :filter="filter"
       :isSidebarActive="reportFilterSidebar"
@@ -418,7 +453,7 @@
       v-if="visible != ''"
     >
       <div class="vx-row">
-        <div class="vx-coll w-full mb-4">
+        <div class="w-full mb-4 vx-coll">
           <label class="font-semibold">Report Title</label>
           <vs-input
             class="w-full"
@@ -426,11 +461,11 @@
             v-model="reportTitle"
           />
         </div>
-        <div class="vx-coll w-full mb-4">
+        <div class="w-full mb-4 vx-coll">
           <label class="font-semibold">Description</label>
           <vs-textarea v-model="description" />
         </div>
-        <div class="vx-coll w-full">
+        <div class="w-full vx-coll">
           <label class="font-semibold">{{ $t("visible to") }}</label>
           <div class="flex items-center mt-2">
             <!-- ['Just me' , 'Public'] -->
@@ -447,7 +482,7 @@
                 <span class="karla text-primary">{{ visibleItem.text }}</span>
               </div>
               <div
-                class="flex items-center cursor-pointer ml-4"
+                class="flex items-center ml-4 cursor-pointer"
                 v-else
                 @click="visible = visibleItem.key"
               >
@@ -457,17 +492,17 @@
             </div>
           </div>
         </div>
-        <div class="vx-col w-full mt-4" v-if="visible == 'Teams'">
+        <div class="w-full mt-4 vx-col" v-if="visible == 'Teams'">
           <label class="font-semibold">{{ $t("teams") }}</label>
           <v-select :options="teams" label="name" multiple v-model="team" />
         </div>
-        <div class="vx-col w-full mt-4">
+        <div class="w-full mt-4 vx-col">
           <label class="font-semibold">{{ $t("tags") }}</label>
           <v-select :options="tags" label="name" multiple v-model="tag">
             <template slot="option" slot-scope="option">
               <div class="flex items-center">
                 <div
-                  class="h-2 w-2 rounded-full mr-3"
+                  class="w-2 h-2 mr-3 rounded-full"
                   :style="`background:${option.color}`"
                 ></div>
                 <span class="karla">{{ option.name }}</span>
@@ -476,7 +511,7 @@
             <template slot="selected-option" slot-scope="option">
               <div class="flex items-center">
                 <div
-                  class="h-2 w-2 rounded-full mr-1"
+                  class="w-2 h-2 mr-1 rounded-full"
                   :style="`background:${option.color}`"
                 ></div>
                 <span class="karla">{{ option.name }}</span>
@@ -496,8 +531,8 @@
       @accept="shareReort"
       v-if="visible != ''"
     >
-      <div class="vx-row px-4">
-        <div class="vx-coll w-full mt-4">
+      <div class="px-4 vx-row">
+        <div class="w-full mt-4 vx-coll">
           <vx-input-group class="mb-base">
             <vs-input v-model="shareUrl" />
             <template slot="append">
@@ -508,7 +543,7 @@
               </div>
             </template>
           </vx-input-group>
-          <div class="vx-coll w-full mt-4">
+          <div class="w-full mt-4 vx-coll">
             <h5 class="mb-4">Share with</h5>
             <social-sharing
               :url="shareUrl"
@@ -531,7 +566,7 @@
                   <p class="mt-2">Facebook</p>
                 </network>
                 <network
-                  class="flex-col text-center ml-3 cursor-pointer"
+                  class="flex-col ml-3 text-center cursor-pointer"
                   network="twitter"
                 >
                   <img
@@ -541,7 +576,7 @@
                   <p class="mt-2">Twitter</p>
                 </network>
                 <network
-                  class="flex-col text-center ml-3 cursor-pointer"
+                  class="flex-col ml-3 text-center cursor-pointer"
                   network="linkedin"
                 >
                   <img
@@ -553,10 +588,10 @@
               </div>
             </social-sharing>
           </div>
-          <div class="vx-coll w-full mt-base">
+          <div class="w-full vx-coll mt-base">
             <h5 class="mb-4">Share with Badge</h5>
             <vs-textarea v-model="badge" />
-            <div class="text-right mt-2">
+            <div class="mt-2 text-right">
               <vs-button @click="copyText(badge)">Copy Badge</vs-button>
             </div>
           </div>
@@ -598,11 +633,11 @@
       @accept="scheduleReport"
     >
       <div class="vx-row">
-        <div class="vx-col w-full mb-6">
+        <div class="w-full mb-6 vx-col">
           <h4 class="font-weight-bold">{{ $t("delivery_schedule") }}</h4>
           <p class="text-muted">{{ $t("create_schedule") }}</p>
         </div>
-        <div class="vx-col w-full mb-6">
+        <div class="w-full mb-6 vx-col">
           <label> {{ $t("start date") }} </label>
           <datepicker
             placeholder="Available from"
@@ -611,7 +646,7 @@
             class="hasDatepickerIcon"
           ></datepicker>
         </div>
-        <div class="vx-col w-full mb-6">
+        <div class="w-full mb-6 vx-col">
           <label>{{ $t("repeat evey") }}</label>
           <v-select
             :clearable="false"
@@ -626,7 +661,7 @@
             </template>
           </v-select>
         </div>
-        <div class="vx-col w-full">
+        <div class="w-full vx-col">
           <div class="flex items-center">
             <label>{{ $t("teams") }}</label>
           </div>
@@ -638,7 +673,7 @@
             class="w-full"
           >
           </v-select>
-          <div class="vx-col v-full mt-6" v-if="existSchedule">
+          <div class="mt-6 vx-col v-full" v-if="existSchedule">
             <div
               class="flex items-center cursor-pointer text-primary hover:text-danger"
               @click="deleteRD"
@@ -660,7 +695,6 @@
 
 <script>
 import Vue from "vue";
-
 import SocialSharing from "vue-social-sharing";
 
 import VSelect from "vue-select";
@@ -1387,7 +1421,9 @@ export default {
         this.roleError("delete");
         return false;
       }
-      db.collection("report_schedule").doc(this.existSchedule.id).delete();
+      db.collection("report_schedule")
+        .doc(this.existSchedule.id)
+        .delete();
       this.activeSchedule = false;
       this.$vs.notify({
         time: 5000,
@@ -1472,8 +1508,7 @@ export default {
       }
     },
     printReprot(file_name) {
-      let isLoading = true;
-      const reportComponent = this.$refs['export-content-pdf'].innerHTML;
+      const reportComponent = this.$refs.exportPdf.innerHTML;
       const pdfOptions = {
         margin: 1,
         image: { type: "jpeg", quality: 2 },
@@ -1488,21 +1523,26 @@ export default {
           avoid: "img",
         },
       };
-
       html2pdf()
+        .from(reportComponent)
         .set(pdfOptions)
         .toPdf()
         .get("pdf")
         .then(function(pdf) {
-          const pdfPages = pdf.internal.getNumberOfPages();
+          const allPages = pdf.internal.getNumberOfPages();
+          const pdfPages = pdf.internal.getNumberOfPages() - 1;
+
           const pageUrl = window.location.href;
+
           const d = new Date();
           const pdfDate =
             d.getMonth() + "/" + d.getDate() + "/" + d.getFullYear();
+
           for (let i = 1; i <= pdfPages; i++) {
             pdf.setPage(i);
             pdf.setFontSize(10);
             pdf.setTextColor("#000");
+            pdf.deletePage(allPages)
             pdf.text(
               i + "/" + pdfPages,
               pdf.internal.pageSize.getWidth() - 0.9,
@@ -1526,21 +1566,9 @@ export default {
           }
         })
         .save();
-        
-      // const pdf = new jsPDF('p', 'px', [595, 842]);
-      // const content = this.$refs['export-content-pdf'].innerHTML;
-      // console.log("content", content);
-      // pdf.html(content, {
-      //   callback: function(pdf) {
-      //     pdf.save(file_name + ".pdf");
-      //   }
-      // });
 
-      // var title = document.title;
-      // document.title = file_name;
-      // window.print();
-      // document.title = title;
     },
+
     exportExcel(file_name) {
       var logs = this.filteredLogs;
 
@@ -1644,7 +1672,7 @@ export default {
     copyText(text) {
       const thisIns = this;
       this.$copyText(text).then(
-        function () {
+        function() {
           thisIns.$vs.notify({
             title: "Success",
             text: "Text copied successfully",
@@ -1654,7 +1682,7 @@ export default {
             icon: "icon-check-circle",
           });
         },
-        function () {
+        function() {
           thisIns.$vs.notify({
             title: "Failed",
             text: "Error in copying text",
@@ -1677,7 +1705,9 @@ export default {
       });
     },
     acceptDelete() {
-      db.collection("reports").doc(this.$route.params.id).delete();
+      db.collection("reports")
+        .doc(this.$route.params.id)
+        .delete();
       this.$router.push("/report");
     },
     saveReport() {
@@ -1878,7 +1908,6 @@ export default {
 };
 </script>
 
-
 <style scoped>
 /* BEGIN export content */
 /* END export content */
@@ -1935,7 +1964,6 @@ export default {
 }
 </style>
 
-
 <style>
 .report-schedule .vs-dialog {
   overflow-y: auto;
@@ -1943,7 +1971,6 @@ export default {
 }
 </style>
 <style lang="scss" src="../analytics/buefy.scss"></style>
-
 
 <style lang="scss">
 #report-print {
