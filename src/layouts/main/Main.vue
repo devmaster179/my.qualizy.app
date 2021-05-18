@@ -831,7 +831,7 @@ export default {
             isFreePlan: snap.size < 150, //<
           });
 
-          // when user exceed the log-usage-limit: 300
+          // when user exceed the log-usage-limit: 150
           if (snap.size < 150 == false) {
             let subscription = this.$store.getters["app/getSubscription"];
             if (

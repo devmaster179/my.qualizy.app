@@ -190,7 +190,7 @@ export default {
     },
     login() {
       this.$vs.loading();
-      var email = this.email.charAt(0).toLowerCase() + this.email.substring(1);
+      var email = this.email.toLocaleLowerCase();
       const payload = {
         checkbox_remember_me: this.checkbox_remember_me,
         userDetails: {
