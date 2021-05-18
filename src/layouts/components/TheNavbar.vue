@@ -481,7 +481,7 @@ export default {
   },
   methods: {
     goToSalePage() {
-      window.open("https://www.qualizy.app/get/", "_blank");
+      window.open("https://www.qualizy.app/get-monthly/", "_blank");
     },
     goToBuySensor() {
       window.open("https://www.qualizy.app/sensors-first/", "_blank");

@@ -12,7 +12,7 @@
   <div>
     <div v-if="!subscribed" class="banner-non-subscribed">
       <span class="info-badge">Info</span>
-      Please upgrade <a href="https://www.qualizy.app/get/" target="_blank" class="underline">here</a> to use Qualizy’s pro features and unlock an unlimited number of logs.
+      Please upgrade <a href="https://www.qualizy.app/get-monthly/" target="_blank" class="underline">here</a> to use Qualizy’s pro features and unlock an unlimited number of logs.
     </div>
     <div
       class="layout--main"
