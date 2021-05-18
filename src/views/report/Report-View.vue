@@ -366,6 +366,7 @@
     <!-- BEGIN PDF -->
     <div
       id="export-content-pdf"
+      ref="export-content-pdf"
       style="background-color: white; padding: 50px; padding-top: 0"
     >
       <template v-for="(log, index) in filteredLogs">
@@ -686,6 +687,7 @@ import PrintItem from "./PrintItem.vue";
 import PrintReportDoc from "./Print/PrintReportDoc";
 import PrintReportPdf from "./Print/PrintReportPdf";
 import Test from "./Print/Test";
+import html2pdf from "html2pdf.js";
 
 export default {
   components: {
@@ -1470,10 +1472,45 @@ export default {
       }
     },
     printReprot(file_name) {
-      var title = document.title;
-      document.title = file_name;
-      window.print();
-      document.title = title;
+      let isLoading = true;
+      const reportComponent = this.$refs['export-content-pdf'].innerHTML;
+      const pdfOptions = {
+        margin: 1,
+        image: { type: "png", quality: 2 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+        filename: file_name + ".pdf",
+      };
+
+      html2pdf()
+        .set(pdfOptions)
+        .from(reportComponent)
+        .save(file_name)
+        .then(
+          function(pdf) {
+            //Success here
+            isLoading = false;
+            console.log(isLoading);
+          },
+          function() {
+            console.log("error ");
+
+            //Error Here
+          }
+        );
+      // const pdf = new jsPDF('p', 'px', [595, 842]);
+      // const content = this.$refs['export-content-pdf'].innerHTML;
+      // console.log("content", content);
+      // pdf.html(content, {
+      //   callback: function(pdf) {
+      //     pdf.save(file_name + ".pdf");
+      //   }
+      // });
+
+      // var title = document.title;
+      // document.title = file_name;
+      // window.print();
+      // document.title = title;
     },
     exportExcel(file_name) {
       var logs = this.filteredLogs;
