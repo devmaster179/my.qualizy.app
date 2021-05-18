@@ -20,7 +20,7 @@
     </VuePerfectScrollbar>
     <vs-divider />
     <div class="flex items-center justify-end">
-      <a href="https://www.qualizy.app/get/" target="_blank">
+      <a href="https://www.qualizy.app/get-monthly/" target="_blank">
         <vs-button>Upgrade to pro</vs-button>
       </a>
     </div>
