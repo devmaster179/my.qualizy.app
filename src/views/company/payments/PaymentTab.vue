@@ -90,9 +90,7 @@ export default {
       let url = `${this.$firebaseFunctionUrl}/loginToCustomerPortal`;
       this.$http
         .post(url, {
-          email:
-            "amayor.lu@gmail.com" ||
-            JSON.parse(localStorage.getItem("userInfo")).email,
+          email: JSON.parse(localStorage.getItem("userInfo")).email,
         })
         .then((res) => {
           this.pksAtoLoginSecret = res.data.secret;
