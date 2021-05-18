@@ -660,7 +660,6 @@
 
 <script>
 import Vue from "vue";
-import jsPDF from "jspdf";
 
 import SocialSharing from "vue-social-sharing";
 
@@ -688,6 +687,7 @@ import PrintReportDoc from "./Print/PrintReportDoc";
 import PrintReportPdf from "./Print/PrintReportPdf";
 import Test from "./Print/Test";
 import html2pdf from "html2pdf.js";
+import jsPDF from "jspdf";
 
 export default {
   components: {
@@ -1476,28 +1476,57 @@ export default {
       const reportComponent = this.$refs['export-content-pdf'].innerHTML;
       const pdfOptions = {
         margin: 1,
-        image: { type: "png", quality: 2 },
-        html2canvas: { scale: 2 },
+        image: { type: "jpeg", quality: 2 },
+        html2canvas: {
+          scale: 2,
+        },
         jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
         filename: file_name + ".pdf",
+        pagebreak: {
+          before: ".beforeClass",
+          after: ["#after1", "#after2"],
+          avoid: "img",
+        },
       };
 
       html2pdf()
         .set(pdfOptions)
-        .from(reportComponent)
-        .save(file_name)
-        .then(
-          function(pdf) {
-            //Success here
-            isLoading = false;
-            console.log(isLoading);
-          },
-          function() {
-            console.log("error ");
-
-            //Error Here
+        .toPdf()
+        .get("pdf")
+        .then(function(pdf) {
+          const pdfPages = pdf.internal.getNumberOfPages();
+          const pageUrl = window.location.href;
+          const d = new Date();
+          const pdfDate =
+            d.getMonth() + "/" + d.getDate() + "/" + d.getFullYear();
+          for (let i = 1; i <= pdfPages; i++) {
+            pdf.setPage(i);
+            pdf.setFontSize(10);
+            pdf.setTextColor("#000");
+            pdf.text(
+              i + "/" + pdfPages,
+              pdf.internal.pageSize.getWidth() - 0.9,
+              pdf.internal.pageSize.getHeight() - 0.3
+            );
+            pdf.text(
+              pageUrl,
+              pdf.internal.pageSize.getWidth() - 8.2,
+              pdf.internal.pageSize.getHeight() - 0.3
+            );
+            pdf.text(
+              file_name,
+              pdf.internal.pageSize.getWidth() / 2.3,
+              pdf.internal.pageSize.getHeight() - 10.3
+            );
+            pdf.text(
+              pdfDate,
+              pdf.internal.pageSize.getWidth() - 7.3,
+              pdf.internal.pageSize.getHeight() - 10.3
+            );
           }
-        );
+        })
+        .save();
+        
       // const pdf = new jsPDF('p', 'px', [595, 842]);
       // const content = this.$refs['export-content-pdf'].innerHTML;
       // console.log("content", content);
