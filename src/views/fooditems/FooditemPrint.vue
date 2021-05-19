@@ -48,6 +48,7 @@
 
 <script>
 import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 //  var jsPdf = require('https://unpkg.com/jspdf@latest/dist/jspdf.min.js');
 export default {
   components: {
