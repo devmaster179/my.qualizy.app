@@ -7,7 +7,6 @@
     Author URL: http://www.themeforest.net/user/pixinvent
 ========================================================================================== -->
 
-
 <template>
   <vs-prompt
     :title="$t('print label') | capitalize"
@@ -18,28 +17,31 @@
     :active.sync="activePrompt"
   >
     <div
-      class="vx-row mt-4 pt-4"
+      class="pt-4 mt-4 vx-row"
       id="foodItemPrintSection"
       ref="foodItemPrintSection"
-      v-if="item.id!==undefined"
+      v-if="item.id !== undefined"
     >
-      <div class="vx-col mt-auto mb-auto sm:w-1/2 w-full">
-        <h6 class="mb-1">{{$t("name")}} : {{item.name}}</h6>
-        <h6
-          class="mb-1"
-          v-if="item.forever"
-        >{{$t("expire date") | capitalize}} : {{$t('forever') | capitalize}}</h6>
-        <h6
-          class="mb-1"
-          v-else
-        >{{$t("expire date")}} : {{item.e_date.toDate() | moment("DD MMMM , YYYY")}}</h6>
-        <h6
-          class="mb-1"
-        >{{$t("created") | capitalize}} Date : {{item.created_at.toDate() | moment("DD MMMM ,YYYY")}}</h6>
-        <h6 v-if="user!=undefined">{{$t("by") | capitalize}} : {{user.name | capitalize}}</h6>
-        <h6>{{$t("allergens")}} : {{allergens | capitalize}}</h6>
+      <div class="w-full mt-auto mb-auto vx-col sm:w-1/2">
+        <h6 class="mb-1">{{ $t("name") }} : {{ item.name }}</h6>
+        <h6 class="mb-1" v-if="item.forever">
+          {{ $t("expire date") | capitalize }} :
+          {{ $t("forever") | capitalize }}
+        </h6>
+        <h6 class="mb-1" v-else>
+          {{ $t("expire date") }} :
+          {{ item.e_date.toDate() | moment("DD MMMM , YYYY") }}
+        </h6>
+        <h6 class="mb-1">
+          {{ $t("created") | capitalize }} Date :
+          {{ item.created_at.toDate() | moment("DD MMMM ,YYYY") }}
+        </h6>
+        <h6 v-if="user != undefined">
+          {{ $t("by") | capitalize }} : {{ user.name | capitalize }}
+        </h6>
+        <h6>{{ $t("allergens") }} : {{ allergens | capitalize }}</h6>
       </div>
-      <div class="vx-col mt-4 sm:mt-0 sm:w-1/2 w-full">
+      <div class="w-full mt-4 vx-col sm:mt-0 sm:w-1/2">
         <qrcode-vue :value="get_qrcode" size="150" level="H"></qrcode-vue>
       </div>
     </div>
@@ -48,7 +50,8 @@
 
 <script>
 import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
+import print from "print-js";
+
 //  var jsPdf = require('https://unpkg.com/jspdf@latest/dist/jspdf.min.js');
 export default {
   components: {
@@ -85,28 +88,30 @@ export default {
     },
 
     allergens() {
-      let allergens = []
+      let allergens = [];
 
-      this.item.allergens.map(item=> {
+      this.item.allergens.map((item) => {
         var allergen = this.$store.getters["app/getAllergenById"](item);
-        if (allergen)
-          allergens.push(item);
-      })
+        if (allergen) allergens.push(item);
+      });
 
-      if(this.item.ingredients && Array.isArray(this.item.ingredients)) {
-        var iFoodItem
-        this.item.ingredients.map(item=> {
-          iFoodItem = this.$store.getters["app/getItemById"](item.id)
-          if(iFoodItem && iFoodItem.allergens) {
-            iFoodItem.allergens.map(al=> {
-              if(allergens.indexOf(al) < 0 && this.$store.getters["app/getAllergenById"](al))
-                allergens.push(al)
-            })
+      if (this.item.ingredients && Array.isArray(this.item.ingredients)) {
+        var iFoodItem;
+        this.item.ingredients.map((item) => {
+          iFoodItem = this.$store.getters["app/getItemById"](item.id);
+          if (iFoodItem && iFoodItem.allergens) {
+            iFoodItem.allergens.map((al) => {
+              if (
+                allergens.indexOf(al) < 0 &&
+                this.$store.getters["app/getAllergenById"](al)
+              )
+                allergens.push(al);
+            });
           }
-        })
+        });
       }
-      
-      var tempAl = []
+
+      var tempAl = [];
       allergens.map((item) => {
         var allergen = this.$store.getters["app/getAllergenById"](item);
         if (allergen == undefined) return;
@@ -129,7 +134,7 @@ export default {
           this.item.e_date.toDate(),
           "DD MMMM , YYYY"
         );
-      let allergens = this.allergens
+      let allergens = this.allergens;
 
       var txt = "";
       txt += "Name: " + this.item.name;
@@ -152,27 +157,28 @@ export default {
         type: "dataURL",
       };
       html2canvas(el).then((canvas) => {
-        const img = canvas.toDataURL("image/png");
-        const pdf = new jsPDF({
-          orientation: 'p',
+        var img = canvas.toDataURL("image/png");
+        var link = document.createElement("a");
+        link.setAttribute("id", "qrcodeGengerator");
+        link.download = this.item.name + ".png";
+        link.href = img;
+        // link.click();
+        printJS({
+          printable: img,
+          type: "image",
+          documentTitle: this.item.name,
         });
-        const imgProps= pdf.getImageProperties(img);
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-        pdf.addImage(img, 'PNG', 0, 0, pdfWidth, pdfHeight);
-        pdf.autoPrint();
-        pdf.output('dataurlnewwindow', this.item.name+'.pdf');
       });
 
-      this.$userflow.track("Print Food Item" , {
+      this.$userflow.track("Print Food Item", {
         name: this.item.name,
-        group: JSON.parse(localStorage.getItem("userInfo")).group
-      })
-      
-      window.gist.track("Print Food Item" , {
+        group: JSON.parse(localStorage.getItem("userInfo")).group,
+      });
+
+      window.gist.track("Print Food Item", {
         name: this.item.name,
-        group: JSON.parse(localStorage.getItem("userInfo")).group
-      })
+        group: JSON.parse(localStorage.getItem("userInfo")).group,
+      });
     },
   },
 };
@@ -188,4 +194,3 @@ export default {
   margin: 0;
 }
 </style>
-
