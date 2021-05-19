@@ -151,12 +151,16 @@ export default {
         type: "dataURL",
       };
       html2canvas(el).then((canvas) => {
-        var img = canvas.toDataURL("image/png");
-        var link = document.createElement("a");
-        link.setAttribute("id", "qrcodeGengerator");
-        link.download = this.item.name + ".png";
-        link.href = img;
-        link.click();
+        const img = canvas.toDataURL("image/png");
+        const pdf = new jsPDF({
+          orientation: 'p',
+        });
+        const imgProps= pdf.getImageProperties(img);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        pdf.addImage(img, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.autoPrint();
+        pdf.output('dataurlnewwindow', this.item.name+'.pdf');
       });
 
       this.$userflow.track("Print Food Item" , {
