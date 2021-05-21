@@ -1,30 +1,38 @@
 <template>
   <div id="food-items" class="px-2">
-    <template v-if="!auth('food items' , 'view')">
-      <no-auth/>
+    <template v-if="!auth('food items', 'view')">
+      <no-auth />
     </template>
     <template v-else>
       <template v-if="!isSidebarActive">
-        <div class="sm:flex items-center justify-between">
-          <p class="pageTitle karla-bold">{{$t("food items") | capitalize}}</p>
-          <div class="page-tools sm:flex justify-end">
+        <div class="items-center justify-between sm:flex">
+          <p class="pageTitle karla-bold">
+            {{ $t("food items") | capitalize }}
+          </p>
+          <div class="justify-end page-tools sm:flex">
             <div class="flex justify-end">
               <feather-icon
-                @click="viewMode='card'"
-                icon="GridIcon"
-                class="p-2 ml-2 rounded-lg d-theme-dark-bg cursor-pointer hidden md:block"
-                :class="{'text-primary': viewMode=='card'}"
+                @click="printAllergy()"
+                icon="PrinterIcon"
+                class="hidden p-2 ml-2 rounded-lg cursor-pointer card d-theme-dark-bg md:block"
                 style="height:40px;"
               />
               <feather-icon
-                @click="viewMode='list'"
+                @click="viewMode = 'card'"
+                icon="GridIcon"
+                class="hidden p-2 ml-2 rounded-lg cursor-pointer d-theme-dark-bg md:block"
+                :class="{ 'text-primary': viewMode == 'card' }"
+                style="height:40px;"
+              />
+              <feather-icon
+                @click="viewMode = 'list'"
                 icon="ListIcon"
-                :class="{'text-primary': viewMode=='list'}"
-                class="p-2 mx-2 rounded-lg d-theme-dark-bg cursor-pointer hidden md:block"
+                :class="{ 'text-primary': viewMode == 'list' }"
+                class="hidden p-2 mx-2 rounded-lg cursor-pointer d-theme-dark-bg md:block"
                 style="height:40px;"
               />
               <vs-input
-                class="bg-white hidden md:block"
+                class="hidden bg-white md:block"
                 v-model="search"
                 :placeholder="$t('Search')"
                 icon="icon-search"
@@ -32,32 +40,33 @@
                 icon-no-border
               />
               <feather-icon
-                v-if="role<4"
+                v-if="role < 4"
                 @click="activeUpload = true"
                 icon="DownloadIcon"
-                class="ml-2 rounded-lg d-theme-dark-bg cursor-pointer"
+                class="ml-2 rounded-lg cursor-pointer d-theme-dark-bg"
                 style="height:40px; width:40px; padding:.6rem"
               />
               <feather-icon
-                @click="activeFilter=true"
+                @click="activeFilter = true"
                 icon="FilterIcon"
-                class="ml-2 rounded-lg d-theme-dark-bg cursor-pointer"
+                class="ml-2 rounded-lg cursor-pointer d-theme-dark-bg"
                 style="height:40px; width:40px; padding:.7rem"
               />
-              <vs-button
-                @click="addFoodItem"
-                class="ml-2"
-              >
-                <span class="karla">+ {{$t("add food item") | capitalize}}</span>
+              <vs-button @click="addFoodItem" class="ml-2">
+                <span class="karla"
+                  >+ {{ $t("add food item") | capitalize }}</span
+                >
               </vs-button>
             </div>
           </div>
         </div>
         <div class="video-launcher">
-          <a href="#" @click="howtoTemplate">{{ $t("Watch this video to see how it works") }}</a>
+          <a href="#" @click="howtoTemplate">{{
+            $t("Watch this video to see how it works")
+          }}</a>
         </div>
         <vs-input
-          class="bg-white block md:hidden w-full my-2"
+          class="block w-full my-2 bg-white md:hidden"
           v-model="search"
           :placeholder="$t('Search')"
           icon="icon-search"
@@ -65,12 +74,48 @@
           icon-no-border
         />
 
+        <div v-show="false" class="list-view" ref="exportPdf">
+          <div class="flex w-full mb-6 ml-6 font-bold">
+            <p class="mr-5"> Menu items</p>
+            <div class="mx-auto"><p > Allergen</p></div>
+          </div>
+          <table class="w-full print_allergen">
+            <thead>
+              <tr>
+                <th class="text-sm font-black" >
+                  Kona Pizza
+                </th>
+                <th class="text-xs" v-for="(allergen, index) in allergens" :key="index">
+                  {{ $t(allergen.name) }}
+                </th>
+              </tr>
+            </thead>
+            <tbody >
+              
+              <tr v-for="(item, index) in fooditems" :key="index">
+                <td class="text-sm font-black" >
+                  {{item.name}}
+                </td>
+                <td class="text-xs" v-for="(allergen, i) in item.allergens" :key="i">
+                  <span class="text-lg allergy-mark" v-if="(getAllergen(allergen).name)">
+                    X
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+
         <div class="page-content">
-          <template v-if="fooditems.length>0">
-            <div class="card-view vx-row w-full mt-base" v-if="viewMode=='card'">
+          <template v-if="fooditems.length > 0">
+            <div
+              class="w-full card-view vx-row mt-base"
+              v-if="viewMode == 'card'"
+            >
               <div
-                class="vx-col lg:w-1/4 md:w-2/1 sm:w-1/2 w-full p-0 sm:px-2"
-                v-for="(item,index) in fooditems"
+                class="w-full p-0 vx-col lg:w-1/4 md:w-2/1 sm:w-1/2 sm:px-2"
+                v-for="(item, index) in fooditems"
                 :key="index"
               >
                 <card-view
@@ -86,23 +131,23 @@
               </div>
             </div>
             <div class="list-view" v-else>
-              <table class="fooditem-table w-full">
+              <table class="w-full fooditem-table">
                 <thead>
                   <tr>
-                    <th width="15%">{{$t('name')}}</th>
-                    <th>{{$t('expiry')}}</th>
-                    <th>{{$t('created')}}</th>
-                    <th>{{$t('quantity')}}</th>
-                    <th>{{$t('batch number')}}</th>
-                    <th>{{$t('supplier')}}</th>
-                    <th width="18%">{{$t('tags')}}</th>
-                    <th width="10%">{{$t('status')}}</th>
+                    <th width="15%">{{ $t("name") }}</th>
+                    <th>{{ $t("expiry") }}</th>
+                    <th>{{ $t("created") }}</th>
+                    <th>{{ $t("quantity") }}</th>
+                    <th>{{ $t("batch number") }}</th>
+                    <th>{{ $t("supplier") }}</th>
+                    <th width="18%">{{ $t("tags") }}</th>
+                    <th width="10%">{{ $t("status") }}</th>
                     <th></th>
                   </tr>
                 </thead>
                 <tbody>
                   <list-view
-                    v-for="(item,index) in fooditems"
+                    v-for="(item, index) in fooditems"
                     :key="index"
                     :item="item"
                     @edit="edit"
@@ -120,37 +165,58 @@
           <template v-else>
             <div class="flex w-full mt-base">
               <div
-                class="vx-col flex items-center justify-center flex-col sm:w-1/2 md:w-3/5 lg:w-3/4 xl:w-1/2 mx-auto text-center sm:mt-base mt-0"
+                class="flex flex-col items-center justify-center mx-auto mt-0 text-center vx-col sm:w-1/2 md:w-3/5 lg:w-3/4 xl:w-1/2 sm:mt-base"
               >
                 <img
                   :src="require('@/assets/images/pages/report/empty-docs.svg')"
                   class="mx-auto mb-4"
                 />
                 <h5
-                  class="sm:mx-0 mx-4 mb-4 sm:text-2xl sm:text-1xl d-theme-heading-color"
-                >{{$t("You don’t have any food items yet")}}, {{$t("would you like to create one")}}?</h5>
-                <vs-button class="ml-2" @click="addFoodItem" >{{$t("add food item")}}</vs-button>
+                  class="mx-4 mb-4 sm:mx-0 sm:text-2xl sm:text-1xl d-theme-heading-color"
+                >
+                  {{ $t("You don’t have any food items yet") }},
+                  {{ $t("would you like to create one") }}?
+                </h5>
+                <vs-button class="ml-2" @click="addFoodItem">{{
+                  $t("add food item")
+                }}</vs-button>
               </div>
             </div>
           </template>
-          </div>
+        </div>
       </template>
 
-      <fooditem-type :open="activeType" @close="activeType=false" @selectType="selectType" />
+      <fooditem-type
+        :open="activeType"
+        @close="activeType = false"
+        @selectType="selectType"
+      />
       <fooditemadd-sidebar
         :item="selectedItem"
         :type="type"
         :open="activeAdd"
         :duplicateFlag="duplicateFlag"
-        @close="activeAdd=false"
+        @close="activeAdd = false"
       />
-      <fooditem-filter :activeFilter="activeFilter" @filter="filter" @close="activeFilter=false" />
-      <fooditem-history :open="activeHistory" :id="historyID" @close="activeHistory=false" />
-      <fooditem-print :open="activePrint" :item="printItem" @close="activePrint=false" />
-      <fooditem-upload :open="activeUpload" @close="activeUpload=false" />
+      <fooditem-filter
+        :activeFilter="activeFilter"
+        @filter="filter"
+        @close="activeFilter = false"
+      />
+      <fooditem-history
+        :open="activeHistory"
+        :id="historyID"
+        @close="activeHistory = false"
+      />
+      <fooditem-print
+        :open="activePrint"
+        :item="printItem"
+        @close="activePrint = false"
+      />
+      <fooditem-upload :open="activeUpload" @close="activeUpload = false" />
       <fooditem-process
         :open="activeProcess"
-        @close="activeProcess=false"
+        @close="activeProcess = false"
         @assginTemplate="assginTemplate"
       />
       <log-sidebar
@@ -159,9 +225,13 @@
         :pages="pages"
         :template="template"
         :isSidebarActive="isSidebarActive"
-        @closeSidebar="isSidebarActive=false"
+        @closeSidebar="isSidebarActive = false"
       />
-      <fooditem-ingredient :item="showInd" :open="activeIngredient" @close="activeIngredient=false" />
+      <fooditem-ingredient
+        :item="showInd"
+        :open="activeIngredient"
+        @close="activeIngredient = false"
+      />
     </template>
   </div>
 </template>
@@ -180,7 +250,7 @@ import FooditemProcess from "./FooditemProcess";
 import LogSidebar from "../tasks/LogSidebar";
 import { db } from "@/firebase/firebaseConfig";
 import NoAuth from "@/components/no-auth/NoAuth";
-
+import html2pdf from "html2pdf.js";
 export default {
   components: {
     FooditemaddSidebar,
@@ -194,7 +264,7 @@ export default {
     FooditemProcess,
     LogSidebar,
     FooditemIngredient,
-    NoAuth
+    NoAuth,
   },
   data() {
     return {
@@ -225,25 +295,82 @@ export default {
     };
   },
   methods: {
+      printAllergy() {
+        const file_name = "demo test"
+      const reportComponent = this.$refs.exportPdf.innerHTML;
+      const pdfOptions = {
+        margin: 0.3,
+        image: { type: "jpeg", quality: 2 },
+        html2canvas: {
+          scale: 2,
+        },
+        jsPDF: { unit: "in", format: "letter", orientation: "landscape" },
+        filename: file_name + ".pdf",
+        pagebreak: {
+          before: ".beforeClass",
+          after: ["#after1", "#after2"],
+          avoid: "img",
+        },
+      };
+      html2pdf()
+        .from(reportComponent)
+        .set(pdfOptions)
+        .toPdf()
+        .get("pdf")
+        .then(function(pdf) {
+          const allPages = pdf.internal.getNumberOfPages();
+          const pdfPages = pdf.internal.getNumberOfPages() - 1;
+          const pageUrl = window.location.href;
+          const d = new Date();
+          const pdfDate =
+            d.getMonth() + "/" + d.getDate() + "/" + d.getFullYear();
+          for (let i = 1; i <= pdfPages; i++) {
+            pdf.setPage(i);
+            pdf.setFontSize(10);
+            pdf.setTextColor("#000");
+            pdf.deletePage(allPages)
+            pdf.text(
+              i + "/" + pdfPages,
+              pdf.internal.pageSize.getWidth() - 0.9,
+              pdf.internal.pageSize.getHeight() - 0.3
+            );
+            pdf.text(
+              pageUrl,
+              pdf.internal.pageSize.getWidth() - 8.2,
+              pdf.internal.pageSize.getHeight() - 0.3
+            );
+            pdf.text(
+              file_name,
+              pdf.internal.pageSize.getWidth() / 2.3,
+              pdf.internal.pageSize.getHeight() - 10.3
+            );
+            pdf.text(
+              pdfDate,
+              pdf.internal.pageSize.getWidth() - 7.3,
+              pdf.internal.pageSize.getHeight() - 10.3
+            );
+          }
+        })
+        .save();
+    },
     howtoTemplate(event) {
       event.preventDefault();
-      this.$userflow.start('3eb696b5-0344-41fd-9143-5d61ee1b1bd7');
+      this.$userflow.start("3eb696b5-0344-41fd-9143-5d61ee1b1bd7");
     },
     addFoodItem() {
-      if(!this.auth('food items' , 'create')) {
-        this.roleError('create')
-        return false
+      if (!this.auth("food items", "create")) {
+        this.roleError("create");
+        return false;
       }
-      this.selectedItem={} 
-      this.duplicateFlag=false 
-      this.activeType=true
+      this.selectedItem = {};
+      this.duplicateFlag = false;
+      this.activeType = true;
     },
     roleError(action) {
       this.$vs.notify({
         time: 5000,
         title: "Authorization Error",
-        text:
-          `You don't have authorization for ${action}.\n Please contact with your super admin`,
+        text: `You don't have authorization for ${action}.\n Please contact with your super admin`,
         color: "danger",
         iconPack: "feather",
         icon: "icon-lock",
@@ -275,7 +402,6 @@ export default {
               answer.type.id
             );
             if (answerType == undefined) return;
-
             if (
               (answerType.type == "opened answers" &&
                 answerType.content == "number") ||
@@ -361,7 +487,6 @@ export default {
         updated_by: JSON.parse(localStorage.getItem("userInfo")).id,
         group: JSON.parse(localStorage.getItem("userInfo")).group,
       });
-
       that.getLogID(updated_at, task.templateID).then((id) => {
         that.$vs.loading.close();
         that.logID = id;
@@ -370,7 +495,6 @@ export default {
         that.isSidebarActive = true;
       });
     },
-
     getLogID(createdAt, templateID) {
       return new Promise((resolve, reject) => {
         var id = "";
@@ -399,11 +523,10 @@ export default {
           });
       });
     },
-
     process(id) {
-      if(!this.auth('records' , 'create')) {
-        this.roleError('create log')
-        return false
+      if (!this.auth("records", "create")) {
+        this.roleError("create log");
+        return false;
       }
       this.processID = id;
       this.activeProcess = true;
@@ -417,9 +540,9 @@ export default {
       this.activePrint = true;
     },
     remove(item) {
-      if(!this.auth('food items' , 'delete')) {
-        this.roleError('delete')
-        return false
+      if (!this.auth("food items", "delete")) {
+        this.roleError("delete");
+        return false;
       }
       this.deleteID = item.id;
       this.$vs.dialog({
@@ -442,9 +565,9 @@ export default {
         });
     },
     duplicate(item) {
-      if(!this.auth('food items' , 'create')) {
-        this.roleError('create')
-        return false
+      if (!this.auth("food items", "create")) {
+        this.roleError("create");
+        return false;
       }
       this.duplicateFlag = true;
       this.selectedItem = item;
@@ -457,9 +580,9 @@ export default {
       this.activeIngredient = true;
     },
     edit(item) {
-      if(!this.auth('food items' , 'edit')) {
-        this.roleError('edit')
-        return false
+      if (!this.auth("food items", "edit")) {
+        this.roleError("edit");
+        return false;
       }
       this.duplicateFlag = false;
       this.selectedItem = item;
@@ -478,17 +601,15 @@ export default {
   },
   computed: {
     auth() {
-      return (sub,action) => {
-        let authList = this.$store.getters['app/auth']
+      return (sub, action) => {
+        let authList = this.$store.getters["app/auth"];
         var cUser = this.$store.getters["app/currentUser"];
-        if(cUser == undefined || cUser.role == undefined) return false
-        else if(cUser.role.key == 0) 
-          return true
-        else if(authList[sub][cUser.role.name.toLowerCase()][action])
-          return true
-        else 
-          return false
-      }
+        if (cUser == undefined || cUser.role == undefined) return false;
+        else if (cUser.role.key == 0) return true;
+        else if (authList[sub][cUser.role.name.toLowerCase()][action])
+          return true;
+        else return false;
+      };
     },
     role() {
       var cUser = this.$store.getters["app/currentUser"];
@@ -507,7 +628,6 @@ export default {
             e_date.getMonth(),
             e_date.getDate()
           );
-
           if (item.name.toLowerCase().indexOf(this.search.toLowerCase()) < 0)
             return false;
           if (
@@ -532,7 +652,6 @@ export default {
             to = new Date(to.getFullYear(), to.getMonth(), to.getDate());
             if (e_date.getTime() > to.getTime()) return false;
           }
-
           if (
             this.filters.created !== undefined &&
             this.filters.created != ""
@@ -549,7 +668,6 @@ export default {
               fCreated.getMonth(),
               fCreated.getDate()
             );
-
             if (created.getTime() != fCreated.getTime()) return false;
           }
           if (this.filters.state !== undefined && this.filters.state != "") {
@@ -562,7 +680,6 @@ export default {
                 return false;
             }
           }
-
           if (
             this.filters.allergens !== undefined &&
             this.filters.allergens.length > 0
@@ -587,7 +704,6 @@ export default {
             )
               return false;
           }
-
           return true;
         })
         .sort(
@@ -595,6 +711,14 @@ export default {
             b.updated_at.toDate().getTime() - a.updated_at.toDate().getTime()
         );
       return fooditems;
+    },
+    allergens() {
+      return this.$store.getters["app/allergens"];
+    },
+    getAllergen() {
+      return (item) => {
+        return this.$store.getters["app/getAllergenById"](item);
+      };
     },
   },
 };
@@ -621,7 +745,17 @@ export default {
 .fooditem-table thead tr th:first-child {
   padding-left: 2rem;
 }
-
+/* Allergers table body */
+.print_allergen tbody tr {
+  box-shadow: none;
+}
+.allergy-mark{
+  color: red;
+}
+.print_allergen tbody tr td{
+  background: none;
+   padding: 1.5rem 10px;
+}
 /* .fooditem-table tbody {
 } */
 .fooditem-table tbody tr {
@@ -641,7 +775,6 @@ export default {
   border-top-left-radius: 0.5rem;
   border-bottom-left-radius: 0.5rem;
 }
-
 .fooditem-table tbody tr td:last-child {
   border-top-right-radius: 0.5rem;
   border-bottom-right-radius: 0.5rem;
@@ -662,7 +795,7 @@ export default {
 .video-launcher {
   font-size: 10px;
   height: 12px;
-  color: #844CF5;
+  color: #844cf5;
 }
 </style>
 <style>
