@@ -114,10 +114,11 @@
           <td class="text-sm font-black">
             {{ item.name }}
           </td>
-          <td class="text-xs" v-for="(allergen, i) in item.allergens" :key="i">
+          <!-- <td class="text-xs" v-for="(allergen, i) in item.allergens" :key="i"> -->
+          <td class="text-xs td-allergen-item" v-for="i in 14" :key="i">
             <span
               class="text-lg allergy-mark"
-              v-if="getAllergen(allergen).name"
+              v-if="getAllergen(item.allergens[i-1]).name"
             >
               X
             </span>
@@ -152,6 +153,9 @@ export default {
   computed: {
     getAllergen() {
       return (item) => {
+        if (item === undefined) {
+          return false;
+        }
         return this.$store.getters["app/getAllergenById"](item);
       };
     },
@@ -181,6 +185,9 @@ export default {
 
 <style lang="scss" scoped>
 /* Allergers table body */
+.print_allergen {
+  border-collapse: collapse;
+}
 .print_allergen tbody tr {
   box-shadow: none;
 }
@@ -197,5 +204,8 @@ export default {
   border: 1px solid black;
   border-collapse: collapse;
   padding: 0px;
+}
+.td-allergen-item {
+  text-align: center;
 }
 </style>
