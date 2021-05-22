@@ -74,51 +74,9 @@
           icon-no-border
         />
 
-        <div v-show="false" class="list-view" ref="exportPdf">
-          <div class="flex w-full mb-6 ml-6 font-bold export_table">
-            <p class="mr-5">Menu items</p>
-            <div class="mx-auto"><p>Allergen</p></div>
-          </div>
-          <table class="w-full print_allergen">
-            <thead>
-              <tr>
-                <th class="text-sm font-black">
-                  {{user.name}}
-                </th>
-                <th
-                  class="text-xs"
-                  v-for="(allergen, index) in allergens"
-                  :key="index"
-                >
-                  {{ $t(allergen.name) }}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="(item, index) in fooditems"
-                :key="index"
-                v-show="expireDate(item.forever, item.e_date).key === 'success'"
-              >
-                <td class="text-sm font-black">
-                  {{ item.name }}
-                </td>
-                <td
-                  class="text-xs"
-                  v-for="(allergen, i) in item.allergens"
-                  :key="i"
-                >
-                  <span
-                    class="text-lg allergy-mark"
-                    v-if="getAllergen(allergen).name"
-                  >
-                    X
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+       <div ref="exportPdf" v-show="false">
+          <allergies-print :allergens="allergens" :fooditems="fooditems" :user="user" />
+       </div>
 
         <div class="page-content">
           <template v-if="fooditems.length > 0">
@@ -260,6 +218,7 @@ import ListView from "./ListView";
 import FooditemHistory from "./FooditemHistory";
 import FooditemPrint from "./FooditemPrint";
 import FooditemProcess from "./FooditemProcess";
+import AllergiesPrint from "./AllergiesPrint.vue";
 import LogSidebar from "../tasks/LogSidebar";
 import { db } from "@/firebase/firebaseConfig";
 import NoAuth from "@/components/no-auth/NoAuth";
@@ -280,6 +239,7 @@ export default {
     LogSidebar,
     FooditemIngredient,
     NoAuth,
+    AllergiesPrint,
   },
   data() {
     return {
@@ -311,15 +271,15 @@ export default {
   },
   methods: {
     printAllergy() {
-      const file_name = "demo test";
+      const file_name = this.user.name+" Allergens Quick Index";
       const reportComponent = this.$refs.exportPdf.innerHTML;
       const pdfOptions = {
-        margin: 0.3,
+        margin: 0.2,
         image: { type: "jpeg", quality: 2 },
         html2canvas: {
           scale: 2,
         },
-        jsPDF: { unit: "in", format: "letter", orientation: "landscape" },
+        jsPDF: { unit: "in", format: "a3", orientation: "landscape" },
         filename: file_name + ".pdf",
         pagebreak: {
           before: ".beforeClass",
@@ -370,24 +330,6 @@ export default {
           }
         })
         .save();
-    },
-    expireDate(item_forever, item_e_date) {
-      var e_date;
-      console.log(item_forever);
-      if (item_forever)
-        return { val: "no", date: this.$t("no expiry"), key: "success" };
-      if (item_e_date.seconds !== undefined) e_date = item_e_date.toDate();
-      else e_date = item_e_date;
-      var key = "success";
-
-      if (e_date.getTime() < this.now.getTime()) key = "danger";
-      else if (e_date.getTime() < this.now.getTime() - 3600 * 24 * 1000)
-        key = "warning";
-      return {
-        date: this.$moment(e_date).format("DD/MM/YYYY"),
-        key,
-        val: e_date,
-      };
     },
     howtoTemplate(event) {
       event.preventDefault();
@@ -653,7 +595,7 @@ export default {
       };
     },
     user() {
-     return this.$store.getters["app/currentUser"];
+      return this.$store.getters["app/currentUser"];
     },
     role() {
       var cUser = this.$store.getters["app/currentUser"];
@@ -764,11 +706,6 @@ export default {
     allergens() {
       return this.$store.getters["app/allergens"];
     },
-    getAllergen() {
-      return (item) => {
-        return this.$store.getters["app/getAllergenById"](item);
-      };
-    },
   },
 };
 </script>
@@ -794,22 +731,12 @@ export default {
 .fooditem-table thead tr th:first-child {
   padding-left: 2rem;
 }
-/* Allergers table body */
-.print_allergen tbody tr {
-  box-shadow: none;
-}
-.allergy-mark {
-  color: red;
-}
-.print_allergen tbody tr td {
-  background: none;
-  padding: 1.5rem 10px;
-}
+
 /* .fooditem-table tbody {
 } */
 .export_table {
   border: black;
-  border-bottom-style: solid;
+  border-style: solid;
 }
 .fooditem-table tbody tr {
   box-shadow: rgba(0, 0, 0, 0.05) 0px 4px 20px 0px;
