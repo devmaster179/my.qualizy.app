@@ -1,5 +1,5 @@
 <template>
-  <div  class="bg-white list-view" >
+  <div class="bg-white list-view">
     <div class="flex w-full font-bold export_table">
       <p class="mr-5">Menu items</p>
       <div class="mx-auto"><p>Allergen</p></div>
@@ -17,108 +17,26 @@
           >
             <div class="flex flex-col items-center justify-items-center">
               <img
-                v-if="$t(allergen.name) == 'Fish'"
-                :src="require('@/assets/images/allergies/fish.png')"
+                :src="require('@/assets/images/allergies/'+$t(allergen.name)+'.png')"
                 class="w-8 rounded-full"
                 alt=""
               />
-              <img
-                v-else-if="$t(allergen.name) == 'Celery'"
-                :src="require('@/assets/images/allergies/celery.png')"
-                class="w-8 rounded-full"
-                alt=""
-              />
-              <img
-                v-else-if="$t(allergen.name) == 'Crustaceans'"
-                :src="require('@/assets/images/allergies/crustaceans.png')"
-                class="w-8 rounded-full"
-                alt=""
-              />
-              <img
-                v-else-if="$t(allergen.name) == 'Eggs'"
-                :src="require('@/assets/images/allergies/egg.png')"
-                class="w-8 rounded-full"
-                alt=""
-              />
-              <img
-                v-else-if="$t(allergen.name) == 'Gluten'"
-                :src="require('@/assets/images/allergies/gluten.png')"
-                class="w-8 rounded-full"
-                alt=""
-              />
-              <img
-                v-else-if="$t(allergen.name) == 'Lupin'"
-                :src="require('@/assets/images/allergies/Lupin.png')"
-                class="w-8 rounded-full"
-                alt=""
-              />
-              <img
-                v-else-if="$t(allergen.name) == 'Milk'"
-                :src="require('@/assets/images/allergies/milk.png')"
-                class="w-8 rounded-full"
-                alt=""
-              />
-              <img
-                v-else-if="$t(allergen.name) == 'Molluscs'"
-                :src="require('@/assets/images/allergies/molluscs.png')"
-                class="w-8 rounded-full"
-                alt=""
-              />
-              <img
-                v-else-if="$t(allergen.name) == 'Mustard'"
-                :src="require('@/assets/images/allergies/mustard.png')"
-                class="w-8 rounded-full"
-                alt=""
-              />
-              <img
-                v-else-if="$t(allergen.name) == 'Nuts'"
-                :src="require('@/assets/images/allergies/tree-nuts.png')"
-                class="w-8 rounded-full"
-                alt=""
-              />
-              <img
-                v-else-if="$t(allergen.name) == 'Peanuts'"
-                :src="require('@/assets/images/allergies/peanuts.png')"
-                class="w-8 rounded-full"
-                alt=""
-              />
-              <img
-                v-else-if="$t(allergen.name) == 'Sesame seeds'"
-                :src="require('@/assets/images/allergies/sesame.png')"
-                class="w-8 rounded-full"
-                alt=""
-              />
-              <img
-                v-else-if="$t(allergen.name) == 'Soy'"
-                :src="require('@/assets/images/allergies/soyabeans.png')"
-                class="w-8 rounded-full"
-                alt=""
-              />
-              <img
-                v-else-if="$t(allergen.name) == 'Sulphur dioxide'"
-                :src="require('@/assets/images/allergies/sulphur.png')"
-                class="w-8 rounded-full"
-                alt=""
-              />
+              
               <span class="text-xs font-bold"> {{ $t(allergen.name) }}</span>
             </div>
           </th>
         </tr>
       </thead>
       <tbody>
-        <tr
-          v-for="(item, index) in fooditems"
-          :key="index"
-          v-show="expireDate(item.forever, item.e_date).key === 'success'"
-        >
+        <tr v-for="(item, index) in activeItems" :key="index">
           <td class="text-sm font-black">
             {{ item.name }}
           </td>
           <!-- <td class="text-xs" v-for="(allergen, i) in item.allergens" :key="i"> -->
-          <td class="text-xs td-allergen-item" v-for="i in 14" :key="i">
+          <td class="text-xs td-allergen-item" v-for="(allergen, index) in allergens" :key="index">
             <span
               class="text-lg allergy-mark"
-              v-if="getAllergen(item.allergens[i-1]).name"
+              v-if="getAllergen(item.allergens, allergen.name)"
             >
               X
             </span>
@@ -152,13 +70,23 @@ export default {
   },
   computed: {
     getAllergen() {
-      return (item) => {
+      return (allergens, item) => {
         if (item === undefined) {
           return false;
         }
-        return this.$store.getters["app/getAllergenById"](item);
+        for (let i = 0; i < allergens.length; i++) {
+          const allergen = allergens[i];
+          if (this.$store.getters["app/getAllergenById"](allergen).name === item) {
+            return true;
+          }
+        }
       };
     },
+    activeItems() {
+      return this.fooditems.filter(fooditem => {
+        return this.expireDate(fooditem.forever, fooditem.e_date).key === 'success';
+      });
+    }
   },
   methods: {
     expireDate(item_forever, item_e_date) {
