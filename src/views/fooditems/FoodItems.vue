@@ -586,7 +586,6 @@ export default {
       return (sub, action) => {
         let authList = this.$store.getters["app/auth"];
         var cUser = this.$store.getters["app/currentUser"];
-        console.log(cUser.name);
         if (cUser == undefined || cUser.role == undefined) return false;
         else if (cUser.role.key == 0) return true;
         else if (authList[sub][cUser.role.name.toLowerCase()][action])

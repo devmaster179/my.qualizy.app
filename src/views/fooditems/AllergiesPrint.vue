@@ -91,7 +91,6 @@ export default {
   methods: {
     expireDate(item_forever, item_e_date) {
       var e_date;
-      console.log(item_forever);
       if (item_forever)
         return { val: "no", date: this.$t("no expiry"), key: "success" };
       if (item_e_date.seconds !== undefined) e_date = item_e_date.toDate();
