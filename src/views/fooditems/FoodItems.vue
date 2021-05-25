@@ -279,7 +279,7 @@ export default {
         html2canvas: {
           scale: 2,
         },
-        jsPDF: { unit: "in", format: "a3", orientation: "landscape" },
+        jsPDF: { unit: "in", format: "a4", orientation: "landscape" },
         filename: file_name + ".pdf",
         pagebreak: {
           before: ".beforeClass",

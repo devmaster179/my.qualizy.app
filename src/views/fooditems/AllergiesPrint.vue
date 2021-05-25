@@ -1,13 +1,27 @@
 <template>
-  <div class="bg-white list-view">
-    <div class="flex w-full font-bold export_table">
-      <p class="mr-5">Menu items</p>
-      <div class="mx-auto"><p>Allergen</p></div>
+  <div class="bg-white list-view px-5">
+    <div class="flex w-full font-bold export_table mb-6 pt-6 ">
+      <p class="mr-5 text-black">{{ user.name }} Allergen Quick reference</p>
+      <p class="ml-auto text-black">Allergens Marked With an X</p>
     </div>
     <table class="w-full print_allergen">
       <thead>
         <tr>
-          <th class="text-sm font-black">
+          <th class="text-sm font-black text-center text-black">
+            Menu items
+          </th>
+          <th
+            class="text-sm"
+            :colspan="allergens.length"
+          >
+            <div class="flex flex-col items-center justify-items-center">
+              
+              <span class="text-sm font-bold text-black"> Allergen</span>
+            </div>
+          </th>
+        </tr>
+        <tr>
+          <th class="text-sm font-black text-left text-black">
             {{ user.name }}
           </th>
           <th
@@ -29,8 +43,10 @@
       </thead>
       <tbody>
         <tr v-for="(item, index) in activeItems" :key="index">
-          <td class="text-sm font-black">
-            {{ item.name }}
+          <td class="text-sm text-right">
+            <span class="font-black text-black">
+              {{ item.name }}
+              </span> 
           </td>
           <!-- <td class="text-xs" v-for="(allergen, i) in item.allergens" :key="i"> -->
           <td class="text-xs td-allergen-item" v-for="(allergen, index) in allergens" :key="index">
@@ -112,6 +128,11 @@ export default {
 
 <style lang="scss" scoped>
 /* Allergers table body */
+.export_table{
+  border-bottom-style: solid;
+  border-bottom-color: hsl(1deg 23% 42%);
+  border-bottom-width: 8px;
+}
 .print_allergen {
   border-collapse: collapse;
 }
