@@ -12,7 +12,7 @@
   <div>
     <div v-if="!subscribed" class="banner-non-subscribed">
       <span class="info-badge">Info</span>
-      Please upgrade <a href="https://www.qualizy.app/get-monthly/" target="_blank" class="underline">here</a> to use Qualizy’s pro features and unlock an unlimited number of logs.
+      You have reached the limit of your demo account, you can still access everything in Qualizy but will be unable to create records - <a href="https://www.qualizy.app/get-monthly/" target="_blank" class="underline">Unlock an unlimited usage of Qualizy pro </a> for FREE for 7 days today.
     </div>
     <div
       class="layout--main"
@@ -828,11 +828,11 @@ export default {
         .onSnapshot((snap) => {
           this.$store.dispatch("app/setCurrentPricePlan", {
             numberOfLogs: snap.size,
-            isFreePlan: snap.size < 150, //<
+            isFreePlan: snap.size < 10, //<
           });
 
-          // when user exceed the log-usage-limit: 150
-          if (snap.size < 150 == false) {
+          // when user exceed the log-usage-limit: 10
+          if (snap.size < 10 == false) {
             let subscription = this.$store.getters["app/getSubscription"];
             if (
               subscription.subscribed == false &&
