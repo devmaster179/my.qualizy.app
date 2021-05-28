@@ -110,7 +110,7 @@
               v-for="(task, index) in tasks('task')"
               :task="task"
               :key="index"
-              @click.native="assign(task)"
+              @click.native="checkAssign(task)"
             ></task-item>
           </VuePerfectScrollbar>
         </div>
@@ -152,7 +152,7 @@
               v-for="(task, index) in unshceduledTemplates"
               :task="task"
               :key="index"
-              @click.native="assign(task, true)"
+              @click.native="checkAssign(task, true)"
             ></task-item>
           </VuePerfectScrollbar>
         </div>
@@ -1019,6 +1019,37 @@ export default {
         icon: "icon-info",
         // position:'bottom-center'
       });
+    },
+    async checkAssign(task, unscheduled = false) {
+      // Check if logging is allowed or not.
+      
+      db.collection("log_usages")
+        .where(
+          "group",
+          "==",
+          JSON.parse(localStorage.getItem("userInfo")).group
+        )
+        .onSnapshot((snap) => {
+          this.$store.dispatch("app/setCurrentPricePlan", {
+            numberOfLogs: snap.size,
+            isFreePlan: snap.size < 10, //<
+          });
+
+          let subscription = this.$store.getters["app/getSubscription"];
+          let preventLogging = false;
+          // when user exceed the log-usage-limit: 10
+          if (snap.size > 10 && subscription.subscribed === false) {
+            preventLogging = true;
+          }
+          this.$store.commit("app/SET_PREVENT_LOGGING", preventLogging);
+        
+          if (preventLogging === true) {
+            return;
+          }else {
+            this.assign(task, unscheduled = false);
+          }
+        });
+
     },
     async assign(task, unscheduled = false) {
       if (task.assign != undefined) {

@@ -189,6 +189,9 @@ export default {
   setCurrentPricePlan({ commit }, query) {
     commit("SET_CURRENT_PRICE_PLAN", query)
   },
+  setPreventLogging({ commit }, query) {
+    commit("SET_PREVENT_LOGGING", query)
+  },
 
 
 }

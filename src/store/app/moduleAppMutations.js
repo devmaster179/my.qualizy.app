@@ -499,5 +499,8 @@ export default {
   SET_CURRENT_PRICE_PLAN(state, query) {
     state.currentPricePlan = { ...state.currentPricePlan, ...query }
   },
+  SET_PREVENT_LOGGING(state, query) {
+    state.preventLogging = query
+  },
 
 }

@@ -364,6 +364,10 @@ export default {
     return state.currentPricePlan
   },
 
+  getPreventLogging: state => {
+    return state.preventLogging
+  },
+
   // from TEMP template
   logicQuestionsByAnswerIdTemp: state => params => {
     let allAnswers = [];

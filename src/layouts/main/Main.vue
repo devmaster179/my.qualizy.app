@@ -125,13 +125,12 @@
             </div>
           </div>
         </div>
-        <div class="hidden">{{ subscribedForModal }}</div>
+        <div class="hidden">{{ showPreventLoggingModal }}</div>
         <the-footer></the-footer>
       </div>
 
       <pro-price-plan-popup
-        :open="activeProPricePlanPopup"
-        @close="activeProPricePlanPopup = true"
+        :open="preventLogging"
         class="pro-price-plan-popup"
       />
     </div>
@@ -160,7 +159,7 @@ tempDate.setFullYear(2000);
 export default {
   data() {
     return {
-      activeProPricePlanPopup: false,
+      preventLogging: false,
       navbarType: themeConfig.navbarType || "floating",
       navbarColor: themeConfig.navbarColor || "#fff",
       footerType: themeConfig.footerType || "static",
@@ -182,17 +181,6 @@ export default {
   watch: {
     $route(to, from) {
       this.routeTitle = this.$route.meta.pageTitle;
-      var cUser = this.$store.getters["app/currentUser"];
-      this.activeProPricePlanPopup = false;
-
-      if (this.$store.getters["app/getCurrentPricePlan"].isFreePlan == false) {
-        let subscription = this.$store.getters["app/getSubscription"];
-        if (subscription.subscribed == false && to.name != "company") {
-          this.activeProPricePlanPopup = true;
-        }
-      } else {
-        this.activeProPricePlanPopup = false;
-      }
     },
     isThemeDark(val) {
       if (this.navbarColor == "#fff" && val) {
@@ -207,12 +195,9 @@ export default {
       let subscription = this.$store.getters["app/getSubscription"];
       return subscription.subscribed;
     },
-    subscribedForModal() {
-      let subscription = this.$store.getters["app/getSubscription"];
-      if (this.$route.name == "company") {
-        this.activeProPricePlanPopup = false;
-      }
-      return subscription.subscribed;
+    showPreventLoggingModal() {
+      this.preventLogging = this.$store.getters["app/getPreventLogging"];
+      return this.preventLogging;
     },
     breadcrumb() {
       var route = {
@@ -818,35 +803,6 @@ export default {
           });
         })
     },
-    checkFreePlan() {
-      db.collection("log_usages")
-        .where(
-          "group",
-          "==",
-          JSON.parse(localStorage.getItem("userInfo")).group
-        )
-        .onSnapshot((snap) => {
-          this.$store.dispatch("app/setCurrentPricePlan", {
-            numberOfLogs: snap.size,
-            isFreePlan: snap.size < 10, //<
-          });
-
-          // when user exceed the log-usage-limit: 10
-          if (snap.size < 10 == false) {
-            let subscription = this.$store.getters["app/getSubscription"];
-            if (
-              subscription.subscribed == false &&
-              this.$route.name != "company"
-            ) {
-              this.activeProPricePlanPopup = true;
-            } else {
-              this.activeProPricePlanPopup = false;
-            }
-          } else {
-            this.activeProPricePlanPopup = false;
-          }
-        });
-    },
   },
   components: {
     VxSidebar,
@@ -917,7 +873,6 @@ export default {
     }
 
     await this.checkSubscribed();
-    await this.checkFreePlan();
 
     // this.$vs.loading();
     this.$store.commit("app/SET_LOCATION_LIST", []);
