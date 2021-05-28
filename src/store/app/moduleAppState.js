@@ -93,5 +93,6 @@ export default {
   currentPricePlan: {
     numberOfLogs: 0,
     isFreePlan: false,
-  }
+  },
+  preventLogging: false
 }

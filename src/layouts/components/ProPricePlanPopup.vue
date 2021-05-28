@@ -1,9 +1,12 @@
 <template>
-  <vs-popup
-    classContent="popup-example"
-    class="popup-image-upload"
-    title="Subscribe to continue"
+  <vs-prompt
+    :title="$t('Subscribe to continue') | capitalize"
+    :accept-text="$t('Upgrade to pro') | capitalize"
+    :cancel-text="$t('cancel') | capitalize"
     :active.sync="activePrompt"
+    @accept="showUpgradePro"
+    @close="closePreventLogging"
+    @cancel="closePreventLogging"
   >
     <VuePerfectScrollbar
       class="scroll-template-making mt-4 pb-6 px-4 log-sidebar"
@@ -18,19 +21,11 @@
         </p>
       </div>
     </VuePerfectScrollbar>
-    <vs-divider />
-    <div class="flex items-center justify-end">
-      <a href="https://www.qualizy.app/get-monthly/" target="_blank">
-        <vs-button>Upgrade to pro</vs-button>
-      </a>
-    </div>
-  </vs-popup>
+  </vs-prompt>
 </template>
 
 <script>
 import VuePerfectScrollbar from "vue-perfect-scrollbar";
-import { db } from "@/firebase/firebaseConfig";
-import firebase from "firebase";
 
 export default {
   components: {
@@ -60,6 +55,13 @@ export default {
       },
     },
   },
-  methods: {},
+  methods: {
+    showUpgradePro() {
+      window.open("https://www.qualizy.app/get-monthly/", "_blank");
+    },
+    closePreventLogging() {
+      this.$store.commit("app/SET_PREVENT_LOGGING", false);
+    }
+  },
 };
 </script>
