@@ -122,6 +122,12 @@
                 <span>{{calcLang.title}}</span>
               </p>
             </div>
+            <div class="flex justify-between py-3 detail-item">
+              <p class="ml-2 color-my-black karla" style="opacity: 0.54;">{{$t("timezone")}}</p>
+              <p class="ml-2 text-sm color-my-black karla flex items-center">
+                <span>{{cUser.timezone}}</span>
+              </p>
+            </div>
 
             <div class="flex justify-between py-3 detail-item items-center mb-3">
               <p class="ml-2 color-my-black karla" style="opacity: 0.54;">{{$t("social media")}}</p>
@@ -750,7 +756,7 @@ export default {
           digit: this.userDigit,
           team: teams,
           location: locations,
-          timezone: that.timezone,
+          timezone: this.timezone.text,
           lang: this.language.flag,
           facebook: this.userFacebook,
           twitter: this.userTwitter,
@@ -780,7 +786,7 @@ export default {
                 phone: that.userPhone,
                 team: teams,
                 location: locations,
-                timezone: that.timezone,
+                timezone: that.timezone.text,
                 rEmail: that.userREmail,
                 lang: that.language.flag,
                 digit: that.userDigit,
@@ -941,6 +947,7 @@ export default {
         this.userLocation = this.locations(user.location);
         this.userLanguage = user.lang || "en-us";
         this.userREmail = user.rEmail || false;
+        this.timezone = user.timezone || "Timezone";
 
         this.language = this.languages.find(
           (item) => item.flag == this.userLanguage
