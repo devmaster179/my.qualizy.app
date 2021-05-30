@@ -508,7 +508,7 @@
                                 ].value.toDate()
                               : pages[pIndex].questions[qIndex].answers[aIndex]
                                   .value
-                                | moment("dddd, MMMM Do YYYY - H:mm:ss")
+                                | moment('timezone', cUser.timezone.utc[0], 'dddd, MMMM Do YYYY - H:mm:ss')
                           }}</span
                         >
                       </div>
@@ -1021,11 +1021,15 @@ export default {
     templateInfo() {
       return this.$store.getters["app/getTemplateById"](this.template);
     },
+      cUser() {
+      return this.$store.getters["app/currentUser"];
+    },
     getUser() {
       return (id) => {
         if (id === undefined || id == "") return null;
         else {
           let user = this.$store.getters["app/getUserById"](id);
+          console.log(user);
           if (Object.keys(user).length > 0)
             return { id: user.id, name: user.name };
           else return null;

@@ -125,7 +125,7 @@
             <div class="flex justify-between py-3 detail-item">
               <p class="ml-2 color-my-black karla" style="opacity: 0.54;">{{$t("timezone")}}</p>
               <p class="ml-2 text-sm color-my-black karla flex items-center">
-                <span>{{cUser.timezone}}</span>
+                <span>{{cUser.timezone.text}}</span>
               </p>
             </div>
 
@@ -756,7 +756,7 @@ export default {
           digit: this.userDigit,
           team: teams,
           location: locations,
-          timezone: this.timezone.text,
+          timezone: this.timezone,
           lang: this.language.flag,
           facebook: this.userFacebook,
           twitter: this.userTwitter,
@@ -786,7 +786,7 @@ export default {
                 phone: that.userPhone,
                 team: teams,
                 location: locations,
-                timezone: that.timezone.text,
+                timezone: that.timezone,
                 rEmail: that.userREmail,
                 lang: that.language.flag,
                 digit: that.userDigit,
@@ -947,7 +947,7 @@ export default {
         this.userLocation = this.locations(user.location);
         this.userLanguage = user.lang || "en-us";
         this.userREmail = user.rEmail || false;
-        this.timezone = user.timezone || "Timezone";
+        this.timezone = user.timezone.text || "Timezone";
 
         this.language = this.languages.find(
           (item) => item.flag == this.userLanguage
