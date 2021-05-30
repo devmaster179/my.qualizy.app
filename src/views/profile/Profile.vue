@@ -360,7 +360,7 @@
           <label class>{{$t("timezone")}}</label>
           <v-select
             v-model="timezone"
-            label="title"
+            label="text"
             :placeholder="$t('timezone')"
             :options="timezones"
             :filterable="false"
