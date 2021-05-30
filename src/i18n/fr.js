@@ -116,6 +116,7 @@ export default {
     "linkedin": "Linkedin",
     "twitter": "Twitter",
     "edit profile": "Modifier le profil",
+    "timezone": "Fuseau horaire",
     "unique pin number": "Numéro PIN unique",
     "you are about to delete team": "Vous êtes sur le point de supprimer l'équipe",
     "this will delete your team": "Cela supprimera votre équipe",

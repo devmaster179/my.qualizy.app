@@ -88,8 +88,9 @@ import VeeValidate from 'vee-validate';
 Vue.use(VeeValidate);
 
 // VueMoment --kk
-const moment = require('moment')
+// const moment = require('moment')
 import VueMoment from 'vue-moment'
+import moment from 'moment-timezone'
 
 import 'moment/locale/fr'
 import 'moment/locale/en-gb'
