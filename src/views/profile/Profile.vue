@@ -356,6 +356,22 @@
           </v-select>
         </div>
 
+        <div class="team-section mb-3">
+          <label class>{{$t("timezone")}}</label>
+          <v-select
+            v-model="timezone"
+            label="title"
+            :placeholder="$t('timezone')"
+            :options="timezones"
+            :filterable="false"
+            :clearable="false"
+          >
+            <template slot="option" slot-scope="option">
+              <span class="karla">{{ option.text }}</span>
+            </template>
+          </v-select>
+        </div>
+
         <div class="facebook-section mb-3">
           <label class>{{$t("facebook")}}</label>
           <vs-input
@@ -450,6 +466,7 @@ import { VueTelInput } from "vue-tel-input";
 import firebase from "firebase/app";
 import "@firebase/auth";
 import VueSelect from "vue-multiselect";
+import {timezonesArray} from '../../helpers/timezones'
 export default {
   components: {
     VSelect,
@@ -459,11 +476,13 @@ export default {
   },
   data() {
     return {
+      timezones: null,
       password: "",
       confirm_password: "",
       userREmail: false,
       userLanguage: "English(US)",
       language: null,
+      timezone: null,
       languages: [
         {
           title: "English(US)",
@@ -611,6 +630,10 @@ export default {
         return require("@/assets/images/user.png");
       else return currentUser.photo;
     },
+    
+  },
+  mounted() {
+    this.timezones = timezonesArray()
   },
   methods: {
     changePassword() {
@@ -727,6 +750,7 @@ export default {
           digit: this.userDigit,
           team: teams,
           location: locations,
+          timezone: that.timezone,
           lang: this.language.flag,
           facebook: this.userFacebook,
           twitter: this.userTwitter,
@@ -756,6 +780,7 @@ export default {
                 phone: that.userPhone,
                 team: teams,
                 location: locations,
+                timezone: that.timezone,
                 rEmail: that.userREmail,
                 lang: that.language.flag,
                 digit: that.userDigit,
