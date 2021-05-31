@@ -1046,12 +1046,12 @@ export default {
           if (preventLogging === true) {
             return;
           }else {
-            this.assign(task, unscheduled = false);
+            this.assign(task, unscheduled);
           }
         });
 
     },
-    async assign(task, unscheduled = false) {
+    async assign(task, unscheduled) {
       if (task.assign != undefined) {
         var cUser = this.$store.getters["app/currentUser"];
         var cTeam = cUser.team || [];
