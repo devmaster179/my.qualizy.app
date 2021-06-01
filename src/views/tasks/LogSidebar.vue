@@ -508,7 +508,7 @@
                                 ].value.toDate()
                               : pages[pIndex].questions[qIndex].answers[aIndex]
                                   .value
-                                | moment('timezone', cUser.timezone.utc[0], 'dddd, MMMM Do YYYY - H:mm:ss')
+                                | moment('timezone', cUser.timezone !== undefined ? cUser.timezone.utc[0] : 'Europe/Istanbul', 'dddd, MMMM Do YYYY - H:mm:ss')
                           }}</span
                         >
                       </div>
