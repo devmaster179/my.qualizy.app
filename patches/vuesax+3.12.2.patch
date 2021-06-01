@@ -1,0 +1,14 @@
+diff --git a/node_modules/vuesax/dist/vuesax.common.js b/node_modules/vuesax/dist/vuesax.common.js
+index 011b274..5c48b16 100644
+--- a/node_modules/vuesax/dist/vuesax.common.js
++++ b/node_modules/vuesax/dist/vuesax.common.js
+@@ -1622,6 +1622,9 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
+         }
+ 
+         var btn = _this4.$refs.btn;
++        
++        if(!btn) return
++
+         var xEvent = event.offsetX;
+         var yEvent = event.offsetY;
+         var radio = btn.clientWidth * 3;
