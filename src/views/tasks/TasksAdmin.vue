@@ -1049,9 +1049,8 @@ export default {
             this.assign(task, unscheduled);
           }
         });
-
     },
-    async assign(task, unscheduled) {
+    assign(task, unscheduled) {
       if (task.assign != undefined) {
         var cUser = this.$store.getters["app/currentUser"];
         var cTeam = cUser.team || [];
