@@ -508,7 +508,7 @@
                                 ].value.toDate()
                               : pages[pIndex].questions[qIndex].answers[aIndex]
                                   .value
-                                | moment('timezone', cUser.timezone.utc[0], 'dddd, MMMM Do YYYY - H:mm:ss')
+                                | moment('timezone', userTimezone, 'dddd, MMMM Do YYYY - H:mm:ss')
                           }}</span
                         >
                       </div>
@@ -1223,6 +1223,13 @@ export default {
         }).color;
       };
     },
+    userTimezone(){
+      if(this.cUser.timezone && this.cUser.timezone.utc){
+        return this.cUser.timezone.utc[0];
+      }else{
+        return Intl.DateTimeFormat().resolvedOptions().timeZone;
+      }
+    }
   },
   mounted() {},
   methods: {
