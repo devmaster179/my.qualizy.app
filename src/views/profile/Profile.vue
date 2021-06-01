@@ -948,7 +948,16 @@ export default {
         this.userLanguage = user.lang || "en-us";
         this.userREmail = user.rEmail || false;
 
-        let timezone = user.timezone && user.timezone.utc ? user.timezone : null;
+        let timezone = user.timezone && user.timezone.utc ? user.timezone : undefined;
+        if (timezone === undefined) {
+          for (let i = 0; i < this.timezones.length; i++) {
+            const tz = this.timezones[i];
+            if(tz.utc.includes(Intl.DateTimeFormat().resolvedOptions().timeZone)){
+              timezone = tz;
+            }
+          }
+        }
+
         this.timezone = timezone;
 
         this.language = this.languages.find(
