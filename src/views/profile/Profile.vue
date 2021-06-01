@@ -125,7 +125,7 @@
             <div class="flex justify-between py-3 detail-item">
               <p class="ml-2 color-my-black karla" style="opacity: 0.54;">{{$t("timezone")}}</p>
               <p class="ml-2 text-sm color-my-black karla flex items-center">
-                <span>{{ cUser.timezone !== undefined ? cUser.timezone.text : 'Europe/Istanbul' }}</span>
+                <span>{{ cUser.timezone && cUser.timezone.text ? cUser.timezone.text : '' }}</span>
               </p>
             </div>
 
@@ -947,7 +947,9 @@ export default {
         this.userLocation = this.locations(user.location);
         this.userLanguage = user.lang || "en-us";
         this.userREmail = user.rEmail || false;
-        this.timezone = (user.timezone !== undefined ? user.timezone.utc[0] : 'Europe/Istanbul') || "Timezone";
+
+        let timezone = user.timezone && user.timezone.utc ? user.timezone : null;
+        this.timezone = timezone;
 
         this.language = this.languages.find(
           (item) => item.flag == this.userLanguage
