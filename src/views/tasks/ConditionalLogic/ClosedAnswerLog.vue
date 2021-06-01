@@ -1283,33 +1283,7 @@ export default {
       if (this.pages[pIndex].questions[qIndex].answers[aIndex].value === e) {
         return false;
       }
-      if (this.pages[pIndex].questions[qIndex].answers[aIndex].loged == false) {
-        db.collection("log_usages")
-          .add({
-            logId: this.logID,
-            pIndex: pIndex,
-            qIndex: qIndex,
-            aIndex: aIndex,
-            content: e,
-            logged: true,
-            count: 1,
-            created_by: JSON.parse(localStorage.getItem("userInfo")).id,
-            created_at: new Date(),
-          })
-          .then((res) => {
-            if (this.subscribed) {
-              let usage_url = `${this.$firebaseFunctionUrl}/addUsageToSubscription`;
-              this.$http
-                .get(usage_url, {
-                  params: {
-                    subscription: this.subscriptionId,
-                    usageCount: 1,
-                  },
-                })
-                .then((res) => {});
-            }
-          });
-      }
+      
 
       this.initState = false;
       this.saveState = true;
@@ -1429,8 +1403,6 @@ export default {
           }
         }
       });
-    },
-    chnContent(pIndex, qIndex, aIndex, content, failed, action = false) {
       if (this.pages[pIndex].questions[qIndex].answers[aIndex].loged == false) {
         db.collection("log_usages")
           .add({
@@ -1438,7 +1410,7 @@ export default {
             pIndex: pIndex,
             qIndex: qIndex,
             aIndex: aIndex,
-            content: content,
+            content: e,
             logged: true,
             count: 1,
             created_by: JSON.parse(localStorage.getItem("userInfo")).id,
@@ -1458,6 +1430,9 @@ export default {
             }
           });
       }
+    },
+    chnContent(pIndex, qIndex, aIndex, content, failed, action = false) {
+      
 
       this.initState = false;
       this.saveState = true;
@@ -1551,6 +1526,35 @@ export default {
           }
         });
       }
+
+      if (this.pages[pIndex].questions[qIndex].answers[aIndex].loged == false) {
+        db.collection("log_usages")
+          .add({
+            logId: this.logID,
+            pIndex: pIndex,
+            qIndex: qIndex,
+            aIndex: aIndex,
+            content: content,
+            logged: true,
+            count: 1,
+            created_by: JSON.parse(localStorage.getItem("userInfo")).id,
+            created_at: new Date(),
+          })
+          .then((res) => {
+            if (this.subscribed) {
+              let usage_url = `${this.$firebaseFunctionUrl}/addUsageToSubscription`;
+              this.$http
+                .get(usage_url, {
+                  params: {
+                    subscription: this.subscriptionId,
+                    usageCount: 1,
+                  },
+                })
+                .then((res) => {});
+            }
+          });
+      }
+
     },
     plusPage() {
       this.enterClass = "animated bounceInRight";

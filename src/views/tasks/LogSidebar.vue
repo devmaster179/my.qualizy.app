@@ -1504,38 +1504,6 @@ export default {
       if (this.pages[pIndex].questions[qIndex].answers[aIndex].value === e)
         return false;
 
-      if (this.pages[pIndex].questions[qIndex].answers[aIndex].loged == false) {
-        db.collection("log_usages")
-          .add({
-            logId: this.logID,
-            pIndex: pIndex,
-            qIndex: qIndex,
-            aIndex: aIndex,
-            content: e,
-            logged: true,
-            count: 1,
-            group: JSON.parse(localStorage.getItem("userInfo")).group,
-            created_by: JSON.parse(localStorage.getItem("userInfo")).id,
-            created_at: new Date(),
-          })
-          .then((res) => {
-            console.log("usage added");
-            if (this.subscribed) {
-              console.log("usage added to subscription");
-              let usage_url = `${this.$firebaseFunctionUrl}/addUsageToPKSSubscription`;
-              this.$http
-                .post(usage_url, {
-                  invoiceId: this.invoiceId,
-                  units: 1,
-                  notes: 'usage added by'+JSON.parse(localStorage.getItem("userInfo")).id
-                })
-                .then((res) => {
-                  console.log("usage res: ", res);
-                });
-            }
-          });
-      }
-
       this.initState = false;
       this.saveState = true;
       this.pages[pIndex].questions[qIndex].answers[aIndex].value = e;
@@ -1670,6 +1638,39 @@ export default {
           }
         }
       });
+      
+      if (this.pages[pIndex].questions[qIndex].answers[aIndex].loged === false) {
+        db.collection("log_usages")
+          .add({
+            logId: this.logID,
+            pIndex: pIndex,
+            qIndex: qIndex,
+            aIndex: aIndex,
+            content: e,
+            logged: true,
+            count: 1,
+            group: JSON.parse(localStorage.getItem("userInfo")).group,
+            created_by: JSON.parse(localStorage.getItem("userInfo")).id,
+            created_at: new Date(),
+          })
+          .then((res) => {
+            console.log("usage added");
+            console.log("this.subscribed", this.subscribed);
+            if (this.subscribed) {
+              console.log("usage added to subscription");
+              let usage_url = `${this.$firebaseFunctionUrl}/addUsageToPKSSubscription`;
+              this.$http
+                .post(usage_url, {
+                  invoiceId: this.invoiceId,
+                  units: 1,
+                  notes: 'usage added by'+JSON.parse(localStorage.getItem("userInfo")).id
+                })
+                .then((res) => {
+                  console.log("usage res: ", res);
+                });
+            }
+          });
+      }
     },
     chnContent(pIndex, qIndex, aIndex, content, failed, action = false) {
       this.initState = false;
