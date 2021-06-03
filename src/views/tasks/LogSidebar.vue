@@ -501,13 +501,9 @@
                             font-size: 12px;
                           "
                           >{{
-                            pages[pIndex].questions[qIndex].answers[aIndex]
-                              .value.nanoseconds !== undefined
-                              ? pages[pIndex].questions[qIndex].answers[
-                                  aIndex
-                                ].value.toDate()
-                              : pages[pIndex].questions[qIndex].answers[aIndex]
-                                  .value
+                            answer.value.nanoseconds !== undefined
+                              ? answer.value.toDate()
+                              : answer.value
                                 | moment('timezone', userTimezone, 'dddd, MMMM Do YYYY - H:mm:ss')
                           }}</span
                         >
@@ -1242,7 +1238,9 @@ export default {
 
       // Makes so the duplicated section has the initial value.
       question.answers.forEach((answer) => {
-        answer.value = "";
+        if (this.getTemplateType(answer.ref.type.id).content !== 'automatic date and time stamp') {
+          answer.value = "";
+        }
       });
 
       // Insert the section in to the right position.
