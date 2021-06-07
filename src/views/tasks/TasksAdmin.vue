@@ -1029,7 +1029,8 @@ export default {
           "==",
           JSON.parse(localStorage.getItem("userInfo")).group
         )
-        .onSnapshot((snap) => {
+        .get()
+        .then((snap) => {
           this.$store.dispatch("app/setCurrentPricePlan", {
             numberOfLogs: snap.size,
             isFreePlan: snap.size < 10, //<

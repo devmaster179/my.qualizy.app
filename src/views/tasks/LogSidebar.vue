@@ -1509,6 +1509,8 @@ export default {
       if (this.pages[pIndex].questions[qIndex].answers[aIndex].value === e)
         return false;
 
+      let addUsage = this.pages[pIndex].questions[qIndex].answers[aIndex].loged ? false : true;
+
       this.initState = false;
       this.saveState = true;
       this.pages[pIndex].questions[qIndex].answers[aIndex].value = e;
@@ -1643,8 +1645,8 @@ export default {
           }
         }
       });
-      
-      if (this.pages[pIndex].questions[qIndex].answers[aIndex].loged === false) {
+
+      if (addUsage) {
         db.collection("log_usages")
           .add({
             logId: this.logID,
@@ -1659,10 +1661,7 @@ export default {
             created_at: new Date(),
           })
           .then((res) => {
-            console.log("usage added");
-            console.log("this.subscribed", this.subscribed);
             if (this.subscribed) {
-              console.log("usage added to subscription");
               let usage_url = `${this.$firebaseFunctionUrl}/addUsageToPKSSubscription`;
               this.$http
                 .post(usage_url, {
