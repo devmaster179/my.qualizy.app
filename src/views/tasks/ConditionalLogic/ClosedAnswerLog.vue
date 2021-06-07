@@ -1418,17 +1418,17 @@ export default {
             created_at: new Date(),
           })
           .then((res) => {
-            if (this.subscribed) {
-              let usage_url = `${this.$firebaseFunctionUrl}/addUsageToPKSSubscription`;
-              this.$http
-                .get(usage_url, {
-                  params: {
-                    subscription: this.subscriptionId,
-                    usageCount: 1,
-                  },
-                })
-                .then((res) => {});
-            }
+            // if (this.subscribed) {
+            //   let usage_url = `${this.$firebaseFunctionUrl}/addUsageToPKSSubscription`;
+            //   this.$http
+            //     .get(usage_url, {
+            //       params: {
+            //         subscription: this.subscriptionId,
+            //         usageCount: 1,
+            //       },
+            //     })
+            //     .then((res) => {});
+            // }
           });
       }
     },
@@ -1543,17 +1543,17 @@ export default {
             created_at: new Date(),
           })
           .then((res) => {
-            if (this.subscribed) {
-              let usage_url = `${this.$firebaseFunctionUrl}/addUsageToPKSSubscription`;
-              this.$http
-                .get(usage_url, {
-                  params: {
-                    subscription: this.subscriptionId,
-                    usageCount: 1,
-                  },
-                })
-                .then((res) => {});
-            }
+            // if (this.subscribed) {
+            //   let usage_url = `${this.$firebaseFunctionUrl}/addUsageToPKSSubscription`;
+            //   this.$http
+            //     .get(usage_url, {
+            //       params: {
+            //         subscription: this.subscriptionId,
+            //         usageCount: 1,
+            //       },
+            //     })
+            //     .then((res) => {});
+            // }
           });
       }
 

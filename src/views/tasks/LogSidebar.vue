@@ -1661,18 +1661,18 @@ export default {
             created_at: new Date(),
           })
           .then((res) => {
-            if (this.subscribed) {
-              let usage_url = `${this.$firebaseFunctionUrl}/addUsageToPKSSubscription`;
-              this.$http
-                .post(usage_url, {
-                  invoiceId: this.invoiceId,
-                  units: 1,
-                  notes: 'usage added by'+JSON.parse(localStorage.getItem("userInfo")).id
-                })
-                .then((res) => {
-                  console.log("usage res: ", res);
-                });
-            }
+            // if (this.subscribed) {
+            //   let usage_url = `${this.$firebaseFunctionUrl}/addUsageToPKSSubscription`;
+            //   this.$http
+            //     .post(usage_url, {
+            //       invoiceId: this.invoiceId,
+            //       units: 1,
+            //       notes: 'usage added by'+JSON.parse(localStorage.getItem("userInfo")).id
+            //     })
+            //     .then((res) => {
+            //       console.log("usage res: ", res);
+            //     });
+            // }
           });
       }
     },
