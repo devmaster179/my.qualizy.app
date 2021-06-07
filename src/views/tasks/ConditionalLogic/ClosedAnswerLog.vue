@@ -1284,6 +1284,7 @@ export default {
         return false;
       }
       
+      let addUsage = this.pages[pIndex].questions[qIndex].answers[aIndex].loged ? false : true;
 
       this.initState = false;
       this.saveState = true;
@@ -1403,7 +1404,7 @@ export default {
           }
         }
       });
-      if (this.pages[pIndex].questions[qIndex].answers[aIndex].loged == false) {
+      if (addUsage) {
         db.collection("log_usages")
           .add({
             logId: this.logID,
@@ -1418,7 +1419,7 @@ export default {
           })
           .then((res) => {
             if (this.subscribed) {
-              let usage_url = `${this.$firebaseFunctionUrl}/addUsageToSubscription`;
+              let usage_url = `${this.$firebaseFunctionUrl}/addUsageToPKSSubscription`;
               this.$http
                 .get(usage_url, {
                   params: {
@@ -1433,6 +1434,7 @@ export default {
     },
     chnContent(pIndex, qIndex, aIndex, content, failed, action = false) {
       
+      let addUsage = this.pages[pIndex].questions[qIndex].answers[aIndex].loged ? false : true;
 
       this.initState = false;
       this.saveState = true;
@@ -1527,7 +1529,7 @@ export default {
         });
       }
 
-      if (this.pages[pIndex].questions[qIndex].answers[aIndex].loged == false) {
+      if (addUsage) {
         db.collection("log_usages")
           .add({
             logId: this.logID,
@@ -1542,7 +1544,7 @@ export default {
           })
           .then((res) => {
             if (this.subscribed) {
-              let usage_url = `${this.$firebaseFunctionUrl}/addUsageToSubscription`;
+              let usage_url = `${this.$firebaseFunctionUrl}/addUsageToPKSSubscription`;
               this.$http
                 .get(usage_url, {
                   params: {
