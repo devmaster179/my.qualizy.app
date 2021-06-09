@@ -12,7 +12,7 @@
   <div>
     <div v-if="!subscribed" class="banner-non-subscribed">
       <span class="info-badge">Info</span>
-      You have reached the limit of your demo account, you can still access everything in Qualizy but will be unable to create records - <a href="https://www.qualizy.app/get-monthly/" target="_blank" class="underline">Unlock an unlimited usage of Qualizy pro </a> for FREE for 7 days today.
+      This is a demo account, you can set everything up in Qualizy but will be unable to create records - <a href="https://www.qualizy.app/get-monthly/" target="_blank" class="underline">Unlock an unlimited usage of Qualizy pro </a> for FREE for 7 days today.
     </div>
     <div
       class="layout--main"
