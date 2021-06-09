@@ -195,7 +195,7 @@
               :task="log"
               progress
               :key="index"
-              @click.native="editLog(log)"
+              @click.native="checkEditable(log)" 
             ></task-item>
           </VuePerfectScrollbar>
         </div>
@@ -237,7 +237,7 @@
               :pinned="task.time === undefined"
               :task="task"
               :key="index"
-              @click.native="editLog(task)"
+              @click.native="checkEditable(task)"
             ></completed-item>
           </VuePerfectScrollbar>
         </div>
@@ -1048,6 +1048,37 @@ export default {
             return;
           }else {
             this.assign(task, unscheduled);
+          }
+        });
+    },
+    async checkEditable(task) {
+      // Check if logging is allowed or not.
+      
+      db.collection("log_usages")
+        .where(
+          "group",
+          "==",
+          JSON.parse(localStorage.getItem("userInfo")).group
+        )
+        .get()
+        .then((snap) => {
+          this.$store.dispatch("app/setCurrentPricePlan", {
+            numberOfLogs: snap.size,
+            isFreePlan: snap.size < 10, //<
+          });
+
+          let subscription = this.$store.getters["app/getSubscription"];
+          let preventLogging = false;
+          // when user exceed the log-usage-limit: 10
+          if (snap.size > 10 && subscription.subscribed === false) {
+            preventLogging = true;
+          }
+          this.$store.commit("app/SET_PREVENT_LOGGING", preventLogging);
+        
+          if (preventLogging === true) {
+            return;
+          }else {
+            this.editLog(task);
           }
         });
     },
