@@ -226,7 +226,16 @@
                               width: 48px;
                               height: 48px;
                             "
-                            class="rounded-lg px-3 text-center cursor-pointer numBtn mr-2 pt-1 block"
+                            class="
+                              rounded-lg
+                              px-3
+                              text-center
+                              cursor-pointer
+                              numBtn
+                              mr-2
+                              pt-1
+                              block
+                            "
                             >+</span
                           >
                           <span
@@ -245,7 +254,15 @@
                               width: 48px;
                               height: 48px;
                             "
-                            class="rounded-lg px-3 text-center cursor-pointer numBtn block pt-1"
+                            class="
+                              rounded-lg
+                              px-3
+                              text-center
+                              cursor-pointer
+                              numBtn
+                              block
+                              pt-1
+                            "
                             >-</span
                           >
                         </div>
@@ -275,7 +292,11 @@
                           "
                         >
                           <img
-                            class="w-full border border-solid d-theme-border-grey-light"
+                            class="
+                              w-full
+                              border border-solid
+                              d-theme-border-grey-light
+                            "
                             :src="
                               pages[pIndex].questions[qIndex].answers[aIndex]
                                 .value.url
@@ -306,7 +327,10 @@
                               '_' +
                               aIndex
                             "
-                            class="border border-solid d-theme-border-grey-light"
+                            class="
+                              border border-solid
+                              d-theme-border-grey-light
+                            "
                             :class="{ 'w-full': !(isMobile || isIOS) }"
                             :options="{ onBegin, onEnd, penColor: '#2128ff' }"
                             :images="signImage(pIndex, qIndex, aIndex)"
@@ -425,7 +449,14 @@
                             border: 1px solid rgba(0, 0, 0, 0.2);
                             width: 48px;
                           "
-                          class="rounded-lg px-1 pt-2 text-center cursor-pointer numBtn"
+                          class="
+                            rounded-lg
+                            px-1
+                            pt-2
+                            text-center
+                            cursor-pointer
+                            numBtn
+                          "
                           @click="
                             chnValue(
                               pages[pIndex].questions[qIndex].answers[aIndex]
@@ -504,7 +535,11 @@
                             answer.value.nanoseconds !== undefined
                               ? answer.value.toDate()
                               : answer.value
-                                | moment('timezone', userTimezone, 'dddd, MMMM Do YYYY - H:mm:ss')
+                                | moment(
+                                  "timezone",
+                                  userTimezone,
+                                  "dddd, MMMM Do YYYY - H:mm:ss"
+                                )
                           }}</span
                         >
                       </div>
@@ -705,7 +740,10 @@
                             :src="viewSrc"
                             @closeImage="closeImage"
                           />
-                          <div v-if="!temporPages.length" class="con-img-upload py-0 m-0">
+                          <div
+                            v-if="!temporPages.length"
+                            class="con-img-upload py-0 m-0"
+                          >
                             <div
                               class="img-upload my-2"
                               v-for="(image, imageKey) in pages[pIndex]
@@ -1017,7 +1055,7 @@ export default {
     templateInfo() {
       return this.$store.getters["app/getTemplateById"](this.template);
     },
-      cUser() {
+    cUser() {
       return this.$store.getters["app/currentUser"];
     },
     getUser() {
@@ -1219,13 +1257,13 @@ export default {
         }).color;
       };
     },
-    userTimezone(){
-      if(this.cUser.timezone && this.cUser.timezone.utc){
+    userTimezone() {
+      if (this.cUser.timezone && this.cUser.timezone.utc) {
         return this.cUser.timezone.utc[0];
-      }else{
+      } else {
         return Intl.DateTimeFormat().resolvedOptions().timeZone;
       }
-    }
+    },
   },
   mounted() {},
   methods: {
@@ -1238,7 +1276,10 @@ export default {
 
       // Makes so the duplicated section has the initial value.
       question.answers.forEach((answer) => {
-        if (this.getTemplateType(answer.ref.type.id).content !== 'automatic date and time stamp') {
+        if (
+          this.getTemplateType(answer.ref.type.id).content !==
+          "automatic date and time stamp"
+        ) {
           answer.value = "";
         }
       });
@@ -1284,12 +1325,10 @@ export default {
       this.pages[indexs[0]].questions[indexs[1]].answers[
         indexs[2]
       ].loged = true;
-      this.pages[indexs[0]].questions[indexs[1]].answers[
-        indexs[2]
-      ].time = new Date();
-      this.pages[indexs[0]].questions[indexs[1]].answers[
-        indexs[2]
-      ].user = JSON.parse(localStorage.getItem("userInfo")).id;
+      this.pages[indexs[0]].questions[indexs[1]].answers[indexs[2]].time =
+        new Date();
+      this.pages[indexs[0]].questions[indexs[1]].answers[indexs[2]].user =
+        JSON.parse(localStorage.getItem("userInfo")).id;
       db.collection("logs")
         .doc(this.logID)
         .update({
@@ -1300,9 +1339,8 @@ export default {
         });
     },
     saveSign(p, q, a) {
-      const { isEmpty, data } = this.$refs[
-        `signaturePad_${p}_${q}_${a}`
-      ][0].saveSignature();
+      const { isEmpty, data } =
+        this.$refs[`signaturePad_${p}_${q}_${a}`][0].saveSignature();
       if (isEmpty) {
         this.$vs.notify({
           title: "Empty",
@@ -1441,19 +1479,17 @@ export default {
       this.initState = false;
       this.saveState = true;
       if (kind === "online") {
-        this.temporPages = []
+        this.temporPages = [];
         this.pages[indexs[0]].questions[indexs[1]].answers[
           indexs[2]
         ].images.push({ url: url, ref: ref });
         this.pages[indexs[0]].questions[indexs[1]].answers[
           indexs[2]
         ].loged = true;
-        this.pages[indexs[0]].questions[indexs[1]].answers[
-          indexs[2]
-        ].time = new Date();
-        this.pages[indexs[0]].questions[indexs[1]].answers[
-          indexs[2]
-        ].user = JSON.parse(localStorage.getItem("userInfo")).id;
+        this.pages[indexs[0]].questions[indexs[1]].answers[indexs[2]].time =
+          new Date();
+        this.pages[indexs[0]].questions[indexs[1]].answers[indexs[2]].user =
+          JSON.parse(localStorage.getItem("userInfo")).id;
       } else if (kind === "offline") {
         if (!this.temporPages.length)
           this.temporPages = JSON.parse(JSON.stringify(this.pages));
@@ -1509,7 +1545,9 @@ export default {
       if (this.pages[pIndex].questions[qIndex].answers[aIndex].value === e)
         return false;
 
-      let addUsage = this.pages[pIndex].questions[qIndex].answers[aIndex].loged ? false : true;
+      let addUsage = this.pages[pIndex].questions[qIndex].answers[aIndex].loged
+        ? false
+        : true;
 
       this.initState = false;
       this.saveState = true;
@@ -1568,22 +1606,26 @@ export default {
 
               user.map((item) => {
                 if (
-                  mUsers.find((mUser) => mUser.email == item.email) != undefined || item.rEmail === undefined || !item.rEmail
+                  mUsers.find((mUser) => mUser.email == item.email) !=
+                    undefined ||
+                  item.rEmail === undefined ||
+                  !item.rEmail
                 )
                   return;
                 mUsers.push({ email: item.email, name: item.name });
               });
             });
             if (notification === undefined) {
-              const notificationText = "Captured " +
-                  '"' +
-                  e +
-                  this.pages[pIndex].questions[qIndex].answers[aIndex].ref.type
-                    .tempUnit +
-                  '" in ' +
-                  '"' +
-                  this.pages[pIndex].questions[qIndex].title +
-                  '"';
+              const notificationText =
+                "Captured " +
+                '"' +
+                e +
+                this.pages[pIndex].questions[qIndex].answers[aIndex].ref.type
+                  .tempUnit +
+                '" in ' +
+                '"' +
+                this.pages[pIndex].questions[qIndex].title +
+                '"';
               db.collection("notifications").add({
                 readIds: [],
                 sendEmails: mUsers,
@@ -1606,17 +1648,16 @@ export default {
 
               mUsers.map((mUser) => {
                 this.$http
-                .post(
-                  "https://us-central1-the-haccp-app-249610.cloudfunctions.net/api/sendMail",
-                  {
-                    email: mUser.email,
-                    subject: templateTitle,
-                    html: notificationText
-                  }
-                )
-                .then(() => {});
+                  .post(
+                    "https://us-central1-the-haccp-app-249610.cloudfunctions.net/api/sendMail",
+                    {
+                      email: mUser.email,
+                      subject: templateTitle,
+                      html: notificationText,
+                    }
+                  )
+                  .then(() => {});
               });
-
             } else {
               db.collection("notifications")
                 .doc(notification.id)
@@ -1749,15 +1790,15 @@ export default {
 
               mUsers.map((mUser) => {
                 this.$http
-                .post(
-                  "https://us-central1-the-haccp-app-249610.cloudfunctions.net/api/sendMail",
-                  {
-                    email: mUser.email,
-                    subject: actionItem.name,
-                    html: actionItem.description
-                  }
-                )
-                .then(() => {});
+                  .post(
+                    "https://us-central1-the-haccp-app-249610.cloudfunctions.net/api/sendMail",
+                    {
+                      email: mUser.email,
+                      subject: actionItem.name,
+                      html: actionItem.description,
+                    }
+                  )
+                  .then(() => {});
               });
             } else {
               db.collection("notifications")
