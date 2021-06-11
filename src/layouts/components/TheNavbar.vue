@@ -8,9 +8,10 @@
   Author URL: http://www.themeforest.net/user/pixinvent
 ========================================================================================== -->
 
+
 <template>
   <div class="relative">
-    <div id="vx-navbar-wrapper" class="vx-navbar-wrapper">
+    <div class="vx-navbar-wrapper">
       <vs-navbar
         class="vx-navbar navbar-custom"
         :color="navbarColor"
@@ -563,11 +564,9 @@ export default {
         .auth()
         .signOut()
         .then(() => {
-          db.collection("users")
-            .doc(cUser.id)
-            .update({
-              chatStatus: "offline",
-            });
+          db.collection("users").doc(cUser.id).update({
+            chatStatus: "offline",
+          });
           firebase.analytics().logEvent("sign-out", {
             email: cUser.email,
           });
@@ -591,7 +590,7 @@ export default {
 
       // Change role on logout. Same value as initialRole of acj.js
     },
-    outside: function() {
+    outside: function () {
       this.showLocationSelect = false;
     },
     // Method for creating dummy notification time
@@ -614,27 +613,6 @@ export default {
     }
 
     setInterval(() => (this.now = new Date()), 1000 * 60);
-  },
-  mounted() {
-    document?.addEventListener("readystatechange", () => {
-      const bannerEl = document.getElementById("banner-non-subscribed");
-      const resizeObserver = new ResizeObserver((entries) => {
-        const bannerHeight = entries[0]?.target?.clientHeight;
-
-        document.getElementsByClassName(
-          "vx-navbar-wrapper"
-        )[0].style.marginTop = `${bannerHeight}px`;
-
-        document.getElementsByClassName(
-          "router-content"
-        )[0].style.marginTop = `${bannerHeight + 63}px`;
-
-        document.getElementsByClassName(
-          "vs-sidebar-parent"
-        )[0].style.marginTop = `${bannerHeight}px`;
-      });
-      resizeObserver.observe(bannerEl);
-    });
   },
 };
 </script>
