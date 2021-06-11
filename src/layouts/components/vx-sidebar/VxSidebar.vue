@@ -24,7 +24,16 @@
     >
       <div @mouseenter="sidebarMouseEntered" @mouseleave="sidebarMouseLeave">
         <div
-          class="header-sidebar flex justify-between m-0 mb-4"
+          :class="[
+            'header-sidebar',
+            'flex',
+            'justify-between',
+            'm-0',
+            'mb-4',
+            {
+              'header-sidebar-active': !subscribed,
+            },
+          ]"
           slot="header"
           style="padding: 20px; background: #6c50f0"
         >
@@ -174,6 +183,10 @@ export default {
     showShadowBottom: false,
   }),
   computed: {
+    subscribed() {
+      let subscription = this.$store.getters["app/getSubscription"];
+      return subscription.subscribed;
+    },
     auth() {
       return (sub, action) => {
         let authList = this.$store.getters["app/auth"];

@@ -7,16 +7,27 @@
     Author URL: http://www.themeforest.net/user/pixinvent
 ========================================================================================== -->
 
-
 <template>
   <div>
     <div v-if="!subscribed" class="banner-non-subscribed">
       <span class="info-badge">Info</span>
-      This is a demo account, you can set everything up in Qualizy but will be unable to create records - <a href="https://www.qualizy.app/get-monthly/" target="_blank" class="underline">Unlock an unlimited usage of Qualizy pro </a> for FREE for 7 days today.
+      This is a demo account, you can set everything up in Qualizy but will be
+      unable to create records -
+      <a
+        href="https://www.qualizy.app/get-monthly/"
+        target="_blank"
+        class="underline"
+        >Unlock an unlimited usage of Qualizy pro
+      </a>
+      for FREE for 7 days today.
     </div>
     <div
       class="layout--main"
-      :class="[navbarClasses, footerClasses, { 'app-page': isAppPage, 'layout--main-non-subscribed':!subscribed }]"
+      :class="[
+        navbarClasses,
+        footerClasses,
+        { 'app-page': isAppPage, 'layout--main-non-subscribed': !subscribed },
+      ]"
     >
       <vx-sidebar
         :sidebarItems="sidebarItems"
@@ -42,8 +53,13 @@
 
           <div class="router-view">
             <div
-              class="router-content"
-              :class="{ 'mt-0': navbarType == 'hidden' }"
+              :class="[
+                'router-content',
+                {
+                  'mt-0': navbarType == 'hidden',
+                  'router-content-active': !subscribed,
+                },
+              ]"
             >
               <transition :name="routerTransition">
                 <div
@@ -780,7 +796,11 @@ export default {
       // GET status of subscription and next billing date
       db.collection("paykickstart_subscriptions")
         // .where("content.buyer_email", "==", "bestsolution2028@gmail.com")
-        .where("user_group", "==", JSON.parse(localStorage.getItem("userInfo")).group)
+        .where(
+          "user_group",
+          "==",
+          JSON.parse(localStorage.getItem("userInfo")).group
+        )
         // .where("content.event", "in", ['subscription-updated', 'subscription-payment', 'subscription-created', 'sales'])
         .orderBy("created_at", "desc")
         .limit(1)
@@ -799,9 +819,9 @@ export default {
           });
           this.$store.dispatch("app/setSubscription", {
             subscribed: subscription.content.event != "subscription-cancelled",
-            invoiceId: subscription.content.invoice_id
+            invoiceId: subscription.content.invoice_id,
           });
-        })
+        });
     },
   },
   components: {
@@ -998,20 +1018,18 @@ export default {
 }
 </style>
 <style>
-
 .layout--main-non-subscribed .vs-sidebar {
-  top: 32px!important;
+  top: 0px;
 }
 .layout--main-non-subscribed .main-layout-navbar .vx-navbar-wrapper {
-  top: 32px!important;
+  top: 0px;
 }
 .layout--main-non-subscribed #content-area {
   position: relative;
-  top: 32px!important;
+  top: 0px;
 }
 .banner-non-subscribed {
   background-color: #fffbcc;
-  height: 32px;
   padding: 5px;
   text-align: center;
   font-size: 13px;

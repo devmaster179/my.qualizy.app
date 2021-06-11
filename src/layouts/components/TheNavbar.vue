@@ -8,10 +8,14 @@
   Author URL: http://www.themeforest.net/user/pixinvent
 ========================================================================================== -->
 
-
 <template>
   <div class="relative">
-    <div class="vx-navbar-wrapper">
+    <div
+      :class="[
+        'vx-navbar-wrapper',
+        { 'vx-navbar-wrapper-active': !subscribed },
+      ]"
+    >
       <vs-navbar
         class="vx-navbar navbar-custom"
         :color="navbarColor"
@@ -58,7 +62,14 @@
             >
             <div
               v-click-outside="outside"
-              class="absolute bookmark-list w-location sm:w-1/3 xl:w-1/4 mt-base"
+              class="
+                absolute
+                bookmark-list
+                w-location
+                sm:w-1/3
+                xl:w-1/4
+                mt-base
+              "
               v-if="showLocationSelect"
               style="left: 10px"
             >
@@ -161,7 +172,14 @@
                 <li
                   v-for="ntf in unreadNotifications"
                   :key="ntf.id"
-                  class="flex justify-between px-4 py-4 notification cursor-pointer"
+                  class="
+                    flex
+                    justify-between
+                    px-4
+                    py-4
+                    notification
+                    cursor-pointer
+                  "
                   @click="readNotification(ntf.id)"
                 >
                   <div class="flex items-start">
@@ -201,7 +219,20 @@
               </ul>
             </VuePerfectScrollbar>
             <div
-              class="checkout-footer fixed bottom-0 rounded-b-lg text-primary w-full p-2 font-semibold text-center border border-b-0 border-l-0 border-r-0 border-solid d-theme-border-grey-light cursor-pointer"
+              class="
+                checkout-footer
+                fixed
+                bottom-0
+                rounded-b-lg
+                text-primary
+                w-full
+                p-2
+                font-semibold
+                text-center
+                border border-b-0 border-l-0 border-r-0 border-solid
+                d-theme-border-grey-light
+                cursor-pointer
+              "
             >
               <span>View All Notifications</span>
             </div>
@@ -251,7 +282,14 @@
             <vs-dropdown-menu class="vx-navbar-dropdown">
               <ul style="min-width: 10rem">
                 <li
-                  class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white"
+                  class="
+                    flex
+                    py-2
+                    px-4
+                    cursor-pointer
+                    hover:bg-primary
+                    hover:text-white
+                  "
                   @click="$router.push('/profile').catch((err) => {})"
                 >
                   <feather-icon
@@ -262,7 +300,14 @@
                 </li>
                 <!-- <li class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white"><feather-icon icon="MailIcon" svgClasses="w-4 h-4"></feather-icon> <span class="ml-2">Inbox</span></li> -->
                 <li
-                  class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white"
+                  class="
+                    flex
+                    py-2
+                    px-4
+                    cursor-pointer
+                    hover:bg-primary
+                    hover:text-white
+                  "
                   @click="$router.push('/dashboard').catch((err) => {})"
                 >
                   <feather-icon
@@ -274,7 +319,14 @@
 
                 <li
                   v-if="subscribed"
-                  class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white"
+                  class="
+                    flex
+                    py-2
+                    px-4
+                    cursor-pointer
+                    hover:bg-primary
+                    hover:text-white
+                  "
                   @click="$router.push('/company').catch((err) => {})"
                 >
                   <feather-icon
@@ -285,7 +337,14 @@
                 </li>
                 <li
                   v-else
-                  class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white"
+                  class="
+                    flex
+                    py-2
+                    px-4
+                    cursor-pointer
+                    hover:bg-primary
+                    hover:text-white
+                  "
                   @click="goToSalePage"
                 >
                   <feather-icon
@@ -296,7 +355,14 @@
                 </li>
 
                 <li
-                  class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white"
+                  class="
+                    flex
+                    py-2
+                    px-4
+                    cursor-pointer
+                    hover:bg-primary
+                    hover:text-white
+                  "
                   @click="goToBuySensor"
                 >
                   <feather-icon
@@ -307,7 +373,14 @@
                 </li>
 
                 <li
-                  class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white"
+                  class="
+                    flex
+                    py-2
+                    px-4
+                    cursor-pointer
+                    hover:bg-primary
+                    hover:text-white
+                  "
                   @click="goToReferEarn"
                 >
                   <feather-icon
@@ -318,7 +391,16 @@
                 </li>
 
                 <li
-                  class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white sm:hidden block"
+                  class="
+                    flex
+                    py-2
+                    px-4
+                    cursor-pointer
+                    hover:bg-primary
+                    hover:text-white
+                    sm:hidden
+                    block
+                  "
                   @click="$router.push('/knowledge-page').catch((err) => {})"
                 >
                   <feather-icon
@@ -328,7 +410,16 @@
                   <span class="ml-2">{{ $t("knowledge base") }}</span>
                 </li>
                 <li
-                  class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white sm:hidden block"
+                  class="
+                    flex
+                    py-2
+                    px-4
+                    cursor-pointer
+                    hover:bg-primary
+                    hover:text-white
+                    sm:hidden
+                    block
+                  "
                   @click="$router.push('/chat').catch((err) => {})"
                 >
                   <feather-icon
@@ -339,7 +430,14 @@
                 </li>
                 <vs-divider class="m-1"></vs-divider>
                 <li
-                  class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white"
+                  class="
+                    flex
+                    py-2
+                    px-4
+                    cursor-pointer
+                    hover:bg-primary
+                    hover:text-white
+                  "
                   @click="logout"
                 >
                   <feather-icon
