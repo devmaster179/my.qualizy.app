@@ -400,11 +400,6 @@ router.afterEach((to, from) => {
         title = nearestWithTitle.meta.title
     }
     window.gist.track("(Visit a page) <a href='" + location.href + "'>" + title + "</a>", {});
-    // Remove initial loading
-    const appLoading = document.getElementById('loading-bg')
-    if (appLoading) {
-        appLoading.style.display = "none";
-    }
 })
 
 router.beforeEach((to, from, next) => {

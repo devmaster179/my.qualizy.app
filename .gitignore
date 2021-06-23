@@ -20,9 +20,9 @@ yarn-error.log*
 *.sln
 *.sw?
 
+package-lock.json
+
 *firebase*
 .firebase
-
-package-lock.json
 
 /functions

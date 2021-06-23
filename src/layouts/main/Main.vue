@@ -891,92 +891,92 @@ export default {
       this.updateNavbarColor(this.navbarColor);
     }
 
-    await this.checkSubscribed();
+    this.checkSubscribed();
 
     // this.$vs.loading();
     this.$store.commit("app/SET_LOCATION_LIST", []);
     var mDate = new Date().getTime();
     // var  mDate1 = new Date().getTime()
-    await this.setReportSchedule();
+    this.setReportSchedule();
     // mDate1 = new Date().getTime()
     // console.log((mDate1 - mDate) , 'setReportSchedule')
     // mDate = mDate1
-    await this.setAuth();
+    this.setAuth();
     // mDate1 = new Date().getTime()
     // console.log((mDate1 - mDate) , 'setAuth')
     // mDate = mDate1
-    await this.setCurrentUser();
+    this.setCurrentUser();
     // mDate1 = new Date().getTime()
     // console.log((mDate1 - mDate) , 'setCurrentUser')
     // mDate = mDate1
-    await this.setUser();
+    this.setUser();
     // mDate1 = new Date().getTime()
     // console.log((mDate1 - mDate) , 'setUser')
     // mDate = mDate1
-    await this.setAllergens();
+    this.setAllergens();
     // mDate1 = new Date().getTime()
     // console.log((mDate1 - mDate) , 'setAllergens')
     // mDate = mDate1
-    await this.setSuppliers();
+    this.setSuppliers();
     // mDate1 = new Date().getTime()
     // console.log((mDate1 - mDate) , 'setSuppliers')
     // mDate = mDate1
-    await this.setFoodItems();
+    this.setFoodItems();
     // mDate1 = new Date().getTime()
     // console.log((mDate1 - mDate) , 'setFoodItems')
     // mDate = mDate1
-    await this.setTeams();
+    this.setTeams();
     // mDate1 = new Date().getTime()
     // console.log((mDate1 - mDate) , 'setTeams')
     // mDate = mDate1
-    await this.setLocations();
+    this.setLocations();
     // mDate1 = new Date().getTime()
     // console.log((mDate1 - mDate) , 'setLocations')
     // mDate = mDate1
-    await this.setTemplateLabels();
+    this.setTemplateLabels();
     // mDate1 = new Date().getTime()
     // console.log((mDate1 - mDate) , 'setTemplateLabels')
     // mDate = mDate1
-    await this.setTemplateTypes();
+    this.setTemplateTypes();
     // mDate1 = new Date().getTime()
     // console.log((mDate1 - mDate) , 'setTemplateTypes')
     // mDate = mDate1
-    await this.setTemplates();
+    this.setTemplates();
     // mDate1 = new Date().getTime()
     // console.log((mDate1 - mDate) , 'setTemplates')
     // mDate = mDate1
-    await this.setPublicTemplates();
+    this.setPublicTemplates();
     // mDate1 = new Date().getTime()
     // console.log((mDate1 - mDate) , 'setPublicTemplates')
     // mDate = mDate1
-    await this.setNotifications();
+    this.setNotifications();
     // // mDate1 = new Date().getTime()
     // // console.log((mDate1 - mDate) , 'setNotifications')
     // // mDate = mDate1
-    await this.setLogs();
+    this.setLogs();
     // mDate1 = new Date().getTime()
     // console.log((mDate1 - mDate) , 'setLogs')
     // mDate = mDate1
-    await this.setSchedules();
+    this.setSchedules();
     // mDate1 = new Date().getTime()
     // console.log((mDate1 - mDate) , 'setSchedules')
     // mDate = mDate1
-    await this.setChat();
+    this.setChat();
     // mDate1 = new Date().getTime()
     // console.log((mDate1 - mDate) , 'setChat')
     // mDate = mDate1
-    await this.setIots();
+    this.setIots();
     // mDate1 = new Date().getTime()
     // console.log((mDate1 - mDate) , 'setIots')
     // mDate = mDate1
-    await this.setReports();
+    this.setReports();
     // mDate1 = new Date().getTime()
     // console.log((mDate1 - mDate) , 'setReports')
     // mDate = mDate1
-    await this.setKnowledge();
+    this.setKnowledge();
     // mDate1 = new Date().getTime()
     // console.log((mDate1 - mDate) , 'setKnowledge')
-    await this.setAnalytics();
+    this.setAnalytics();
     // this.$vs.loading.close();
 
     // db.collection('notifications').where('group', '==', JSON.parse(localStorage.getItem('userInfo')).group).onSnapshot(q => {

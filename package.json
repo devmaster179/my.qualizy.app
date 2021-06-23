@@ -5,7 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "start": "serve -s dist -p 9200"
   },
   "dependencies": {
     "@hscmap/vue-menu": "^2.10.0",
@@ -42,7 +43,7 @@
     "prismjs": "^1.19.0",
     "qrcode.vue": "^1.7.0",
     "register-service-worker": "^1.6.2",
-    "sass": "^1.32.8",
+    "sass": "~1.32.6",
     "swiper": "^5.3.8",
     "userflow.js": "^1.7.0",
     "v-emoji-picker": "^2.1.7",
@@ -99,6 +100,7 @@
     "purgecss": "^2.1.0",
     "sass-loader": "^8.0.2",
     "script-loader": "^0.7.2",
+    "serve": "^12.0.0",
     "tailwindcss": "^1.2.0",
     "vue-calendly": "0.0.4",
     "vue-template-compiler": "^2.6.11"
