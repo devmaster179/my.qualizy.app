@@ -42,47 +42,65 @@
 }
 
 .vx-navbar-wrapper-active {
-  @media screen and (min-width: 1182.9px) {
+  top: 31px !important;
+  @media screen and (min-width: 520px) {
     top: 31px !important;
   }
 
-  @media screen and (min-width: 597.9px) and (max-width: 1182.9px) {
+  @media screen and (max-width: 520px) {
     top: 50px !important;
   }
 
-  @media screen and (min-width: 410.9px) and (max-width: 597.9px) {
-    top: 69px !important;
-  }
+  // top: 31px !important;
+  // @media screen and (min-width: 1182.9px) {
+  //   top: 31px !important;
+  // }
 
-  @media screen and (min-width: 317.9px) and (max-width: 410.9px) {
-    top: 88px !important;
-  }
+  // @media screen and (min-width: 597.9px) and (max-width: 1182.9px) {
+  //   top: 50px !important;
+  // }
 
-  @media screen and (max-width: 317.9px) {
-    top: 109px !important;
-  }
+  // @media screen and (min-width: 410.9px) and (max-width: 597.9px) {
+  //   top: 69px !important;
+  // }
+
+  // @media screen and (min-width: 317.9px) and (max-width: 410.9px) {
+  //   top: 88px !important;
+  // }
+
+  // @media screen and (max-width: 317.9px) {
+  //   top: 109px !important;
+  // }
 }
 
 .router-content-active {
-  @media screen and (min-width: 1182.9px) {
-    margin-top: 94px !important;
-  }
+    @media screen and (min-width: 520px) {
+      margin-top: 94px !important;
+    }
 
-  @media screen and (min-width: 597.9px) and (max-width: 1182.9px) {
-    margin-top: 113px !important;
-  }
+    @media screen and (max-width: 520px) {
+      margin-top: 113px !important;
+    }
 
-  @media screen and (min-width: 410.9px) and (max-width: 597.9px) {
-    margin-top: 132px !important;
-  }
+  // @media screen and (min-width: 1182.9px) {
+  //   margin-top: 94px !important;
+  // }
 
-  @media screen and (min-width: 317.9px) and (max-width: 410.9px) {
-    margin-top: 151px !important;
-  }
+  // @media screen and (min-width: 597.9px) and (max-width: 1182.9px) {
+  //   margin-top: 113px !important;
+  // }
 
-  @media screen and (max-width: 317.9px) {
-    margin-top: 172px !important;
-  }
+  // @media screen and (min-width: 410.9px) and (max-width: 597.9px) {
+  //   margin-top: 132px !important;
+  // }
+
+  // @media screen and (min-width: 317.9px) and (max-width: 410.9px) {
+  //   margin-top: 151px !important;
+  // }
+
+  // @media screen and (max-width: 317.9px) {
+  //   margin-top: 172px !important;
+  // }
 }
 
 .content-area-reduced {

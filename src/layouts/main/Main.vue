@@ -11,15 +11,14 @@
   <div>
     <div v-if="!subscribed" class="banner-non-subscribed">
       <span class="info-badge">Info</span>
-      This is a demo account, you can set everything up in Qualizy but will be
-      unable to create records -
+      This is a demo account, but you can 
       <a
         href="https://www.qualizy.app/get-monthly/"
         target="_blank"
         class="underline"
-        >Unlock an unlimited usage of Qualizy pro
+        >upgrade to pro
       </a>
-      for FREE for 7 days today.
+       for just $1/day!
     </div>
     <div
       class="layout--main"
