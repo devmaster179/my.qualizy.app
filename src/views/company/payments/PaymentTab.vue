@@ -14,7 +14,7 @@
                 $t("Buy temperature sensors")
               }}</vs-button>
             </a>
-            <a href="https://www.qualizy.app/get-monthly/" target="_blank">
+            <a href="https://www.qualizy.app/get-monthly/" target="_blank" v-if="!subscribed">
               <vs-button class="w-full md:w-auto">{{
                 $t("Upgrade Plan")
               }}</vs-button>
