@@ -430,7 +430,7 @@ export default {
         this.newEmail = "";
         return false;
       }
-      this.inviteUsers.push({ email: this.newEmail });
+      this.inviteUsers.push({ email: this.newEmail.toLowerCase() });
       this.newEmail = "";
     },
     removeInviteUser(key) {
