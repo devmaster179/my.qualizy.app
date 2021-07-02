@@ -66,8 +66,8 @@ export default {
           var ctx = canvas.getContext("2d");
           ctx.drawImage(img, 0, 0);
 
-          var MAX_WIDTH = 400;
-          var MAX_HEIGHT = 300;
+          var MAX_WIDTH = 2000;
+          var MAX_HEIGHT = 1500;
           var width = img.width;
           var height = img.height;
 
