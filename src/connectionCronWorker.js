@@ -3,7 +3,7 @@ const isOnline = require("is-online")
 import store from "./store/store"
 
 const job = new CronJob(
-  "* * * * * *",
+  "*/3 * * * * *",
   async () => {
     const online = await isOnline()
     // console.log(store)
