@@ -1167,6 +1167,7 @@ export default {
               ontimeTask =
                 ontimeTask &&
                 answer.loged &&
+                typeof(answer.time) !== "string" &&
                 answer.time.toDate().getTime() <= ontime;
             }
             if (answer.loged) {

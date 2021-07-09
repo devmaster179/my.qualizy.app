@@ -1235,21 +1235,21 @@ export default {
               return false;
           }
         } else {
-          var schedule = this.$store.getters["app/getScheduleById"](
-            log.schedule || ""
-          );
-          if (schedule == undefined) return false;
-          if (
-            schedule.deleted ||
-            (schedule.active !== undefined && !schedule.active)
-          )
-            return false;
-          var scheduleTeam = schedule.assign.concat(schedule.monitor || []);
-          if (!scheduleTeam.some((t) => userTeam.includes(t))) return false;
-          if (schedule.location == undefined) return false;
-          if (locationList.length > 0) {
-            if (locationList.indexOf(schedule.location[0]) < 0) return false;
-          }
+          // var schedule = this.$store.getters["app/getScheduleById"](
+          //   log.schedule || ""
+          // );
+          // if (schedule == undefined) return false;
+          // if (
+          //   schedule.deleted ||
+          //   (schedule.active !== undefined && !schedule.active)
+          // )
+          //   return false;
+          // var scheduleTeam = schedule.assign.concat(schedule.monitor || []);
+          // if (!scheduleTeam.some((t) => userTeam.includes(t))) return false;
+          // if (schedule.location == undefined) return false;
+          // if (locationList.length > 0) {
+          //   if (locationList.indexOf(schedule.location[0]) < 0) return false;
+          // }
         }
 
         return (
