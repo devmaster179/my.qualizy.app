@@ -24,6 +24,37 @@ import Router from 'vue-router'
 import firebase from 'firebase/app'
 import 'firebase/auth'
 
+const MainLayout = () => import(/* webpackPrefetch: true */'@/layouts/main/Main.vue');
+const Test = () => import(/* webpackPrefetch: true */ '@/views/report/Print/Test.vue');
+const Capture = () => import(/* webpackPrefetch: true */ '@/views/capture/Capture.vue');
+const Tasks = () => import(/* webpackPrefetch: true */ '@/views/tasks/Tasks.vue');
+const FoodItems = () => import(/* webpackPrefetch: true */ '@/views/fooditems/FoodItems.vue');
+const Templates = () => import(/* webpackPrefetch: true */ '@/views/templates/Templates.vue');
+const TemplateNew = () => import(/* webpackPrefetch: true */ '@/views/template-new/TemplateNew.vue');
+const TemplateEdit = () => import(/* webpackPrefetch: true */ '@/views/template-edit/TemplateEdit.vue');
+const Schedule = () => import(/* webpackPrefetch: true */ '@/views/schedule/Schedule.vue');
+const Report = () => import(/* webpackPrefetch: true */ '@/views/report/Report.vue');
+const ReportCreate = () => import(/* webpackPrefetch: true */ '@/views/report/Report-Create.vue');
+const ReportView = () => import(/* webpackPrefetch: true */ '@/views/report/Report-View.vue');
+const Analytics = () => import(/* webpackPrefetch: true */ '@/views/analytics/Analytics.vue');
+const Team = () => import(/* webpackPrefetch: true */ '@/views/team/Team.vue');
+const Profile = () => import(/* webpackPrefetch: true */ '@/views/profile/Profile.vue');
+const Company = () => import(/* webpackPrefetch: true */ '@/views/company/Company.vue');
+const Knowledge = () => import(/* webpackPrefetch: true */ '@/views/knowledge/Knowledge.vue');
+const Articles = () => import(/* webpackPrefetch: true */ '@/views/articles/Articles.vue');
+const Chat = () => import(/* webpackPrefetch: true */ '@/views/chat/Chat.vue');
+const KnowledgePage = () => import(/* webpackPrefetch: true */ '@/views/knowledge-page/Knowledge.vue');
+const Category = () => import(/* webpackPrefetch: true */ '@/views/category-page/Category.vue');
+const FullPage = () => import(/* webpackPrefetch: true */'@/layouts/full-page/FullPage.vue');
+const Login = () => import(/* webpackPrefetch: true */'@/views/pages/Login.vue');
+const ForgotPassword = () => import(/* webpackPrefetch: true */'@/views/pages/ForgotPassword.vue');
+const Register = () => import(/* webpackPrefetch: true */'@/views/pages/Register.vue');
+const Digit = () => import(/* webpackPrefetch: true */'@/views/pages/Digit.vue');
+const Error404 = () => import(/* webpackPrefetch: true */'@/views/pages/Error404.vue');
+const NotAuthorized = () => import(/* webpackPrefetch: true */'@/views/pages/NotAuthorized.vue');
+const PublicTemplates = () => import(/* webpackPrefetch: true */'@/views/pages/publicTemplate/PublicTemplates.vue');
+const PublicReport = () => import(/* webpackPrefetch: true */'@/views/pages/publicReport/publicReport.vue');
+
 Vue.use(Router)
 
 const router = new Router({
@@ -41,7 +72,7 @@ const router = new Router({
             // MAIN LAYOUT ROUTES
             // =============================================================================
             path: '',
-            component: () => import('@/layouts/main/Main.vue'),
+            component: MainLayout,
             children: [
                 // =============================================================================
                 // Theme Routes
@@ -53,12 +84,12 @@ const router = new Router({
                 {
                     path: '/export-test',
                     name: 'export-test',
-                    component: () => import('@/views/report/Print/Test.vue'),
+                    component: Test,
                 },
                 {
                     path: '/capture/:ids',
                     name: 'capture',
-                    component: () => import('@/views/capture/Capture.vue'),
+                    component: Capture,
                     meta: {
                         title: "Capture - Qualizy",
                         rule: 'visitor'
@@ -68,7 +99,7 @@ const router = new Router({
                 {
                     path: '/dashboard',
                     name: 'dashboard',
-                    component: () => import('@/views/tasks/Tasks.vue'),
+                    component: Tasks,
                     meta: {
                         title: "Dashboard - Qualizy",
                         rule: 'visitor'
@@ -78,7 +109,7 @@ const router = new Router({
                 {
                     path: '/fooditems',
                     name: 'fooditems',
-                    component: () => import('@/views/fooditems/FoodItems.vue'),
+                    component: () => FoodItems,
                     meta: {
                         title: "FoodItems - Qualizy",
                         rule: 'visitor',
@@ -108,7 +139,7 @@ const router = new Router({
                 {
                     path: '/templates',
                     name: 'templates',
-                    component: () => import('@/views/templates/Templates.vue'),
+                    component: () => Templates,
                     meta: {
                         title: "Templates - Qualizy",
                         rule: 'visitor',
@@ -117,7 +148,7 @@ const router = new Router({
                 {
                     path: '/templates/template-new',
                     name: 'template-new',
-                    component: () => import('@/views/template-new/TemplateNew.vue'),
+                    component: TemplateNew,
                     meta: {
                         title: "Template New - Qualizy",
                         rule: 'visitor',
@@ -127,7 +158,7 @@ const router = new Router({
                 {
                     path: '/templates/template-edit/:id/:state',
                     name: 'template-edit',
-                    component: () => import('@/views/template-edit/TemplateEdit.vue'),
+                    component: TemplateEdit,
                     meta: {
                         title: "Template Edit - Qualizy",
                         rule: 'visitor',
@@ -158,7 +189,7 @@ const router = new Router({
                 {
                     path: '/schedule',
                     name: 'schedule',
-                    component: () => import('@/views/schedule/Schedule.vue'),
+                    component: Schedule,
                     meta: {
                         title: "Schedules - Qualizy",
                         rule: 'visitor',
@@ -168,7 +199,7 @@ const router = new Router({
                 {
                     path: '/report',
                     name: 'report',
-                    component: () => import('@/views/report/Report.vue'),
+                    component: Report,
                     meta: {
                         title: "Report - Qualizy",
                         rule: 'visitor',
@@ -177,7 +208,7 @@ const router = new Router({
                 {
                     path: '/create-report',
                     name: 'create-report',
-                    component: () => import('@/views/report/Report-Create.vue'),
+                    component: ReportCreate,
                     meta: {
                         title: "Report - Qualizy",
                         rule: 'visitor',
@@ -187,7 +218,7 @@ const router = new Router({
                 {
                     path: '/report-view/:id',
                     name: 'report-view',
-                    component: () => import('@/views/report/Report-View.vue'),
+                    component: ReportView,
                     meta: {
                         title: "Report View - Qualizy",
                         rule: 'visitor',
@@ -197,7 +228,7 @@ const router = new Router({
                 {
                     path: '/analytics',
                     name: 'analytics',
-                    component: () => import('@/views/analytics/Analytics.vue'),
+                    component: Analytics,
                     meta: {
                         title: "Analytics - Qualizy",
                         rule: 'visitor',
@@ -206,7 +237,7 @@ const router = new Router({
                 {
                     path: '/team',
                     name: 'team',
-                    component: () => import('@/views/team/Team.vue'),
+                    component: Team,
                     meta: {
                         title: "User Manager - Qualizy",
                         rule: 'visitor',
@@ -215,7 +246,7 @@ const router = new Router({
                 {
                     path: '/profile',
                     name: 'profile',
-                    component: () => import('@/views/profile/Profile.vue'),
+                    component: Profile,
                     meta: {
                         title: "Profile - Qualizy",
                         rule: 'visitor',
@@ -234,7 +265,7 @@ const router = new Router({
                 {
                     path: '/company',
                     name: 'company',
-                    component: () => import('@/views/company/Company.vue'),
+                    component: Company,
                     meta: {
                         title: "Company - Qualizy",
                         rule: 'visitor',
@@ -244,7 +275,7 @@ const router = new Router({
                 {
                     path: '/knowledge',
                     name: 'knowledge-base',
-                    component: () => import('@/views/knowledge/Knowledge.vue'),
+                    component: Knowledge,
                     meta: {
                         title: "Knowledge Base Admin - Qualizy",
                         rule: 'visitor',
@@ -253,7 +284,7 @@ const router = new Router({
                 {
                     path: '/article/:id',
                     name: 'articles',
-                    component: () => import('@/views/articles/Articles.vue'),
+                    component: Articles,
                     meta: {
                         title: "Knowledge Base Articles - Qualizy",
                         rule: 'visitor',
@@ -263,7 +294,7 @@ const router = new Router({
                 {
                     path: '/chat',
                     name: 'chat',
-                    component: () => import('@/views/chat/Chat.vue'),
+                    component: Chat,
                     meta: {
                         title: "Chat - Qualizy",
                         rule: 'visitor',
@@ -273,7 +304,7 @@ const router = new Router({
                 {
                     path: '/knowledge-page',
                     name: 'knowledge-page',
-                    component: () => import('@/views/knowledge-page/Knowledge.vue'),
+                    component: KnowledgePage,
                     meta: {
                         title: "Knowledge Base - Qualizy",
                         rule: 'visitor',
@@ -282,7 +313,7 @@ const router = new Router({
                 {
                     path: '/category-page/:id',
                     name: 'category',
-                    component: () => import('@/views/category-page/Category.vue'),
+                    component: Category,
                     meta: {
                         title: "Articles of Knowledge Base - Qualizy",
                         rule: 'visitor',
@@ -295,7 +326,7 @@ const router = new Router({
         // =============================================================================
         {
             path: '',
-            component: () => import('@/layouts/full-page/FullPage.vue'),
+            component: FullPage,
             children: [
                 // =============================================================================
                 // PAGES
@@ -304,7 +335,7 @@ const router = new Router({
                 {
                     path: '/pages/login',
                     name: 'page-login',
-                    component: () => import('@/views/pages/Login.vue'),
+                    component: Login,
                     meta: {
                         title: "Login - Qualizy",
                         rule: 'public'
@@ -313,7 +344,7 @@ const router = new Router({
                 {
                     path: '/pages/forgot-password',
                     name: 'page-forgot-password',
-                    component: () => import('@/views/pages/ForgotPassword.vue'),
+                    component: ForgotPassword,
                     meta: {
                         title: "Forgot Password - Qualizy",
                         rule: 'public'
@@ -330,7 +361,7 @@ const router = new Router({
                 {
                     path: '/pages/register',
                     name: 'page-register',
-                    component: () => import('@/views/pages/Register.vue'),
+                    component: Register,
                     meta: {
                         title: "Register - Qualizy",
                         rule: 'public'
@@ -339,7 +370,7 @@ const router = new Router({
                 {
                     path: '/pages/digit',
                     name: 'page-digit',
-                    component: () => import('@/views/pages/Digit.vue'),
+                    component: Digit,
                     meta: {
                         title: "Digit Login - Qualizy",
                         rule: 'public'
@@ -348,7 +379,7 @@ const router = new Router({
                 {
                     path: '/pages/error-404',
                     name: 'page-error-404',
-                    component: () => import('@/views/pages/Error404.vue'),
+                    component: Error404,
                     meta: {
                         title: "Not found - Qualizy",
                         rule: 'public'
@@ -357,7 +388,7 @@ const router = new Router({
                 {
                     path: '/pages/not-authorized',
                     name: 'page-not-authorized',
-                    component: () => import('@/views/pages/NotAuthorized.vue'),
+                    component: NotAuthorized,
                     meta: {
                         title: "Not Authorized - Qualizy",
                         rule: 'public'
@@ -366,7 +397,7 @@ const router = new Router({
                 {
                     path: '/pages/public-templates',
                     name: 'page-template',
-                    component: () => import('@/views/pages/publicTemplate/PublicTemplates.vue'),
+                    component: PublicTemplates,
                     meta: {
                         title: "Public Template - Qualizy",
                         rule: 'public'
@@ -376,7 +407,7 @@ const router = new Router({
                 {
                     path: '/public-report/:id',
                     name: 'pubic-report',
-                    component: () => import('@/views/pages/publicReport/publicReport.vue'),
+                    component: PublicReport,
                     meta: {
                         title: "Public Report - Qualizy",
                         rule: 'public'

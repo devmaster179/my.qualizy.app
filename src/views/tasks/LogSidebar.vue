@@ -881,6 +881,7 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import { db } from "@/firebase/firebaseConfig";
 import VuePerfectScrollbar from "vue-perfect-scrollbar";
 import Datepicker from "vuejs-datepicker";
@@ -896,9 +897,12 @@ import ScoreItem from "./ScoreItem";
 import FoodItem from "./FoodItem";
 import ClosedAnswerLog from "./ConditionalLogic/ClosedAnswerLog";
 
-import firebase, { analytics } from "firebase/app";
+import firebase from "firebase/app";
 import "@firebase/firestore";
 import { isMobile, isIOS } from "mobile-device-detect";
+import VueSignaturePad from 'vue-signature-pad';
+
+Vue.use(VueSignaturePad);
 export default {
   props: {
     parent: {
