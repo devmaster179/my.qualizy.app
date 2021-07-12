@@ -138,9 +138,14 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import VuePerfectScrollbar from "vue-perfect-scrollbar";
 import VxSidebarGroup from "./VxSidebarGroup.vue";
 import VxSidebarItem from "./VxSidebarItem.vue";
+import {
+  VueHammer
+} from 'vue2-hammer'
+Vue.use(VueHammer)
 
 export default {
   name: "vx-sidebar",

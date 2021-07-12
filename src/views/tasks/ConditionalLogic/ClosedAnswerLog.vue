@@ -3,44 +3,44 @@
   <div>
     <div class="vx-row answer-content">
       <div
-        :class="
+          :class="
           closeAnswerWidth(
             getTemplateType(parentAnswer.ref.type.id).content.length
           )
         "
-        class="pl-4 sm:mt-0 mt-1 w-full"
-        v-for="(content, cIndex) in getTemplateType(parentAnswer.ref.type.id)
+          class="pl-4 sm:mt-0 mt-1 w-full"
+          v-for="(content, cIndex) in getTemplateType(parentAnswer.ref.type.id)
           .content"
-        :key="'c' + cIndex"
+          :key="'c' + cIndex"
       >
         <div
-          v-if="
+            v-if="
             pages[pIndex].questions[qIndex].answers[aIndex].value ==
             content.name
           "
-          class="flex items-center justify-center border border-solid rounded-lg py-3 cursor-pointer"
-          :style="`background:${hexToRGB(
+            class="flex items-center justify-center border border-solid rounded-lg py-3 cursor-pointer"
+            :style="`background:${hexToRGB(
             content.color
           )}; border-color:${hexToRGB(content.color)};`"
         >
           <span
-            class="karla text-white"
-            v-if="getTemplateType(parentAnswer.ref.type.id).group == 'global'"
-            >{{ $t(content.name) }}</span
+              class="karla text-white"
+              v-if="getTemplateType(parentAnswer.ref.type.id).group == 'global'"
+          >{{ $t(content.name) }}</span
           >
           <span class="karla text-white" v-else>{{
-            content.name | capitalize
-          }}</span>
+              content.name | capitalize
+            }}</span>
         </div>
         <div
-          v-else
-          class="flex items-center justify-center border border-solid rounded-lg py-3 cursor-pointer"
-          @click="logClosedAnswerValue(content)"
+            v-else
+            class="flex items-center justify-center border border-solid rounded-lg py-3 cursor-pointer"
+            @click="logClosedAnswerValue(content)"
         >
           <span
-            class="karla"
-            v-if="getTemplateType(parentAnswer.ref.type.id).group == 'global'"
-            >{{ $t(content.name) }}</span
+              class="karla"
+              v-if="getTemplateType(parentAnswer.ref.type.id).group == 'global'"
+          >{{ $t(content.name) }}</span
           >
           <span class="karla" v-else>{{ content.name | capitalize }}</span>
         </div>
@@ -48,54 +48,54 @@
     </div>
 
     <div
-      v-for="(answer, aIndex) in filteredAnswers(getLogicQuestions())"
-      :key="aIndex"
-      class="mt-5"
+        v-for="(answer, aIndex) in filteredAnswers(getLogicQuestions())"
+        :key="aIndex"
+        class="mt-5"
     >
       <div class="answer-title karla-bold">
         {{ answer.title | capitalize }}
         <span v-if="answer.mandatory" class="text-danger">*</span>
         <span
-          class="text-primary"
-          v-if="getTemplateType(answer.type.id).content == 'temperature'"
-          >({{ answer.type.tempUnit }})</span
+            class="text-primary"
+            v-if="getTemplateType(answer.type.id).content == 'temperature'"
+        >({{ answer.type.tempUnit }})</span
         >
       </div>
       <div class="vx-row answer-content">
         <template
-          v-if="getTemplateType(answer.type.id).content == 'closed answers'"
+            v-if="getTemplateType(answer.type.id).content == 'closed answers'"
         >
           <div
-            :class="
+              :class="
               closeAnswerWidth(getTemplateType(answer.type.id).content.length)
             "
-            class="pl-4 sm:mt-0 mt-1 w-full"
-            v-for="(content, cIndex) in getTemplateType(answer.type.id).content"
-            :key="'c' + cIndex"
+              class="pl-4 sm:mt-0 mt-1 w-full"
+              v-for="(content, cIndex) in getTemplateType(answer.type.id).content"
+              :key="'c' + cIndex"
           >
             <div
-              v-if="
+                v-if="
                 pages[pIndex].questions[qIndex].answers[answer.index].value ==
                 content.name
               "
-              class="flex items-center justify-center border border-solid rounded-lg py-3 cursor-pointer"
-              :style="`background:${hexToRGB(
+                class="flex items-center justify-center border border-solid rounded-lg py-3 cursor-pointer"
+                :style="`background:${hexToRGB(
                 content.color
               )}; border-color:${hexToRGB(content.color)};`"
             >
               <span
-                class="karla text-white"
-                v-if="getTemplateType(answer.type.id).group == 'global'"
-                >{{ $t(content.name) }}</span
+                  class="karla text-white"
+                  v-if="getTemplateType(answer.type.id).group == 'global'"
+              >{{ $t(content.name) }}</span
               >
               <span class="karla text-white" v-else>{{
-                content.name | capitalize
-              }}</span>
+                  content.name | capitalize
+                }}</span>
             </div>
             <div
-              v-else
-              class="flex items-center justify-center border border-solid rounded-lg py-3 cursor-pointer"
-              @click="
+                v-else
+                class="flex items-center justify-center border border-solid rounded-lg py-3 cursor-pointer"
+                @click="
                 chnContent(
                   pIndex,
                   qIndex,
@@ -107,9 +107,9 @@
               "
             >
               <span
-                class="karla"
-                v-if="getTemplateType(answer.type.id).group == 'global'"
-                >{{ $t(content.name) }}</span
+                  class="karla"
+                  v-if="getTemplateType(answer.type.id).group == 'global'"
+              >{{ $t(content.name) }}</span
               >
               <span class="karla" v-else>{{ content.name | capitalize }}</span>
             </div>
@@ -117,20 +117,20 @@
         </template>
 
         <template
-          v-else-if="getTemplateType(answer.type.id).content == 'number'"
+            v-else-if="getTemplateType(answer.type.id).content == 'number'"
         >
           <div class="pl-4 w-full flex items-center justify-between">
             <vs-input
-              type="number"
-              class="w-full mr-2"
-              :value="
+                type="number"
+                class="w-full mr-2"
+                :value="
                 pages[pIndex].questions[qIndex].answers[answer.index].value
               "
-              v-on:input="chnValue($event, pIndex, qIndex, answer.index)"
+                v-on:input="chnValue($event, pIndex, qIndex, answer.index)"
             />
             <div class="flex items-center">
               <span
-                @click="
+                  @click="
                   chnValue(
                     pages[pIndex].questions[qIndex].answers[answer.index]
                       .value + 1,
@@ -139,17 +139,17 @@
                     answer.index
                   )
                 "
-                style="
+                  style="
                   font-size: 25px;
                   border: 1px solid rgba(0, 0, 0, 0.2);
                   width: 48px;
                   height: 48px;
                 "
-                class="rounded-lg px-3 text-center cursor-pointer numBtn mr-2 pt-1 block"
-                >+</span
+                  class="rounded-lg px-3 text-center cursor-pointer numBtn mr-2 pt-1 block"
+              >+</span
               >
               <span
-                @click="
+                  @click="
                   chnValue(
                     pages[pIndex].questions[qIndex].answers[answer.index]
                       .value - 1,
@@ -158,14 +158,14 @@
                     answer.index
                   )
                 "
-                style="
+                  style="
                   font-size: 25px;
                   border: 1px solid rgba(0, 0, 0, 0.2);
                   width: 48px;
                   height: 48px;
                 "
-                class="rounded-lg px-3 text-center cursor-pointer numBtn block pt-1"
-                >-</span
+                  class="rounded-lg px-3 text-center cursor-pointer numBtn block pt-1"
+              >-</span
               >
             </div>
             <!-- <vs-button color="white" type="border">
@@ -179,11 +179,11 @@
           </div>
         </template>
         <template
-          v-else-if="getTemplateType(answer.type.id).content == 'signature'"
+            v-else-if="getTemplateType(answer.type.id).content == 'signature'"
         >
           <div class="pl-4 w-full">
             <div
-              v-if="
+                v-if="
                 pages[pIndex].questions[qIndex].answers[answer.index].value
                   .url != undefined &&
                 pages[pIndex].questions[qIndex].answers[answer.index].value
@@ -191,112 +191,112 @@
               "
             >
               <img
-                class="w-full border border-solid d-theme-border-grey-light"
-                :src="
+                  class="w-full border border-solid d-theme-border-grey-light"
+                  :src="
                   pages[pIndex].questions[qIndex].answers[answer.index].value
                     .url
                 "
-                height="150px"
+                  height="150px"
               />
               <div class="flex justify-end mt-4">
                 <vs-button
-                  color="danger"
-                  @click="
+                    color="danger"
+                    @click="
                     pages[pIndex].questions[qIndex].answers[
                       answer.index
                     ].value.url = ''
                   "
-                  >{{ $t("clear") }}</vs-button
+                >{{ $t("clear") }}</vs-button
                 >
               </div>
             </div>
             <div v-else>
               <VueSignaturePad
-                height="150px"
-                width="300px"
-                :ref="
+                  height="150px"
+                  width="300px"
+                  :ref="
                   'signaturePad_' + pIndex + '_' + qIndex + '_' + answer.index
                 "
-                class="border border-solid d-theme-border-grey-light"
-                :class="{ 'w-full': !(isMobile || isIOS) }"
-                :options="{ onBegin, onEnd, penColor: '#2128ff' }"
-                :images="signImage(pIndex, qIndex, answer.index)"
+                  class="border border-solid d-theme-border-grey-light"
+                  :class="{ 'w-full': !(isMobile || isIOS) }"
+                  :options="{ onBegin, onEnd, penColor: '#2128ff' }"
+                  :images="signImage(pIndex, qIndex, answer.index)"
               />
               <div class="sm:flex justify-between w-full mt-4">
                 <vs-button
-                  class="w-full mb-2"
-                  color="danger"
-                  @click="clearSign(pIndex, qIndex, answer.index)"
-                  >{{ $t("clear") }}</vs-button
+                    class="w-full mb-2"
+                    color="danger"
+                    @click="clearSign(pIndex, qIndex, answer.index)"
+                >{{ $t("clear") }}</vs-button
                 >
                 <vs-button
-                  class="w-full mx-0 sm:mx-5 mb-2"
-                  color="warning"
-                  @click="undoSign(pIndex, qIndex, answer.index)"
-                  >{{ $t("undo") }}</vs-button
+                    class="w-full mx-0 sm:mx-5 mb-2"
+                    color="warning"
+                    @click="undoSign(pIndex, qIndex, answer.index)"
+                >{{ $t("undo") }}</vs-button
                 >
                 <vs-button
-                  class="w-full mb-2"
-                  color="primary"
-                  @click="saveSign(pIndex, qIndex, answer.index)"
-                  >{{ $t("save") }}</vs-button
+                    class="w-full mb-2"
+                    color="primary"
+                    @click="saveSign(pIndex, qIndex, answer.index)"
+                >{{ $t("save") }}</vs-button
                 >
               </div>
             </div>
           </div>
         </template>
         <template
-          v-else-if="getTemplateType(answer.type.id).content == 'instruction'"
+            v-else-if="getTemplateType(answer.type.id).content == 'instruction'"
         >
           <div class="pl-4 w-full">
             <div
-              style="white-space: pre-wrap; font-size: 12px; color: #86848a"
-              v-html="answer.type.instruction"
+                style="white-space: pre-wrap; font-size: 12px; color: #86848a"
+                v-html="answer.type.instruction"
             ></div>
           </div>
         </template>
         <template
-          v-else-if="getTemplateType(answer.type.id).content == 'checkbox'"
+            v-else-if="getTemplateType(answer.type.id).content == 'checkbox'"
         >
           <div class="pl-4 w-full">
             <vs-checkbox
-              color="success"
-              :value="
+                color="success"
+                :value="
                 pages[pIndex].questions[qIndex].answers[answer.index].value
               "
-              v-on:input="chnValue($event, pIndex, qIndex, answer.index)"
+                v-on:input="chnValue($event, pIndex, qIndex, answer.index)"
             ></vs-checkbox>
           </div>
         </template>
         <template
-          v-else-if="
+            v-else-if="
             getTemplateType(answer.type.id).content == 'paragraph' ||
             getTemplateType(answer.type.id).content == 'short answer'
           "
         >
           <div class="pl-4 w-full">
             <textarea
-              class="my-textarea"
-              :value="
+                class="my-textarea"
+                :value="
                 pages[pIndex].questions[qIndex].answers[answer.index].value
               "
-              @blur="
+                @blur="
                 chnValue($event.target.value, pIndex, qIndex, answer.index)
               "
             />
           </div>
         </template>
         <template
-          v-else-if="getTemplateType(answer.type.id).content == 'temperature'"
+            v-else-if="getTemplateType(answer.type.id).content == 'temperature'"
         >
           <div class="pl-4 w-full flex justify-between">
             <vs-input
-              type="number"
-              class="w-full mr-1"
-              :value="
+                type="number"
+                class="w-full mr-1"
+                :value="
                 pages[pIndex].questions[qIndex].answers[answer.index].value
               "
-              @blur="
+                @blur="
                 chnValue(
                   $event,
                   pIndex,
@@ -308,13 +308,13 @@
               "
             />
             <span
-              style="
+                style="
                 font-size: 20px;
                 border: 1px solid rgba(0, 0, 0, 0.2);
                 width: 48px;
               "
-              class="rounded-lg px-1 pt-2 text-center cursor-pointer numBtn"
-              @click="
+                class="rounded-lg px-1 pt-2 text-center cursor-pointer numBtn"
+                @click="
                 chnValue(
                   pages[pIndex].questions[qIndex].answers[answer.index].value *
                     -1,
@@ -325,7 +325,7 @@
                   templateAction(pIndex, qIndex, answer.index)
                 )
               "
-              >&plus;&#8725;&minus;</span
+            >&plus;&#8725;&minus;</span
             >
           </div>
         </template>
@@ -333,75 +333,75 @@
         <template v-else-if="getTemplateType(answer.type.id).content == 'star'">
           <div class="pl-4 w-full">
             <star-rating
-              :show-rating="false"
-              :star-size="40"
-              text-class="text-warning font-medium"
-              :rating="
+                :show-rating="false"
+                :star-size="40"
+                text-class="text-warning font-medium"
+                :rating="
                 pages[pIndex].questions[qIndex].answers[answer.index].value
               "
-              @rating-selected="chnValue($event, pIndex, qIndex, answer.index)"
-              :glow="5"
-              :increment="0.5"
-              :fixed-points="1"
+                @rating-selected="chnValue($event, pIndex, qIndex, answer.index)"
+                :glow="5"
+                :increment="0.5"
+                :fixed-points="1"
             ></star-rating>
           </div>
         </template>
 
         <template
-          v-else-if="getTemplateType(answer.type.id).content == 'score'"
+            v-else-if="getTemplateType(answer.type.id).content == 'score'"
         >
           <div class="pl-4 w-full">
             <score-item
-              :p="pIndex"
-              :q="qIndex"
-              :a="answer.index"
-              :score="
+                :p="pIndex"
+                :q="qIndex"
+                :a="answer.index"
+                :score="
                 pages[pIndex].questions[qIndex].answers[answer.index].value
               "
-              @input="chnValue"
+                @input="chnValue"
             />
           </div>
         </template>
 
         <template
-          v-else-if="
+            v-else-if="
             getTemplateType(answer.type.id).content ==
             'automatic date and time stamp'
           "
         >
           <div class="pl-4 w-full">
             <span
-              class
-              style="
+                class
+                style="
                 font-style: italic;
                 color: #1e1c26;
                 opacity: 0.54;
                 font-size: 12px;
               "
-              >{{
+            >{{
                 pages[pIndex].questions[qIndex].answers[answer.index].value
-                  .nanoseconds !== undefined
-                  ? pages[pIndex].questions[qIndex].answers[
-                      answer.index
-                    ].value.toDate()
-                  : pages[pIndex].questions[qIndex].answers[answer.index].value
+                    .nanoseconds !== undefined
+                    ? pages[pIndex].questions[qIndex].answers[
+                        answer.index
+                        ].value.toDate()
+                    : pages[pIndex].questions[qIndex].answers[answer.index].value
                     | moment("dddd, MMMM Do YYYY - H:mm:ss")
               }}</span
             >
           </div>
         </template>
         <template
-          v-else-if="getTemplateType(answer.type.id).content == 'items'"
+            v-else-if="getTemplateType(answer.type.id).content == 'items'"
         >
           <div class="pl-4 w-full">
             <food-item
-              :selectedItem="
+                :selectedItem="
                 pages[pIndex].questions[qIndex].answers[answer.index].value
               "
-              :p="pIndex"
-              :q="qIndex"
-              :a="answer.index"
-              @chnItem="chnItem"
+                :p="pIndex"
+                :q="qIndex"
+                :a="answer.index"
+                @chnItem="chnItem"
             />
 
             <!-- <v-select
@@ -413,50 +413,50 @@
           </div>
         </template>
         <template
-          v-else-if="getTemplateType(answer.type.id).content == 'users'"
+            v-else-if="getTemplateType(answer.type.id).content == 'users'"
         >
           <div class="pl-4 w-full">
             <v-select
-              :filterable="false"
-              @search="searchUserList"
-              :placeholder="$t('please type 3 letters at least')"
-              :value="
+                :filterable="false"
+                @search="searchUserList"
+                :placeholder="$t('please type 3 letters at least')"
+                :value="
                 getUser(
                   pages[pIndex].questions[qIndex].answers[answer.index].value
                 )
               "
-              @input="chnItem($event, pIndex, qIndex, answer.index, true)"
-              :options="userList"
-              label="name"
+                @input="chnItem($event, pIndex, qIndex, answer.index, true)"
+                :options="userList"
+                label="name"
             ></v-select>
           </div>
         </template>
         <template
-          v-else-if="getTemplateType(answer.type.id).content == 'teams'"
+            v-else-if="getTemplateType(answer.type.id).content == 'teams'"
         >
           <div class="pl-4 w-full">
             <v-select
-              :value="
+                :value="
                 getTeam(
                   pages[pIndex].questions[qIndex].answers[answer.index].value
                 )
               "
-              @input="chnItem($event, pIndex, qIndex, answer.index, true)"
-              :options="teamList"
-              label="name"
+                @input="chnItem($event, pIndex, qIndex, answer.index, true)"
+                :options="teamList"
+                label="name"
             ></v-select>
           </div>
         </template>
         <template
-          v-else-if="getTemplateType(answer.type.id).content == 'drop down'"
+            v-else-if="getTemplateType(answer.type.id).content == 'drop down'"
         >
           <div class="pl-4 w-full">
             <v-select
-              :value="
+                :value="
                 pages[pIndex].questions[qIndex].answers[answer.index].value
               "
-              @input="chnItem($event, pIndex, qIndex, answer.index, true, true)"
-              :options="
+                @input="chnItem($event, pIndex, qIndex, answer.index, true, true)"
+                :options="
                 pages[pIndex].questions[qIndex].answers[answer.index].ref.type
                   .dropdown
                   ? pages[pIndex].questions[qIndex].answers[
@@ -469,74 +469,74 @@
         </template>
         <template v-else-if="getTemplateType(answer.type.id).content == 'date'">
           <div
-            class="pl-4 w-full relative"
-            :class="{ hasClockIcon: !(isMobile || isIOS) }"
+              class="pl-4 w-full relative"
+              :class="{ hasClockIcon: !(isMobile || isIOS) }"
           >
             <flat-pickr
-              class="flatpickr-input w-full"
-              :config="configDatePicker"
-              :value="
+                class="flatpickr-input w-full"
+                :config="configDatePicker"
+                :value="
                 pages[pIndex].questions[qIndex].answers[answer.index].value
               "
-              @input="chnValue($event, pIndex, qIndex, answer.index)"
+                @input="chnValue($event, pIndex, qIndex, answer.index)"
             />
           </div>
         </template>
         <template
-          v-else-if="getTemplateType(answer.type.id).content == 'date time'"
+            v-else-if="getTemplateType(answer.type.id).content == 'date time'"
         >
           <div
-            class="pl-4 w-full relative"
-            :class="{ hasClockIcon: !(isMobile || isIOS) }"
+              class="pl-4 w-full relative"
+              :class="{ hasClockIcon: !(isMobile || isIOS) }"
           >
             <flat-pickr
-              v-if="
+                v-if="
                 answer.type.dateType == 'Date' ||
                 answer.type.dateType == undefined
               "
-              class="flatpickr-input w-full"
-              :config="configDatePicker"
-              :value="
+                class="flatpickr-input w-full"
+                :config="configDatePicker"
+                :value="
                 pages[pIndex].questions[qIndex].answers[answer.index].value
               "
-              @input="chnValue($event, pIndex, qIndex, answer.index)"
+                @input="chnValue($event, pIndex, qIndex, answer.index)"
             />
             <flat-pickr
-              v-else-if="answer.type.dateType == 'Time'"
-              class="flatpickr-input w-full"
-              :config="configTimePicker"
-              :value="
+                v-else-if="answer.type.dateType == 'Time'"
+                class="flatpickr-input w-full"
+                :config="configTimePicker"
+                :value="
                 pages[pIndex].questions[qIndex].answers[answer.index].value
               "
-              @input="chnValue($event, pIndex, qIndex, answer.index)"
+                @input="chnValue($event, pIndex, qIndex, answer.index)"
             />
             <flat-pickr
-              v-else-if="answer.type.dateType == 'Date & Time'"
-              class="flatpickr-input w-full"
-              :config="configDateTimePicker"
-              :value="
+                v-else-if="answer.type.dateType == 'Date & Time'"
+                class="flatpickr-input w-full"
+                :config="configDateTimePicker"
+                :value="
                 pages[pIndex].questions[qIndex].answers[answer.index].value
               "
-              @input="chnValue($event, pIndex, qIndex, answer.index)"
+                @input="chnValue($event, pIndex, qIndex, answer.index)"
             />
           </div>
         </template>
         <template
-          v-else-if="
+            v-else-if="
             getTemplateType(answer.type.id).content == 'automatic user stamp'
           "
         >
           <div class="pl-4 w-full">
             <span
-              style="
+                style="
                 font-style: italic;
                 color: #1e1c26;
                 opacity: 0.54;
                 font-size: 12px;
               "
-              >{{
+            >{{
                 currentUser(
-                  pages[pIndex].questions[qIndex].answers[answer.index].value
+                    pages[pIndex].questions[qIndex].answers[answer.index].value
                 ) | capitalize
               }}</span
             >
@@ -544,7 +544,7 @@
         </template>
 
         <template
-          v-else-if="
+            v-else-if="
             getTemplateType(answer.type.id).content == 'photo' ||
             getTemplateType(answer.type.id).content == 'receipts'
           "
@@ -552,38 +552,38 @@
           <div class="sm:pl-4 pl-0 w-full">
             <div class="con-upload">
               <view-upload
-                v-if="viewActive"
-                :src="viewSrc"
-                @closeImage="closeImage"
+                  v-if="viewActive"
+                  :src="viewSrc"
+                  @closeImage="closeImage"
               />
               <div class="con-img-upload py-0 m-0">
                 <div
-                  class="img-upload my-2"
-                  v-for="(image, imageKey) in pages[pIndex].questions[qIndex]
+                    class="img-upload my-2"
+                    v-for="(image, imageKey) in pages[pIndex].questions[qIndex]
                     .answers[answer.index].images"
-                  :key="imageKey"
+                    :key="imageKey"
                 >
                   <button
-                    type="button"
-                    class="btn-x-file"
-                    @click="
+                      type="button"
+                      class="btn-x-file"
+                      @click="
                       removeImage(image.url, pIndex, qIndex, answer.index)
                     "
                   >
                     <i translate="translate" class="material-icons notranslate"
-                      >delete</i
+                    >delete</i
                     >
                   </button>
                   <img
-                    :src="image.url"
-                    style="max-width: none; max-height: 100%"
-                    @touchend="viewImage(image.url, $event)"
-                    @click="viewImage(image.url, $event)"
+                      :src="image.url"
+                      style="max-width: none; max-height: 100%"
+                      @touchend="viewImage(image.url, $event)"
+                      @click="viewImage(image.url, $event)"
                   />
                 </div>
                 <file-upload
-                  :indexs="[pIndex, qIndex, answer.index]"
-                  @url="uploadSucess"
+                    :indexs="[pIndex, qIndex, answer.index]"
+                    @url="uploadSucess"
                 />
               </div>
             </div>
@@ -595,6 +595,7 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import { db } from "@/firebase/firebaseConfig";
 import VuePerfectScrollbar from "vue-perfect-scrollbar";
 import Datepicker from "vuejs-datepicker";
@@ -608,9 +609,12 @@ import { storage } from "@/firebase/firebaseStorage";
 import ScoreItem from "../ScoreItem";
 import FoodItem from "../FoodItem";
 
-import firebase, { analytics } from "firebase/app";
+import firebase from "firebase/app";
 import "@firebase/firestore";
 import { isMobile, isIOS } from "mobile-device-detect";
+import VueSignaturePad from 'vue-signature-pad';
+
+Vue.use(VueSignaturePad);
 export default {
   props: {
     parent: {
@@ -736,10 +740,10 @@ export default {
       return (p, q, a) => {
         if (this.templateInfo.content.pages[p].questions[q] === undefined) {
           return this.templateInfo.content.pages[p].questions[0].answers[a]
-          .action;
+              .action;
         } else{
           return this.templateInfo.content.pages[p].questions[q].answers[a]
-          .action;
+              .action;
         }
       };
     },
@@ -808,7 +812,7 @@ export default {
     teamList() {
       var __teams = [];
       let teams = this.$store.getters["app/teams"].filter(
-        (item) => !item.deleted && item.active
+          (item) => !item.deleted && item.active
       );
       teams.map((item) => {
         __teams.push({ id: item.id, name: item.name });
@@ -935,8 +939,8 @@ export default {
           else return h;
         } else {
           let r = 0,
-            g = 0,
-            b = 0;
+              g = 0,
+              b = 0;
 
           // 3 digits
           if (h.length == 4) {
@@ -976,20 +980,20 @@ export default {
         return [];
       }
       return this.templateInfo.content.conditionTabs.filter(
-        (tab) => tab.createdByAnswer == this.parentAnswer.ref.id
+          (tab) => tab.createdByAnswer == this.parentAnswer.ref.id
       );
     },
   },
   mounted() {
     this.getTemplateType(this.parentAnswer.ref.type.id).content.map(
-      (content) => {
-        if (
-          this.pages[this.pIndex].questions[this.qIndex].answers[this.aIndex]
-            .value == content.name
-        ) {
-          this.selectedAnswer = content;
+        (content) => {
+          if (
+              this.pages[this.pIndex].questions[this.qIndex].answers[this.aIndex]
+                  .value == content.name
+          ) {
+            this.selectedAnswer = content;
+          }
         }
-      }
     );
   },
   methods: {
@@ -1005,12 +1009,12 @@ export default {
     logClosedAnswerValue(content) {
       this.selectedAnswer = content;
       this.chnContent(
-        this.pIndex,
-        this.qIndex,
-        this.aIndex,
-        content.name,
-        this.parentAnswer.ref.type.failedAnswer,
-        this.templateAction(this.pIndex, this.qIndex, this.aIndex)
+          this.pIndex,
+          this.qIndex,
+          this.aIndex,
+          content.name,
+          this.parentAnswer.ref.type.failedAnswer,
+          this.templateAction(this.pIndex, this.qIndex, this.aIndex)
       );
     },
     filteredAnswers(answers) {
@@ -1018,7 +1022,7 @@ export default {
       let matchingTabs = [];
       if (this.selectedAnswer == null) {
         matchingTabs = this.conditionTabs.filter(
-          (tab) => tab.condition.symbol == "not_selected"
+            (tab) => tab.condition.symbol == "not_selected"
         );
       } else {
         matchingTabs = this.conditionTabs.filter((tab) => {
@@ -1026,27 +1030,27 @@ export default {
             return true;
           } else {
             if (
-              tab.condition.key == "is" &&
-              tab.answers[0].name == this.selectedAnswer.name
+                tab.condition.key == "is" &&
+                tab.answers[0].name == this.selectedAnswer.name
             ) {
               return true;
             } else if (
-              tab.condition.key == "is_not" &&
-              tab.answers[0].name != this.selectedAnswer.name
+                tab.condition.key == "is_not" &&
+                tab.answers[0].name != this.selectedAnswer.name
             ) {
               return true;
             } else if (
-              tab.condition.key == "is_one_of" &&
-              tab.answers.some(
-                (answer) => answer.name == this.selectedAnswer.name
-              )
+                tab.condition.key == "is_one_of" &&
+                tab.answers.some(
+                    (answer) => answer.name == this.selectedAnswer.name
+                )
             ) {
               return true;
             } else if (
-              tab.condition.key == "is_not_one_of" &&
-              tab.answers.some(
-                (answer) => answer.name == this.selectedAnswer.name
-              )
+                tab.condition.key == "is_not_one_of" &&
+                tab.answers.some(
+                    (answer) => answer.name == this.selectedAnswer.name
+                )
             ) {
               return false;
             } else {
@@ -1074,27 +1078,27 @@ export default {
         ref: ref,
       };
       this.pages[indexs[0]].questions[indexs[1]].answers[
-        indexs[2]
-      ].loged = true;
+          indexs[2]
+          ].loged = true;
       this.pages[indexs[0]].questions[indexs[1]].answers[
-        indexs[2]
-      ].time = new Date();
+          indexs[2]
+          ].time = new Date();
       this.pages[indexs[0]].questions[indexs[1]].answers[
-        indexs[2]
-      ].user = JSON.parse(localStorage.getItem("userInfo")).id;
+          indexs[2]
+          ].user = JSON.parse(localStorage.getItem("userInfo")).id;
       db.collection("logs")
-        .doc(this.logID)
-        .update({
-          updated_at: new Date(),
-          updated_by: JSON.parse(localStorage.getItem("userInfo")).id,
-          initial: false,
-          logs: this.pages,
-        });
+          .doc(this.logID)
+          .update({
+            updated_at: new Date(),
+            updated_by: JSON.parse(localStorage.getItem("userInfo")).id,
+            initial: false,
+            logs: this.pages,
+          });
     },
     saveSign(p, q, a) {
       const { isEmpty, data } = this.$refs[
-        `signaturePad_${p}_${q}_${a}`
-      ][0].saveSignature();
+          `signaturePad_${p}_${q}_${a}`
+          ][0].saveSignature();
       if (isEmpty) {
         this.$vs.notify({
           title: "Empty",
@@ -1106,11 +1110,11 @@ export default {
         return false;
       }
       let ref =
-        JSON.parse(localStorage.getItem("userInfo")).group +
-        "/" +
-        JSON.parse(localStorage.getItem("userInfo")).id +
-        "/logs/images/signature/" +
-        new Date().getTime();
+          JSON.parse(localStorage.getItem("userInfo")).group +
+          "/" +
+          JSON.parse(localStorage.getItem("userInfo")).id +
+          "/logs/images/signature/" +
+          new Date().getTime();
       var storageRef = storage.ref();
       var mountainsRef = storageRef.child(ref);
       var uploadTask = mountainsRef.putString(data, "data_url");
@@ -1164,10 +1168,10 @@ export default {
     searchUser(loading, search) {
       var __users = [];
       let users = this.$store.getters["app/users"].filter(
-        (item) => !item.deleted && item.status
+          (item) => !item.deleted && item.status
       );
       users = users.filter(
-        (user) => user.name.toLowerCase().indexOf(search.toLowerCase()) > -1
+          (user) => user.name.toLowerCase().indexOf(search.toLowerCase()) > -1
       );
       users.map((item) => {
         __users.push({ id: item.id, name: item.name });
@@ -1181,26 +1185,26 @@ export default {
     },
     removeImage(url, p, q, a) {
       this.pages[p].questions[q].answers[a].images = this.pages[p].questions[
-        q
-      ].answers[a].images.filter((item) => {
+          q
+          ].answers[a].images.filter((item) => {
         if (item.url == url) {
           storage.ref().child(item.ref).delete();
         }
         return item.url != url;
       });
       this.pages[p].questions[q].answers[a].user = JSON.parse(
-        localStorage.getItem("userInfo")
+          localStorage.getItem("userInfo")
       ).id;
       this.pages[p].questions[q].answers[a].time = new Date();
       this.initState = false;
       this.saveState = true;
       db.collection("logs")
-        .doc(this.logID)
-        .update({
-          updated_at: new Date(),
-          updated_by: JSON.parse(localStorage.getItem("userInfo")).id,
-          logs: this.pages,
-        });
+          .doc(this.logID)
+          .update({
+            updated_at: new Date(),
+            updated_by: JSON.parse(localStorage.getItem("userInfo")).id,
+            logs: this.pages,
+          });
     },
     closeImage() {
       this.viewActive = false;
@@ -1208,10 +1212,10 @@ export default {
     viewImage(src, evt) {
       var timeout;
       var eventx =
-        "ontouchstart" in window ||
-        (window.DocumentTouch && document instanceof window.DocumentTouch)
-          ? "touchstart"
-          : "click";
+          "ontouchstart" in window ||
+          (window.DocumentTouch && document instanceof window.DocumentTouch)
+              ? "touchstart"
+              : "click";
       if (eventx == "click") {
         this.viewActive = true;
         this.viewSrc = src;
@@ -1233,14 +1237,14 @@ export default {
       this.initState = false;
       this.saveState = true;
       this.pages[indexs[0]].questions[indexs[1]].answers[
-        indexs[2]
-      ].images.push({ url: url, ref: ref });
+          indexs[2]
+          ].images.push({ url: url, ref: ref });
       this.pages[indexs[0]].questions[indexs[1]].answers[
-        indexs[2]
-      ].loged = true;
+          indexs[2]
+          ].loged = true;
       this.pages[indexs[0]].questions[indexs[1]].answers[
-        indexs[2]
-      ].time = new Date();
+          indexs[2]
+          ].time = new Date();
       this.pages[indexs[0]].questions[indexs[1]].answers[
         indexs[2]
       ].user = JSON.parse(localStorage.getItem("userInfo")).id;
@@ -1267,7 +1271,7 @@ export default {
       this.pages[pIndex].questions[qIndex].answers[aIndex].loged = true;
       this.pages[pIndex].questions[qIndex].answers[aIndex].time = new Date();
       this.pages[pIndex].questions[qIndex].answers[aIndex].user = JSON.parse(
-        localStorage.getItem("userInfo")
+          localStorage.getItem("userInfo")
       ).id;
       db.collection("logs")
         .doc(this.logID)
@@ -1460,8 +1464,8 @@ export default {
         action.map((actionItem) => {
           if (actionItem.content == content) {
             var notification = this.$store.getters[
-              "app/getNotificationByT_Indexes"
-            ]({
+                "app/getNotificationByT_Indexes"
+                ]({
               tId: this.template,
               indexes: [pIndex, qIndex, aIndex],
               logID: this.logID,

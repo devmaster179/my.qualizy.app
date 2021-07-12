@@ -682,6 +682,7 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import VuePerfectScrollbar from "vue-perfect-scrollbar";
 import Datepicker from "vuejs-datepicker";
 import StarRating from "vue-star-rating";
@@ -693,7 +694,10 @@ import FoodItem from "../tasks/FoodItem";
 import ClosedAnswerPreview from "./ConditionalLogic/ClosedAnswerPreview";
 import flatPickr from "vue-flatpickr-component";
 import "flatpickr/dist/flatpickr.css";
-import { storage } from "@/firebase/firebaseStorage";
+import VueSignaturePad from 'vue-signature-pad';
+
+Vue.use(VueSignaturePad);
+
 
 export default {
   components: {
