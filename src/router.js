@@ -109,7 +109,7 @@ const router = new Router({
                 {
                     path: '/fooditems',
                     name: 'fooditems',
-                    component: () => FoodItems,
+                    component: FoodItems,
                     meta: {
                         title: "FoodItems - Qualizy",
                         rule: 'visitor',
@@ -139,7 +139,7 @@ const router = new Router({
                 {
                     path: '/templates',
                     name: 'templates',
-                    component: () => Templates,
+                    component: Templates,
                     meta: {
                         title: "Templates - Qualizy",
                         rule: 'visitor',
