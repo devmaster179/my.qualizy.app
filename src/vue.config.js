@@ -6,6 +6,7 @@
   Author: Pixinvent
   Author URL: http://www.themeforest.net/user/pixinvent
 ==========================================================================================*/
+const TerserPlugin = require('terser-webpack-plugin');
 
 
 module.exports = {
@@ -26,6 +27,15 @@ module.exports = {
   configureWebpack: {
     optimization: {
       runtimeChunk: 'single',
+      minimize: true,
+      minimizer: [
+        new TerserPlugin({
+          parallel: true,
+          terserOptions: {
+            // https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
+          },
+        }),
+      ],
       splitChunks: {
         chunks: 'all',
         maxInitialRequests: Infinity,
