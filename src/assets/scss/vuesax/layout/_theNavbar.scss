@@ -43,11 +43,11 @@
 
 .vx-navbar-wrapper-active {
   top: 31px !important;
-  @media screen and (min-width: 520px) {
+  @media screen and (min-width: 503px) {
     top: 31px !important;
   }
 
-  @media screen and (max-width: 520px) {
+  @media screen and (max-width: 503px) {
     top: 50px !important;
   }
 
@@ -74,11 +74,11 @@
 }
 
 .router-content-active {
-    @media screen and (min-width: 520px) {
+    @media screen and (min-width: 503px) {
       margin-top: 94px !important;
     }
 
-    @media screen and (max-width: 520px) {
+    @media screen and (max-width: 503px) {
       margin-top: 113px !important;
     }
 

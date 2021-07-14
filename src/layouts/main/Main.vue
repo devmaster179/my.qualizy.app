@@ -10,15 +10,14 @@
 <template>
   <div>
     <div v-if="!subscribed" class="banner-non-subscribed">
-      <span class="info-badge">Info</span>
-      This is a demo account, but you can 
+      <span class="info-badge">Discount</span>
+      Unlock Qualizy pro + full HACCP plan - 
       <a
         href="https://www.qualizy.app/get-monthly/"
         target="_blank"
         class="underline"
-        >upgrade to pro
+        >GET 55% OFF today
       </a>
-       for just $1/day!
     </div>
     <div
       class="layout--main"
