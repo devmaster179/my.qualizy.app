@@ -17,12 +17,12 @@
     :active.sync="activePrompt"
   >
     <div
-      class="pt-4 mt-4 vx-row"
+      class="vx-row"
       id="foodItemPrintSection"
       ref="foodItemPrintSection"
       v-if="item.id !== undefined"
     >
-      <div class="w-full mt-auto mb-auto vx-col sm:w-1/2">
+      <div class="w-full mt-auto mb-auto sm:w-7/12">
         <h6 class="mb-1">{{ $t("name") }} : {{ item.name }}</h6>
         <h6 class="mb-1" v-if="item.forever">
           {{ $t("expire date") | capitalize }} :
@@ -41,8 +41,8 @@
         </h6>
         <h6>{{ $t("allergens") }} : {{ allergens | capitalize }}</h6>
       </div>
-      <div class="w-full mt-4 vx-col sm:mt-0 sm:w-1/2">
-        <qrcode-vue :value="get_qrcode" size="150" level="H"></qrcode-vue>
+      <div class="w-full mt-4 vx-col sm:mt-0 sm:w-5/12">
+        <qrcode-vue :value="get_qrcode" size="120" level="H"></qrcode-vue>
       </div>
     </div>
   </vs-prompt>
@@ -186,6 +186,14 @@ export default {
 <style scoped>
 .vs-dialog {
   max-width: 600px !important;
+}
+#foodItemPrintSection {
+  width: 340px !important;
+  margin: auto;
+  padding: 8px 0px;
+}
+#foodItemPrintSection > div > h6 {
+  font-size: 13px;
 }
 /* .food-new-area{
         height:  calc(20vh);
