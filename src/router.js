@@ -20,11 +20,11 @@
 
 import Vue from 'vue'
 import Router from 'vue-router'
-// import auth from "@/auth/authService";
+
 import firebase from 'firebase/app'
 import 'firebase/auth'
 
-const MainLayout = () => import(/* webpackPrefetch: true */'@/layouts/main/Main.vue');
+const MainLayout = () => import(/* webpackPrefetch: true */ /* webpackChunkName: "main" */'@/layouts/main/Main.vue');
 const Test = () => import(/* webpackPrefetch: true */ '@/views/report/Print/Test.vue');
 const Capture = () => import(/* webpackPrefetch: true */ '@/views/capture/Capture.vue');
 const Tasks = () => import(/* webpackPrefetch: true */ '@/views/tasks/Tasks.vue');

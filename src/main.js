@@ -76,7 +76,6 @@ import VeeValidate from 'vee-validate';
 Vue.use(VeeValidate);
 
 // VueMoment --kk
-// const moment = require('moment')
 import VueMoment from 'vue-moment'
 import moment from 'moment-timezone'
 
@@ -97,13 +96,6 @@ import i18n from './i18n/i18n.js'
 
 // Vuesax Admin Filters
 import './filters/filters'
-
-
-// PrismJS
-// import 'prismjs'
-// import 'prismjs/themes/prism-tomorrow.css'
-// import { ValueFormatterService } from 'ag-grid-community';
-
 
 // Feather font icon
 require('./assets/css/iconfont.css')

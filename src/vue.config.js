@@ -28,6 +28,8 @@ module.exports = {
     optimization: {
       runtimeChunk: 'single',
       minimize: true,
+      removeAvailableModules: true,
+      removeEmptyChunks: true,
       minimizer: [
         new TerserPlugin({
           parallel: true,
