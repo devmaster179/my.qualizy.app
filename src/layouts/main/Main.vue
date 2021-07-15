@@ -152,20 +152,17 @@
 </template>
 
 <script>
-import VxSidebar from "@/layouts/components/vx-sidebar/VxSidebar.vue";
-import TheNavbar from "../components/TheNavbar.vue";
-import TheFooter from "../components/TheFooter.vue";
-import ProPricePlanPopup from "../components/ProPricePlanPopup.vue";
+const VxSidebar = () => import(/* webpackChunkName: "main" */ "@/layouts/components/vx-sidebar/VxSidebar.vue");
+const TheNavbar = () => import(/* webpackChunkName: "main" */ "../components/TheNavbar.vue");
+const TheFooter = () => import(/* webpackChunkName: "main" */ "../components/TheFooter.vue");
+const ProPricePlanPopup = () => import(/* webpackChunkName: "main" */ "../components/ProPricePlanPopup.vue");
 import themeConfig from "@/../themeConfig.js";
 import sidebarItems from "@/layouts/components/vx-sidebar/sidebarItems.js";
 import BackToTop from "vue-backtotop";
 
-import firebase from "firebase/app";
 import "firebase/auth";
 
 import { db } from "@/firebase/firebaseConfig.js";
-
-// import {fcm} from '@/firebase/cloudMessage.js';
 
 let tempDate = new Date();
 tempDate.setFullYear(2000);
