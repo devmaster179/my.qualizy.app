@@ -48,6 +48,11 @@ module.exports = {
   important: true,
   // prefix: '',
   // separator: ':',
+  purge: [
+    './src/**/*.html',
+    './src/**/*.vue',
+    './src/**/*.jsx',
+  ],
 
   theme: {
 

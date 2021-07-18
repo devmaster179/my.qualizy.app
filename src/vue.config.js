@@ -25,6 +25,9 @@ module.exports = {
     themeColor: '#2196f3'
   },
   configureWebpack: {
+    output: {
+      crossOriginLoading: 'anonymous'
+    },
     optimization: {
       runtimeChunk: 'single',
       minimize: true,
