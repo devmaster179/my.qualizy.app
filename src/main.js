@@ -89,6 +89,10 @@ require('./assets/css/iconfont.css')
 // Karla font icon
 require('./assets/css/karla.css')
 
+// Undo Redo Plugin
+import VuexUndoRedo from "./undoRedoPlugin"
+Vue.use(VuexUndoRedo)
+
 // Globally Registered Components
 import './globalComponents.js'
 
