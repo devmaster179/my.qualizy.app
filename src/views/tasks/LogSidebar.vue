@@ -42,9 +42,7 @@
                   @click="sidebarActive = false"
                 />
                 <img
-                  :src="
-                    require(`../../assets/images/template_image/${templateInfo.content.templateImage}`)
-                  "
+                  :src="applyImage(templateInfo.content.templateImage)"
                   width="37"
                   height="37"
                   class="rounded-full"
