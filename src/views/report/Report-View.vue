@@ -1508,6 +1508,12 @@ export default {
       }
     },
     printReprot(file_name) {
+      var title = document.title;
+      document.title = file_name;
+      window.print();
+      document.title = title;
+      return;
+      
       const reportComponent = this.$refs.exportPdf.innerHTML;
       const pdfOptions = {
         margin: 1,
