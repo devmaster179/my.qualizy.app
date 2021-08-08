@@ -519,13 +519,16 @@ export default {
       var cUser = this.$store.getters["app/currentUser"];
       if (cUser == undefined) return [];
       var notify = this.$store.getters["app/unreadNotifications"](cUser);
-      return notify.filter(
+      
+      var notifications = notify.filter(
         (item) =>
           this.$store.getters["app/getTemplateById"](item.templateId) !==
             undefined &&
           item.types !== undefined &&
           item.types.indexOf("app") > -1
       );
+
+      return notifications;
     },
     country() {
       return (locale) => {

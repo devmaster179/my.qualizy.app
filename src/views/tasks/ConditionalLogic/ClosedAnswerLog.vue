@@ -1472,28 +1472,29 @@ export default {
               value: content,
             });
 
-            if (notification == undefined) {
-              var mUsers = [];
-              actionItem.teams.map((id) => {
-                let team = this.$store.getters["app/getTeamById"](id);
-                if (team == undefined) return;
-                let user = this.$store.getters["app/users"].filter(
-                  (item) => item.team.indexOf(id) > -1
-                );
-                user.map((item) => {
-                  if (
-                    mUsers.find((mUser) => mUser.email == item.email) !=
-                      undefined ||
-                    item.rEmail === undefined ||
-                    !item.rEmail
-                  )
-                    return;
-                  mUsers.push({ email: item.email, name: item.name });
-                });
+            var mUsers = [];
+            actionItem.teams.map((id) => {
+              let team = this.$store.getters["app/getTeamById"](id);
+              if (team == undefined) return;
+              let user = this.$store.getters["app/users"].filter(
+                (item) => item.team.indexOf(id) > -1
+              );
+              user.map((item) => {
+                if (
+                  mUsers.find((mUser) => mUser.email == item.email) !=
+                    undefined ||
+                  item.rEmail === undefined ||
+                  !item.rEmail
+                )
+                  return;
+                mUsers.push({ email: item.email, name: item.name });
               });
+            });
+
+            if (notification == undefined) {
               db.collection("notifications").add({
                 icon: "CheckSquareIcon",
-                type: actionItem.types,
+                types: actionItem.types,
                 readIds: [],
                 sendEmails: mUsers,
                 text: actionItem.description,
@@ -1509,11 +1510,24 @@ export default {
                 updated_at: new Date(),
                 at: firebase.firestore.FieldValue.serverTimestamp(),
               });
+
+              mUsers.map((mUser) => {
+                this.$http
+                  .post(
+                    "https://us-central1-the-haccp-app-249610.cloudfunctions.net/api/sendMail",
+                    {
+                      email: mUser.email,
+                      subject: actionItem.name,
+                      html: actionItem.description,
+                    }
+                  )
+                  .then(() => {});
+              });
             } else {
               db.collection("notifications")
                 .doc(notification.id)
                 .update({
-                  type: actionItem.types,
+                  types: actionItem.types,
                   readIds: [],
                   sendEmails: mUsers,
                   text: actionItem.description,
