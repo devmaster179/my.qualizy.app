@@ -1752,25 +1752,26 @@ export default {
               value: content,
             });
 
-            if (notification == undefined) {
-              var mUsers = [];
-              actionItem.teams.map((id) => {
-                let team = this.$store.getters["app/getTeamById"](id);
-                if (team == undefined) return;
-                let user = this.$store.getters["app/users"].filter(
-                  (item) => item.team.indexOf(id) > -1
-                );
-                user.map((item) => {
-                  if (
-                    mUsers.find((mUser) => mUser.email == item.email) !=
-                      undefined ||
-                    item.rEmail === undefined ||
-                    !item.rEmail
-                  )
-                    return;
-                  mUsers.push({ email: item.email, name: item.name });
-                });
+            var mUsers = [];
+            actionItem.teams.map((id) => {
+              let team = this.$store.getters["app/getTeamById"](id);
+              if (team == undefined) return;
+              let user = this.$store.getters["app/users"].filter(
+                (item) => item.team.indexOf(id) > -1
+              );
+              user.map((item) => {
+                if (
+                  mUsers.find((mUser) => mUser.email == item.email) !=
+                    undefined ||
+                  item.rEmail === undefined ||
+                  !item.rEmail
+                )
+                  return;
+                mUsers.push({ email: item.email, name: item.name });
               });
+            });
+
+            if (notification == undefined) {
               db.collection("notifications").add({
                 icon: "CheckSquareIcon",
                 types: actionItem.types,
