@@ -77,6 +77,22 @@
        <div ref="exportPdf" v-show="false">
           <allergies-print :allergens="allergens" :fooditems="fooditems" :user="user" />
        </div>
+       
+        <br>
+        <vs-row vs-w="12">
+          <vs-col vs-type="flex" vs-justify="left" vs-align="center" vs-lg="3" vs-sm="12" vs-xs="12">
+            <vs-select
+                class="selectExample"
+                v-model="perPage"
+                @change="onChangeLimit($event)"
+            >
+              <vs-select-item :key="index" :value="item.value" :text="item.text" v-for="item,index in options" />
+            </vs-select>
+          </vs-col>
+          <vs-col vs-type="flex" vs-justify="center" vs-align="center" vs-lg="9" vs-sm="12" vs-xs="12">
+              <vs-pagination :total="Math.ceil(fooditems.length/perPage)" buttons-dotted v-model="currentPage" goto />
+          </vs-col>
+        </vs-row>
 
         <div class="page-content">
           <template v-if="fooditems.length > 0">
@@ -85,8 +101,8 @@
               v-if="viewMode == 'card'"
             >
               <div
-                class="w-full p-0 vx-col lg:w-1/4 md:w-2/1 sm:w-1/2 sm:px-2"
-                v-for="(item, index) in fooditems"
+                class="w-full vx-col lg:w-1/4 md:w-2/1 sm:w-1/2 sm:px-2"
+                v-for="(item, index) in fooditems.slice((currentPage-1)*perPage,(currentPage-1)*perPage+perPage)"
                 :key="index"
               >
                 <card-view
@@ -118,7 +134,7 @@
                 </thead>
                 <tbody>
                   <list-view
-                    v-for="(item, index) in fooditems"
+                    v-for="(item, index) in fooditems.slice((currentPage-1)*perPage,(currentPage-1)*perPage+perPage)"
                     :key="index"
                     :item="item"
                     @edit="edit"
@@ -155,6 +171,15 @@
             </div>
           </template>
         </div>
+
+        <br>
+        <vs-row vs-type="flex">
+          <vs-col vs-type="flex" vs-justify="left" vs-align="left" vs-w="3">
+          </vs-col>
+          <vs-col vs-type="flex" vs-justify="center" vs-align="center" vs-w="9">
+              <vs-pagination :total="Math.ceil(fooditems.length/perPage)" buttons-dotted v-model="currentPage" goto />
+          </vs-col>
+        </vs-row>
       </template>
 
       <fooditem-type
@@ -207,21 +232,29 @@
   </div>
 </template>
 <script>
-// import FooditemAdd from "./FooditemAdd";
-import FooditemIngredient from "./FooditemIngredient";
-import FooditemType from "./FooditemType";
-import FooditemaddSidebar from "./FooditemaddSidebar";
-import FooditemUpload from "./FooditemUpload";
-import FooditemFilter from "./FooditemFilter";
-import CardView from "./CardView";
-import ListView from "./ListView";
-import FooditemHistory from "./FooditemHistory";
-import FooditemPrint from "./FooditemPrint";
-import FooditemProcess from "./FooditemProcess";
-import AllergiesPrint from "./AllergiesPrint.vue";
-import LogSidebar from "../tasks/LogSidebar";
+
+// import Vue from 'vue';
+const FooditemIngredient = () => import("./FooditemIngredient");
+const FooditemType = () => import("./FooditemType");
+const FooditemaddSidebar = () => import("./FooditemaddSidebar");
+const FooditemUpload = () => import("./FooditemUpload");
+const FooditemFilter = () => import("./FooditemFilter");
+const CardView = () => import("./CardView");
+const ListView = () => import("./ListView");
+const FooditemHistory = () => import("./FooditemHistory");
+const FooditemPrint = () => import("./FooditemPrint");
+const FooditemProcess = () => import("./FooditemProcess");
+const AllergiesPrint = () => import("./AllergiesPrint.vue");
+const LogSidebar = () => import("../tasks/LogSidebar");
 import { db } from "@/firebase/firebaseConfig";
 import NoAuth from "@/components/no-auth/NoAuth";
+
+// import { BootstrapVue } from 'bootstrap-vue'
+
+// import 'bootstrap/dist/css/bootstrap.css'
+// import 'bootstrap-vue/dist/bootstrap-vue.css'
+
+// Vue.use(BootstrapVue)
 
 import html2pdf from "html2pdf.js";
 
@@ -267,9 +300,20 @@ export default {
       pages: [],
       template: "",
       isSidebarActive: false,
+      currentPage: 1,
+      perPage: 10,
+      options: [
+        { value: '10', text: '10' },
+        { value: '20', text: '20' },
+        { value: '50', text: '50' },
+        { value: '100', text: '100' }
+      ]
     };
   },
   methods: {
+    onChangeLimit(value) {
+      this.perPage = value;
+    },
     printAllergy() {
       const file_name = this.user.name+" Allergens Quick Index";
       const reportComponent = this.$refs.exportPdf.innerHTML;
@@ -705,6 +749,9 @@ export default {
     allergens() {
       return this.$store.getters["app/allergens"];
     },
+    rows() {
+      return this.fooditems.length
+    },
   },
 };
 </script>
@@ -713,6 +760,48 @@ export default {
   font-size: 24px;
   color: #1e1c26;
 }
+</style>
+<style>
+
+@media only screen and (max-width: 600px) {
+
+  .vs-col.vs-pagination--mb.vs-xs-12.vs-sm-12.vs-lg-12 {
+    display: block !important;
+    font-size: 0.7rem;
+    padding: 10px 0px 0px;
+    /*margin-left: 7% !important;*/
+  }
+
+  .vs-pagination--li {
+    width: 25px !important;
+    height: 25px !important;
+  }
+
+  .vs-col {
+    padding: 10px 0px 0px !important;
+  }
+  .vs-pagination--input-goto {
+    padding-right: 0px;
+    font-size: 0.7rem;
+  }
+  .vs-pagination--buttons {
+    width: 25px !important;
+    height: 25px !important;
+  }
+  .w-full .vx-col {
+    padding: 0px !important;
+  }
+  .vuesax-app-is-ltr .vs-pagination--buttons.vs-pagination--button-prev, .vuesax-app-is-rtl .vs-pagination--buttons.vs-pagination--button-next {
+    margin-left: 0px !important;
+    margin-right: 0px !important;
+  }
+  .vuesax-app-is-ltr .vs-pagination--buttons.vs-pagination--button-next {
+    margin-left: 0px !important;
+  }
+
+
+}
+
 </style>
 <style scoped>
 .bg-clip {
