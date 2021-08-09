@@ -83,6 +83,16 @@ import i18n from './i18n/i18n.js'
 // Vuesax Admin Filters
 import './filters/filters'
 
+// Google Maps
+import * as VueGoogleMaps from 'vue2-google-maps'
+Vue.use(VueGoogleMaps, {
+  load: {
+    // Add your API key here
+    key: 'AIzaSyDBZC72kClDayfBoP-Bz1Ppx1cawcIiYRM',
+    libraries: 'places', // This is required if you use the Auto complete plug-in
+  },
+})
+
 // Feather font icon
 require('./assets/css/iconfont.css')
 
