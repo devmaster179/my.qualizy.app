@@ -330,7 +330,7 @@
 
     <add-location :open="addLocation" :warn="afterAddedLocation" @close="addLocation = false" @warnSubscription="afterAddedLocation=true" />
 
-    <vs-prompt :accept-text="false" cancel-text="Close" class="modal-after-added-location"  title="Info" :active.sync="afterAddedLocation">
+    <vs-prompt cancel-text="Close" class="modal-after-added-location"  title="Info" :active.sync="afterAddedLocation">
       <p>
         Please note that an additional location will be added to your subscription
       </p>

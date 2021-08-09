@@ -53,6 +53,8 @@ import EditLocation from "./locations/LocationEdit";
 import PaymentTab from "./payments/PaymentTab";
 import LocationTab from "./locations/LocationTab";
 
+import VuePlaceAutocomplete from 'vue-place-autocomplete';
+
 export default {
   components: {
     VueTelInput,
@@ -62,6 +64,7 @@ export default {
     PaymentTab,
     LocationTab,
     NoAuth,
+    VuePlaceAutocomplete,
   },
   data() {
     return {
