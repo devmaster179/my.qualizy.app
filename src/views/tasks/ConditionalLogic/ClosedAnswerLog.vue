@@ -63,7 +63,7 @@
       </div>
       <div class="vx-row answer-content">
         <template
-            v-if="getTemplateType(answer.type.id).content == 'closed answers'"
+            v-if="getTemplateType(answer.type.id).type == 'closed answers'"
         >
           <div
               :class="
@@ -85,7 +85,7 @@
             >
               <span
                   class="karla text-white"
-                  v-if="getTemplateType(answer.type.id).group == 'global'"
+                  v-if="getTemplateType(answer.type.id).group === 'global'"
               >{{ $t(content.name) }}</span
               >
               <span class="karla text-white" v-else>{{

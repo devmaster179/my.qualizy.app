@@ -173,7 +173,7 @@
                   </div>
                   <template
                     v-if="
-                      getTemplateType(answer.ref.type.id).type ==
+                      getTemplateType(answer.ref.type.id).type ===
                       'closed answers'
                     "
                   >
@@ -192,7 +192,7 @@
                   <div class="vx-row answer-content" v-else>
                     <template
                       v-if="
-                        getTemplateType(answer.ref.type.id).content == 'number'
+                        getTemplateType(answer.ref.type.id).content === 'number'
                       "
                     >
                       <div
