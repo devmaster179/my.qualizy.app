@@ -553,4 +553,9 @@ export default {
     "What describes the best your operation? This will help us deploy the perfect templates for you.": "What describes the best your operation? This will help us deploy the perfect templates for you.",
     "What is your job title?": "What is your job title?",
     "How many locations does your company have?": "How many locations does your company have?",
+    "Sensors": "Sensors",
+    "Buy temperature sensors": "Buy temperature sensors",
+    "Refer & earn": "Refer & earn",
+    "Subscribe to continue": "Subscribe to continue",
+    "Upgrade to pro": "Upgrade to pro",
 }
