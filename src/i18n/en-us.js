@@ -641,4 +641,6 @@ export default {
     "Sensors": "Sensors",
     "Buy temperature sensors": "Buy temperature sensors",
     "Refer & earn": "Refer & earn",
+    "Subscribe to continue": "Subscribe to continue",
+    "Upgrade to pro": "Upgrade to pro",
 }
