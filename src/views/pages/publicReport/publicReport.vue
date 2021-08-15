@@ -410,10 +410,15 @@ export default {
       new Promise((resolve, reject) => {
         var today = new Date();
         if (this.filter.date == "custom") {
-          this.filter.from = new Date(
-            today.getTime() - 10 * 24 * 60 * 60 * 1000
-          );
-          this.filter.to = today;
+          if (this.filter.from === undefined) {
+            this.filter.from = new Date(
+              today.getTime() - 10 * 24 * 60 * 60 * 1000
+            );
+            this.filter.to = today;
+          }else {
+            this.filter.from = new Date(this.filter.from.seconds * 1000);
+            this.filter.to = new Date(this.filter.to.seconds * 1000);
+          }
         } else if (this.filter.date == "today") {
           this.filter.from = this.filter.to = today;
         } else if (this.filter.date == "thisW") {
@@ -509,6 +514,8 @@ export default {
           .get()
           .then((doc) => {
             this.report = Object.assign({}, { id: doc.id }, doc.data());
+            const filter = doc.data().filter;
+            this.filter = filter;
             resolve("OK");
           });
       });
@@ -591,7 +598,6 @@ export default {
     this.$vs.loading();
     await this.setTemplateTypes();
     await this.getReport(reportID);
-    this.filter = this.report.filter;
     await this.setTemplates();
     await this.setCompany();
     await this.getLogs();
