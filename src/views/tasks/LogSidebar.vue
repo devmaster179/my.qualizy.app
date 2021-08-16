@@ -530,7 +530,7 @@
                             font-size: 12px;
                           "
                           >{{
-                            answer.value.nanoseconds !== undefined
+                            answer.value.seconds !== undefined
                               ? answer.value.toDate()
                               : answer.value
                                 | moment(
@@ -1283,6 +1283,9 @@ export default {
           "automatic date and time stamp"
         ) {
           answer.value = "";
+          answer.loged = false
+        } else{
+          answer.value = new Date();
         }
       });
 

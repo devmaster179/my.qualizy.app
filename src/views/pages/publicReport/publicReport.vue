@@ -487,6 +487,7 @@ export default {
           .get()
           .then((docs) => {
             docs.forEach((doc) => {
+        console.log(doc.data().updated_at, "b.updated_at.toDate()");
               var date =
                 doc.data().updated_at.seconds === undefined
                   ? doc.data().updated_at
