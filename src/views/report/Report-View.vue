@@ -1133,14 +1133,14 @@ export default {
         if (!template) return false;
 
         if (log.time && log.time.seconds) {
-          if (
-            checkLog.find(
-              (check) =>
-                check.templateID == log.templateID &&
-                check.time == log.time.seconds
-            )
-          )
-            return false;
+          // if (
+          //   checkLog.find(
+          //     (check) =>
+          //       check.templateID == log.templateID &&
+          //       check.time == log.time.seconds
+          //   )
+          // )
+          //   return false;
           checkLog.push({ templateID: log.templateID, time: log.time.seconds });
         }
 
