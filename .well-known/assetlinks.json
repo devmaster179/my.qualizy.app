@@ -1,0 +1,11 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "xyz.appmaker.vvkbdk",
+      "sha256_cert_fingerprints": ["0B:6C:D3:40:B9:59:07:95:E5:5A:AE:8B:DD:FF:97:FC:65:B0:8C:ED"],
+      "SHA1": "0B:6C:D3:40:B9:59:07:95:E5:5A:AE:8B:DD:FF:97:FC:65:B0:8C:ED"
+    }
+  }
+]

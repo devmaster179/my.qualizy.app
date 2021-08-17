@@ -455,12 +455,25 @@ router.beforeEach((to, from, next) => {
         ) {
             return next()
         }
-        router.push({
-            path: '/pages/login',
-            query: {
-                to: to.path
-            }
-        }).catch((err) => { });
+
+        const visited = localStorage.getItem("visited");
+        if (visited === null) {
+            router.push({
+                path: '/pages/register',
+                query: {
+                    to: to.path
+                }
+            }).catch((err) => { });    
+        }else{
+            router.push({
+                path: '/pages/login',
+                query: {
+                    to: to.path
+                }
+            }).catch((err) => { });
+        }
+        
+        localStorage.setItem("visited", true)
     })
 
 });
