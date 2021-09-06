@@ -42,7 +42,7 @@
         <h6>{{ $t("allergens") }} : {{ allergens | capitalize }}</h6>
       </div>
       <div class="w-full mt-4 vx-col sm:mt-0 sm:w-5/12">
-        <qrcode-vue :value="get_qrcode" size="120" level="H"></qrcode-vue>
+        <qrcode-vue :value="get_qrcode" size="73" level="H"></qrcode-vue>
       </div>
     </div>
   </vs-prompt>
@@ -188,12 +188,13 @@ export default {
   max-width: 600px !important;
 }
 #foodItemPrintSection {
-  width: 340px !important;
+  /* width: 340px !important; */
+  width: 234px !important;
   margin: auto;
-  padding: 8px 0px;
+  padding: 15px 15px;
 }
 #foodItemPrintSection > div > h6 {
-  font-size: 13px;
+  font-size: 6px;
 }
 /* .food-new-area{
         height:  calc(20vh);
