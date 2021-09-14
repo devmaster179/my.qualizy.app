@@ -57,6 +57,9 @@ export default {
                     type: 'string',
                     opposite: true,
                 },
+                stroke: {
+                    width: 2
+                }
             },
         }
     },
