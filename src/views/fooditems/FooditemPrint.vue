@@ -167,6 +167,7 @@ export default {
           printable: img,
           type: "image",
           documentTitle: this.item.name,
+          imageStyle: 'margin-top: 0px;margin-bottom: 0px;margin-left: 0px;margin-right: 0px;',
         });
       });
 
@@ -191,7 +192,6 @@ export default {
   /* width: 340px !important; */
   width: 234px !important;
   margin: auto;
-  padding: 15px 15px;
 }
 #foodItemPrintSection > div > h6 {
   font-size: 6px;
