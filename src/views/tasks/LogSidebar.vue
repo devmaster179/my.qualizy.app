@@ -1107,11 +1107,25 @@ export default {
       return (number) => {
         var count = 0;
         var complated = 0;
-        this.pages[number].questions.map((question) => {
-          question.answers.map((answer) => {
-            if (answer.ref.mandatory) {
-              complated++;
-              if (answer.loged) count++;
+        this.pages[number].questions.map((question, q) => {
+          question.answers.map((answer, a) => {
+            if (answer.ref.isLogicQuestion === true) {
+              var parentSelected = this.checkParentSelected(this.templateInfo.content.pages[number].questions[q].answers[a].tabId);
+              if (answer.ref.mandatory && parentSelected) {
+                if (answer.loged) {
+                  // if(answer.ref.type.failedAnswer === undefined || answer.ref.type.failedAnswer === '' || answer.value != answer.ref.type.failedAnswer)
+                  complated++;
+                }
+                count++;
+              }
+            } else {
+              if (answer.ref.mandatory) {
+                if (answer.loged) {
+                  // if(answer.ref.type.failedAnswer === undefined || answer.ref.type.failedAnswer === '' || answer.value != answer.ref.type.failedAnswer)
+                  complated++;
+                }
+                count++;
+              }
             }
           });
         });
@@ -1121,11 +1135,25 @@ export default {
     calcPageCompletd() {
       var count = 0;
       var complated = 0;
-      this.pages[this.pageNum].questions.map((question) => {
-        question.answers.map((answer) => {
-          if (answer.ref.mandatory && answer.ref.isLogicQuestion !== true) {
-            complated++;
-            if (answer.loged) count++;
+      this.pages[this.pageNum].questions.map((question, q) => {
+        question.answers.map((answer, a) => {
+          if (answer.ref.isLogicQuestion === true) {
+            var parentSelected = this.checkParentSelected(this.templateInfo.content.pages[this.pageNum].questions[q].answers[a].tabId);
+            if (answer.ref.mandatory && parentSelected) {
+              if (answer.loged) {
+                // if(answer.ref.type.failedAnswer === undefined || answer.ref.type.failedAnswer === '' || answer.value != answer.ref.type.failedAnswer)
+                complated++;
+              }
+              count++;
+            }
+          } else {
+            if (answer.ref.mandatory) {
+              if (answer.loged) {
+                // if(answer.ref.type.failedAnswer === undefined || answer.ref.type.failedAnswer === '' || answer.value != answer.ref.type.failedAnswer)
+                complated++;
+              }
+              count++;
+            }
           }
         });
       });
@@ -1134,16 +1162,28 @@ export default {
     calcQuestionCompletd() {
       return (p, q) => {
         var count = 0;
-        var _complated = 0;
+        var complated = 0;
         this.pages[p].questions[q].answers.map((answer, a) => {
-          if (answer.ref.mandatory && answer.ref.isLogicQuestion !== true) {
-            if (answer.loged) {
-              _complated++;
+          if (answer.ref.isLogicQuestion === true) {
+            var parentSelected = this.checkParentSelected(this.templateInfo.content.pages[p].questions[q].answers[a].tabId);
+            if (answer.ref.mandatory && parentSelected) {
+              if (answer.loged) {
+                // if(answer.ref.type.failedAnswer === undefined || answer.ref.type.failedAnswer === '' || answer.value != answer.ref.type.failedAnswer)
+                complated++;
+              }
+              count++;
             }
-            count++;
+          } else {
+            if (answer.ref.mandatory) {
+              if (answer.loged) {
+                // if(answer.ref.type.failedAnswer === undefined || answer.ref.type.failedAnswer === '' || answer.value != answer.ref.type.failedAnswer)
+                complated++;
+              }
+              count++;
+            }
           }
         });
-        return _complated + "/" + count;
+        return complated + "/" + count;
       };
     },
     calcColor() {
@@ -1155,23 +1195,34 @@ export default {
     },
     calcComplateStatus() {
       var count = 0;
-      var _complated = 0;
+      var complated = 0;
       this.pages.map((page, p) => {
         page.questions.map((question, q) => {
           question.answers.map((answer, a) => {
-            if (answer.ref.mandatory && answer.ref.isLogicQuestion !== true) {
-              if (this.pages[p].questions[q].answers[a].loged) {
-                // if(answer.ref.type.failedAnswer === undefined || answer.ref.type.failedAnswer === '' || this.pages[p].questions[q].answers[a].value != answer.ref.type.failedAnswer)
-                _complated++;
+            if (answer.ref.isLogicQuestion === true) {
+              var parentSelected = this.checkParentSelected(this.templateInfo.content.pages[p].questions[q].answers[a].tabId);
+              if (answer.ref.mandatory && parentSelected) {
+                if (answer.loged) {
+                  // if(answer.ref.type.failedAnswer === undefined || answer.ref.type.failedAnswer === '' || answer.value != answer.ref.type.failedAnswer)
+                  complated++;
+                }
+                count++;
               }
-              count++;
+            } else {
+              if (answer.ref.mandatory) {
+                if (answer.loged) {
+                  // if(answer.ref.type.failedAnswer === undefined || answer.ref.type.failedAnswer === '' || answer.value != answer.ref.type.failedAnswer)
+                  complated++;
+                }
+                count++;
+              }
             }
           });
         });
       });
       if (count == 0) this.complated = 100;
-      else this.complated = (_complated / count) * 100;
-      return _complated + "/" + count;
+      else this.complated = (complated / count) * 100;
+      return complated + "/" + count;
     },
     currentUser() {
       return (id) => {
@@ -1266,6 +1317,12 @@ export default {
         return Intl.DateTimeFormat().resolvedOptions().timeZone;
       }
     },
+    conditionTabs() {
+      if (this.templateInfo.content.conditionTabs == undefined) {
+        return [];
+      }
+      return this.templateInfo.content.conditionTabs;
+    },
   },
   mounted() {},
   methods: {
@@ -1311,6 +1368,32 @@ export default {
         icon: "icon-check-circle",
         color: "success",
       });
+    },
+    checkParentSelected(tabId) {
+      let result = false;
+      let parentTabs = this.conditionTabs.filter(
+            (tab) => tab.id === tabId
+        );
+      let parentName = parentTabs[0].answers[0].name;
+      let parentId = parentTabs[0].createdByAnswer;
+
+      this.pages.map((page, p) => {
+        page.questions.map((question, q) => {
+          question.answers.map((answer, a) => {
+            if (answer.ref.id === parentId && answer.value === parentName) {
+              result = true;
+            }
+          });
+        });
+      });
+
+      return result;
+    },
+    getParentName(tabId) {
+      let parentTabs = this.conditionTabs.filter(
+            (tab) => tab.id === tabId
+        );
+      return parentTabs[0].answers[0].name;
     },
     applyImage(image) {
       if (image.indexOf("firebasestorage") > -1) {

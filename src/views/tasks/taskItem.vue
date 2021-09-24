@@ -201,6 +201,26 @@ export default {
     };
   },
   methods: {
+    checkParentSelected(tabId) {
+      let result = false;
+      let parentTabs = this.conditionTabs.filter(
+            (tab) => tab.id === tabId
+        );
+      let parentName = parentTabs[0].answers[0].name;
+      let parentId = parentTabs[0].createdByAnswer;
+
+      this.task.logs.map((page, p) => {
+        page.questions.map((question, q) => {
+          question.answers.map((answer, a) => {
+            if (answer.ref.id === parentId && answer.value === parentName) {
+              result = true;
+            }
+          });
+        });
+      });
+
+      return result;
+    },
     applyImage(image) {
       if (image.indexOf("firebasestorage") > -1) {
         return image;
@@ -239,6 +259,14 @@ export default {
     },
   },
   computed: {
+    conditionTabs() {
+      let template = this.templateInfo(this.task.templateID);
+      
+      if (template.content.conditionTabs == undefined) {
+        return [];
+      }
+      return template.content.conditionTabs;
+    },
     auth() {
       return (action) => {
         let authList = this.$store.getters["app/auth"];
@@ -288,8 +316,9 @@ export default {
     calcComplete() {
       var total = 0,
         complated = 0;
+      let template = this.templateInfo(this.task.templateID);
       if (this.task.logs === undefined) {
-        let template = this.templateInfo(this.task.templateID);
+        
         template.content.pages.map((page) => {
           page.questions.map((question) => {
             question.answers.map((answer) => {
@@ -298,12 +327,27 @@ export default {
           });
         });
       } else {
-        this.task.logs.map((page) => {
-          page.questions.map((question) => {
-            question.answers.map((answer) => {
-              if (answer.ref.mandatory) {
-                total++;
-                if (answer.loged) complated++;
+        this.task.logs.map((page, p) => {
+          page.questions.map((question, q) => {
+            question.answers.map((answer, a) => {
+              if (answer.ref.isLogicQuestion === true) {
+                var parentSelected = this.checkParentSelected(template.content.pages[p].questions[q].answers[a].tabId);
+                
+                if (answer.ref.mandatory && parentSelected) {
+                  if (answer.loged) {
+                    // if(answer.ref.type.failedAnswer === undefined || answer.ref.type.failedAnswer === '' || answer.value != answer.ref.type.failedAnswer)
+                    complated++;
+                  }
+                  total++;
+                }
+              } else {
+                if (answer.ref.mandatory) {
+                  if (answer.loged) {
+                    // if(answer.ref.type.failedAnswer === undefined || answer.ref.type.failedAnswer === '' || answer.value != answer.ref.type.failedAnswer)
+                    complated++;
+                  }
+                  total++;
+                }
               }
             });
           });
