@@ -1156,7 +1156,6 @@ export default {
     calcComplateStatus() {
       var count = 0;
       var _complated = 0;
-      console.log(this.pages, "this.pages")
       this.pages.map((page, p) => {
         page.questions.map((question, q) => {
           question.answers.map((answer, a) => {
