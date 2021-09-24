@@ -369,7 +369,7 @@ export default {
     },
   },
   mounted() {
-    this.selectedValues = [this.answerTypes.content[0]];
+    this.selectedValues = this.conditionTabs[0].answers;
     this.selectedCondition = this.conditionList[0];
     this.activeCondTab =
       this.conditionTabs.length > 0 ? this.conditionTabs[0].id : 0;
