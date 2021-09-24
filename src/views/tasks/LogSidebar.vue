@@ -1123,7 +1123,7 @@ export default {
       var complated = 0;
       this.pages[this.pageNum].questions.map((question) => {
         question.answers.map((answer) => {
-          if (answer.ref.mandatory) {
+          if (answer.ref.mandatory && answer.ref.isLogicQuestion !== true) {
             complated++;
             if (answer.loged) count++;
           }
@@ -1136,7 +1136,7 @@ export default {
         var count = 0;
         var _complated = 0;
         this.pages[p].questions[q].answers.map((answer, a) => {
-          if (answer.ref.mandatory) {
+          if (answer.ref.mandatory && answer.ref.isLogicQuestion !== true) {
             if (answer.loged) {
               _complated++;
             }
@@ -1156,10 +1156,11 @@ export default {
     calcComplateStatus() {
       var count = 0;
       var _complated = 0;
+      console.log(this.pages, "this.pages")
       this.pages.map((page, p) => {
         page.questions.map((question, q) => {
           question.answers.map((answer, a) => {
-            if (answer.ref.mandatory) {
+            if (answer.ref.mandatory && answer.ref.isLogicQuestion !== true) {
               if (this.pages[p].questions[q].answers[a].loged) {
                 // if(answer.ref.type.failedAnswer === undefined || answer.ref.type.failedAnswer === '' || this.pages[p].questions[q].answers[a].value != answer.ref.type.failedAnswer)
                 _complated++;
