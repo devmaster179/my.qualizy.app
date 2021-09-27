@@ -710,6 +710,8 @@ export default {
       this.answers = this.answers.filter((item) => item.id != this.answerId);
     },
     duplicateAnswer() {
+      let duplicatedAnswer = JSON.parse(JSON.stringify(this.answerContent));
+      duplicatedAnswer.id = generateUniqueId();
       this.$store.commit("app/CHN_TEMP_TEMPLATE", {
         index: {
           page: this.page,
@@ -718,7 +720,8 @@ export default {
         },
         target: "answer",
         key: "duplicate",
-        val: JSON.stringify(this.answerContent),
+        oldId: this.answerContent.id,
+        val: duplicatedAnswer,
       });
     },
     makeLogicAnswer() {

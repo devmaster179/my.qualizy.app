@@ -321,8 +321,22 @@ export default {
       }
       else if (query.key == 'duplicate') {
         allAnswers.push(
-          JSON.parse(query.val)
+          query.val
         )
+        let tabs = JSON.parse(JSON.stringify(state.tempTemplate.content.conditionTabs));
+        console.log(tabs, "origin")
+        let _duplicatedTabs = tabs.filter(
+          conditionTab => conditionTab.createdByAnswer === query.oldId
+        )
+        let duplicatedTabs = JSON.parse(JSON.stringify(_duplicatedTabs))
+        duplicatedTabs.map(
+          tab => {
+            tab.createdByAnswer = query.val.id
+            tab.id = generateUniqueId()
+          }
+        )
+        
+        state.tempTemplate.content.conditionTabs = [...tabs, ...duplicatedTabs];
       }
       else if (query.key == 'addQuestion') {
         allAnswers.push({
