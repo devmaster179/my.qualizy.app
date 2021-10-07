@@ -25,11 +25,11 @@
       <div class="w-full mt-auto mb-auto sm:w-12/12">
         <h6 class="mb-1">{{ $t("name") }} : {{ item.name }}</h6>
         <h6 class="mb-1" v-if="item.forever">
-          {{ $t("expire date") | capitalize }} :
+          {{ $t("expiry date") | capitalize }} :
           {{ $t("forever") | capitalize }}
         </h6>
         <h6 class="mb-1" v-else>
-          {{ $t("expire date") }} :
+          {{ $t("expiry date") }} :
           {{ item.e_date.toDate() | moment("DD MMMM, YYYY") }}
         </h6>
         <h6 class="mb-1">

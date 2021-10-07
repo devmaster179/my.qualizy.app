@@ -376,7 +376,7 @@ export default {
     "event": "événement",
     "new event": "nouvel événement",
     "preparation date": "date préparation",
-    "expire date": "Date d'expiration",
+    "expiry date": "Date d'expiration",
     "created for": "créé pour",
     "templates": "Modèles",
     "new template": "nouveau modèle",

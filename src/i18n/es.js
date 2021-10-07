@@ -320,7 +320,7 @@ export default {
     "event": "evento",
     "new event": "evento nuevo",
     "preparation date": "fecha de preparación",
-    "expire date": "Fecha de caducidad",
+    "expiry date": "Fecha de caducidad",
     "created for": "creado para",
     "templates": "Plantillas",
     "new template": "nueva plantilla",

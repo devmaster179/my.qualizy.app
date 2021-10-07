@@ -446,7 +446,7 @@ export default {
         type: this.type,
         supplier: this.supplier,
         name: this.fName,
-        // "expire date": this.e_date,
+        // "expiry date": this.e_date,
         forever: this.forever,
         // allergens: this.allergenss,
         group: JSON.parse(localStorage.getItem("userInfo")).group
@@ -456,7 +456,7 @@ export default {
         type: this.type,
         supplier: this.supplier,
         name: this.fName,
-        // "expire date": this.e_date,
+        // "expiry date": this.e_date,
         forever: this.forever,
         // allergens: this.allergenss,
         group: JSON.parse(localStorage.getItem("userInfo")).group
