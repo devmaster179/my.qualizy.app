@@ -332,7 +332,7 @@ export default {
     "trash": "corbeille",
     "Select template": " Sélectionner modèle",
     "expired": "Expiré",
-    "forever": "Pour toujours",
+    "forever": "non définie",
     "prev": "préc",
     "dashboard": "tableau de bord",
     "My Tasks": "Mes tâches",

@@ -332,7 +332,7 @@ export default {
     "trash": "trash",
     "Select template": "Select template",
     "expired": "Expired",
-    "forever": "Forever",
+    "forever": "N/A",
     "prev": "prev",
     "dashboard": "dashboard",
     "My Tasks": "My Tasks",
