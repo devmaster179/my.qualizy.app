@@ -30,13 +30,13 @@
         </h6>
         <h6 class="mb-1" v-else>
           {{ $t("expire date") }} :
-          {{ item.e_date.toDate() | moment("DD MMMM , YYYY") }}
+          {{ item.e_date.toDate() | moment("DD MMMM, YYYY") }}
         </h6>
         <h6 class="mb-1">
           {{ $t("created") | capitalize }} Date :
-          {{ item.created_at.toDate() | moment("DD MMMM ,YYYY") }}
+          {{ item.created_at.toDate() | moment("DD MMMM, YYYY") }}
         </h6>
-        <h6 v-if="user != undefined">
+        <h6 class="mb-1" v-if="user != undefined">
           {{ $t("by") | capitalize }} : {{ user.name | capitalize }}
         </h6>
         <h6>{{ $t("allergens") }} : {{ allergens | capitalize }}</h6>
@@ -115,7 +115,7 @@ export default {
         tempAl.push(this.$t(allergen.name));
       });
 
-      return tempAl.join();
+      return tempAl.join(", ");
     },
     user() {
       return this.$store.getters["app/getUserById"](this.item.created_by);
@@ -187,7 +187,8 @@ export default {
 }
 #foodItemPrintSection {
   /* width: 340px !important; */
-  width: 180px !important;
+  width: 150px !important;
+  height: 100px !important;
   margin: auto;
   word-wrap: break-word;
   border: 1px solid black;
