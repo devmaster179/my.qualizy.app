@@ -22,27 +22,24 @@
       ref="foodItemPrintSection"
       v-if="item.id !== undefined"
     >
-      <div class="w-full mt-auto mb-auto sm:w-7/12">
+      <div class="w-full mt-auto mb-auto sm:w-12/12">
         <h6 class="mb-1">{{ $t("name") }} : {{ item.name }}</h6>
         <h6 class="mb-1" v-if="item.forever">
-          {{ $t("expire date") | capitalize }} :
+          {{ $t("expiry date") | capitalize }} :
           {{ $t("forever") | capitalize }}
         </h6>
         <h6 class="mb-1" v-else>
-          {{ $t("expire date") }} :
-          {{ item.e_date.toDate() | moment("DD MMMM , YYYY") }}
+          {{ $t("expiry date") }} :
+          {{ item.e_date.toDate() | moment("DD MMMM, YYYY") }}
         </h6>
         <h6 class="mb-1">
           {{ $t("created") | capitalize }} Date :
-          {{ item.created_at.toDate() | moment("DD MMMM ,YYYY") }}
+          {{ item.created_at.toDate() | moment("DD MMMM, YYYY") }}
         </h6>
-        <h6 v-if="user != undefined">
+        <h6 class="mb-1" v-if="user != undefined">
           {{ $t("by") | capitalize }} : {{ user.name | capitalize }}
         </h6>
         <h6>{{ $t("allergens") }} : {{ allergens | capitalize }}</h6>
-      </div>
-      <div class="w-full mt-4 vx-col sm:mt-0 sm:w-5/12">
-        <qrcode-vue :value="get_qrcode" size="73" level="H"></qrcode-vue>
       </div>
     </div>
   </vs-prompt>
@@ -118,7 +115,7 @@ export default {
         tempAl.push(this.$t(allergen.name));
       });
 
-      return tempAl.join();
+      return tempAl.join(", ");
     },
     user() {
       return this.$store.getters["app/getUserById"](this.item.created_by);
@@ -190,11 +187,14 @@ export default {
 }
 #foodItemPrintSection {
   /* width: 340px !important; */
-  width: 234px !important;
+  width: 150px !important;
+  height: 100px !important;
   margin: auto;
+  word-wrap: break-word;
+  border: 1px solid black;
 }
 #foodItemPrintSection > div > h6 {
-  font-size: 6px;
+  font-size: 8px;
 }
 /* .food-new-area{
         height:  calc(20vh);

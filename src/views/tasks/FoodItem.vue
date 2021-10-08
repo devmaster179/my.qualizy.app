@@ -40,7 +40,7 @@
                       <span class="karla batch-number ml-2">{{suggestion_list.batch}}</span>
                     </div>
                     <div class>
-                      <span class="karla batch">{{$t("expire date") | capitalize}}:</span>
+                      <span class="karla batch">{{$t("expiry date") | capitalize}}:</span>
                       <span class="karla batch-number ml-2">{{expireDate(suggestion_list)}}</span>
                     </div>
                   </div>

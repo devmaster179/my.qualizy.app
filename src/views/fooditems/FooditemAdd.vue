@@ -58,13 +58,13 @@
         <vs-divider
           position="left-center"
           :color="dateValidation ? '#999':'rgb(234, 84, 85)'"
-        >{{$t("preparation date") | capitalize}} & {{$t("expire date") | capitalize}}</vs-divider>
+        >{{$t("preparation date") | capitalize}} & {{$t("expiry date") | capitalize}}</vs-divider>
         <div class="vx-row">
           <div class="vx-col w-full px-1 mb-4">
             <vs-checkbox v-model="expireForever">{{$t("no expiry date") | capitalize}}</vs-checkbox>
           </div>
           <div class="vx-col w-full px-0" v-if="!expireForever">
-            <span>{{$t("expire date") | capitalize}}</span>
+            <span>{{$t("expiry date") | capitalize}}</span>
             <datepicker
               v-model="e_date"
               format="dd MMMM yyyy"

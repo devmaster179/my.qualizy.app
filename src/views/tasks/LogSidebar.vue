@@ -1374,8 +1374,13 @@ export default {
       let parentTabs = this.conditionTabs.filter(
             (tab) => tab.id === tabId
         );
-      let parentName = parentTabs[0].answers[0].name;
-      let parentId = parentTabs[0].createdByAnswer;
+
+      let parentName = "";
+      let parentId = "";
+      if (parentTabs.length > 0 && parentTabs[0].answers.length > 0) {
+        parentName = parentTabs[0].answers[0].name;
+        parentId = parentTabs[0].createdByAnswer;
+      }
 
       this.pages.map((page, p) => {
         page.questions.map((question, q) => {
