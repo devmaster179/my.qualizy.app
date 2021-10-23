@@ -126,7 +126,7 @@ export default {
           }
         }
         if (!item.lang) {
-          if (locale != "en-gb") return false;
+          if (!(locale === "en-gb" || locale === "en-us")) return false;
         } else {
           if (item.lang != locale) return false;
         }

@@ -53,7 +53,7 @@
           </div>
         </template>
         <div class="vx-col pl-base pr-4w-full">
-          <h5 class="mb-0">{{$t("labels") | capitalize}}</h5>
+          <h5 class="mb-0">{{$t("tags") | capitalize}}</h5>
         </div>
         <div class="vx-col pl-base pr-4 pb-4 w-full">
           <v-select :label="'name'" multiple :options="labels" v-model="tag" />
@@ -304,7 +304,7 @@ export default {
           }
         }
         if (!item.lang) {
-          if (locale != "en-gb") return false;
+          if (!(locale === "en-gb" || locale === "en-us")) return false;
         } else {
           if (item.lang != locale) return false;
         }

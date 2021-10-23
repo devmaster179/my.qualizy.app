@@ -20,7 +20,7 @@
         <v-select :clearable="false" :options="statuss" v-model="status" label="text" />
       </div>
       <div class="mb-3">
-        <p class="karla-bold">{{$t("labels")}}</p>
+        <p class="karla-bold">{{$t("tags")}}</p>
         <v-select multiple :options="tags" v-model="tag" label="name" />
       </div>
       <div class="mb-3">
@@ -122,7 +122,11 @@ export default {
     },
     tags() {
       const locale = this.$i18n.locale || "en-gb";
+      console.log(locale, "locale")
       let labels = this.$store.getters["app/labels"].filter((item) => {
+        if (item.group === "hmR0YZxZaseXPf0ytfVaTjl410Q2") {
+          console.log(item, item.name)
+        }
         if (item.group != "global") {
           const userInfo = JSON.parse(localStorage.getItem("userInfo"));
           if (userInfo.group != item.group) {
@@ -130,7 +134,7 @@ export default {
           }
         }
         if (!item.lang) {
-          if (locale != "en-gb") return false;
+          if (!(locale === "en-gb" || locale === "en-us")) return false;
         } else {
           if (item.lang != locale) return false;
         }
